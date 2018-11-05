@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="jquery-3.3.1.min.js"></script>
+  <script src="moment.js"></script>
+  
+
+  <script src="currentUser.js"></script>
+  <script src="currentUserRepo.js"></script>
+
+  <script src="options.js"></script>
+  <script src="optionsRepo.js"></script>
+  <script src="worklog.js"></script>
+
+  <script src="popup.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
+
+
+</head>
+
+<body>
+
+
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-fluid">
+
+        <div id='loginContainer' style="display: none" class="box">
+          <img src="images/myhourslogo.png" />
+          <div class="field">
+            <p class="control has-icons-left has-icons-right">
+              <input class="input" type="email" placeholder="Email" id='email' value="davidsakelsek@gmail.com">
+              <span class="icon is-small is-left">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <span class="icon is-small is-right">
+                <i class="fas fa-check"></i>
+              </span>
+            </p>
+          </div>
+          <div class="field">
+            <p class="control has-icons-left">
+              <input class="input" type="password" placeholder="Password" id='password' value="password00">
+              <span class="icon is-small is-left">
+                <i class="fas fa-lock"></i>
+              </span>
+            </p>
+          </div>
+
+          <button id='loginButton' class="button is-info">Login</button>
+        </div>
+
+        <div id='mainContainer' style="display: none" class="box">
+          <h1 class='subtitle'><span id='usersName'></span>, here is your today's worklog</h1>
+          <div>
+            <ul id='logs'>
+            </ul>
+          </div>
+          <button id='copyToAxoSoftButton' class="button is-info">Copy</button>
+        </div>
+
+      </div>
+  </section>
+
+</body>
+
+</html>

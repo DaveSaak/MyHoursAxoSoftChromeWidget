@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Options</title>
+
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="optionsPage.js"></script>
+    <script src="options.js"></script>
+    <script src="optionsRepo.js"></script>
+    <script src="worklog.js"></script>
+    <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
+
+</head>
+
+<body>
+    <div class="container" style="max-width: 600px; margin-top: 20px;">
+        <div class="box">
+            <div>
+                <h1 class="title">Options</h1>
+
+                <!-- <img src="images/myhourslogo.png" /> -->
+
+                <div class="field">
+                    <label class="label">AxoSoft API Address</label>
+                    <div class="control">
+                        <input class="input" type="text" id='axoSoftUrl' />
+
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">AxoSoft API Token</label>
+                    <div class="control">
+                        <input class="input" type="text" id='axoSoftToken' />
+
+                    </div>
+                </div>
+
+                <div class="field" style="width: 50%">
+                    <label class="label">AxoSoft User Id</label>
+                    <div class="control">
+                        <input class="input" type="number" id='axoSoftUserId' />
+
+                    </div>
+                </div>
+
+
+                <div class="field" style="width: 50%">
+                    <label class="label">AxoSoft Default Worklog type id</label>
+                    <div class="control">
+                        <input class="input" type="number" id='axoSoftDefaultWorklogTypeId' />
+
+                    </div>
+                </div>                
+
+                <div class="field is-grouped is-grouped-right">
+                    <p class="control">
+                        <button id='saveButton' class="button is-info">Save</button>
+                    </p>
+
+                </div>
+
+
+            </div>
+        </div>
+        <!-- </div> -->
+    </div>
+    <!-- </section> -->
+
+
+
+
+
+    <!-- Favorite color:
+    <select id="color">
+        <option value="red">red</option>
+        <option value="green">green</option>
+        <option value="blue">blue</option>
+        <option value="yellow">yellow</option>
+    </select>
+
+    <label>
+        <input type="checkbox" id="like">
+        I like colors.
+    </label>
+
+    <div id="status"></div>
+    <button id="save">Save</button> -->
+
+
+
+
+</body>
+
+</html>

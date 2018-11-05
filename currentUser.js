@@ -1,0 +1,85 @@
+function CurrentUser() {
+
+    this.accessToken = undefined;
+    this.refreshToken = undefined;
+    this.id = undefined;
+    this.name = "John Doe";
+    this.email = undefined;
+
+    this.setUserData = function (id, name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    this.setTokenData = function (accessToken, refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
+    this.save = function () {
+        console.info("saving current user");
+
+        if (chrome == undefined || chrome.storage == undefined) {
+            console.warn('cannot access chrome storage api');
+        } else {
+            console.info("saving current user to the chrome store");
+            chrome.storage.sync.set({
+                'curentUser': this
+            })
+        }
+    }
+
+    this.load = function (callback) {
+        console.info("loading current user");
+
+        if (chrome == undefined || chrome.storage == undefined) {
+            console.warn('cannot access chrome storage api');
+
+            if (callback) {
+                console.info("executing load current user callback");
+                callback();
+            }
+
+        } else {
+            console.info("loading current user from the chrome store");
+
+            var currenUser = this;
+
+            chrome.storage.sync.get('curentUser', function (items) {
+                if (items.currentUser) {
+                    currenUser.accessToken = items.currentUser.accessToken;
+                    currenUser.refreshToken = items.currentUser.refreshToken;
+                    currenUser.id = items.currentUser.id;
+                    currenUser.name = items.currentUser.name;
+                    currenUser.email = items.currentUser.email;
+                    //this = items.curentUser; 
+                }
+
+                if (callback) {
+                    console.info("executing load current user callback");
+                    callback();
+                }
+            });
+        }
+    }
+
+    this.clear = function () {
+      
+        console.info("clearing current user");
+        this.accessToken = undefined;
+        this.refreshToken = undefined;
+        this.id = undefined;
+        this.name = undefined;
+        this.email = undefined;
+
+
+
+        if (chrome == undefined || chrome.storage == undefined) {
+            console.warn('cannot access chrome storage api');
+        } else {
+            console.info("clearing current user from the chrome store");
+            chrome.storage.sync.remove('curentUser', undefined);
+        }
+
+    }
+}
