@@ -24,7 +24,7 @@ function CurrentUser() {
         } else {
             console.info("saving current user to the chrome store");
             chrome.storage.sync.set({
-                'curentUser': this
+                'currentUser': this
             })
         }
     }
@@ -43,15 +43,21 @@ function CurrentUser() {
         } else {
             console.info("loading current user from the chrome store");
 
-            var currenUser = this;
+            var currentUser = this;
 
-            chrome.storage.sync.get('curentUser', function (items) {
+            console.info(currentUser);
+
+            chrome.storage.sync.get('currentUser', function (items) {
                 if (items.currentUser) {
-                    currenUser.accessToken = items.currentUser.accessToken;
-                    currenUser.refreshToken = items.currentUser.refreshToken;
-                    currenUser.id = items.currentUser.id;
-                    currenUser.name = items.currentUser.name;
-                    currenUser.email = items.currentUser.email;
+                    console.info(items.currentUser);
+
+
+
+                    currentUser.accessToken = items.currentUser.accessToken;
+                    currentUser.refreshToken = items.currentUser.refreshToken;
+                    currentUser.id = items.currentUser.id;
+                    currentUser.name = items.currentUser.name;
+                    currentUser.email = items.currentUser.email;
                     //this = items.curentUser; 
                 }
 
@@ -78,7 +84,7 @@ function CurrentUser() {
             console.warn('cannot access chrome storage api');
         } else {
             console.info("clearing current user from the chrome store");
-            chrome.storage.sync.remove('curentUser', undefined);
+            chrome.storage.sync.remove('currentUser', undefined);
         }
 
     }
