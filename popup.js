@@ -14,14 +14,19 @@ function popup() {
 
   //    init = function () {
   $('#loginButton').click(function () {
-    login();
+    var email = $('#email').val();
+    var password = $('#password').val();
+    login(email, password);
   });
 
   $('#copyToAxoSoftButton').click(function () {
     copyTimelogs();
   });
 
-
+  $('#logOutButton').click(function () {
+    currentUser.clear();
+    showLoginPage();
+  });
 
   var myHoursLogs = undefined;
   var worklogTypes = undefined;
@@ -68,11 +73,22 @@ function popup() {
     getLogs();
   }
 
+/*
+  var promise = new Promise(function(resolve, reject) {
+    // do a thing, possibly async, then…
+  
+    if (true) {
+      resolve("Stuff worked!");
+    }
+    else {
+      reject(Error("It broke"));
+    }
+  });
 
+*/
   function getLogs() {
-    var currentUser = new CurrentUserRepo.getInstance();
-
-    
+    // var currentUser = new CurrentUserRepo.getInstance();
+  
 
     $.ajax({
       url: "https://api.myhours.com/logs",
@@ -143,13 +159,14 @@ function popup() {
 
         //use refresh token
         console.error(data);
+        showLoginPage();
       }
     });
   }
 
 
-  function getCurrentUser(successCallback, errorCallback) {
-    var currentUser = new CurrentUserRepo.getInstance();
+  function getCurrentUser(resolve, reject) {
+    // var currentUser = new CurrentUserRepo.getInstance();
 
     console.info("api: getting user data");
 
@@ -159,49 +176,19 @@ function popup() {
         "Authorization": "Bearer " + currentUser.accessToken
       },
       type: "GET",
-      //data: {},
-
-      // statusCode: {
-      //   401: function (response) {
-      //     console.error('unauthorized');
-      //     showLoginPage();
-      //   },
-      //   403: function (response) {
-      //     console.error('forbiden');
-      //   }
-      // },
-
       success: function (data) {
-
         currentUser.setUserData(data.id, data.name);
         currentUser.save();
-
-        // window.curentUserData.userName = data.name;
-        // window.curentUserData.userId = data.id;
-
-
-
-        //saveCurrentUser();
-
-        if (successCallback != undefined) {
-          console.info("executing getCurrentUser callback")
-          successCallback();
-        }
-
+        resolve();
       },
       error: function (data) {
         console.error(data);
-
-        if (errorCallback != undefined) {
-          errorCallback();
-        }
-
+        reject(Error());
       }
     });
   }
 
-  function login() {
-    var email = $('#email').val();
+  function login(email, password) {
     $.ajax({
       url: "https://api.myhours.com/tokens",
       type: "POST",
@@ -209,18 +196,22 @@ function popup() {
         clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
         email: email,
         grantType: "password",
-        password: $('#password').val()
+        password: password
       },
       success: function (data) {
-        // window.curentUserData.accessToken = data.accessToken;
-        // window.curentUserData.refreshToken = data.refreshToken;
-
         var currentUser = new CurrentUserRepo.getInstance();
         currentUser.email = email;
-        currentUser.setTokenData(data.accessToken, data.reefreshToken);
+        currentUser.setTokenData(data.accessToken, data.refreshToken);
         currentUser.save();
 
-        getCurrentUser(showMainPage);
+        var promise = new Promise(getCurrentUser);
+        promise.then(function(result) {
+          showMainPage();
+        }, function(err) {
+          showLoginPage();
+        });
+
+        
       },
       error: function (data) {
         console.error(data);
@@ -237,16 +228,10 @@ function popup() {
         return +v;
       }).shift();
 
-
-
     if (itemId != undefined) {
-      //var itemId = myHoursLogProjectName.substring(0, itemIdMatchIndex + 1);
-
       console.info(itemId);
       var axoItem = getAxoItem(itemId);
-
     }
-
   }
 
   function copyTimeLog(userId, workDoneInHours, itemId, itemType, itemWorklogTypeId, description, datetime) {
@@ -263,14 +248,8 @@ function popup() {
     console.info(worklog);
   }
 
-
-
   function getAxoItem(itemId, successCallback) {
     console.info('getting item from axosoft');
-    //    options.load(
-
-    //    function () {
-
     $.ajax({
       url: options.axoSoftUrl + "/v6/features/" + itemId,
       headers: {
@@ -291,21 +270,10 @@ function popup() {
         return null;
       }
     });
-    //     });
   }
 
-
   function copyTimelogs() {
-
     console.info(myHoursLogs);
-
-    //var options = new OptionsRepo.getInstance();
-    //options.load(
-
-    //function () {
-
-    //get worklog types
-    //var currentUser = new CurrentUserRepo.getInstance();
     $.ajax({
       url: options.axoSoftUrl + "/v6/picklists/work_log_types",
       headers: {
@@ -326,8 +294,5 @@ function popup() {
         console.error();
       }
     });
-
-
-    //      });
   }
 };
