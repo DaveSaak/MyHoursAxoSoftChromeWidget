@@ -4,6 +4,9 @@ function AxoSoftApi() {
 
 
     this.getFeatureItemType = function (itemId) {
+        var options = this.options;
+
+
         return new Promise(function (resolve, reject) {
             console.info('getting item from axosoft');
             $.ajax({
@@ -26,18 +29,19 @@ function AxoSoftApi() {
     }
 
     this.getWorkLogTypes = function () {
+        var options = this.options;
         return new Promise(function (resolve, reject) {
             console.info('getting item from axosoft');
             $.ajax({
                 url: options.axoSoftUrl + "/v6/picklists/work_log_types",
                 headers: {
-                  "Authorization": "Bearer " + options.axoSoftToken,
-                  "Access-Control-Allow-Origin": "*"
+                    "Authorization": "Bearer " + options.axoSoftToken,
+                    "Access-Control-Allow-Origin": "*"
                 },
                 type: "GET",
 
                 success: function (data) {
-                    console.info(data);                    
+                    console.info(data);
                     resolve(data);
                 },
                 error: function (data) {
@@ -47,5 +51,5 @@ function AxoSoftApi() {
         })
     }
 
-    //this.addWorklog
+    
 }
