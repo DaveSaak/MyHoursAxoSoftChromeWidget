@@ -51,6 +51,7 @@ function popup() {
       if (currentUser.email != undefined) {
         $('#email').val(currentUser.email);
       }
+      console.info('access token is undefined');
       showLoginPage();
     } else {
       MyHoursRepo.accessToken = currentUser.accessToken;
@@ -132,6 +133,7 @@ function popup() {
 
       },
       function () {
+        console.info('failed to get logs');
         showLoginPage();
       }
     )
@@ -151,18 +153,20 @@ function popup() {
           currentUser.save();
           showMainPage();
         }, function (err) {
+          console.info('error while geeting the user data');
           showLoginPage();
         });
 
       },
       function (error) {
+        console.info('error while geeting the access token');
         showLoginPage();
       }
     )
   }
 
   function getTimeLogDetails(myHoursLog, workLogTypeId) {
-    var itemId = (myHoursLogP.poject.name
+    var itemId = (myHoursLog.project.name
         .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
       .map(function (v) {
         return +v;
@@ -173,7 +177,7 @@ function popup() {
 
 
       axoSoftRepo.getFeatureItemType(itemId).then(function (itemType) {
-        console.info(result);
+        console.info(itemType);
 
         var worklog = new Worklog;
         worklog.user.id = options.axoSoftUserId;
@@ -193,7 +197,7 @@ function popup() {
   function copyTimelogs() {
     console.info(myHoursLogs);
     axoSoftRepo.getWorkLogTypes().then(
-      function () {
+      function (data) {
         console.info(data);
         worklogTypes = data;
         $.each(myHoursLogs, function (index, myHoursLog) {
