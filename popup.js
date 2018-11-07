@@ -11,6 +11,14 @@ function popup() {
   //init();
 
   console.info('init');
+  var myHoursLogs = undefined;
+  var worklogTypes = undefined;
+  var myHoursRepo = new MyHoursRepo.getInstance();
+  var axoSoftRepo = new AxoSoftRepo.getInstance();
+  var options = new OptionsRepo.getInstance();
+  options.load();
+  var currentUser = new CurrentUserRepo.getInstance();
+
 
   //    init = function () {
   $('#loginButton').click(function () {
@@ -28,13 +36,11 @@ function popup() {
     showLoginPage();
   });
 
-  var myHoursLogs = undefined;
-  var worklogTypes = undefined;
-  var options = new OptionsRepo.getInstance();
-  options.load();
 
 
-  var currentUser = new CurrentUserRepo.getInstance();
+
+  
+  
 
   //currentUser.clear(); //test
   currentUser.load(function () {
@@ -47,6 +53,7 @@ function popup() {
       }
       showLoginPage();
     } else {
+      MyHoursRepo.accessToken = currentUser.accessToken;
       showMainPage();
     }
   })
@@ -73,45 +80,11 @@ function popup() {
     getLogs();
   }
 
-/*
-  var promise = new Promise(function(resolve, reject) {
-    // do a thing, possibly async, then…
-  
-    if (true) {
-      resolve("Stuff worked!");
-    }
-    else {
-      reject(Error("It broke"));
-    }
-  });
 
-*/
   function getLogs() {
-    // var currentUser = new CurrentUserRepo.getInstance();
-  
 
-    $.ajax({
-      url: "https://api.myhours.com/logs",
-      headers: {
-        "Authorization": "Bearer " + currentUser.accessToken
-      },
-      type: "GET",
-      data: {
-        dateFrom: moment().format("YYYY-MM-DD"),
-        dateTo: moment().format("YYYY-MM-DD")
-      },
-
-      // statusCode: {
-      //   401: function (response) {
-      //     console.error('unauthorized');
-      //     showLoginPage();
-      //   },
-      //   403: function (response) {
-      //     console.error('forbiden');
-      //   }
-      // },
-
-      success: function (data) {
+    myHoursRepo.getLogs(moment()).then(
+      function (data) {
         myHoursLogs = data;
 
         var logsContainer = $('#logs');
@@ -154,75 +127,42 @@ function popup() {
 
           logsContainer.append(log);
         });
-      },
-      error: function (data) {
 
-        //use refresh token
-        console.error(data);
+
+
+      },
+      function () {
         showLoginPage();
       }
-    });
-  }
-
-
-  function getCurrentUser(resolve, reject) {
-    // var currentUser = new CurrentUserRepo.getInstance();
-
-    console.info("api: getting user data");
-
-    $.ajax({
-      url: "https://api.myhours.com/users",
-      headers: {
-        "Authorization": "Bearer " + currentUser.accessToken
-      },
-      type: "GET",
-      success: function (data) {
-        currentUser.setUserData(data.id, data.name);
-        currentUser.save();
-        resolve();
-      },
-      error: function (data) {
-        console.error(data);
-        reject(Error());
-      }
-    });
+    )
   }
 
   function login(email, password) {
-    $.ajax({
-      url: "https://api.myhours.com/tokens",
-      type: "POST",
-      data: {
-        clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
-        email: email,
-        grantType: "password",
-        password: password
-      },
-      success: function (data) {
-        var currentUser = new CurrentUserRepo.getInstance();
+    myHoursRepo.getAccessToken(email, password).then(
+      function (token) {
+        //var currentUser = new CurrentUserRepo.getInstance();
         currentUser.email = email;
-        currentUser.setTokenData(data.accessToken, data.refreshToken);
+        currentUser.setTokenData(token.accessToken, token.refreshToken);
         currentUser.save();
 
-        var promise = new Promise(getCurrentUser);
-        promise.then(function(result) {
+        myHoursRepo.accessToken = token.accessToken;
+        myHoursRepo.getUser().then(function (user) {
+          currentUser.setUserData(user.id, user.name);
+          currentUser.save();
           showMainPage();
-        }, function(err) {
+        }, function (err) {
           showLoginPage();
         });
 
-        
       },
-      error: function (data) {
-        console.error(data);
+      function (error) {
+        showLoginPage();
       }
-    });
-
+    )
   }
 
-
-  function getTimeLogDetails(myHoursLogProjectName) {
-    var itemId = (myHoursLogProjectName
+  function getTimeLogDetails(myHoursLog, workLogTypeId) {
+    var itemId = (myHoursLogP.poject.name
         .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
       .map(function (v) {
         return +v;
@@ -230,69 +170,45 @@ function popup() {
 
     if (itemId != undefined) {
       console.info(itemId);
-      var axoItem = getAxoItem(itemId);
+
+
+      axoSoftRepo.getFeatureItemType(itemId).then(function (itemType) {
+        console.info(result);
+
+        var worklog = new Worklog;
+        worklog.user.id = options.axoSoftUserId;
+        worklog.work_done.duration = myHoursLog.duration / 60 / 60;
+        worklog.item.id = itemId;
+        worklog.item.item_type = itemType;
+        worklog.work_log_type.id = workLogTypeId;
+        worklog.description = myHoursLog.note;
+        worklog.date_time = myHoursLog.date;
+
+        console.info(worklog);
+      })
     }
   }
 
-  function copyTimeLog(userId, workDoneInHours, itemId, itemType, itemWorklogTypeId, description, datetime) {
-
-    var worklog = new Worklog;
-    worklog.user.id = userId;
-    worklog.work_done.duration = workDoneInHours;
-    worklog.item.id = itemId;
-    worklog.item.item_type = itemType;
-    worklog.work_log_type.id = itemWorklogTypeId;
-    worklog.description = description;
-    worklog.date_time = datetime;
-
-    console.info(worklog);
-  }
-
-  function getAxoItem(itemId, successCallback) {
-    console.info('getting item from axosoft');
-    $.ajax({
-      url: options.axoSoftUrl + "/v6/features/" + itemId,
-      headers: {
-        "Authorization": "Bearer " + options.axoSoftToken
-      },
-      type: "GET",
-
-      success: function (data) {
-        console.info(data);
-
-        console.info(data.item_type);
-
-        if (successCallback != undefined) {
-          successCallback();
-        }
-      },
-      error: function (data) {
-        return null;
-      }
-    });
-  }
 
   function copyTimelogs() {
     console.info(myHoursLogs);
-    $.ajax({
-      url: options.axoSoftUrl + "/v6/picklists/work_log_types",
-      headers: {
-        "Authorization": "Bearer " + options.axoSoftToken,
-        "Access-Control-Allow-Origin": "*"
-      },
-      type: "GET",
-      success: function (data) {
+    axoSoftRepo.getWorkLogTypes().then(
+      function () {
         console.info(data);
         worklogTypes = data;
         $.each(myHoursLogs, function (index, myHoursLog) {
           if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
-            getTimeLogDetails(myHoursLog.project.name);
+
+            if (myHoursLog.task != undefined && myHoursLog.task.name != undefined){
+              var workLogType = $.grep(worklogTypes, function(obj){return obj.name.toUpperCase() === myHoursLog.task.name.toUpperCase() })[0];
+              if (workLogType != undefined){
+                var workLogTypeId = workLogType.Id;
+              }
+            }
+            getTimeLogDetails(myHoursLog, workLogTypeId);
           }
         });
       },
-      error: function (data) {
-        console.error();
-      }
-    });
+      function () {});
   }
 };
