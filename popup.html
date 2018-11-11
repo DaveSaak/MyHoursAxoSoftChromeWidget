@@ -2,76 +2,110 @@
 <html>
 
 <head>
-  <script src="jquery-3.3.1.min.js"></script>
-  <script src="moment.js"></script>
-  
-  <script src="myHoursRepo.js"></script>
-  <script src="myHoursApi.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+        crossorigin="anonymous">
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="moment.js"></script>
+    <script src="underscore-min.js"></script>
 
-  <script src="currentUser.js"></script>
-  <script src="currentUserRepo.js"></script>
+    <script src="myHoursRepo.js"></script>
+    <script src="myHoursApi.js"></script>
 
-  <script src="options.js"></script>
-  <script src="optionsRepo.js"></script>
-  <script src="axoSoftRepo.js"></script>
-  <script src="axoSoftApi.js"></script>
-  
-  <script src="worklog.js"></script>
+    <script src="currentUser.js"></script>
+    <script src="currentUserRepo.js"></script>
 
-  <script src="popup.js"></script>
+    <script src="options.js"></script>
+    <script src="optionsRepo.js"></script>
+    <!-- <script src="axoSoftRepo.js"></script> -->
+    <script src="axoSoftApi.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
+    <script src="worklog.js"></script>
+
+    <script src="popup.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
 
 
 </head>
 
-<body>
+<body class="narrow">
 
 
 
 
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-fluid">
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-fluid">
 
-        <div id='loginContainer' style="display: none" class="box">
-          <img src="images/myhourslogo.png" />
-          <div class="field">
-            <p class="control has-icons-left has-icons-right">
-              <input class="input" type="email" placeholder="Email" id='email'>
-              <span class="icon is-small is-left">
-                <i class="fas fa-envelope"></i>
-              </span>
-              <span class="icon is-small is-right">
-                <i class="fas fa-check"></i>
-              </span>
-            </p>
-          </div>
-          <div class="field">
-            <p class="control has-icons-left">
-              <input class="input" type="password" placeholder="Password" id='password'>
-              <span class="icon is-small is-left">
-                <i class="fas fa-lock"></i>
-              </span>
-            </p>
-          </div>
+                <div id='loginContainer' style="display: none" class="box12">
+                    <img src="images/myhourslogo.png" />
+                    <div class="field">
+                        <p class="control has-icons-left has-icons-right">
+                            <input class="input" type="email" placeholder="Email" id='email'>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="field">
+                        <p class="control has-icons-left">
+                            <input class="input" type="password" placeholder="Password" id='password'>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </p>
+                    </div>
 
-          <button id='loginButton' class="button is-info">Login</button>
-        </div>
+                    <button id='loginButton' class="button is-info">Login</button>
+                </div>
 
-        <div id='mainContainer' style="display: none" class="box">
-          <h1 class='subtitle'><span id='usersName'></span>, here is your today's worklog</h1>
-          <div>
-            <ul id='logs'>
-            </ul>
-          </div>
-          <button id='copyToAxoSoftButton' class="button is-info">Copy</button>
-          <button id='logOutButton' class="button is-info">log out</button>
-        </div>
+                <div id='mainContainer' style="display: none" class="box12">
 
-      </div>
-  </section>
+                    <div class="columns">
+                        <div class="column">
+                            <h1 class='subtitle'><span id='usersName'></span>, here is your worklog</h1>
+                        </div>
+                        <div class="column is-1">
+                            <div class="buttons are-medium is-right">
+
+                                <button id='logOutButton' class="button is-info is-inverted">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>log out</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeControl buttons has-addons">
+                        <span class="button">
+                            <i class="fas fa-angle-left"></i>
+                        </span>
+                        <span class="button is-static">date</span>
+                        <span class="button">
+                            <i class="fas fa-angle-right"></i>
+                        </span>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <ul id='logs'>
+                        </ul>
+                    </div>
+
+                    <div class="buttons are-medium is-right">
+                        <button id='copyToAxoSoftButton' class="button is-info">
+                            <i class="far fa-clone"></i>
+                            <span>Copy to AxoSoft</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+    </section>
 
 </body>
 
