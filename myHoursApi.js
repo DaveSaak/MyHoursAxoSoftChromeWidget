@@ -1,11 +1,14 @@
-function MyHoursApi() {
+'use strict'
 
-    this.accessToken = undefined;
+function MyHoursApi(currentUser) {
+    var _this = this;
 
+    _this.currentUser= currentUser;
+    //_this.accessToken = undefined;
 
-
-    this.getUser = function () {
-        var accessToken = this.accessToken;
+    
+    _this.getUser = function () {
+        //var accessToken = _this.accessToken;
 
         return new Promise(
             function (resolve, reject) {
@@ -14,22 +17,22 @@ function MyHoursApi() {
                 $.ajax({
                     url: "https://api.myhours.com/users",
                     headers: {
-                        "Authorization": "Bearer " + accessToken
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
                     type: "GET",
                     success: function (data) {
-                        resolve(data)
+                        return resolve(data)
                     },
                     error: function (data) {
                         console.error(data);
-                        reject(Error());
+                        return reject(Error());
                     }
                 });
             }
         )
     }
 
-    this.getAccessToken = function (email, password) {
+    _this.getAccessToken = function (email, password) {
         return new Promise(
             function (resolve, reject) {
                 console.info("api: getting user data");
@@ -44,19 +47,19 @@ function MyHoursApi() {
                       password: password
                     },
                     success: function (data) {
-                        resolve(data);
+                        return resolve(data);
                     },
                     error: function (data) {
                         console.error(data);
-                        reject(Error());
+                        return reject(Error());
                     }
                 });
             }
         )
     }
 
-    this.getLogs = function(date){
-        var accessToken = this.accessToken;
+    _this.getLogs = function(date){
+        var accessToken = _this.accessToken;
         return new Promise(
             function (resolve, reject) {
                 console.info("api: getting user data");
@@ -64,7 +67,7 @@ function MyHoursApi() {
                 $.ajax({
                     url: "https://api.myhours.com/logs",
                     headers: {
-                      "Authorization": "Bearer " + accessToken
+                      "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
                     type: "GET",
                     data: {
@@ -72,7 +75,7 @@ function MyHoursApi() {
                       dateTo: moment(date).format("YYYY-MM-DD")
                     },
                     success: function (data) {
-                        resolve(data);
+                         resolve(data);
                     },
                     error: function (data) {
                         console.error(data);
