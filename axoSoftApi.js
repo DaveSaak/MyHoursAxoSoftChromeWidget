@@ -1,50 +1,51 @@
-function AxoSoftApi() {
-    this.options = new OptionsRepo.getInstance();
-    this.options.load();
+'use strict'
+
+function AxoSoftApi(options) {
+    var _this = this;
+    _this.options = options;
 
 
-    this.getFeatureItemType = function (itemId) {
-        var options = this.options;
 
-
+    _this.getFeatureItemType = function (itemId) {
         return new Promise(function (resolve, reject) {
             console.info('getting item from axosoft');
             $.ajax({
-                url: options.axoSoftUrl + "/v6/features/" + itemId,
+                url: _this.options.axoSoftUrl + "/v6/features/" + itemId,
                 headers: {
-                    "Authorization": "Bearer " + options.axoSoftToken
+                    "Authorization": "Bearer " + _this.options.axoSoftToken
                 },
                 type: "GET",
 
-                success: function (data) {
-                    console.info(data);
-                    console.info(data.item_type);
-                    resolve(data.item_type);
+                success: function (response) {
+                    console.info(response);
+                    console.info(response.data.item_type);
+                    resolve(response.data.item_type);
                 },
-                error: function (data) {
+                error: function () {
                     reject();
                 }
             });
         })
     }
 
-    this.getWorkLogTypes = function () {
-        var options = this.options;
+
+    _this.getWorkLogTypes = function () {
+        //var options = this.options;
         return new Promise(function (resolve, reject) {
             console.info('getting item from axosoft');
             $.ajax({
-                url: options.axoSoftUrl + "/v6/picklists/work_log_types",
+                url: _this.options.axoSoftUrl + "/v6/picklists/work_log_types",
                 headers: {
-                    "Authorization": "Bearer " + options.axoSoftToken,
+                    "Authorization": "Bearer " + _this.options.axoSoftToken,
                     "Access-Control-Allow-Origin": "*"
                 },
                 type: "GET",
 
-                success: function (data) {
-                    console.info(data);
-                    resolve(data);
+                success: function (response) {
+                    console.info(response);
+                    resolve(response.data);
                 },
-                error: function (data) {
+                error: function () {
                     reject();
                 }
             });
