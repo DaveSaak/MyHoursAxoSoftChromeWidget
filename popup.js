@@ -1,218 +1,252 @@
-$(document).ready(function () {
-  // we define and invoke a function
+'use strict'
 
-  popup();
+$(document).ready(function () {
+
+    new popup();
+
 
 
 });
 
 
+
 function popup() {
-  //init();
+    console.info('init');
+    var _this = this;
 
-  console.info('init');
-  var myHoursLogs = undefined;
-  var worklogTypes = undefined;
-  var myHoursRepo = new MyHoursRepo.getInstance();
-  var axoSoftRepo = new AxoSoftRepo.getInstance();
-  var options = new OptionsRepo.getInstance();
-  options.load();
-  var currentUser = new CurrentUserRepo.getInstance();
+    _this.myHoursLogs = undefined;
+    _this.worklogTypes = undefined;
+    _this.currentDate = moment();
 
+    _this.currentUser = new CurrentUserRepo.getInstance();
+    _this.options = new OptionsRepo.getInstance();
 
-  //    init = function () {
-  $('#loginButton').click(function () {
-    var email = $('#email').val();
-    var password = $('#password').val();
-    login(email, password);
-  });
+    _this.myHoursRepo = new MyHoursApi(_this.currentUser) //new MyHoursRepo.getInstance();
+    _this.axoSoftRepo = new AxoSoftApi(_this.options); //new AxoSoftRepo.getInstance();
 
-  $('#copyToAxoSoftButton').click(function () {
-    copyTimelogs();
-  });
+    _this.options.load().then(
+        function () {
+            //        _this.myHoursRepo.accessToken = options.accessToken;
 
-  $('#logOutButton').click(function () {
-    currentUser.clear();
-    showLoginPage();
-  });
+            _this.currentUser.load(function () {
+                console.info(_this.currentUser);
 
+                if (_this.currentUser.accessToken == undefined) {
+                    console.info('access token is undefined');
 
+                    if (_this.currentUser.email != undefined) {
+                        $('#email').val(_this.currentUser.email);
+                    }
 
+                    showLoginPage();
+                } else {
+                    //MyHoursRepo.accessToken = currentUser.accessToken;
+                    showMainPage();
+                }
+            })
+        }
+    );
 
-  
-  
+    function initInterface() {
 
-  //currentUser.clear(); //test
-  currentUser.load(function () {
+        $('#loginButton').click(function () {
+            var email = $('#email').val();
+            var password = $('#password').val();
+            login(email, password);
+        });
 
-    console.info(currentUser);
+        $('#copyToAxoSoftButton').click(function () {
+            copyTimelogs();
+        });
 
-    if (currentUser.accessToken == undefined) {
-      if (currentUser.email != undefined) {
-        $('#email').val(currentUser.email);
-      }
-      console.info('access token is undefined');
-      showLoginPage();
-    } else {
-      MyHoursRepo.accessToken = currentUser.accessToken;
-      showMainPage();
-    }
-  })
+        $('#logOutButton').click(function () {
+            _this.currentUser.clear();
+            showLoginPage();
+        });
 
-  function showLoginPage() {
-    $('#mainContainer').hide();
-    $('#loginContainer').show();
+        $('.timeControl span:first-child').click(function () {
+            _this.currentDate = _this.currentDate.add(-1, 'days');
+            getLogs();
+        });
 
-    var currentUser = new CurrentUserRepo.getInstance();
-    if (currentUser.email != undefined) {
-      $('input#email').val(currentUser.email);
-    }
-
-  }
-
-  function showMainPage() {
-    $('#mainContainer').show();
-    $('#loginContainer').hide();
-
-
-    var currentUser = new CurrentUserRepo.getInstance();
-    $('#usersName').text(currentUser.name);
-
-    getLogs();
-  }
-
-
-  function getLogs() {
-
-    myHoursRepo.getLogs(moment()).then(
-      function (data) {
-        myHoursLogs = data;
-
-        var logsContainer = $('#logs');
-        logsContainer.empty();
-
-
-        $.each(data, function (index, data) {
-
-          var log = $('<li>').data('logId', data.id);
-
-          var columns = $('<div>').addClass('columns');
-          var columnA = $('<div>').addClass('column is-two-thirds');
-
-
-
-          if (data.project != null) {
-            var projectInfo = $('<span>').text(data.project.name).addClass('tag is-link');
-            columnA.append(projectInfo);
-          }
-
-
-          if (data.task != null) {
-            var taskInfo = $('<span>').text(data.task.name).addClass('tag is-warning');
-            columnA.append(taskInfo);
-          }
-          columns.append(columnA);
-
-
-          var columnB = $('<div>').addClass('column is-one-third');
-          if (data.duration != null) {
-            var duration = moment().startOf('day').add(data.duration, 'seconds');
-            var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
-            columnB.append(durationInfo);
-          }
-          columns.append(columnB);
-
-          log.append(columns);
-
-
-
-          logsContainer.append(log);
+        $('.timeControl span:last-child').click(function () {
+            _this.currentDate = _this.currentDate.add(1, 'days');
+            getLogs();
         });
 
 
+    }
 
-      },
-      function () {
-        console.info('failed to get logs');
-        showLoginPage();
-      }
-    )
-  }
 
-  function login(email, password) {
-    myHoursRepo.getAccessToken(email, password).then(
-      function (token) {
+    function showLoginPage() {
+        $('body').addClass('narrow');
+        $('body').removeClass('wide');
+
+        $('#mainContainer').hide();
+        $('#loginContainer').show();
+
         //var currentUser = new CurrentUserRepo.getInstance();
-        currentUser.email = email;
-        currentUser.setTokenData(token.accessToken, token.refreshToken);
-        currentUser.save();
+        if (_this.currentUser.email != undefined) {
+            $('input#email').val(_this.currentUser.email);
+        }
 
-        myHoursRepo.accessToken = token.accessToken;
-        myHoursRepo.getUser().then(function (user) {
-          currentUser.setUserData(user.id, user.name);
-          currentUser.save();
-          showMainPage();
-        }, function (err) {
-          console.info('error while geeting the user data');
-          showLoginPage();
-        });
-
-      },
-      function (error) {
-        console.info('error while geeting the access token');
-        showLoginPage();
-      }
-    )
-  }
-
-  function getTimeLogDetails(myHoursLog, workLogTypeId) {
-    var itemId = (myHoursLog.project.name
-        .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
-      .map(function (v) {
-        return +v;
-      }).shift();
-
-    if (itemId != undefined) {
-      console.info(itemId);
-
-
-      axoSoftRepo.getFeatureItemType(itemId).then(function (itemType) {
-        console.info(itemType);
-
-        var worklog = new Worklog;
-        worklog.user.id = options.axoSoftUserId;
-        worklog.work_done.duration = myHoursLog.duration / 60 / 60;
-        worklog.item.id = itemId;
-        worklog.item.item_type = itemType;
-        worklog.work_log_type.id = workLogTypeId;
-        worklog.description = myHoursLog.note;
-        worklog.date_time = myHoursLog.date;
-
-        console.info(worklog);
-      })
     }
-  }
+
+    function showMainPage() {
+        $('body').removeClass('narrow');
+        $('body').addClass('wide');
 
 
-  function copyTimelogs() {
-    console.info(myHoursLogs);
-    axoSoftRepo.getWorkLogTypes().then(
-      function (data) {
-        console.info(data);
-        worklogTypes = data;
-        $.each(myHoursLogs, function (index, myHoursLog) {
-          if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
+        $('#mainContainer').show();
+        $('#loginContainer').hide();
 
-            if (myHoursLog.task != undefined && myHoursLog.task.name != undefined){
-              var workLogType = $.grep(worklogTypes, function(obj){return obj.name.toUpperCase() === myHoursLog.task.name.toUpperCase() })[0];
-              if (workLogType != undefined){
-                var workLogTypeId = workLogType.Id;
-              }
+
+        //var currentUser = new CurrentUserRepo.getInstance();
+        $('#usersName').text(_this.currentUser.name);
+
+        getLogs();
+    }
+
+
+    function getLogs() {
+        $('.timeControl span:nth-child(2)').text(_this.currentDate.format('LL'));
+
+        _this.myHoursRepo.getLogs(_this.currentDate).then(
+            function (data) {
+                _this.myHoursLogs = data;
+
+                var logsContainer = $('#logs');
+                logsContainer.empty();
+
+                $.each(data, function (index, data) {
+
+                    var log = $('<li>').data('logId', data.id);
+
+                    var columns = $('<div>').addClass('columns');
+                    var columnA = $('<div>').addClass('column is-two-thirds');
+
+                    if (data.project != null) {
+                        var projectInfo = $('<span>').text(data.project.name).addClass('tag is-link');
+                        columnA.append(projectInfo);
+                    }
+
+                    if (data.task != null) {
+                        var taskInfo = $('<span>').text(data.task.name).addClass('tag is-warning');
+                        columnA.append(taskInfo);
+                    }
+                    columns.append(columnA);
+
+                    var columnB = $('<div>').addClass('column is-2');
+                    if (data.duration != null) {
+                        var duration = moment().startOf('day').add(data.duration, 'seconds');
+                        var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
+                        columnB.append(durationInfo);
+                    }
+                    columns.append(columnB);
+
+                    var columnC = $('<div>').addClass('column is-1');
+                    var statusDone = ($('<span>').addClass('icon has-text-success'));
+                    statusDone.append('<i>').addClass('fas fa-check-square');
+                    columnC.append(statusDone);
+                    columns.append(columnC);
+
+                        
+
+                    
+                    log.append(columns);
+                    logsContainer.append(log);
+                });
+            },
+            function () {
+                console.info('failed to get logs');
+                showLoginPage();
             }
-            getTimeLogDetails(myHoursLog, workLogTypeId);
-          }
-        });
-      },
-      function () {});
-  }
+        )
+    }
+
+    function login(email, password) {
+        _this.myHoursRepo.getAccessToken(email, password).then(
+            function (token) {
+                //var currentUser = new CurrentUserRepo.getInstance();
+                _this.currentUser.email = email;
+                _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
+                _this.currentUser.save();
+
+                //myHoursRepo.accessToken = token.accessToken;
+                _this.myHoursRepo.getUser().then(function (user) {
+                    _this.currentUser.setUserData(user.id, user.name);
+                    _this.currentUser.save();
+                    showMainPage();
+                }, function (err) {
+                    console.info('error while geeting the user data');
+                    showLoginPage();
+                });
+
+            },
+            function (error) {
+                console.info('error while geeting the access token');
+                showLoginPage();
+            }
+        )
+    }
+
+    function getTimeLogDetails(myHoursLog, workLogTypeId) {
+        var itemId = (myHoursLog.project.name
+                .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
+            .map(function (v) {
+                return +v;
+            }).shift();
+
+        if (itemId != undefined) {
+            console.info(itemId);
+
+            _this.axoSoftRepo.getFeatureItemType(itemId).then(function (itemType) {
+                console.info(itemType);
+
+                var worklog = new Worklog;
+                worklog.user.id = _this.options.axoSoftUserId;
+                worklog.work_done.duration = myHoursLog.duration / 60 / 60;
+                worklog.item.id = itemId;
+                worklog.item.item_type = itemType;
+                worklog.work_log_type.id = workLogTypeId;
+                worklog.description = myHoursLog.note;
+                worklog.date_time = myHoursLog.date;
+
+                console.info(worklog);
+            })
+        }
+    }
+
+
+    function copyTimelogs() {
+        console.info(_this.myHoursLogs);
+        _this.axoSoftRepo.getWorkLogTypes().then(
+            function (response) {
+                console.info(response);
+                _this.worklogTypes = response;
+                $.each(_this.myHoursLogs, function (index, myHoursLog) {
+                    if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
+
+                        var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
+                        if (myHoursLog.task != undefined && myHoursLog.task.name != undefined) {
+                            var workLogType = _.find(_this.worklogTypes,
+                                function (w) {
+                                    return w.name.toUpperCase() === myHoursLog.task.name.toUpperCase();
+                                });
+
+                            if (workLogType != undefined) {
+                                workLogTypeId = workLogType.Id;
+                            }
+                        }
+                        getTimeLogDetails(myHoursLog, workLogTypeId);
+                    }
+                });
+            },
+            function () {});
+    }
+
+
+
+
+    initInterface();
 };
