@@ -120,7 +120,7 @@ function popup() {
 
                 $.each(data, function (index, data) {
 
-                    var log = $('<li>').data('logId', data.id);
+                    var log = $('<li>').attr("data-logId", data.id);
 
                     var columns = $('<div>').addClass('columns');
                     var columnA = $('<div>').addClass('column is-two-thirds');
@@ -134,7 +134,7 @@ function popup() {
                         var taskInfo = $('<span>').text(data.task.name).addClass('tag is-warning');
                         columnA.append(taskInfo);
                     }
-                    columns.append(columnA);
+                    
 
                     var columnB = $('<div>').addClass('column is-2');
                     if (data.duration != null) {
@@ -142,17 +142,23 @@ function popup() {
                         var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
                         columnB.append(durationInfo);
                     }
-                    columns.append(columnB);
+                    
 
-                    var columnC = $('<div>').addClass('column is-1');
+                    var columnC = $('<div>').addClass('column is-1 statusColumn');
                     var statusDone = ($('<span>').addClass('icon has-text-success'));
-                    statusDone.append('<i>').addClass('fas fa-check-square');
+                    statusDone.append('<i>').addClass('far fa-check-circle');
                     columnC.append(statusDone);
-                    columns.append(columnC);
-
-                        
+                    
+                    columnC.hide();
 
                     
+                    columns.append(columnA);
+                    columns.append(columnB);
+                    columns.append(columnC);
+
+
+
+
                     log.append(columns);
                     logsContainer.append(log);
                 });
@@ -204,15 +210,32 @@ function popup() {
                 console.info(itemType);
 
                 var worklog = new Worklog;
-                worklog.user.id = _this.options.axoSoftUserId;
+                worklog.user.id = parseInt(_this.options.axoSoftUserId);
                 worklog.work_done.duration = myHoursLog.duration / 60 / 60;
-                worklog.item.id = itemId;
+                worklog.item.id = parseInt(itemId);
                 worklog.item.item_type = itemType;
-                worklog.work_log_type.id = workLogTypeId;
+                worklog.work_log_type.id = parseInt(workLogTypeId);
                 worklog.description = myHoursLog.note;
                 worklog.date_time = myHoursLog.date;
 
                 console.info(worklog);
+                console.info(JSON.stringify(worklog));
+
+
+                _this.axoSoftRepo.addWorkLog(worklog)
+                    .then(
+                        function () {
+                            console.info('worklog added');
+                            $('*[data-itemId="'+worklog.id+'"] .statusColumn').show();
+                        }
+                    )
+                    .catch(
+                        function () {
+                            console.info('worklog add failed');
+                        }
+                    )
+
+
             })
         }
     }
@@ -235,7 +258,7 @@ function popup() {
                                 });
 
                             if (workLogType != undefined) {
-                                workLogTypeId = workLogType.Id;
+                                workLogTypeId = workLogType.id;
                             }
                         }
                         getTimeLogDetails(myHoursLog, workLogTypeId);

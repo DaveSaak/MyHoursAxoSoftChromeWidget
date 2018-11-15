@@ -52,5 +52,34 @@ function AxoSoftApi(options) {
         })
     }
 
+    _this.addWorkLog = function (worklog) {
+        //var options = this.options;
+        return new Promise(function (resolve, reject) {
+            console.info('getting item from axosoft');
+            $.ajax({
+                url: _this.options.axoSoftUrl + "/v5/work_logs",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.axoSoftToken,
+                    "Access-Control-Allow-Origin": "*"
+                },
+                type: "POST",
+                contentType:"application/json; charset=utf-8",
+                // dataType:"json",
+                //data: worklog,
+                data: JSON.stringify(worklog),
+
+                success: function (response) {
+                    console.info(response);
+                    resolve(response.data);
+                },
+                error: function () {
+                    reject();
+                }
+            });
+        })
+    }
+
+
+
     
 }
