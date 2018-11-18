@@ -1,14 +1,8 @@
 'use strict'
 
 $(document).ready(function () {
-
     new popup();
-
-
-
 });
-
-
 
 function popup() {
     console.info('init');
@@ -50,10 +44,16 @@ function popup() {
     function initInterface() {
 
         $('#loginButton').click(function () {
-            var email = $('#email').val();
-            var password = $('#password').val();
-            login(email, password);
+            login($('#email').val(), $('#password').val());
         });
+
+        $('#loginContainer input').keyup(function(e){
+            if(e.keyCode == 13)
+            {
+                login($('#email').val(), $('#password').val());
+            }
+        });
+        
 
         $('#copyToAxoSoftButton').click(function () {
             copyTimelogs();
@@ -109,7 +109,7 @@ function popup() {
 
 
     function getLogs() {
-        $('.timeControl span:nth-child(2)').text(_this.currentDate.format('LL'));
+        $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
 
         _this.myHoursRepo.getLogs(_this.currentDate).then(
             function (data) {
@@ -126,20 +126,22 @@ function popup() {
                     var columnA = $('<div>').addClass('column is-two-thirds');
 
                     if (data.project != null) {
-                        var projectInfo = $('<span>').text(data.project.name).addClass('tag is-link');
+                        var projectInfo = $('<span>').text(data.project.name).addClass('tag is-info');
                         columnA.append(projectInfo);
                     }
 
                     if (data.task != null) {
-                        var taskInfo = $('<span>').text(data.task.name).addClass('tag is-warning');
+                        var taskInfo = $('<span>').text(data.task.name).addClass('tag is-danger');
                         columnA.append(taskInfo);
                     }
                     
 
                     var columnB = $('<div>').addClass('column is-2');
                     if (data.duration != null) {
-                        var duration = moment().startOf('day').add(data.duration, 'seconds');
-                        var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
+                        // var duration = moment().startOf('day').add(data.duration, 'seconds');
+                        var duration = Math.round(data.duration/60/60*100)/100 + ' hrs';
+                        // var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
+                        var durationInfo = $('<span>').text(duration);
                         columnB.append(durationInfo);
                     }
                     
@@ -221,12 +223,14 @@ function popup() {
                 console.info(worklog);
                 console.info(JSON.stringify(worklog));
 
+                var myHoursLogId = myHoursLog.id;
+
 
                 _this.axoSoftRepo.addWorkLog(worklog)
                     .then(
                         function () {
                             console.info('worklog added');
-                            $('*[data-itemId="'+worklog.id+'"] .statusColumn').show();
+                            $('*[data-logid="'+  myHoursLogId + '"] .statusColumn').show();
                         }
                     )
                     .catch(

@@ -31,11 +31,71 @@
 </head>
 
 <body class="narrow">
+    <section class="hero is-info">
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <span class="navbar-item">
+                            <h1 class="title">
+                                <span id='usersName'></span>, here is your worklog</h1>
+
+                        </span>
+                    </div>
+
+                    <div id="navbarMenuHeroA" class="navbar-menu is-active">
+                        <div class="navbar-end">
+                            <span class="navbar-item is-active">
+
+                                <div class="timeControl buttons has-addons">
+                                    <span class="button">
+                                        <i class="fas fa-angle-left"></i>
+                                    </span>
+                                    <span class="button is-static">date</span>
+                                    <span class="button">
+                                        <i class="fas fa-angle-right"></i>
+                                    </span>
+                                </div>
 
 
 
 
-    <section class="hero">
+
+                                <!-- <button class="button is-primary" id='logOutButton'>
+                                    <span class="icon">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </span>
+                                    <span>Log out</span>
+                                </button> -->
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+
+
+
+            <!-- 
+            <div class="columns">
+                <div class="column">
+                    <h1 class='title'><span id='usersName'></span>, here is your worklog</h1>
+                </div>
+                <div class="column is-1">
+                    <div class="buttons are-medium is-right">
+
+                        <button id='logOutButton' class="button is-info is-inverted">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>log out</span>
+                        </button>
+                    </div>
+                </div>
+            </div> -->
+
+        </div>
+    </section>
+
+    <section class="hero ">
         <div class="hero-body">
             <div class="container is-fluid">
 
@@ -60,51 +120,30 @@
                             </span>
                         </p>
                     </div>
-
                     <button id='loginButton' class="button is-info">Login</button>
                 </div>
 
                 <div id='mainContainer' style="display: none" class="box12">
-
-                    <div class="columns">
-                        <div class="column">
-                            <h1 class='subtitle'><span id='usersName'></span>, here is your worklog</h1>
-                        </div>
-                        <div class="column is-1">
-                            <div class="buttons are-medium is-right">
-
-                                <button id='logOutButton' class="button is-info is-inverted">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>log out</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="timeControl buttons has-addons">
-                        <span class="button">
-                            <i class="fas fa-angle-left"></i>
-                        </span>
-                        <span class="button is-static">date</span>
-                        <span class="button">
-                            <i class="fas fa-angle-right"></i>
-                        </span>                        
-                    </div>
-                    
-
                     <div style="margin-bottom: 20px;">
                         <ul id='logs'>
                         </ul>
                     </div>
-
-                    <div class="buttons are-medium is-right">
-                        <button id='copyToAxoSoftButton' class="button is-info">
-                            <span>Copy to AxoSoft</span>
-                        </button>
-                    </div>
                 </div>
-
             </div>
+        </div>
+    </section>
+
+    <section class="hero is-info">
+
+        <div class="hero-foot">
+            <nav class="tabs">
+                <span class="navbar-item is-active">
+                    <button id='copyToAxoSoftButton' class="button">
+                        <span>Copy to AxoSoft</span>
+                    </button>
+                </span>
+            </nav>
+        </div>
     </section>
 
 </body>

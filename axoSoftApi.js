@@ -52,9 +52,37 @@ function AxoSoftApi(options) {
         })
     }
 
-    _this.addWorkLog = function (worklog) {
+    _this.getUsers = function () {
         //var options = this.options;
         return new Promise(function (resolve, reject) {
+            console.info('getting users from axosoft');
+            $.ajax({
+                url: _this.options.axoSoftUrl + "/v6/users",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.axoSoftToken,
+                    "Access-Control-Allow-Origin": "*"
+                },
+                type: "GET",
+
+                success: function (response) {
+                    console.info(response);
+                    resolve(response.data);
+                },
+                error: function () {
+                    reject();
+                }
+            });
+        })
+    }
+
+    _this.addWorkLog = function (worklog) {
+        //var options = this.options;
+
+
+        return new Promise(function (resolve, reject) {
+            //resolve();
+
+
             console.info('getting item from axosoft');
             $.ajax({
                 url: _this.options.axoSoftUrl + "/v5/work_logs",
@@ -76,6 +104,8 @@ function AxoSoftApi(options) {
                     reject();
                 }
             });
+
+            
         })
     }
 
