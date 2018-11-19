@@ -76,13 +76,8 @@ function AxoSoftApi(options) {
     }
 
     _this.addWorkLog = function (worklog) {
-        //var options = this.options;
-
-
         return new Promise(function (resolve, reject) {
             //resolve();
-
-
             console.info('getting item from axosoft');
             $.ajax({
                 url: _this.options.axoSoftUrl + "/v5/work_logs",
@@ -109,7 +104,7 @@ function AxoSoftApi(options) {
         })
     }
 
-
+   
 
     
 }

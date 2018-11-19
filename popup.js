@@ -15,13 +15,11 @@ function popup() {
     _this.currentUser = new CurrentUserRepo.getInstance();
     _this.options = new OptionsRepo.getInstance();
 
-    _this.myHoursRepo = new MyHoursApi(_this.currentUser) //new MyHoursRepo.getInstance();
-    _this.axoSoftRepo = new AxoSoftApi(_this.options); //new AxoSoftRepo.getInstance();
+    _this.myHoursApi = new MyHoursApi(_this.currentUser) //new myHoursApi.getInstance();
+    _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
 
     _this.options.load().then(
         function () {
-            //        _this.myHoursRepo.accessToken = options.accessToken;
-
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 
@@ -34,7 +32,7 @@ function popup() {
 
                     showLoginPage();
                 } else {
-                    //MyHoursRepo.accessToken = currentUser.accessToken;
+                    //myHoursApi.accessToken = currentUser.accessToken;
                     showMainPage();
                 }
             })
@@ -64,12 +62,12 @@ function popup() {
             showLoginPage();
         });
 
-        $('.timeControl span:first-child').click(function () {
+        $('.timeControl span.previousDay').click(function () {
             _this.currentDate = _this.currentDate.add(-1, 'days');
             getLogs();
         });
 
-        $('.timeControl span:last-child').click(function () {
+        $('.timeControl span.nextDay').click(function () {
             _this.currentDate = _this.currentDate.add(1, 'days');
             getLogs();
         });
@@ -109,9 +107,10 @@ function popup() {
 
 
     function getLogs() {
-        $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
+        // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
+        $('.date').text(_this.currentDate.format('dddd, LL'));
 
-        _this.myHoursRepo.getLogs(_this.currentDate).then(
+        _this.myHoursApi.getLogs(_this.currentDate).then(
             function (data) {
                 _this.myHoursLogs = data;
 
@@ -173,15 +172,15 @@ function popup() {
     }
 
     function login(email, password) {
-        _this.myHoursRepo.getAccessToken(email, password).then(
+        _this.myHoursApi.getAccessToken(email, password).then(
             function (token) {
                 //var currentUser = new CurrentUserRepo.getInstance();
                 _this.currentUser.email = email;
                 _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
                 _this.currentUser.save();
 
-                //myHoursRepo.accessToken = token.accessToken;
-                _this.myHoursRepo.getUser().then(function (user) {
+                //myHoursApi.accessToken = token.accessToken;
+                _this.myHoursApi.getUser().then(function (user) {
                     _this.currentUser.setUserData(user.id, user.name);
                     _this.currentUser.save();
                     showMainPage();
@@ -208,7 +207,7 @@ function popup() {
         if (itemId != undefined) {
             console.info(itemId);
 
-            _this.axoSoftRepo.getFeatureItemType(itemId).then(function (itemType) {
+            _this.axoSoftApi.getFeatureItemType(itemId).then(function (itemType) {
                 console.info(itemType);
 
                 var worklog = new Worklog;
@@ -226,7 +225,7 @@ function popup() {
                 var myHoursLogId = myHoursLog.id;
 
 
-                _this.axoSoftRepo.addWorkLog(worklog)
+                _this.axoSoftApi.addWorkLog(worklog)
                     .then(
                         function () {
                             console.info('worklog added');
@@ -247,7 +246,7 @@ function popup() {
 
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
-        _this.axoSoftRepo.getWorkLogTypes().then(
+        _this.axoSoftApi.getWorkLogTypes().then(
             function (response) {
                 console.info(response);
                 _this.worklogTypes = response;

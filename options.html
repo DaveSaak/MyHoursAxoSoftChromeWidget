@@ -5,22 +5,20 @@
     <title>Options</title>
 
     <script src="jquery-3.3.1.min.js"></script>
+    <script src="underscore-min.js"></script>
+
     <script src="optionsPage.js"></script>
     <script src="options.js"></script>
-    <script src="optionsRepo.js"></script>
+    <!-- <script src="optionsRepo.js"></script> -->
     <script src="worklog.js"></script>
     <script src="axoSoftApi.js"></script>
+    
     <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
 
 </head>
 
 <body>
     <div class="container" style="max-width: 600px; margin-top: 20px;">
-
-        <div class="notification is-info" style="display:none" >
-            <!-- <button class="delete"></button> -->
-            Options successfully saved.
-          </div>
 
         <div class="box">
             <div>
@@ -44,30 +42,37 @@
                     </div>
                 </div>
 
-                <div class="field" style="width: 50%">
+                <!-- <div class="field" style="width: 50%">
                     <label class="label">AxoSoft User Id</label>
                     <div class="control">
                         <input class="input" type="number" id='axoSoftUserId' />
 
                     </div>
-                </div>
+                </div> -->
 
-                <div class="field" style="width: 50%">
-                    <label class="label">AxoSoft User Id</label>
+                <div class="field" style="width: 100%">
+                    <label class="label">AxoSoft User</label>
                     <div class="control">
-                        <select class="select" id='axoSoftUserId2'></select>
+                        <select class="select" style="width: 50%" id='axoSoftUserId'></select>
 
                     </div>
                 </div>
 
 
-                <div class="field" style="width: 50%">
+                <!-- <div class="field" style="width: 50%">
                     <label class="label">AxoSoft Default Worklog type id</label>
                     <div class="control">
                         <input class="input" type="number" id='axoSoftDefaultWorklogTypeId' />
+                    </div>
+                </div>                 -->
 
+                <div class="field" style="width: 100%">
+                    <label class="label">AxoSoft Default Worklog type </label>
+                    <div class="control">
+                        <select class="select" style="width: 50%" id='axoSoftDefaultWorklogTypeId'></select>
                     </div>
                 </div>                
+
 
                 <div class="field is-grouped is-grouped-right">
                     <p class="control">

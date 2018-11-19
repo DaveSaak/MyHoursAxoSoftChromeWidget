@@ -9,7 +9,7 @@
     <script src="moment.js"></script>
     <script src="underscore-min.js"></script>
 
-    <script src="myHoursRepo.js"></script>
+    <!-- <script src="myHoursRepo.js"></script> -->
     <script src="myHoursApi.js"></script>
 
     <script src="currentUser.js"></script>
@@ -31,15 +31,15 @@
 </head>
 
 <body class="narrow">
-    <section class="hero is-info">
+    <section class="hero is-light">
         <div class="hero-head">
             <nav class="navbar">
                 <div class="container">
                     <div class="navbar-brand">
                         <span class="navbar-item">
-                            <h1 class="title">
-                                <span id='usersName'></span>, here is your worklog</h1>
-
+                            <h2 class="subtitle">
+                                <span id='usersName'></span>, here is your worklog
+                            </h2>
                         </span>
                     </div>
 
@@ -48,14 +48,18 @@
                             <span class="navbar-item is-active">
 
                                 <div class="timeControl buttons has-addons">
-                                    <span class="button">
+                                    <span class="button previousDay">
                                         <i class="fas fa-angle-left"></i>
                                     </span>
-                                    <span class="button is-static">date</span>
-                                    <span class="button">
+                                    
+                                    <span class="button nextDay">
                                         <i class="fas fa-angle-right"></i>
                                     </span>
+
+                                    <span class="button is-static date">date</span>
+                                    <!-- <span class="date">date</span> -->
                                 </div>
+                                
 
 
 
@@ -133,7 +137,7 @@
         </div>
     </section>
 
-    <section class="hero is-info">
+    <section class="hero is-light">
 
         <div class="hero-foot">
             <nav class="tabs">
