@@ -9,7 +9,6 @@
     <script src="moment.js"></script>
     <script src="underscore-min.js"></script>
 
-    <!-- <script src="myHoursRepo.js"></script> -->
     <script src="myHoursApi.js"></script>
 
     <script src="currentUser.js"></script>
@@ -17,7 +16,7 @@
 
     <script src="options.js"></script>
     <script src="optionsRepo.js"></script>
-    <!-- <script src="axoSoftRepo.js"></script> -->
+
     <script src="axoSoftApi.js"></script>
 
     <script src="worklog.js"></script>
@@ -31,124 +30,97 @@
 </head>
 
 <body class="narrow">
-    <section class="hero is-light">
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
+
+    <div id='loginContainer' style="display: none">
+        <section class="hero ">
+            <div class="hero-body">
+                <div class="container is-fluid">
+
+                    <div class="box12">
+                        <img src="images/myhourslogo.png" />
+                        <div class="field">
+                            <!-- <p class="control has-icons-left has-icons-right"> -->
+                            <input class="input" type="email" placeholder="Email" id='email'>
+                            <!-- </p> -->
+                        </div>
+                        <div class="field">
+                            <!-- <p class="control has-icons-left"> -->
+                            <input class="input" type="password" placeholder="Password" id='password'>
+                            <!-- </p> -->
+                        </div>
+                        <button id='loginButton' class="button is-info">Login</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id='mainContainer' style="display: none" class="box12">
+        <section class="hero is-light">
+            <div class="hero-head">
+                
+                <nav class="navbar" role="navigation" aria-label="main navigation">
+
                     <div class="navbar-brand">
-                        <span class="navbar-item">
-                            <h2 class="subtitle">
-                                <span id='usersName'></span>, here is your worklog
-                            </h2>
-                        </span>
+                        <a class="navbar-item">
+                            <img src="images/myhourslogo.png">
+                        </a>
                     </div>
 
-                    <div id="navbarMenuHeroA" class="navbar-menu is-active">
-                        <div class="navbar-end">
+                    <div class="navbar-menu is-active">
+                        <div class="navbar-start">
                             <span class="navbar-item is-active">
-
                                 <div class="timeControl buttons has-addons">
                                     <span class="button previousDay">
                                         <i class="fas fa-angle-left"></i>
                                     </span>
-                                    
                                     <span class="button nextDay">
                                         <i class="fas fa-angle-right"></i>
                                     </span>
-
                                     <span class="button is-static date">date</span>
-                                    <!-- <span class="date">date</span> -->
                                 </div>
-                                
-
-
-
-
-
-                                <!-- <button class="button is-primary" id='logOutButton'>
-                                    <span class="icon">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                    </span>
-                                    <span>Log out</span>
-                                </button> -->
                             </span>
                         </div>
                     </div>
-                </div>
-            </nav>
 
-
-
-
-            <!-- 
-            <div class="columns">
-                <div class="column">
-                    <h1 class='title'><span id='usersName'></span>, here is your worklog</h1>
-                </div>
-                <div class="column is-1">
-                    <div class="buttons are-medium is-right">
-
-                        <button id='logOutButton' class="button is-info is-inverted">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>log out</span>
-                        </button>
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <a class="button" id="logOutButton">
+                                logout
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </div> -->
 
-        </div>
-    </section>
+                </nav>
+            </div>
+        </section>
 
-    <section class="hero ">
-        <div class="hero-body">
-            <div class="container is-fluid">
-
-                <div id='loginContainer' style="display: none" class="box12">
-                    <img src="images/myhourslogo.png" />
-                    <div class="field">
-                        <p class="control has-icons-left has-icons-right">
-                            <input class="input" type="email" placeholder="Email" id='email'>
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-                            <span class="icon is-small is-right">
-                                <i class="fas fa-check"></i>
-                            </span>
-                        </p>
-                    </div>
-                    <div class="field">
-                        <p class="control has-icons-left">
-                            <input class="input" type="password" placeholder="Password" id='password'>
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                        </p>
-                    </div>
-                    <button id='loginButton' class="button is-info">Login</button>
-                </div>
-
-                <div id='mainContainer' style="display: none" class="box12">
-                    <div style="margin-bottom: 20px;">
-                        <ul id='logs'>
-                        </ul>
+        <section class="hero ">
+            <div class="hero-body">
+                <div class="container is-fluid">
+                    <div id='mainContainer2'>
+                        <div style="margin-bottom: 20px;">
+                            <ul id='logs'>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="hero is-light">
+        <section class="hero is-light">
+            <div class="hero-foot">
+                <nav class="tabs">
+                    <span class="navbar-item is-active">
+                        <button id='copyToAxoSoftButton' class="button">
+                            <span>Copy to AxoSoft</span>
+                        </button>
+                    </span>
+                </nav>
+            </div>
+        </section>
+    </div>
 
-        <div class="hero-foot">
-            <nav class="tabs">
-                <span class="navbar-item is-active">
-                    <button id='copyToAxoSoftButton' class="button">
-                        <span>Copy to AxoSoft</span>
-                    </button>
-                </span>
-            </nav>
-        </div>
-    </section>
 
 </body>
 

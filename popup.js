@@ -117,7 +117,10 @@ function popup() {
                 var logsContainer = $('#logs');
                 logsContainer.empty();
 
+                var totalMins = 0;
+
                 $.each(data, function (index, data) {
+                    totalMins = totalMins + (data.duration / 60);
 
                     var log = $('<li>').attr("data-logId", data.id);
 
@@ -149,19 +152,16 @@ function popup() {
                     var statusDone = ($('<span>').addClass('icon has-text-success'));
                     statusDone.append('<i>').addClass('far fa-check-circle');
                     columnC.append(statusDone);
-                    
                     columnC.hide();
-
                     
                     columns.append(columnA);
                     columns.append(columnB);
                     columns.append(columnC);
 
-
-
-
                     log.append(columns);
                     logsContainer.append(log);
+
+                    console.log(totalMins);
                 });
             },
             function () {
@@ -212,7 +212,7 @@ function popup() {
 
                 var worklog = new Worklog;
                 worklog.user.id = parseInt(_this.options.axoSoftUserId);
-                worklog.work_done.duration = myHoursLog.duration / 60 / 60;
+                worklog.work_done.duration = myHoursLog.duration / 60;
                 worklog.item.id = parseInt(itemId);
                 worklog.item.item_type = itemType;
                 worklog.work_log_type.id = parseInt(workLogTypeId);

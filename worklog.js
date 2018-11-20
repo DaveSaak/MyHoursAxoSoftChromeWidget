@@ -24,7 +24,7 @@ function WorkDone(){
 }
 
 function TimeUnit(){
-    this.id = 2; //hours
+    this.id = 1; //minutes
 }
 
 function Item(){
