@@ -10,6 +10,9 @@ function popup() {
 
     _this.myHoursLogs = undefined;
     _this.worklogTypes = undefined;
+    _this.timeUnits = undefined;
+
+
     _this.currentDate = moment();
 
     _this.currentUser = new CurrentUserRepo.getInstance();
@@ -110,6 +113,13 @@ function popup() {
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
         $('.date').text(_this.currentDate.format('dddd, LL'));
 
+
+        _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function(minutesWorked){
+            console.info(minutesWorked);
+            $("#axoTotal").text(Math.round(minutesWorked/60 * 100) / 100);
+        });
+
+
         _this.myHoursApi.getLogs(_this.currentDate).then(
             function (data) {
                 _this.myHoursLogs = data;
@@ -163,6 +173,7 @@ function popup() {
 
                     console.log(totalMins);
                 });
+                $('#mhTotal').text(Math.round(totalMins/60 * 100) / 100);
             },
             function () {
                 console.info('failed to get logs');
@@ -207,17 +218,25 @@ function popup() {
         if (itemId != undefined) {
             console.info(itemId);
 
-            _this.axoSoftApi.getFeatureItemType(itemId).then(function (itemType) {
-                console.info(itemType);
+            _this.axoSoftApi.getFeatureItem(itemId).then(function (item) {
+                console.info(item);
 
                 var worklog = new Worklog;
                 worklog.user.id = parseInt(_this.options.axoSoftUserId);
-                worklog.work_done.duration = myHoursLog.duration / 60;
+                worklog.work_done.duration = myHoursLog.duration / 60;  // mins
                 worklog.item.id = parseInt(itemId);
-                worklog.item.item_type = itemType;
+                worklog.item.item_type = item.item_type;
                 worklog.work_log_type.id = parseInt(workLogTypeId);
                 worklog.description = myHoursLog.note;
                 worklog.date_time = myHoursLog.date;
+                
+                //calc remaining time
+                var timeUnit = _.find(_this.timeUnits, function (t) { return t.id === item.remaining_duration.time_unit.id});
+                var remainingTimeMins = timeUnit.conversion_factor * item.remaining_duration.duration;
+
+                worklog.remaining_time.duration = remainingTimeMins - worklog.work_done.duration;
+
+
 
                 console.info(worklog);
                 console.info(JSON.stringify(worklog));
@@ -250,23 +269,35 @@ function popup() {
             function (response) {
                 console.info(response);
                 _this.worklogTypes = response;
-                $.each(_this.myHoursLogs, function (index, myHoursLog) {
-                    if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
 
-                        var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
-                        if (myHoursLog.task != undefined && myHoursLog.task.name != undefined) {
-                            var workLogType = _.find(_this.worklogTypes,
-                                function (w) {
-                                    return w.name.toUpperCase() === myHoursLog.task.name.toUpperCase();
-                                });
-
-                            if (workLogType != undefined) {
-                                workLogTypeId = workLogType.id;
+                _this.axoSoftApi.getTimeUnits().then(function(response){
+                    console.info(response);
+                    _this.timeUnits = response;
+    
+                    $.each(_this.myHoursLogs, function (index, myHoursLog) {
+                        if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
+    
+                            var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
+                            if (myHoursLog.task != undefined && myHoursLog.task.name != undefined) {
+                                var workLogType = _.find(_this.worklogTypes,
+                                    function (w) {
+                                        return w.name.toUpperCase() === myHoursLog.task.name.toUpperCase();
+                                    });
+    
+                                if (workLogType != undefined) {
+                                    workLogTypeId = workLogType.id;
+                                }
                             }
+                            getTimeLogDetails(myHoursLog, workLogTypeId);
                         }
-                        getTimeLogDetails(myHoursLog, workLogTypeId);
-                    }
+                    });
+
                 });
+
+
+
+
+                
             },
             function () {});
     }

@@ -8,6 +8,8 @@ function Worklog(){
 
     this.work_log_type = new WorkLogType;
 
+    this.remaining_time = new WorkDone;
+
     this.description = "description";
     this.date_time = "2018-10-30T14:38:00Z"
 
@@ -35,3 +37,4 @@ function Item(){
 function WorkLogType(){
     this.id = 3;  //3=internal work
 }
+

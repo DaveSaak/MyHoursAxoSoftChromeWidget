@@ -58,40 +58,28 @@
     <div id='mainContainer' style="display: none" class="box12">
         <section class="hero is-light">
             <div class="hero-head">
-                
-                <nav class="navbar" role="navigation" aria-label="main navigation">
 
-                    <div class="navbar-brand">
-                        <a class="navbar-item">
-                            <img src="images/myhourslogo.png">
+                <div class="columns" style="padding:10px">
+                    <div class="column is-2">
+                        <img src="images/myhourslogo.png">
+                    </div>
+                    <div class="column" style="margin-top: 20px;">
+                        <div class="timeControl buttons has-addons">
+                            <span class="button previousDay">
+                                <i class="fas fa-angle-left"></i>
+                            </span>
+                            <span class="button nextDay">
+                                <i class="fas fa-angle-right"></i>
+                            </span>
+                            <span class="button is-static date">date</span>
+                        </div>
+                    </div>
+                    <div class="column is-2" style="margin-top: 20px;">
+                        <a class="button" id="logOutButton">
+                            logout
                         </a>
                     </div>
-
-                    <div class="navbar-menu is-active">
-                        <div class="navbar-start">
-                            <span class="navbar-item is-active">
-                                <div class="timeControl buttons has-addons">
-                                    <span class="button previousDay">
-                                        <i class="fas fa-angle-left"></i>
-                                    </span>
-                                    <span class="button nextDay">
-                                        <i class="fas fa-angle-right"></i>
-                                    </span>
-                                    <span class="button is-static date">date</span>
-                                </div>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="navbar-end">
-                        <div class="navbar-item">
-                            <a class="button" id="logOutButton">
-                                logout
-                            </a>
-                        </div>
-                    </div>
-
-                </nav>
+                </div>
             </div>
         </section>
 
@@ -110,13 +98,24 @@
 
         <section class="hero is-light">
             <div class="hero-foot">
-                <nav class="tabs">
-                    <span class="navbar-item is-active">
-                        <button id='copyToAxoSoftButton' class="button">
+
+                <div class="columns">
+                    <div class="column is-4" style="margin-left: 10px; margin-top: 10px">
+                        <div>AxoSoft logged: <span id="axoTotal"></span></div>
+                        <div>MyHours logged: <span id="mhTotal"></span></div>
+                    </div>
+                    <!-- <div class="column is-3" style="margin: 10px;">
+                        <progress class="progress is-info" value="45" max="100">45%</progress>
+                        <progress class="progress is-success" value="60" max="100">60%</progress>
+                    </div> -->
+
+                    <div class="column"></div>
+                    <div class="column is-3">
+                        <button id='copyToAxoSoftButton' class="button" style="margin-top: 10px;">
                             <span>Copy to AxoSoft</span>
                         </button>
-                    </span>
-                </nav>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
