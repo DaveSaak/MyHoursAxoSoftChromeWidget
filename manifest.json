@@ -1,22 +1,29 @@
 {
-  "manifest_version": 2,
-  "name": "MyHoursToAxoSoft",
-  "description": "will add today's time logs to your worklog",
-  "version": "1",
-  "author": "Dave",
+    "manifest_version": 2,
+    "name": "MyHoursToAxoSoft",
+    "description": "will add today's time logs to your worklog",
+    "version": "1",
+    "author": "Dave",
 
-  "browser_action": {
-    "default_popup": "popup.html",
-    "default_icon": "logo.png"
-  },
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": "logo.png"
+    },
 
-  "options_page": "options.html",
+    "options_page": "options.html",
 
-  "permissions": [
-    "storage",
-    "notifications",
-    "https://api.myhours.com/*",
-    "http://despacito.spica.si/OnTime/api/*"
-  ]
+    "content_scripts": [{
+            "matches": ["https://app.myhours.com/*"],
+            "css": ["myhours.css"]
+        }
+
+    ],
+
+    "permissions": [
+        "storage",
+        "notifications",
+        "https://api.myhours.com/*",
+        "http://despacito.spica.si/OnTime/api/*"
+    ]
 
 }

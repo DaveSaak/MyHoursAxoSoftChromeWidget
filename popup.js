@@ -48,13 +48,12 @@ function popup() {
             login($('#email').val(), $('#password').val());
         });
 
-        $('#loginContainer input').keyup(function(e){
-            if(e.keyCode == 13)
-            {
+        $('#loginContainer input').keyup(function (e) {
+            if (e.keyCode == 13) {
                 login($('#email').val(), $('#password').val());
             }
         });
-        
+
 
         $('#copyToAxoSoftButton').click(function () {
             copyTimelogs();
@@ -114,9 +113,9 @@ function popup() {
         $('.date').text(_this.currentDate.format('dddd, LL'));
 
 
-        _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function(minutesWorked){
+        _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
-            $("#axoTotal").text(Math.round(minutesWorked/60 * 100) / 100);
+            $("#axoTotal").text((Math.round(minutesWorked / 60 * 100) / 100) + "h");
         });
 
 
@@ -137,35 +136,46 @@ function popup() {
                     var columns = $('<div>').addClass('columns');
                     var columnA = $('<div>').addClass('column is-two-thirds');
 
+                    var tagGroup = $('<div>').addClass('tags has-addons');
+
+
                     if (data.project != null) {
                         var projectInfo = $('<span>').text(data.project.name).addClass('tag is-info');
-                        columnA.append(projectInfo);
+                        tagGroup.append(projectInfo);
+                    } else {
+                        var projectInfo = $('<span>')
+                            .text("Unassigned time log. Will not be copied to Axo")
+                            .addClass('tag is-dark')
+                            .css("font-style", "italic");
+
+                        tagGroup.append(projectInfo);
                     }
 
                     if (data.task != null) {
                         var taskInfo = $('<span>').text(data.task.name).addClass('tag is-danger');
-                        columnA.append(taskInfo);
+                        tagGroup.append(taskInfo);
                     }
-                    
+                    columnA.append(tagGroup);
 
-                    var columnB = $('<div>').addClass('column is-2');
+                    var columnB = $('<div>').addClass('column is-2').css('text-align', 'right').css('font-weight', '600');
                     if (data.duration != null) {
                         // var duration = moment().startOf('day').add(data.duration, 'seconds');
-                        var duration = Math.round(data.duration/60/60*100)/100 + ' hrs';
+                        var duration = Math.round(data.duration / 60 / 60 * 100) / 100 + 'h';
                         // var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
                         var durationInfo = $('<span>').text(duration);
                         columnB.append(durationInfo);
                     }
-                    
+
 
                     var columnC = $('<div>').addClass('column is-1 statusColumn');
                     var statusDone = ($('<span>').addClass('icon has-text-success'));
                     statusDone.append('<i>').addClass('far fa-check-circle');
                     columnC.append(statusDone);
                     columnC.hide();
-                    
-                    columns.append(columnA);
+
                     columns.append(columnB);
+                    columns.append(columnA);
+                    
                     columns.append(columnC);
 
                     log.append(columns);
@@ -173,7 +183,7 @@ function popup() {
 
                     console.log(totalMins);
                 });
-                $('#mhTotal').text(Math.round(totalMins/60 * 100) / 100);
+                $('#mhTotal').text((Math.round(totalMins / 60 * 100) / 100) + "h");
             },
             function () {
                 console.info('failed to get logs');
@@ -223,32 +233,30 @@ function popup() {
 
                 var worklog = new Worklog;
                 worklog.user.id = parseInt(_this.options.axoSoftUserId);
-                worklog.work_done.duration = myHoursLog.duration / 60;  // mins
+                worklog.work_done.duration = myHoursLog.duration / 60; // mins
                 worklog.item.id = parseInt(itemId);
                 worklog.item.item_type = item.item_type;
                 worklog.work_log_type.id = parseInt(workLogTypeId);
                 worklog.description = myHoursLog.note;
                 worklog.date_time = myHoursLog.date;
-                
+
                 //calc remaining time
-                var timeUnit = _.find(_this.timeUnits, function (t) { return t.id === item.remaining_duration.time_unit.id});
+                var timeUnit = _.find(_this.timeUnits, function (t) {
+                    return t.id === item.remaining_duration.time_unit.id
+                });
                 var remainingTimeMins = timeUnit.conversion_factor * item.remaining_duration.duration;
-
                 worklog.remaining_time.duration = remainingTimeMins - worklog.work_done.duration;
-
-
 
                 console.info(worklog);
                 console.info(JSON.stringify(worklog));
 
                 var myHoursLogId = myHoursLog.id;
 
-
                 _this.axoSoftApi.addWorkLog(worklog)
                     .then(
                         function () {
                             console.info('worklog added');
-                            $('*[data-logid="'+  myHoursLogId + '"] .statusColumn').show();
+                            $('*[data-logid="' + myHoursLogId + '"] .statusColumn').show();
                         }
                     )
                     .catch(
@@ -270,20 +278,20 @@ function popup() {
                 console.info(response);
                 _this.worklogTypes = response;
 
-                _this.axoSoftApi.getTimeUnits().then(function(response){
+                _this.axoSoftApi.getTimeUnits().then(function (response) {
                     console.info(response);
                     _this.timeUnits = response;
-    
+
                     $.each(_this.myHoursLogs, function (index, myHoursLog) {
                         if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
-    
+
                             var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
                             if (myHoursLog.task != undefined && myHoursLog.task.name != undefined) {
                                 var workLogType = _.find(_this.worklogTypes,
                                     function (w) {
                                         return w.name.toUpperCase() === myHoursLog.task.name.toUpperCase();
                                     });
-    
+
                                 if (workLogType != undefined) {
                                     workLogTypeId = workLogType.id;
                                 }
@@ -297,7 +305,7 @@ function popup() {
 
 
 
-                
+
             },
             function () {});
     }

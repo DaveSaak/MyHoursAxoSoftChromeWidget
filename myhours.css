@@ -1,0 +1,37 @@
+.wrapper table tr>td.table-cell-title p.project {
+    /* margin-left: 18px; */
+    font-size: 15px;
+    border-radius: 5px;
+    /* background-color: #507F00; */
+    padding: 5px;
+    margin-top: 10px;
+
+    padding-left: 10px;
+    color: white;
+    background-color: #464646;
+}
+
+table.table>tbody>tr:not(.ng-scope) div.btn-group {
+    display: none;
+}
+
+table.table>tbody>tr:not(.ng-scope):hover div.btn-group {
+    display: inline-block;
+}
+
+
+table.table tr>td.table-cell-title{
+    font-size: 14px;
+}
+/* @media (min-width: 992px) {
+    .container {
+        width: initial;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: initial;
+    }
+} */
+

@@ -60,10 +60,10 @@
             <div class="hero-head">
 
                 <div class="columns" style="padding:10px">
-                    <div class="column is-2">
+                    <div class="column is-1" style="margin-top: 6px;">
                         <img src="images/myhourslogo.png">
                     </div>
-                    <div class="column" style="margin-top: 20px;">
+                    <div class="column" >
                         <div class="timeControl buttons has-addons">
                             <span class="button previousDay">
                                 <i class="fas fa-angle-left"></i>
@@ -74,20 +74,38 @@
                             <span class="button is-static date">date</span>
                         </div>
                     </div>
-                    <div class="column is-2" style="margin-top: 20px;">
-                        <a class="button" id="logOutButton">
-                            logout
-                        </a>
+
+
+
+                    <div class="column is-4" style="margin-left: 10px; margin-top: 6px">
+
+                        <div class="field is-grouped is-grouped-multiline">
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">Axo</span>
+                                    <span id="axoTotal" class="tag is-info"></span>
+                                </div>
+                            </div>
+                            <div class="control">
+
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">MH</span>
+                                    <span id="mhTotal" class="tag is-info axoTotal"></span>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="hero ">
-            <div class="hero-body">
+            <div class="hero-bodyX" style="margin: 20px">
                 <div class="container is-fluid">
                     <div id='mainContainer2'>
-                        <div style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 20pxx;">
                             <ul id='logs'>
                             </ul>
                         </div>
@@ -97,27 +115,24 @@
         </section>
 
         <section class="hero is-light">
-            <div class="hero-foot">
-
+            <div class="hero-foot" style="margin:10px;">
                 <div class="columns">
-                    <div class="column is-4" style="margin-left: 10px; margin-top: 10px">
-                        <div>AxoSoft logged: <span id="axoTotal"></span></div>
-                        <div>MyHours logged: <span id="mhTotal"></span></div>
-                    </div>
-                    <!-- <div class="column is-3" style="margin: 10px;">
-                        <progress class="progress is-info" value="45" max="100">45%</progress>
-                        <progress class="progress is-success" value="60" max="100">60%</progress>
-                    </div> -->
-
-                    <div class="column"></div>
+                        <!-- <div class="column is-1"></div> -->
                     <div class="column is-3">
-                        <button id='copyToAxoSoftButton' class="button" style="margin-top: 10px;">
+                        <button id='copyToAxoSoftButton' class="button is-info is-small" style="margin-top: 10pxx;">
                             <span>Copy to AxoSoft</span>
                         </button>
                     </div>
+                    <div class="column"></div>
+                    <div class="column is-2" style="margin-top: 20pxx;">
+                        <a class="button is-light is-small" id="logOutButton">
+                            logout
+                        </a>
+                    </div>
                 </div>
             </div>
-        </section>
+    </div>
+    </section>
     </div>
 
 
