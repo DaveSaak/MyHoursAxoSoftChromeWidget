@@ -145,14 +145,14 @@ function popup() {
                     } else {
                         var projectInfo = $('<span>')
                             .text("Unassigned time log. Will not be copied to Axo")
-                            .addClass('tag is-dark')
+                            .addClass('tag is-light is-rounded')
                             .css("font-style", "italic");
 
                         tagGroup.append(projectInfo);
                     }
 
                     if (data.task != null) {
-                        var taskInfo = $('<span>').text(data.task.name).addClass('tag is-danger');
+                        var taskInfo = $('<span>').text(data.task.name).addClass('tag is-dark').css("font-style", "italic");;
                         tagGroup.append(taskInfo);
                     }
                     columnA.append(tagGroup);
