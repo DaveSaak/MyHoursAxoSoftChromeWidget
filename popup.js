@@ -15,8 +15,8 @@ function popup() {
 
     _this.currentDate = moment();
 
-    _this.currentUser = new CurrentUserRepo.getInstance();
-    _this.options = new OptionsRepo.getInstance();
+    _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
+    _this.options = new Options();  //new OptionsRepo.getInstance();
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser) //new myHoursApi.getInstance();
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
