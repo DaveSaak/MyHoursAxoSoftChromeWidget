@@ -64,6 +64,11 @@ function popup() {
             showLoginPage();
         });
 
+        $('#optionsButton').click(function () {
+            showOptionsPage();
+        });
+
+
         $('.timeControl span.previousDay').click(function () {
             _this.currentDate = _this.currentDate.add(-1, 'days');
             getLogs();
@@ -89,6 +94,11 @@ function popup() {
         if (_this.currentUser.email != undefined) {
             $('input#email').val(_this.currentUser.email);
         }
+
+    }
+
+    function showOptionsPage(){
+        chrome.runtime.openOptionsPage();
 
     }
 
