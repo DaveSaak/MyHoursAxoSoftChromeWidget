@@ -16,7 +16,7 @@ function popup() {
     _this.currentDate = moment();
 
     _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
-    _this.options = new Options();  //new OptionsRepo.getInstance();
+    _this.options = new Options(); //new OptionsRepo.getInstance();
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser) //new myHoursApi.getInstance();
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
@@ -97,7 +97,7 @@ function popup() {
 
     }
 
-    function showOptionsPage(){
+    function showOptionsPage() {
         chrome.runtime.openOptionsPage();
 
     }
@@ -177,15 +177,17 @@ function popup() {
                     }
 
 
-                    var columnC = $('<div>').addClass('column is-1 statusColumn');
-                    var statusDone = ($('<span>').addClass('icon has-text-success'));
-                    statusDone.append('<i>').addClass('far fa-check-circle');
-                    columnC.append(statusDone);
-                    columnC.hide();
+                    var columnC = $('<div>').addClass('column is-2 statusColumn');
+
+
+                    var status = ($('<div>').addClass('tags'));
+                    // statusDone.append('<i>').addClass('far fa-check-circle');
+                    columnC.append(status);
+                    //columnC.hide();
 
                     columns.append(columnB);
                     columns.append(columnA);
-                    
+
                     columns.append(columnC);
 
                     log.append(columns);
@@ -235,6 +237,9 @@ function popup() {
                 return +v;
             }).shift();
 
+        var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .tags');
+        logStatus.empty();
+
         if (itemId != undefined) {
             console.info(itemId);
 
@@ -255,28 +260,39 @@ function popup() {
                     return t.id === item.remaining_duration.time_unit.id
                 });
                 var remainingTimeMins = timeUnit.conversion_factor * item.remaining_duration.duration;
-                worklog.remaining_time.duration = remainingTimeMins - worklog.work_done.duration;
+                worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
 
                 console.info(worklog);
-                console.info(JSON.stringify(worklog));
-
-                var myHoursLogId = myHoursLog.id;
+                //console.info(JSON.stringify(worklog));
 
                 _this.axoSoftApi.addWorkLog(worklog)
                     .then(
                         function () {
                             console.info('worklog added');
-                            $('*[data-logid="' + myHoursLogId + '"] .statusColumn').show();
+                            var success = $('<span>').addClass('tag');
+                            var reminingHrs = Math.round(worklog.remaining_time.duration / 60);
+                            if (reminingHrs > 0) {
+                                success.addClass('is-success')
+                            } else {
+                                success.addClass('is-warning')
+                            }
+                            success.text(reminingHrs +" hrs left");
+
+                            logStatus.append(success);
+                            //logStatus.append('<span>').addClass('tag is-success').text("OK -- " + +" hrs left");
                         }
                     )
                     .catch(
                         function () {
+                            logStatus.append('<span>').addClass('tag is-danger').text("error adding log").css('color: red');
                             console.info('worklog add failed');
                         }
                     )
 
 
             })
+        } else {
+            logStatus.append('<span>').addClass('tag is-danger').text("could not find the item id");
         }
     }
 
