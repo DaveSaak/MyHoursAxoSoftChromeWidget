@@ -61,7 +61,7 @@
                     <div class="column is-1" style="margin-top: 6px;">
                         <img src="images/myhourslogo.png">
                     </div>
-                    <div class="column" >
+                    <div class="column">
                         <div class="timeControl buttons has-addons">
                             <span class="button previousDay">
                                 <i class="fas fa-angle-left"></i>
@@ -75,20 +75,27 @@
 
 
 
-                    <div class="column is-4" style="margin-left: 10px; margin-top: 6px">
+                    <div class="column is-5" style="margin-left: 10px; margin-top: 6px">
 
                         <div class="field is-grouped is-grouped-multiline">
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">MH</span>
+                                    <span id="mhTotal" class="tag is-info axoTotal"></span>
+                                </div>
+                            </div>
+
                             <div class="control">
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">Axo</span>
                                     <span id="axoTotal" class="tag is-info"></span>
                                 </div>
                             </div>
-                            <div class="control">
 
+                            <div class="control">
                                 <div class="tags has-addons">
-                                    <span class="tag is-dark">MH</span>
-                                    <span id="mhTotal" class="tag is-info axoTotal"></span>
+                                    <span class="tag is-dark">AH^</span>
+                                    <span id="ahRange" class="tag is-info"></span>
                                 </div>
                             </div>
                         </div>
@@ -115,7 +122,7 @@
         <section class="hero is-light">
             <div class="hero-foot" style="margin:10px;">
                 <div class="columns">
-                        <!-- <div class="column is-1"></div> -->
+                    <!-- <div class="column is-1"></div> -->
                     <div class="column is-3">
                         <button id='copyToAxoSoftButton' class="button is-info is-small" style="margin-top: 10pxx;">
                             <span>Copy to AxoSoft</span>

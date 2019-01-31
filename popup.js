@@ -196,6 +196,11 @@ function popup() {
                     console.log(totalMins);
                 });
                 $('#mhTotal').text((Math.round(totalMins / 60 * 100) / 100) + "h");
+                // $('#ahRange').text((Math.round(totalMins/ 0.9 / 60 * 100) / 100) + "h");
+
+                let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
+                let ahBottomRange = moment.duration(totalMins, 'minutes');
+                $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
             },
             function () {
                 console.info('failed to get logs');
@@ -276,7 +281,7 @@ function popup() {
                             } else {
                                 success.addClass('is-warning')
                             }
-                            success.text(reminingHrs +" hrs left");
+                            success.text(reminingHrs + " hrs left");
 
                             logStatus.append(success);
                             //logStatus.append('<span>').addClass('tag is-success').text("OK -- " + +" hrs left");
