@@ -119,6 +119,9 @@ function popup() {
 
 
     function getLogs() {
+        var colors = ['#004458', '#455FA8', "#CC8110", "#90090A", "#4D0001"];
+
+
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
         $('.date').text(_this.currentDate.format('dddd, LL'));
 
@@ -136,10 +139,41 @@ function popup() {
                 var logsContainer = $('#logs');
                 logsContainer.empty();
 
+                var timeline = $('#timeline');
+                timeline.empty();
+
+                var baseLine = $('<div>').css({
+                    left: '0px',
+                    width: '800px',
+                    top: "7px",
+                    height: "2px",
+                    position: "absolute",
+                    "background-color": "lightgray",
+                });
+                timeline.append(baseLine);
+
+                for (var i = 1; i < 23; i++) {
+                    var tick = $('<div>').css({
+                        left: (i * 60) / 1440 * 800 + 'px',
+                        width: '1px',
+                        top: "2px",
+                        height: "12px",
+                        position: "absolute",
+                        "background-color": "lightgray",
+                    });
+                    tick.prop('title', i);
+                    timeline.append(tick);
+                }
+
+
+
 
                 var totalMins = 0;
 
                 $.each(data, function (index, data) {
+                    var colorIndex = index % 5;
+                    var logColor = colors[colorIndex];
+
                     totalMins = totalMins + (data.duration / 60);
 
                     var log = $('<li>').attr("data-logId", data.id);
@@ -151,7 +185,10 @@ function popup() {
 
 
                     if (data.project != null) {
-                        var projectInfo = $('<span>').text(data.project.name).addClass('tag is-info');
+                        var projectInfo = $('<span>')
+                            .text(data.project.name)
+                            .addClass('tag is-info')
+                            .css("background-color", logColor);
                         tagGroup.append(projectInfo);
                     } else {
                         var projectInfo = $('<span>')
@@ -185,6 +222,7 @@ function popup() {
                     columnA.append(tagGroup);
 
                     var columnB = $('<div>').addClass('column is-2').css('text-align', 'right').css('font-weight', '600');
+
                     if (data.duration != null) {
                         // var duration = moment().startOf('day').add(data.duration, 'seconds');
                         var duration = Math.round(data.duration / 60 / 60 * 100) / 100 + 'h';
@@ -202,10 +240,60 @@ function popup() {
                     columnC.append(status);
                     //columnC.hide();
 
+                    //var columnD = $('<div>').addClass('column is-2');
+
+
+                    _this.myHoursApi.getTimes(data.id).then(
+                        function (times) {
+                            $.each(times, function (index, time) {
+                                console.log(time);
+                                var left = timeToPixel(time.startTime, 800);
+                                var right = timeToPixel(time.endTime, 800);
+
+
+                                var circleGraph = $('<div>').css({
+                                    left: left + 'px',
+                                    width: '12px',
+                                    height: "12px",
+                                    top: "2px",
+                                    position: "absolute",
+                                    "border-color": logColor,
+                                    "border-width": "2px",
+                                    "border-style": "solid",
+                                    "background-color": "white",
+                                    //"background": "rgba(0,0,0,0.5)",
+                                    "border-radius": "50%"
+                                });
+
+                                var timePeriod = moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ": ";
+                                var title = timePeriod + (data.project != null ? data.project.name : "") + ' / ' + (data.task != null ? data.task.name : "");
+
+                                circleGraph.prop('title', title);
+                                var barGraph = $('<div>').css({
+                                    left: left + 'px',
+                                    width: right - left + 'px',
+                                    top: "6px",
+                                    height: "4px",
+                                    position: "absolute",
+                                    "background-color": logColor,
+                                    "border-radius": "2px"
+                                });
+
+
+                                barGraph.prop('title', title);
+                                timeline.append(barGraph);
+                                timeline.append(circleGraph);
+
+                            })
+                        }
+                    );
+
+
                     columns.append(columnB);
                     columns.append(columnA);
 
                     columns.append(columnC);
+                    //columns.append(columnD);
 
                     log.append(columns);
                     logsContainer.append(log);
@@ -391,6 +479,15 @@ function popup() {
         catch (e) {
             $('#axoNotAccessible').show();
         }
+    }
+
+    function timeToPixel(date, fullLength) {
+        var mmt = moment(date);
+        var mmtMidnight = mmt.clone().startOf('day');
+        var diffMinutes = mmt.diff(mmtMidnight, 'minutes');
+
+        return Math.round(diffMinutes / 1440 * fullLength);
+
     }
 
 
