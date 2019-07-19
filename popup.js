@@ -119,7 +119,7 @@ function popup() {
 
 
     function getLogs() {
-        var colors = ['#004458', '#455FA8', "#CC8110", "#90090A", "#4D0001"];
+        var colors = ['#DE5A18', '#3760A0', "#8CB7BD", "#AD2046"];
 
 
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
@@ -171,7 +171,7 @@ function popup() {
                 var totalMins = 0;
 
                 $.each(data, function (index, data) {
-                    var colorIndex = index % 5;
+                    var colorIndex = index % 4;
                     var logColor = colors[colorIndex];
 
                     totalMins = totalMins + (data.duration / 60);
@@ -253,9 +253,9 @@ function popup() {
 
                                 var circleGraph = $('<div>').css({
                                     left: left + 'px',
-                                    width: '12px',
-                                    height: "12px",
-                                    top: "2px",
+                                    width: '8px',
+                                    height: "8px",
+                                    top: "4px",
                                     position: "absolute",
                                     "border-color": logColor,
                                     "border-width": "2px",
