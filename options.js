@@ -7,6 +7,7 @@ function Options() {
     _this.axoSoftToken = "";
     _this.axoSoftUserId = 0;
     _this.axoSoftDefaultWorklogTypeId = 3;
+    _this.contentSwitchProjectId = 0;
 
     _this.save = function () {
         console.info("saving options");
@@ -51,6 +52,7 @@ function Options() {
                             _this.axoSoftToken = items.options.axoSoftToken;
                             _this.axoSoftUserId = items.options.axoSoftUserId;
                             _this.axoSoftDefaultWorklogTypeId = items.options.axoSoftDefaultWorklogTypeId;
+                            _this.contentSwitchProjectId = items.options.contentSwitchProjectId;
                         }
 
                         resolve();

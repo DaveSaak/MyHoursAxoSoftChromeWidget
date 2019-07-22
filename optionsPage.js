@@ -10,11 +10,12 @@ $(function () {
             $('#axoSoftToken').val(_this.options.axoSoftToken);
             $('#axoSoftUserId').val(_this.options.axoSoftUserId);
             $('#axoSoftDefaultWorklogTypeId').val(_this.options.axoSoftDefaultWorklogTypeId);
+            $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
 
             _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
 
             _this.axoSoftApi.getUsers().then(function (users) {
-                users = _.sortBy(users, function(u) { return u.full_name; });
+                users = _.sortBy(users, function (u) { return u.full_name; });
                 var $select = $("#axoSoftUserId");
                 $(users).each(function (i, user) {
                     if (user.is_active === true) {
@@ -28,7 +29,7 @@ $(function () {
             })
 
             _this.axoSoftApi.getWorkLogTypes().then(function (workLogTypes) {
-                workLogTypes = _.sortBy(workLogTypes, function(o) { return o.name; });
+                workLogTypes = _.sortBy(workLogTypes, function (o) { return o.name; });
                 var $select = $("#axoSoftDefaultWorklogTypeId");
                 $(workLogTypes).each(function (i, workLogType) {
                     $select.append($("<option>", {
@@ -46,6 +47,7 @@ $(function () {
         _this.options.axoSoftToken = $('#axoSoftToken').val();
         _this.options.axoSoftUserId = $('#axoSoftUserId').val();
         _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
+        _this.options.contentSwitchProjectId = $('#contentSwitchProjectId').val();
 
         _this.options.save().then(function () {
             var notificationOptions = {
@@ -55,7 +57,7 @@ $(function () {
                 message: 'Options have been saved.'
             };
             //chrome.notifications.create('optionsSaved', notificationOptions);
-            chrome.notifications.create('optionsSaved', notificationOptions, function () {});
+            chrome.notifications.create('optionsSaved', notificationOptions, function () { });
         });
     })
 

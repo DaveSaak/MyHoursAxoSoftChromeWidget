@@ -79,6 +79,25 @@ function popup() {
             getLogs();
         });
 
+        $('#switchContentButton').click(function () {
+            _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch")
+                .then(
+                    function (data) {
+
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: 'logo.png',
+                            title: 'Content Switch',
+                            message: 'Content Switch was recorded.'
+                        };
+                        chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+
+                        console.log(data);
+                    },
+                    function (error) {
+                        console.log(error);
+                    });
+        });
 
     }
 
@@ -153,13 +172,18 @@ function popup() {
                 timeline.append(baseLine);
 
                 for (var i = 1; i < 23; i++) {
+                    var tickColor = "lightgray";
+                    if (i % 6 == 0)
+                        tickColor = "#474747";
+
+
                     var tick = $('<div>').css({
                         left: (i * 60) / 1440 * 800 + 'px',
                         width: '1px',
                         top: "2px",
                         height: "12px",
                         position: "absolute",
-                        "background-color": "lightgray",
+                        "background-color": tickColor,
                     });
                     tick.prop('title', i);
                     timeline.append(tick);
@@ -266,7 +290,7 @@ function popup() {
                                 });
 
                                 var timePeriod = moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ": ";
-                                var title = timePeriod + (data.project != null ? data.project.name : "") + ' / ' + (data.task != null ? data.task.name : "");
+                                var title = timePeriod + (data.project != null ? data.project.name : "");// + ' / ' + (data.task != null ? data.task.name : "");
 
                                 circleGraph.prop('title', title);
                                 var barGraph = $('<div>').css({

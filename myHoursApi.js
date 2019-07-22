@@ -1,5 +1,7 @@
 'use strict'
 
+const baseUrl = 'https://api2.myhours.com/api/'
+
 function MyHoursApi(currentUser) {
     var _this = this;
 
@@ -16,6 +18,8 @@ function MyHoursApi(currentUser) {
 
                 $.ajax({
                     url: "https://api.myhours.com/users",
+                    //url: baseUrl + "users",
+                    //contentType: "application/json",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
@@ -39,6 +43,8 @@ function MyHoursApi(currentUser) {
 
                 $.ajax({
                     url: "https://api.myhours.com/tokens",
+                    //url: baseUrl + "tokens/login",
+                    //contentType: "application/json",
                     type: "POST",
                     data: {
                         clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
@@ -111,7 +117,50 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
+    }
 
+    _this.addLog = function (projectId, comment) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: adding log");
+
+                var currentTime = moment();
+                var data = {
+                    billable: false,
+                    cost: "0.00",
+                    date: currentTime.format("YYYY-MM-DD"),
+                    duration: 0,
+                    startDate: currentTime.format(),
+                    endDate: currentTime.format(),
+                    originType: 1,
+                    task: null,
+                    userId: _this.currentUser.id,
+
+                    project: {
+                        id: projectId
+                    },
+                    comment: comment
+                };
+
+                $.ajax({
+                    url: "https://api.myhours.com/logs?userId=" + _this.currentUser.id,
+                    //url: baseUrl + "tokens/login",
+                    //contentType: "application/json",
+                    type: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    data: data,
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(Error());
+                    }
+                });
+            }
+        )
 
     }
 
