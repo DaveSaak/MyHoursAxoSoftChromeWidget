@@ -17,9 +17,9 @@ function MyHoursApi(currentUser) {
                 console.info("api: getting user");
 
                 $.ajax({
-                    url: "https://api.myhours.com/users",
-                    //url: baseUrl + "users",
-                    //contentType: "application/json",
+                    //url: "https://api.myhours.com/users",
+                    url: baseUrl + "users",
+                    //                    contentType: "application/json",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
@@ -41,22 +41,38 @@ function MyHoursApi(currentUser) {
             function (resolve, reject) {
                 console.info("api: getting token");
 
+                var loginData = {
+                    clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
+                    email: "davidsakelsek@gmail.com",
+                    grantType: "password",
+                    password: "password00"
+                };
+
+                // $.post({
+                //     //url: "https://api.myhours.com/tokens",
+                //     url: baseUrl + "tokens/login",
+                //     contentType: "application/json",
+                //     data: JSON.stringify(loginData),
+                //     success: function (data) {
+                //         return resolve(data);
+                //     },
+                //     error: function (data) {
+                //         console.log(data);
+                //         return reject(Error());
+                //     }
+                // });
+
                 $.ajax({
-                    url: "https://api.myhours.com/tokens",
-                    //url: baseUrl + "tokens/login",
-                    //contentType: "application/json",
+                    //url: "https://api.myhours.com/tokens",
+                    url: baseUrl + "tokens/login",
+                    contentType: "application/json",
                     type: "POST",
-                    data: {
-                        clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
-                        email: email,
-                        grantType: "password",
-                        password: password
-                    },
+                    data: JSON.stringify(loginData),
                     success: function (data) {
                         return resolve(data);
                     },
                     error: function (data) {
-                        console.error(data);
+                        console.log(data);
                         return reject(Error());
                     }
                 });
@@ -70,7 +86,8 @@ function MyHoursApi(currentUser) {
                 console.info("api: getting logs");
 
                 $.ajax({
-                    url: "https://api.myhours.com/logs",
+                    //url: "https://api.myhours.com/logs",
+                    url: baseUrl + "logs",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
@@ -99,14 +116,15 @@ function MyHoursApi(currentUser) {
                 console.info("api: getting times");
 
                 $.ajax({
-                    url: "https://api.myhours.com/times",
+                    //url: "https://api.myhours.com/times",
+                    url: baseUrl + "times",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
                     type: "GET",
-                    data: {
+                    data: JSON.stringify({
                         logId: logId,
-                    },
+                    }),
                     success: function (data) {
                         resolve(data);
                     },
@@ -125,32 +143,43 @@ function MyHoursApi(currentUser) {
                 console.info("api: adding log");
 
                 var currentTime = moment();
-                var data = {
-                    billable: false,
-                    cost: "0.00",
+                var newLogData = {
+                    projectId: projectId,
+                    note: comment,
                     date: currentTime.format("YYYY-MM-DD"),
-                    duration: 0,
-                    startDate: currentTime.format(),
-                    endDate: currentTime.format(),
-                    originType: 1,
-                    task: null,
-                    userId: _this.currentUser.id,
+                    start: currentTime.format(),
+                    end: currentTime.format()
+                }
 
-                    project: {
-                        id: projectId
-                    },
-                    comment: comment
-                };
+
+
+                // var data = {
+                //     billable: false,
+                //     cost: "0.00",
+                //     date: currentTime.format("YYYY-MM-DD"),
+                //     duration: 0,
+                //     startDate: currentTime.format(),
+                //     endDate: currentTime.format(),
+                //     originType: 1,
+                //     task: null,
+                //     userId: _this.currentUser.id,
+
+                //     project: {
+                //         id: projectId
+                //     },
+                //     comment: comment
+                // };
 
                 $.ajax({
-                    url: "https://api.myhours.com/logs?userId=" + _this.currentUser.id,
+                    url: baseUrl + "logs",
+                    //url: "https://api.myhours.com/logs?userId=" + _this.currentUser.id,
                     //url: baseUrl + "tokens/login",
                     //contentType: "application/json",
                     type: "POST",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
-                    data: data,
+                    data: JSON.stringify(newLogData),
                     success: function (data) {
                         return resolve(data);
                     },
@@ -161,7 +190,5 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-
     }
-
 };
