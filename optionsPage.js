@@ -11,6 +11,9 @@ $(function () {
             $('#axoSoftUserId').val(_this.options.axoSoftUserId);
             $('#axoSoftDefaultWorklogTypeId').val(_this.options.axoSoftDefaultWorklogTypeId);
             $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
+            $('#developmentTaskName').val(_this.options.developmentTaskName);
+            $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
+
 
             _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
 
@@ -48,6 +51,8 @@ $(function () {
         _this.options.axoSoftUserId = $('#axoSoftUserId').val();
         _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
         _this.options.contentSwitchProjectId = $('#contentSwitchProjectId').val();
+        _this.options.developmentTaskName = $('#developmentTaskName').val();
+        _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
 
         _this.options.save().then(function () {
             var notificationOptions = {
