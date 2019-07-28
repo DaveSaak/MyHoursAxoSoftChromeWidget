@@ -80,17 +80,17 @@ function popup() {
         });
 
         $('#switchContentButton').click(function () {
-            _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch")
+            _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
                 .then(
                     function (data) {
 
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: 'logo.png',
-                            title: 'Content Switch',
-                            message: 'Content Switch was recorded.'
-                        };
-                        chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+                        // var notificationOptions = {
+                        //     type: 'basic',
+                        //     iconUrl: 'logo.png',
+                        //     title: 'Content Switch',
+                        //     message: 'Content Switch was recorded.'
+                        // };
+                        // chrome.notifications.create('optionsSaved', notificationOptions, function () { });
 
                         console.log(data);
                     },
@@ -195,6 +195,8 @@ function popup() {
                 var totalMins = 0;
 
                 $.each(data, function (index, data) {
+                    console.log(data);
+
                     var colorIndex = index % 4;
                     var logColor = colors[colorIndex];
 
@@ -208,9 +210,9 @@ function popup() {
                     var tagGroup = $('<div>').addClass('tags has-addons');
 
 
-                    if (data.project != null) {
+                    if (data.projectId != null) {
                         var projectInfo = $('<span>')
-                            .text(data.project.name)
+                            .text(data.projectName)
                             .addClass('tag is-info')
                             .css("background-color", logColor);
                         tagGroup.append(projectInfo);
@@ -223,15 +225,15 @@ function popup() {
                         tagGroup.append(projectInfo);
                     }
 
-                    if (data.task != null) {
-                        var taskInfo = $('<span>').text(data.task.name).addClass('tag is-dark').css("font-style", "italic");;
+                    if (data.taskId != null) {
+                        var taskInfo = $('<span>').text(data.taskName).addClass('tag is-dark').css("font-style", "italic");;
                         tagGroup.append(taskInfo);
 
-                        if (_this.myHoursTaskSummary[data.task.name] == undefined) {
-                            _this.myHoursTaskSummary[data.task.name] = data.duration;
+                        if (_this.myHoursTaskSummary[data.taskName] == undefined) {
+                            _this.myHoursTaskSummary[data.taskName] = data.duration;
                         }
                         else {
-                            _this.myHoursTaskSummary[data.task.name] = _this.myHoursTaskSummary[data.task.name] + data.duration;
+                            _this.myHoursTaskSummary[data.taskName] = _this.myHoursTaskSummary[data.taskName] + data.duration;
                         }
                     }
                     else {
@@ -290,7 +292,7 @@ function popup() {
                                 });
 
                                 var timePeriod = moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ": ";
-                                var title = timePeriod + (data.project != null ? data.project.name : "");// + ' / ' + (data.task != null ? data.task.name : "");
+                                var title = timePeriod + (data.project != null ? data.projectName : "");// + ' / ' + (data.task != null ? data.task.name : "");
 
                                 circleGraph.prop('title', title);
                                 var barGraph = $('<div>').css({
@@ -394,7 +396,7 @@ function popup() {
     }
 
     function getTimeLogDetails(myHoursLog, workLogTypeId) {
-        var itemId = (myHoursLog.project.name
+        var itemId = (myHoursLog.projectName
             .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
             .map(function (v) {
                 return +v;
@@ -474,13 +476,13 @@ function popup() {
                         _this.timeUnits = response;
 
                         $.each(_this.myHoursLogs, function (index, myHoursLog) {
-                            if (myHoursLog.project != undefined && myHoursLog.project.name != undefined) {
+                            if (myHoursLog.project != undefined && myHoursLog.projectName != undefined) {
 
                                 var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
-                                if (myHoursLog.task != undefined && myHoursLog.task.name != undefined) {
+                                if (myHoursLog.task != undefined && myHoursLog.taskName != undefined) {
                                     var workLogType = _.find(_this.worklogTypes,
                                         function (w) {
-                                            return w.name.toUpperCase() === myHoursLog.task.name.toUpperCase();
+                                            return w.name.toUpperCase() === myHoursLog.taskName.toUpperCase();
                                         });
 
                                     if (workLogType != undefined) {

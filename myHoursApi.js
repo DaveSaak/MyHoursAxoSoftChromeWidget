@@ -80,23 +80,56 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    // _this.getLogs = function (date) {
+    //     return new Promise(
+    //         function (resolve, reject) {
+    //             console.info("api: getting logs");
+
+    //             $.ajax({
+    //                 //url: "https://api.myhours.com/logs",
+    //                 url: baseUrl + "logs",
+    //                 headers: {
+    //                     "Authorization": "Bearer " + _this.currentUser.accessToken
+    //                 },
+    //                 type: "GET",
+    //                 data: {
+    //                     dateFrom: moment(date).format("YYYY-MM-DD"),
+    //                     dateTo: moment(date).format("YYYY-MM-DD")
+    //                 },
+    //                 success: function (data) {
+    //                     resolve(data);
+    //                 },
+    //                 error: function (data) {
+    //                     console.error(data);
+    //                     reject(Error());
+    //                 }
+    //             });
+    //         }
+    //     )
+    // }
+
     _this.getLogs = function (date) {
+        date = date.startOf('day');
         return new Promise(
             function (resolve, reject) {
                 console.info("api: getting logs");
 
                 $.ajax({
-                    //url: "https://api.myhours.com/logs",
                     url: baseUrl + "logs",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
                     type: "GET",
                     data: {
-                        dateFrom: moment(date).format("YYYY-MM-DD"),
-                        dateTo: moment(date).format("YYYY-MM-DD")
+                        startIndex: 0,
+                        step: 200,
+                        maxDate: moment(date).format("YYYY-MM-DD")
                     },
                     success: function (data) {
+                        //can contain other dates. filter them out
+                        data = data.filter(function (x) {
+                            return moment(x.date).isSame(moment(date));
+                        })
                         resolve(data);
                     },
                     error: function (data) {
@@ -106,8 +139,6 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-
-
     }
 
     _this.getTimes = function (logId) {
@@ -117,14 +148,14 @@ function MyHoursApi(currentUser) {
 
                 $.ajax({
                     //url: "https://api.myhours.com/times",
-                    url: baseUrl + "times",
+                    url: baseUrl + "times/" + logId,
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
                     type: "GET",
-                    data: JSON.stringify({
-                        logId: logId,
-                    }),
+                    // data: JSON.stringify({
+                    //     logId: logId,
+                    // }),
                     success: function (data) {
                         resolve(data);
                     },
@@ -137,44 +168,25 @@ function MyHoursApi(currentUser) {
         )
     }
 
-    _this.addLog = function (projectId, comment) {
+    _this.addLog = function (projectId, comment, duration) {
         return new Promise(
             function (resolve, reject) {
                 console.info("api: adding log");
 
-                var currentTime = moment();
+                var currentTime = moment.utc();
                 var newLogData = {
                     projectId: projectId,
+                    taskId: 0,
                     note: comment,
-                    date: currentTime.format("YYYY-MM-DD"),
-                    start: currentTime.format(),
-                    end: currentTime.format()
-                }
-
-
-
-                // var data = {
-                //     billable: false,
-                //     cost: "0.00",
-                //     date: currentTime.format("YYYY-MM-DD"),
-                //     duration: 0,
-                //     startDate: currentTime.format(),
-                //     endDate: currentTime.format(),
-                //     originType: 1,
-                //     task: null,
-                //     userId: _this.currentUser.id,
-
-                //     project: {
-                //         id: projectId
-                //     },
-                //     comment: comment
-                // };
+                    date: currentTime.format("YYYY-MM-DDTHH:mm:ss" + "00Z"),
+                    start: currentTime.format("YYYY-MM-DDTHH:mm:ss" + "00Z"),
+                    end: currentTime.add(duration, 'minutes').format("YYYY-MM-DDTHH:mm:ss" + "00Z"),
+                    billable: false,
+                    additionalCost: 0
+                };
 
                 $.ajax({
                     url: baseUrl + "logs",
-                    //url: "https://api.myhours.com/logs?userId=" + _this.currentUser.id,
-                    //url: baseUrl + "tokens/login",
-                    //contentType: "application/json",
                     type: "POST",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken

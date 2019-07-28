@@ -8,8 +8,8 @@ function Options() {
     _this.axoSoftUserId = 0;
     _this.axoSoftDefaultWorklogTypeId = 3;
     _this.contentSwitchProjectId = 0;
-    _this.options.developmentTaskName = 'development';
-    _this.options.contentSwitchZoneReEnterTime = 10;
+    _this.developmentTaskName = 'development';
+    _this.contentSwitchZoneReEnterTime = 10;
 
     _this.save = function () {
         console.info("saving options");
@@ -55,8 +55,8 @@ function Options() {
                             _this.axoSoftUserId = items.options.axoSoftUserId;
                             _this.axoSoftDefaultWorklogTypeId = items.options.axoSoftDefaultWorklogTypeId;
                             _this.contentSwitchProjectId = items.options.contentSwitchProjectId;
-                            _this.options.developmentTaskName = items.options.developmentTaskName;
-                            _this.options.contentSwitchZoneReEnterTime = items.options.contentSwitchZoneReEnterTime;
+                            _this.developmentTaskName = items.options.developmentTaskName;
+                            _this.contentSwitchZoneReEnterTime = items.options.contentSwitchZoneReEnterTime;
                         }
 
                         resolve();
