@@ -178,16 +178,19 @@ function MyHoursApi(currentUser) {
                     projectId: projectId,
                     taskId: 0,
                     note: comment,
-                    date: currentTime.format("YYYY-MM-DDTHH:mm:ss" + "00Z"),
-                    start: currentTime.format("YYYY-MM-DDTHH:mm:ss" + "00Z"),
-                    end: currentTime.add(duration, 'minutes').format("YYYY-MM-DDTHH:mm:ss" + "00Z"),
+                    date: currentTime.format("YYYY-MM-DDTHH:mm:ss") + "Z",
+                    start: currentTime.format("YYYY-MM-DDTHH:mm:ss") + "Z",
+                    end: currentTime.add(duration, 'minutes').format("YYYY-MM-DDTHH:mm:ss") + "Z",
                     billable: false,
                     additionalCost: 0
                 };
 
+                console.info(newLogData);
+
                 $.ajax({
-                    url: baseUrl + "logs",
+                    url: baseUrl + "logs/insertlog",
                     type: "POST",
+                    contentType: "application/json",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },

@@ -84,13 +84,13 @@ function popup() {
                 .then(
                     function (data) {
 
-                        // var notificationOptions = {
-                        //     type: 'basic',
-                        //     iconUrl: 'logo.png',
-                        //     title: 'Content Switch',
-                        //     message: 'Content Switch was recorded.'
-                        // };
-                        // chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: 'logo.png',
+                            title: 'Content Switch',
+                            message: 'Content Switch was recorded.'
+                        };
+                        chrome.notifications.create('optionsSaved', notificationOptions, function () { });
 
                         console.log(data);
                     },
