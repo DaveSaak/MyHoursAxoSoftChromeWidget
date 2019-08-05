@@ -2,7 +2,7 @@
 
 const baseUrl = 'https://api2.myhours.com/api/'
 
-function MyHoursApi(currentUser) {
+function AllHoursApi(currentUser) {
     var _this = this;
 
     _this.currentUser = currentUser;

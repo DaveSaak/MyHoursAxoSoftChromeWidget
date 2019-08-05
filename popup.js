@@ -18,7 +18,7 @@ function popup() {
     _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
     _this.options = new Options(); //new OptionsRepo.getInstance();
 
-    _this.myHoursApi = new MyHoursApi(_this.currentUser) //new myHoursApi.getInstance();
+    _this.myHoursApi = new AllHoursApi(_this.currentUser) //new myHoursApi.getInstance();
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
 
     _this.options.load().then(
@@ -138,7 +138,7 @@ function popup() {
 
 
     function getLogs() {
-        var colors = ['#DE5A18', '#3760A0', "#8CB7BD", "#AD2046"];
+        var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107", "#FF5722", "#795548"];
 
 
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
@@ -164,14 +164,14 @@ function popup() {
                 var baseLine = $('<div>').css({
                     left: '0px',
                     width: '800px',
-                    top: "7px",
+                    top: "15px",
                     height: "2px",
                     position: "absolute",
                     "background-color": "lightgray",
                 });
-                timeline.append(baseLine);
+                //timeline.append(baseLine);
 
-                for (var i = 1; i < 23; i++) {
+                for (var i = 1; i < 24; i++) {
                     var tickColor = "lightgray";
                     if (i % 6 == 0)
                         tickColor = "#474747";
@@ -180,13 +180,26 @@ function popup() {
                     var tick = $('<div>').css({
                         left: (i * 60) / 1440 * 800 + 'px',
                         width: '1px',
-                        top: "2px",
-                        height: "12px",
+                        // top: "2px",
+                        height: "34px",
                         position: "absolute",
                         "background-color": tickColor,
                     });
                     tick.prop('title', i);
                     timeline.append(tick);
+
+                    var time = $('<div>').css({
+                        left: ((i * 60) / 1440 * 800) - 10 + 'px',
+                        width: '20px',
+                        top: "34px",
+                        height: "20px",
+                        position: "absolute",
+                        "font-size": "10px",
+                        "text-align": "center"
+                        // "background-color": tickColor,
+                    });
+                    time.text(i);
+                    timeline.append(time);
                 }
 
 
@@ -197,7 +210,8 @@ function popup() {
                 $.each(data, function (index, data) {
                     console.log(data);
 
-                    var colorIndex = index % 4;
+                    //var colorIndex = index % 4;
+                    var colorIndex = nameToIndex(data.projectName, 10);
                     var logColor = colors[colorIndex];
 
                     totalMins = totalMins + (data.duration / 60);
@@ -247,11 +261,11 @@ function popup() {
                     }
                     columnA.append(tagGroup);
 
-                    var columnB = $('<div>').addClass('column is-2').css('text-align', 'right').css('font-weight', '600');
+                    var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
 
                     if (data.duration != null) {
                         // var duration = moment().startOf('day').add(data.duration, 'seconds');
-                        var duration = Math.round(data.duration / 60 / 60 * 100) / 100 + 'h';
+                        var duration = Math.round(data.duration / 60 / 60 * 10) / 10 + 'h';
                         // var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
                         var durationInfo = $('<span>').text(duration);
                         columnB.append(durationInfo);
@@ -287,28 +301,28 @@ function popup() {
                                     "border-width": "2px",
                                     "border-style": "solid",
                                     "background-color": "white",
-                                    //"background": "rgba(0,0,0,0.5)",
                                     "border-radius": "50%"
                                 });
 
                                 var timePeriod = moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ": ";
-                                var title = timePeriod + (data.project != null ? data.projectName : "");// + ' / ' + (data.task != null ? data.task.name : "");
+                                var title = timePeriod + data.projectName + ' // ' + data.taskName;
 
                                 circleGraph.prop('title', title);
                                 var barGraph = $('<div>').css({
                                     left: left + 'px',
                                     width: right - left + 'px',
-                                    top: "6px",
-                                    height: "4px",
+                                    top: "3px",
+                                    height: "26px",
                                     position: "absolute",
                                     "background-color": logColor,
-                                    "border-radius": "2px"
+                                    // opacity: 0.9
+                                    "border-radius": "1px"
                                 });
 
 
                                 barGraph.prop('title', title);
                                 timeline.append(barGraph);
-                                timeline.append(circleGraph);
+                                //timeline.append(circleGraph);
 
                             })
                         }
@@ -514,6 +528,14 @@ function popup() {
 
         return Math.round(diffMinutes / 1440 * fullLength);
 
+    }
+
+    function nameToIndex(s, length) {
+        if (!s) {
+            return 0;
+        }
+        let sumOfChars = s.split('').map(x => x.charCodeAt(0)).reduce((a, b) => a + b, 0);
+        return sumOfChars % length;
     }
 
 

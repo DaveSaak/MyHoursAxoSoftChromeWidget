@@ -2,6 +2,8 @@ function CurrentUser() {
 
     this.accessToken = undefined;
     this.refreshToken = undefined;
+    this.allHoursAccessToken = undefined;
+    this.allHoursRefreshToken = undefined;
     this.id = undefined;
     this.name = "John Doe";
     this.email = undefined;
@@ -14,6 +16,11 @@ function CurrentUser() {
     this.setTokenData = function (accessToken, refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    this.setAllHoursTokenData = function (accessToken, refreshToken) {
+        this.allHoursAccessToken = accessToken;
+        this.allHoursRefreshToken = refreshToken;
     }
 
     this.save = function () {
@@ -51,10 +58,12 @@ function CurrentUser() {
                 if (items.currentUser) {
                     console.info(items.currentUser);
 
-
-
                     currentUser.accessToken = items.currentUser.accessToken;
                     currentUser.refreshToken = items.currentUser.refreshToken;
+
+                    currentUser.allHoursAccessToken = items.currentUser.allHoursAccessToken;
+                    currentUser.allHoursRefreshToken = items.currentUser.allHorusRefreshToken;
+
                     currentUser.id = items.currentUser.id;
                     currentUser.name = items.currentUser.name;
                     currentUser.email = items.currentUser.email;
@@ -70,10 +79,14 @@ function CurrentUser() {
     }
 
     this.clear = function () {
-      
+
         console.info("clearing current user");
         this.accessToken = undefined;
         this.refreshToken = undefined;
+
+        this.allHoursAccessToken = undefined;
+        this.allHoursRefreshToken = undefined;
+
         this.id = undefined;
         this.name = undefined;
         this.email = undefined;
