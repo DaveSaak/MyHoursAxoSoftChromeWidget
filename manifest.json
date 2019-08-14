@@ -9,26 +9,25 @@
         "default_icon": "logo.png"
     },
     "options_page": "options.html",
-    "content_scripts": [
-        {
-            "matches": [
-                "https://app.myhours.com/*"
-            ],
-            "js": [
-                "jquery-3.3.1.min.js",
-                "moment.js",
-                "underscore-min.js"
-            ],
-            "css": [
-                "myhours.css"
-            ]
-        }
-    ],
+    "content_scripts": [{
+        "matches": [
+            "https://app.myhours.com/*"
+        ],
+        "js": [
+            "jquery-3.3.1.min.js",
+            "moment.js",
+            "underscore-min.js"
+        ],
+        "css": [
+            "myhours.css"
+        ]
+    }],
     "permissions": [
         "storage",
         "notifications",
         "https://api.myhours.com/*",
         "https://api2.myhours.com/*",
-        "http://despacito.spica.si/OnTime/api/*"
+        "http://despacito.spica.si/OnTime/api/*",
+        "https://ahdevelopment-api.azurewebsites.net/*"
     ]
 }

@@ -1,8 +1,9 @@
-'use strict'
-
-const baseUrl = 'https://api2.myhours.com/api/'
-
 function AllHoursApi(currentUser) {
+    'use strict';
+
+    var baseUrl = 'https://ahdevelopment-api.azurewebsites.net/';
+    var baseName = 'AH API';
+
     var _this = this;
 
     _this.currentUser = currentUser;
@@ -11,17 +12,16 @@ function AllHoursApi(currentUser) {
     _this.getAccessToken = function (email, password) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting token");
+                console.info(baseName + ": getting token");
 
                 var loginData = {
-                    clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
-                    email: email,
-                    grantType: "password",
+                    username: email,
+                    grant_type: "password",
                     password: password
                 };
 
                 $.ajax({
-                    url: baseUrl + "tokens/login",
+                    url: baseUrl + "tokens",
                     contentType: "application/json",
                     type: "POST",
                     data: JSON.stringify(loginData),
@@ -38,28 +38,21 @@ function AllHoursApi(currentUser) {
     }
 
 
-    _this.getPresence = function (date) {
+    _this.getPaidPresence = function (userId, date) {
         date = date.startOf('day');
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting calculation");
+                console.info(baseName + ": getting calculation");
 
                 $.ajax({
-                    url: baseUrl + "usercalcuation",
+                    url: baseUrl + "usercalcuation/" + userId + "/?dateFrom=" + moment(date).format('yyyy-MM-dd') + "&dateTo=" + moment(date).format('yyyy-MM-dd'),
                     headers: {
-                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                        "Authorization": "Bearer " + _this.currentUser.allHoursAccessToken,
+                        "X-Timezone-Offset": date.getTimezoneOffset()
                     },
                     type: "GET",
-                    data: {
-                        startIndex: 0,
-                        step: 200,
-                        maxDate: moment(date).format("YYYY-MM-DD")
-                    },
                     success: function (data) {
                         //can contain other dates. filter them out
-                        data = data.filter(function (x) {
-                            return moment(x.date).isSame(moment(date));
-                        })
                         resolve(data);
                     },
                     error: function (data) {

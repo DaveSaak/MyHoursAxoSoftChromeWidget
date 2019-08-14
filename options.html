@@ -7,11 +7,13 @@
     <script src="jquery-3.3.1.min.js"></script>
     <script src="underscore-min.js"></script>
 
+
     <script src="optionsPage.js"></script>
     <script src="options.js"></script>
     <!-- <script src="optionsRepo.js"></script> -->
     <script src="worklog.js"></script>
     <script src="axoSoftApi.js"></script>
+    <script src="allHoursApi.js"></script>
 
     <!-- <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" /> -->
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
@@ -21,18 +23,14 @@
 </head>
 
 <body>
-    <form class="container" style="max-width: 600px; margin-top: 20px;">
+    <div class="container" style="max-width: 600px; margin-top: 20px;">
 
-        <div class="columns">
-            <div class="column">
+        <div class="row align-items-center">
+            <div class="col">
                 <h1 class="title">Options</h1>
             </div>
-            <div class="column">
-                <div class="field is-grouped is-grouped-right">
-                    <p class="control">
-                        <button id='saveButton' class="button is-info">Save</button>
-                    </p>
-                </div>
+            <div class="col-auto">
+                <button id='saveButton' class="btn btn-danger">Save</button>
             </div>
         </div>
 
@@ -123,40 +121,13 @@
 
                     <div class="field is-grouped is-grouped-right">
                         <p class="control">
-                            <button id='saveButton' class="button is-default">Get access tokens</button>
+                            <button id='loginToAllHours' class="btn btn-warning">Get access tokens</button>
                         </p>
                     </div>
                 </p>
             </div>
         </div>
-    </form>
-
-    <!-- </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
-    <!-- </section> -->
-
-
-
-
-
-    <!-- Favorite color:
-    <select id="color">
-        <option value="red">red</option>
-        <option value="green">green</option>
-        <option value="blue">blue</option>
-        <option value="yellow">yellow</option>
-    </select>
-
-    <label>
-        <input type="checkbox" id="like">
-        I like colors.
-    </label>
-
-    <div id="status"></div>
-    <button id="save">Save</button> -->
-
-
+    </div>
 
 
 </body>

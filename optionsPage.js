@@ -1,7 +1,8 @@
 $(function () {
+    'use strict';
     console.info('init options page');
     var _this = this;
-    _this.options = new Options;
+    _this.options = new Options();
 
     _this.options
         .load()
@@ -14,11 +15,13 @@ $(function () {
             $('#developmentTaskName').val(_this.options.developmentTaskName);
             $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
 
-
             _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
+            _this.allHoursApi = new AllHoursApi();
 
             _this.axoSoftApi.getUsers().then(function (users) {
-                users = _.sortBy(users, function (u) { return u.full_name; });
+                users = _.sortBy(users, function (u) {
+                    return u.full_name;
+                });
                 var $select = $("#axoSoftUserId");
                 $(users).each(function (i, user) {
                     if (user.is_active === true) {
@@ -29,10 +32,12 @@ $(function () {
                     }
                 });
                 $select.val(_this.options.axoSoftUserId);
-            })
+            });
 
             _this.axoSoftApi.getWorkLogTypes().then(function (workLogTypes) {
-                workLogTypes = _.sortBy(workLogTypes, function (o) { return o.name; });
+                workLogTypes = _.sortBy(workLogTypes, function (o) {
+                    return o.name;
+                });
                 var $select = $("#axoSoftDefaultWorklogTypeId");
                 $(workLogTypes).each(function (i, workLogType) {
                     $select.append($("<option>", {
@@ -41,8 +46,7 @@ $(function () {
                     }));
                 });
                 $select.val(_this.options.axoSoftDefaultWorklogTypeId);
-            })
-
+            });
         });
 
     $('#saveButton').click(function () {
@@ -62,8 +66,24 @@ $(function () {
                 message: 'Options have been saved.'
             };
             //chrome.notifications.create('optionsSaved', notificationOptions);
-            chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+            chrome.notifications.create('optionsSaved', notificationOptions, function () {});
         });
-    })
+    });
 
+
+    $('#loginToAllHours').click(function () {
+        _this.allHoursApi.getAccessToken(
+            $('#ahUsername').val(),
+            $('#ahPassword').val()
+        ).then(function (data) {
+                console.log(data);
+                $('#ahAccessToken').text(data.access_token);
+            },
+            function (err) {
+                console.info('error while geeting token');
+                console.error(err);
+                showLoginPage();
+            }
+        );
+    });
 });

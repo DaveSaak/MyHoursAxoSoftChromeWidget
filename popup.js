@@ -1,10 +1,12 @@
-'use strict'
+//'use strict';
 
 $(document).ready(function () {
     new popup();
 });
 
 function popup() {
+    'use strict';
+
     console.info('init');
     var _this = this;
 
@@ -90,7 +92,7 @@ function popup() {
                             title: 'Content Switch',
                             message: 'Content Switch was recorded.'
                         };
-                        chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+                        chrome.notifications.create('optionsSaved', notificationOptions, function () {});
 
                         console.log(data);
                     },
@@ -245,16 +247,13 @@ function popup() {
 
                         if (_this.myHoursTaskSummary[data.taskName] == undefined) {
                             _this.myHoursTaskSummary[data.taskName] = data.duration;
-                        }
-                        else {
+                        } else {
                             _this.myHoursTaskSummary[data.taskName] = _this.myHoursTaskSummary[data.taskName] + data.duration;
                         }
-                    }
-                    else {
+                    } else {
                         if (_this.myHoursTaskSummary['_'] == undefined) {
                             _this.myHoursTaskSummary['_'] = data.duration;
-                        }
-                        else {
+                        } else {
                             _this.myHoursTaskSummary['_'] = _this.myHoursTaskSummary['_'] + data.duration;
                         }
 
@@ -354,8 +353,7 @@ function popup() {
                     let taskCssClass = "is-info";
                     if (index == 'development' && summaryHours >= 4) {
                         taskCssClass = "is-success"
-                    }
-                    else if (index == 'development' && summaryHours < 1) {
+                    } else if (index == 'development' && summaryHours < 1) {
                         taskCssClass = "is-danger"
                     }
 
@@ -411,7 +409,7 @@ function popup() {
 
     function getTimeLogDetails(myHoursLog, workLogTypeId) {
         var itemId = (myHoursLog.projectName
-            .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
+                .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
             .map(function (v) {
                 return +v;
             }).shift();
@@ -481,42 +479,41 @@ function popup() {
         $('#axoNotAccessible').hide();
         try {
             _this.axoSoftApi.getWorkLogTypes().then(
-                function (response) {
-                    console.info(response);
-                    _this.worklogTypes = response;
-
-                    _this.axoSoftApi.getTimeUnits().then(function (response) {
+                    function (response) {
                         console.info(response);
-                        _this.timeUnits = response;
+                        _this.worklogTypes = response;
 
-                        $.each(_this.myHoursLogs, function (index, myHoursLog) {
-                            if (myHoursLog.project != undefined && myHoursLog.projectName != undefined) {
+                        _this.axoSoftApi.getTimeUnits().then(function (response) {
+                            console.info(response);
+                            _this.timeUnits = response;
 
-                                var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
-                                if (myHoursLog.task != undefined && myHoursLog.taskName != undefined) {
-                                    var workLogType = _.find(_this.worklogTypes,
-                                        function (w) {
-                                            return w.name.toUpperCase() === myHoursLog.taskName.toUpperCase();
-                                        });
+                            $.each(_this.myHoursLogs, function (index, myHoursLog) {
+                                if (myHoursLog.project != undefined && myHoursLog.projectName != undefined) {
 
-                                    if (workLogType != undefined) {
-                                        workLogTypeId = workLogType.id;
+                                    var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
+                                    if (myHoursLog.task != undefined && myHoursLog.taskName != undefined) {
+                                        var workLogType = _.find(_this.worklogTypes,
+                                            function (w) {
+                                                return w.name.toUpperCase() === myHoursLog.taskName.toUpperCase();
+                                            });
+
+                                        if (workLogType != undefined) {
+                                            workLogTypeId = workLogType.id;
+                                        }
                                     }
+                                    getTimeLogDetails(myHoursLog, workLogTypeId);
                                 }
-                                getTimeLogDetails(myHoursLog, workLogTypeId);
-                            }
-                        });
+                            });
 
-                    });
-                },
-                function () { })
+                        });
+                    },
+                    function () {})
                 .catch(
                     function () {
                         $('#axoNotAccessible').show();
                     }
                 );
-        }
-        catch (e) {
+        } catch (e) {
             $('#axoNotAccessible').show();
         }
     }
