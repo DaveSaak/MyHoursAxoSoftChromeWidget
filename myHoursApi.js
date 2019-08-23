@@ -1,8 +1,7 @@
-'use strict'
+function MyHoursApi(currentUser) {
+    'use strict'
 
-const baseUrl = 'https://api2.myhours.com/api/'
-
-function AllHoursApi(currentUser) {
+    var baseUrl = 'https://api2.myhours.com/api/';
     var _this = this;
 
     _this.currentUser = currentUser;

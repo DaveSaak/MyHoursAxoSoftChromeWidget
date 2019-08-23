@@ -20,11 +20,13 @@ function popup() {
     _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
     _this.options = new Options(); //new OptionsRepo.getInstance();
 
-    _this.myHoursApi = new AllHoursApi(_this.currentUser) //new myHoursApi.getInstance();
+    _this.myHoursApi = new MyHoursApi(_this.currentUser); //new myHoursApi.getInstance();
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
+    // _this.allHoursApi = new AllHoursApi(_this.currentUser);
 
     _this.options.load().then(
         function () {
+            _this.allHoursApi = new AllHoursApi(_this.options.allHoursAccessToken);
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 
@@ -377,6 +379,25 @@ function popup() {
             function () {
                 console.info('failed to get logs');
                 showLoginPage();
+            }
+        );
+
+        _this.allHoursApi.getCurrentUserId().then(
+            function (data) {
+
+                if (data) {
+                    _this.allHoursApi.getAttendance(data, _this.currentDate).then(
+                        function (data) {
+                            console.log(data);
+                        },
+                        function (error) {
+                            console.info('error while geeting attendance.');
+                        }
+                    );
+                }
+            },
+            function (error) {
+                console.info('error while geeting the AH current. token may be expired');
             }
         )
     }

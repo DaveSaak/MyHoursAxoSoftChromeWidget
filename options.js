@@ -10,6 +10,7 @@ function Options() {
     _this.contentSwitchProjectId = 0;
     _this.developmentTaskName = 'development';
     _this.contentSwitchZoneReEnterTime = 10;
+    _this.allHoursAccessToken = '';
 
     _this.save = function () {
         console.info("saving options");
@@ -57,6 +58,7 @@ function Options() {
                             _this.contentSwitchProjectId = items.options.contentSwitchProjectId;
                             _this.developmentTaskName = items.options.developmentTaskName;
                             _this.contentSwitchZoneReEnterTime = items.options.contentSwitchZoneReEnterTime;
+                            _this.allHoursAccessToken = items.options.allHoursAccessToken;
                         }
 
                         resolve();

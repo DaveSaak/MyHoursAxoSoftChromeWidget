@@ -11,6 +11,7 @@
     <script src="twix.min.js"></script>
 
     <script src="myHoursApi.js"></script>
+    <script src="allHoursApi.js"></script>
 
     <script src="currentUser.js"></script>
 
@@ -59,10 +60,10 @@
             <div class="hero-head">
 
                 <div class="columns" style="padding:10px">
-                    <div class="column is-1" style="margin-top: 6px;">
+                    <!-- <div class="column is-1" style="margin-top: 6px;">
                         <img src="images/myhourslogo.png">
-                    </div>
-                    <div class="column">
+                    </div> -->
+                    <div class="column is-5">
                         <div class="timeControl buttons has-addons">
                             <span class="button previousDay">
                                 <i class="fas fa-angle-left"></i>
@@ -74,10 +75,7 @@
                         </div>
                     </div>
 
-
-
-                    <div class="column is-5" style="margin-left: 10px; margin-top: 6px">
-
+                    <div class="column is-7" style="margin-left: 10px; margin-top: 6px">
                         <div class="field is-grouped is-grouped-multiline">
                             <div class="control">
                                 <div class="tags has-addons">
@@ -97,6 +95,13 @@
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">AH^</span>
                                     <span id="ahRange" class="tag is-info"></span>
+                                </div>
+                            </div>
+
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">AH(t)</span>
+                                    <span id="ahAttendance" class="tag is-danger"></span>
                                 </div>
                             </div>
                         </div>

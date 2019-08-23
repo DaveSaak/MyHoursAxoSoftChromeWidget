@@ -1,4 +1,4 @@
-function AllHoursApi(currentUser) {
+function AllHoursApi(allHoursAccessToken) {
     'use strict';
 
     var baseUrl = 'https://ahdevelopment-api.azurewebsites.net/';
@@ -6,7 +6,7 @@ function AllHoursApi(currentUser) {
 
     var _this = this;
 
-    _this.currentUser = currentUser;
+    _this.allHoursAccessToken = allHoursAccessToken;
     //_this.accessToken = undefined;
 
     _this.getAccessToken = function (email, password) {
@@ -34,21 +34,57 @@ function AllHoursApi(currentUser) {
                     }
                 });
             }
-        )
-    }
+        );
+    };
+
+    _this.getCurrentUserId = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info(baseName + ": getting logged-in user");
+
+                // var loginData = {
+                //     username: email,
+                //     grant_type: "password",
+                //     password: password
+                // };
+
+                $.ajax({
+                    url: baseUrl + "UserAccount/GetLoggedIn",
+                    headers: {
+                        "Authorization": "Bearer " + _this.allHoursAccessToken,
+                        //"X-Timezone-Offset": date.getTimezoneOffset()
+                    },
+                    //contentType: "application/json",
+                    type: "GET",
+                    //data: JSON.stringify(loginData),
+                    success: function (data) {
+                        return resolve(data ? data.user_id : "");
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        return reject(Error());
+                    }
+                });
+            }
+        );
+    };
 
 
-    _this.getPaidPresence = function (userId, date) {
+    _this.getAttendance = function (userId, date) {
         date = date.startOf('day');
         return new Promise(
             function (resolve, reject) {
                 console.info(baseName + ": getting calculation");
 
                 $.ajax({
-                    url: baseUrl + "usercalcuation/" + userId + "/?dateFrom=" + moment(date).format('yyyy-MM-dd') + "&dateTo=" + moment(date).format('yyyy-MM-dd'),
+                    url: baseUrl + "usercalcuations/" + userId + "/CalculationValues/" +
+                        "?date=" + date.toISOString() +
+                        "&calculationResultTypeCode=33" +
+                        "&timeEventIds=" +
+                        "?userId=" + userId,
                     headers: {
-                        "Authorization": "Bearer " + _this.currentUser.allHoursAccessToken,
-                        "X-Timezone-Offset": date.getTimezoneOffset()
+                        "Authorization": "Bearer " + _this.allHoursAccessToken,
+                        "X-Timezone-Offset": date.toDate().getTimezoneOffset()
                     },
                     type: "GET",
                     success: function (data) {

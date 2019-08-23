@@ -78,6 +78,7 @@ $(function () {
         ).then(function (data) {
                 console.log(data);
                 $('#ahAccessToken').text(data.access_token);
+                _this.options.allHoursAccessToken = data.access_token;
             },
             function (err) {
                 console.info('error while geeting token');
