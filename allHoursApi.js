@@ -89,13 +89,14 @@ function AllHoursApi(allHoursUrl, allHoursAccessToken) {
 
     _this.getAttendance = function (userId, date) {
         date = date.startOf('day');
+        let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
         return new Promise(
             function (resolve, reject) {
                 console.info(baseName + ": getting calculation");
 
                 $.ajax({
                     url: baseUrl + "usercalculations/" + userId + "/CalculationValues/" +
-                        "?date=" + date.toISOString(true) +
+                        "?date=" + dateString +
                         "&calculationResultTypeCode=33" +
                         "&timeEventIds=",
                     //"?userId=" + userId,

@@ -15,6 +15,7 @@ $(function () {
             $('#developmentTaskName').val(_this.options.developmentTaskName);
             $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
             $('#ahUrl').val(_this.options.allHoursUrl);
+            $('#ahUserName').val(_this.options.allHoursUserName);
 
             _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
             _this.allHoursApi = new AllHoursApi(_this.options.allHoursUrl);
@@ -59,6 +60,7 @@ $(function () {
         _this.options.developmentTaskName = $('#developmentTaskName').val();
         _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
         _this.options.allHoursUrl = $('#ahUrl').val();
+        _this.options.allHoursUserName = $('#ahUserName').val();
 
         _this.options.save().then(function () {
             var notificationOptions = {
@@ -72,10 +74,9 @@ $(function () {
         });
     });
 
-
     $('#loginToAllHours').click(function () {
         _this.allHoursApi.getAccessToken(
-            $('#ahUsername').val(),
+            $('#ahUserName').val(),
             $('#ahPassword').val()
         ).then(function (data) {
                 console.log(data);
@@ -90,10 +91,6 @@ $(function () {
                     },
                     function (err) {}
                 );
-
-
-
-
             },
             function (err) {
                 $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-success').addClass('alert-danger').text("Error while geeting token.");

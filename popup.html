@@ -3,9 +3,10 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
-        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
     <script src="jquery-3.3.1.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
     <script src="moment.js"></script>
     <script src="underscore-min.js"></script>
     <script src="twix.min.js"></script>
@@ -23,8 +24,16 @@
 
     <script src="popup.js"></script>
 
+    <script src="fontawesome.js"></script>
+
     <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
+
+    <!-- <script src="popper.min.js"></script> -->
+
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
+
+    <!-- <script src="https://kit.fontawesome.com/a8696dba34.js"></script> -->
 
 
 </head>
@@ -71,6 +80,9 @@
                             <span class="button nextDay">
                                 <i class="fas fa-angle-right"></i>
                             </span>
+                            <span class="button today">
+                                <i class="fas fa-igloo"></i>
+                            </span>
                             <span class="button is-static date">date</span>
                         </div>
                     </div>
@@ -93,17 +105,19 @@
 
                             <div class="control">
                                 <div class="tags has-addons">
-                                    <span class="tag is-dark">AH^</span>
-                                    <span id="ahRange" class="tag is-info"></span>
+                                    <span class="tag is-dark">AH</span>
+                                    <span id="ahAttendance" class="tag is-info"></span>
                                 </div>
                             </div>
 
                             <div class="control">
                                 <div class="tags has-addons">
-                                    <span class="tag is-dark">AH(t)</span>
-                                    <span id="ahAttendance" class="tag is-danger"></span>
+                                    <span class="tag is-dark">AH^</span>
+                                    <span id="ahRange" class="tag is-info"></span>
                                 </div>
                             </div>
+
+
                         </div>
 
 

@@ -25,6 +25,10 @@ function popup() {
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
     // _this.allHoursApi = new AllHoursApi(_this.currentUser);
 
+    //init bootstrap tooltips
+
+
+
     _this.options.load().then(
         function () {
             _this.allHoursApi = new AllHoursApi(_this.options.allHoursUrl, _this.options.allHoursAccessToken);
@@ -81,6 +85,11 @@ function popup() {
 
         $('.timeControl span.nextDay').click(function () {
             _this.currentDate = _this.currentDate.add(1, 'days');
+            getLogs();
+        });
+
+        $('.timeControl span.today').click(function () {
+            _this.currentDate = _this.currentDate = moment().startOf('day');
             getLogs();
         });
 
@@ -147,12 +156,16 @@ function popup() {
 
 
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
-        $('.date').text(_this.currentDate.format('dddd, LL'));
+        $('.date').text(_this.currentDate.format('dddd, ll'));
+
+        $('#ahAttendance').text('-');
+        $('#axoTotal').text('-');
+        $('#mhTotal').text('-');
 
 
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
-            $("#axoTotal").text((Math.round(minutesWorked / 60 * 100) / 100) + "h");
+            $("#axoTotal").text(minutesToString(minutesWorked));
         });
 
         _this.myHoursApi.getLogs(_this.currentDate).then(
@@ -267,7 +280,7 @@ function popup() {
 
                     if (data.duration != null) {
                         // var duration = moment().startOf('day').add(data.duration, 'seconds');
-                        var duration = Math.round(data.duration / 60 / 60 * 10) / 10 + 'h';
+                        var duration = minutesToString(data.duration / 60);
                         // var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
                         var durationInfo = $('<span>').text(duration);
                         columnB.append(durationInfo);
@@ -306,11 +319,18 @@ function popup() {
                                     "border-radius": "50%"
                                 });
 
-                                var timePeriod = moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ": ";
-                                var title = timePeriod + data.projectName + ' // ' + data.taskName;
+                                var timePeriod = "TIME: " + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT');
+                                timePeriod = timePeriod + ': ' + minutesToString(time.duration / 60) + "h";
+                                var title = timePeriod + ' <br/>PROJECT: ' + data.projectName + '<br/> TASK: ' + data.taskName;
+
 
                                 circleGraph.prop('title', title);
-                                var barGraph = $('<div>').css({
+                                var barGraph = $('<div>');
+                                barGraph.prop('title', title);
+                                barGraph.attr('data-toggle', "tooltip");
+                                barGraph.attr('data-placement', "bottom");
+                                barGraph.attr('data-html', "true");
+                                barGraph.css({
                                     left: left + 'px',
                                     width: right - left + 'px',
                                     top: "3px",
@@ -321,10 +341,15 @@ function popup() {
                                     "border-radius": "1px"
                                 });
 
+                                //data-toggle="tooltip" data-placement="top" title="Tooltip on top"
 
-                                barGraph.prop('title', title);
+
+
                                 timeline.append(barGraph);
                                 //timeline.append(circleGraph);
+
+                                //set tooltips
+                                barGraph.tooltip();
 
                             });
                         }
@@ -343,8 +368,7 @@ function popup() {
                     console.log(totalMins);
                 });
                 _this.totalMins = totalMins;
-                $('#mhTotal').text((Math.round(totalMins / 60 * 100) / 100) + "h");
-                // $('#ahRange').text((Math.round(totalMins/ 0.9 / 60 * 100) / 100) + "h");
+                $('#mhTotal').text(minutesToString(totalMins));
 
                 let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
                 let ahBottomRange = moment.duration(totalMins, 'minutes');
@@ -366,7 +390,7 @@ function popup() {
                     var taskControl = $('<div>').addClass('control');
                     var taskGroup = $('<div>').addClass('tags has-addons');
                     var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
-                    var taskTime = $('<span>').text(summaryHours + "h").addClass('tag').addClass(taskCssClass);
+                    var taskTime = $('<span>').text(minutesToString(summary / 60)).addClass('tag').addClass(taskCssClass);
 
                     taskGroup.append(taskName);
                     taskGroup.append(taskTime);
@@ -375,6 +399,8 @@ function popup() {
 
                     $('#tasks').append(taskControl);
                 });
+
+
 
                 console.log(_this.myHoursTaskSummary);
             },
@@ -395,7 +421,8 @@ function popup() {
                             if (data && data.CalculationResultValues.length > 0) {
                                 //$('#ahAttendance').text(data.CalculationResultValues[0].Value);
                                 let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                $('#ahAttendance').text((Math.round(attendance / 60 * 100) / 100) + "h");
+                                console.log('attendance: ' + attendance);
+                                $('#ahAttendance').text(minutesToString(attendance));
 
                                 // if (this._totalMins >= attendance * 0.9 && this._totalMins <= attendance) {
                                 //     $('#ahAttendance').removeClass('is-danger').removeClass('is-success').addClass('is-success');
@@ -566,6 +593,16 @@ function popup() {
 
         return Math.round(diffMinutes / 1440 * fullLength);
 
+    }
+
+    function minutesToString(minutes) {
+        let duration = moment.duration(minutes, 'minutes');
+        let minutesString = (duration.days() * 24) + duration.hours() + ':' + duration.minutes().toString().padStart(2, '0');
+
+        console.log('format minutes: ' + minutes + ' -> ' + minutesString);
+        return minutesString;
+
+        //return (Math.round(minutes / 60 * 100) / 100) + "h";
     }
 
     function nameToIndex(s, length) {

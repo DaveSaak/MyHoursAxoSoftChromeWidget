@@ -1,6 +1,6 @@
-'use strict'
-
 function Options() {
+    'use strict';
+
     var _this = this;
 
     _this.axoSoftUrl = "";
@@ -12,6 +12,7 @@ function Options() {
     _this.contentSwitchZoneReEnterTime = 10;
     _this.allHoursAccessToken = '';
     _this.allHoursUrl = '';
+    _this.allHoursUserName = '';
 
 
     _this.save = function () {
@@ -33,7 +34,7 @@ function Options() {
                 }
             }
         );
-    }
+    };
 
 
     _this.load = function () {
@@ -62,6 +63,7 @@ function Options() {
                             _this.contentSwitchZoneReEnterTime = items.options.contentSwitchZoneReEnterTime;
                             _this.allHoursAccessToken = items.options.allHoursAccessToken;
                             _this.allHoursUrl = items.options.allHoursUrl;
+                            _this.allHoursUserName = items.options.allHoursUserName;
                         }
 
                         resolve();
