@@ -16,6 +16,7 @@ function popup() {
 
 
     _this.currentDate = moment();
+    _this.totalMins = 0;
 
     _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
     _this.options = new Options(); //new OptionsRepo.getInstance();
@@ -26,7 +27,7 @@ function popup() {
 
     _this.options.load().then(
         function () {
-            _this.allHoursApi = new AllHoursApi(_this.options.allHoursAccessToken);
+            _this.allHoursApi = new AllHoursApi(_this.options.allHoursUrl, _this.options.allHoursAccessToken);
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 
@@ -325,7 +326,7 @@ function popup() {
                                 timeline.append(barGraph);
                                 //timeline.append(circleGraph);
 
-                            })
+                            });
                         }
                     );
 
@@ -341,6 +342,7 @@ function popup() {
 
                     console.log(totalMins);
                 });
+                _this.totalMins = totalMins;
                 $('#mhTotal').text((Math.round(totalMins / 60 * 100) / 100) + "h");
                 // $('#ahRange').text((Math.round(totalMins/ 0.9 / 60 * 100) / 100) + "h");
 
@@ -389,6 +391,24 @@ function popup() {
                     _this.allHoursApi.getAttendance(data, _this.currentDate).then(
                         function (data) {
                             console.log(data);
+
+                            if (data && data.CalculationResultValues.length > 0) {
+                                //$('#ahAttendance').text(data.CalculationResultValues[0].Value);
+                                let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                                $('#ahAttendance').text((Math.round(attendance / 60 * 100) / 100) + "h");
+
+                                // if (this._totalMins >= attendance * 0.9 && this._totalMins <= attendance) {
+                                //     $('#ahAttendance').removeClass('is-danger').removeClass('is-success').addClass('is-success');
+                                // } else {
+                                //     $('#ahAttendance').removeClass('is-success').removeClass('is-danger').addClass('is-danger');
+
+                                // }
+
+
+
+                            }
+
+                            console.log(data.CalculationResultValues[0].Value)
                         },
                         function (error) {
                             console.info('error while geeting attendance.');
@@ -399,7 +419,7 @@ function popup() {
             function (error) {
                 console.info('error while geeting the AH current. token may be expired');
             }
-        )
+        );
     }
 
     function login(email, password) {
@@ -560,4 +580,4 @@ function popup() {
 
 
     initInterface();
-};
+}

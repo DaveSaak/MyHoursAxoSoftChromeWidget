@@ -14,9 +14,10 @@ $(function () {
             $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
             $('#developmentTaskName').val(_this.options.developmentTaskName);
             $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
+            $('#ahUrl').val(_this.options.allHoursUrl);
 
             _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
-            _this.allHoursApi = new AllHoursApi();
+            _this.allHoursApi = new AllHoursApi(_this.options.allHoursUrl);
 
             _this.axoSoftApi.getUsers().then(function (users) {
                 users = _.sortBy(users, function (u) {
@@ -57,6 +58,7 @@ $(function () {
         _this.options.contentSwitchProjectId = $('#contentSwitchProjectId').val();
         _this.options.developmentTaskName = $('#developmentTaskName').val();
         _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
+        _this.options.allHoursUrl = $('#ahUrl').val();
 
         _this.options.save().then(function () {
             var notificationOptions = {
@@ -77,13 +79,26 @@ $(function () {
             $('#ahPassword').val()
         ).then(function (data) {
                 console.log(data);
-                $('#ahAccessToken').text(data.access_token);
+                $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("All Good. Token retrieved.");
                 _this.options.allHoursAccessToken = data.access_token;
+
+                _this.allHoursApi.setAccessToken(data.access_token);
+                _this.allHoursApi.getCurrentUserName().then(
+                    function (data) {
+                        console.log(data);
+                        $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("Hi " + data);
+                    },
+                    function (err) {}
+                );
+
+
+
+
             },
             function (err) {
+                $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-success').addClass('alert-danger').text("Error while geeting token.");
                 console.info('error while geeting token');
                 console.error(err);
-                showLoginPage();
             }
         );
     });

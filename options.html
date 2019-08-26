@@ -103,6 +103,12 @@
             <div class="card-body">
 
                 <p class="card-text">
+
+                    <div class="form-group">
+                        <label>All Hours API Address</label>
+                        <input class="form-control" type="url" id='ahUrl' />
+                    </div>
+
                     <div class="form-group">
                         <label>Username</label>
                         <input class="form-control" id='ahUsername' />
@@ -110,18 +116,18 @@
 
                     <div class="form-group">
                         <label>Password</label>
-                        <input class="form-control" id='ahPassword' />
+                        <input class="form-control" type="password" id='ahPassword' />
                     </div>
 
                     <div class="form-group">
-                        <label>Token</label>
-                        <label id="ahAccessToken"></label></label>
+                        <div id='ahAccessToken' class='alert alert-primary'>hit get access token to obtain access to
+                            your attendance data.</div>
                     </div>
 
 
                     <div class="field is-grouped is-grouped-right">
                         <p class="control">
-                            <button id='loginToAllHours' class="btn btn-warning">Get access tokens</button>
+                            <button id='loginToAllHours' class="btn btn-warning">Get access token</button>
                         </p>
                     </div>
                 </p>

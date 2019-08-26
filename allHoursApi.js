@@ -1,4 +1,4 @@
-function AllHoursApi(allHoursAccessToken) {
+function AllHoursApi(allHoursUrl, allHoursAccessToken) {
     'use strict';
 
     var baseUrl = 'https://ahdevelopment-api.azurewebsites.net/';
@@ -7,7 +7,12 @@ function AllHoursApi(allHoursAccessToken) {
     var _this = this;
 
     _this.allHoursAccessToken = allHoursAccessToken;
+    baseUrl = allHoursUrl;
     //_this.accessToken = undefined;
+
+    _this.setAccessToken = function (accessToken) {
+        _this.allHoursAccessToken = accessToken;
+    };
 
     _this.getAccessToken = function (email, password) {
         return new Promise(
@@ -41,24 +46,36 @@ function AllHoursApi(allHoursAccessToken) {
         return new Promise(
             function (resolve, reject) {
                 console.info(baseName + ": getting logged-in user");
-
-                // var loginData = {
-                //     username: email,
-                //     grant_type: "password",
-                //     password: password
-                // };
-
                 $.ajax({
                     url: baseUrl + "UserAccount/GetLoggedIn",
                     headers: {
                         "Authorization": "Bearer " + _this.allHoursAccessToken,
-                        //"X-Timezone-Offset": date.getTimezoneOffset()
                     },
-                    //contentType: "application/json",
                     type: "GET",
-                    //data: JSON.stringify(loginData),
                     success: function (data) {
                         return resolve(data ? data.user_id : "");
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        return reject(Error());
+                    }
+                });
+            }
+        );
+    };
+
+    _this.getCurrentUserName = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info(baseName + ": getting logged-in user");
+                $.ajax({
+                    url: baseUrl + "UserAccount/GetLoggedIn",
+                    headers: {
+                        "Authorization": "Bearer " + _this.allHoursAccessToken,
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        return resolve(data ? data.given_name : "");
                     },
                     error: function (data) {
                         console.log(data);
@@ -77,11 +94,11 @@ function AllHoursApi(allHoursAccessToken) {
                 console.info(baseName + ": getting calculation");
 
                 $.ajax({
-                    url: baseUrl + "usercalcuations/" + userId + "/CalculationValues/" +
-                        "?date=" + date.toISOString() +
+                    url: baseUrl + "usercalculations/" + userId + "/CalculationValues/" +
+                        "?date=" + date.toISOString(true) +
                         "&calculationResultTypeCode=33" +
-                        "&timeEventIds=" +
-                        "?userId=" + userId,
+                        "&timeEventIds=",
+                    //"?userId=" + userId,
                     headers: {
                         "Authorization": "Bearer " + _this.allHoursAccessToken,
                         "X-Timezone-Offset": date.toDate().getTimezoneOffset()
