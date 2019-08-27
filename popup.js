@@ -26,7 +26,9 @@ function popup() {
     // _this.allHoursApi = new AllHoursApi(_this.currentUser);
 
     //init bootstrap tooltips
-
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
 
 
     _this.options.load().then(
@@ -93,6 +95,10 @@ function popup() {
             getLogs();
         });
 
+        $('.timeControl span.refresh').click(function () {
+            getLogs();
+        });
+
         $('#switchContentButton').click(function () {
             _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
                 .then(
@@ -106,7 +112,7 @@ function popup() {
                         };
                         chrome.notifications.create('optionsSaved', notificationOptions, function () {});
 
-                        console.log(data);
+                        //console.log(data);
                     },
                     function (error) {
                         console.log(error);
@@ -226,7 +232,7 @@ function popup() {
                 var totalMins = 0;
 
                 $.each(data, function (index, data) {
-                    console.log(data);
+                    //console.log(data);
 
                     //var colorIndex = index % 4;
                     var colorIndex = nameToIndex(data.projectName, 10);
@@ -301,7 +307,7 @@ function popup() {
                     _this.myHoursApi.getTimes(data.id).then(
                         function (times) {
                             $.each(times, function (index, time) {
-                                console.log(time);
+                                //console.log(time);
                                 var left = timeToPixel(time.startTime, 800);
                                 var right = timeToPixel(time.endTime, 800);
 
@@ -365,7 +371,7 @@ function popup() {
                     log.append(columns);
                     logsContainer.append(log);
 
-                    console.log(totalMins);
+                    //console.log(totalMins);
                 });
                 _this.totalMins = totalMins;
                 $('#mhTotal').text(minutesToString(totalMins));
@@ -402,7 +408,7 @@ function popup() {
 
 
 
-                console.log(_this.myHoursTaskSummary);
+                //console.log(_this.myHoursTaskSummary);
             },
             function () {
                 console.info('failed to get logs');
@@ -416,12 +422,12 @@ function popup() {
                 if (data) {
                     _this.allHoursApi.getAttendance(data, _this.currentDate).then(
                         function (data) {
-                            console.log(data);
+                            //console.log(data);
 
                             if (data && data.CalculationResultValues.length > 0) {
                                 //$('#ahAttendance').text(data.CalculationResultValues[0].Value);
                                 let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                console.log('attendance: ' + attendance);
+                                //console.log('attendance: ' + attendance);
                                 $('#ahAttendance').text(minutesToString(attendance));
 
                                 // if (this._totalMins >= attendance * 0.9 && this._totalMins <= attendance) {
@@ -435,16 +441,16 @@ function popup() {
 
                             }
 
-                            console.log(data.CalculationResultValues[0].Value)
+                            //console.log(data.CalculationResultValues[0].Value)
                         },
                         function (error) {
-                            console.info('error while geeting attendance.');
+                            console.error('error while geeting attendance.');
                         }
                     );
                 }
             },
             function (error) {
-                console.info('error while geeting the AH current. token may be expired');
+                console.error('error while geeting the AH current. token may be expired');
             }
         );
     }
@@ -485,11 +491,12 @@ function popup() {
         var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .tags');
         logStatus.empty();
 
+        console.info('copy to axo: itemId' + itemId);
         if (itemId != undefined) {
             console.info(itemId);
 
             _this.axoSoftApi.getFeatureItem(itemId).then(function (item) {
-                console.info(item);
+                //console.info(item);
 
                 var worklog = new Worklog;
                 worklog.user.id = parseInt(_this.options.axoSoftUserId);
@@ -507,7 +514,7 @@ function popup() {
                 var remainingTimeMins = timeUnit.conversion_factor * item.remaining_duration.duration;
                 worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
 
-                console.info(worklog);
+                //console.info(worklog);
                 //console.info(JSON.stringify(worklog));
 
                 _this.axoSoftApi.addWorkLog(worklog)
@@ -548,18 +555,19 @@ function popup() {
         try {
             _this.axoSoftApi.getWorkLogTypes().then(
                     function (response) {
-                        console.info(response);
+                        //console.info(response);
                         _this.worklogTypes = response;
 
                         _this.axoSoftApi.getTimeUnits().then(function (response) {
-                            console.info(response);
+                            //console.info(response);
                             _this.timeUnits = response;
 
                             $.each(_this.myHoursLogs, function (index, myHoursLog) {
-                                if (myHoursLog.project != undefined && myHoursLog.projectName != undefined) {
+                                console.info('copy to axo: ' + index);
+                                if (myHoursLog.projectId != undefined && myHoursLog.projectName != undefined) {
 
                                     var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
-                                    if (myHoursLog.task != undefined && myHoursLog.taskName != undefined) {
+                                    if (myHoursLog.taskId != undefined && myHoursLog.taskName != undefined) {
                                         var workLogType = _.find(_this.worklogTypes,
                                             function (w) {
                                                 return w.name.toUpperCase() === myHoursLog.taskName.toUpperCase();
@@ -599,7 +607,7 @@ function popup() {
         let duration = moment.duration(minutes, 'minutes');
         let minutesString = (duration.days() * 24) + duration.hours() + ':' + duration.minutes().toString().padStart(2, '0');
 
-        console.log('format minutes: ' + minutes + ' -> ' + minutesString);
+        //console.log('format minutes: ' + minutes + ' -> ' + minutesString);
         return minutesString;
 
         //return (Math.round(minutes / 60 * 100) / 100) + "h";

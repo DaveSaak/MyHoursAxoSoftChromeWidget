@@ -52,11 +52,11 @@ function CurrentUser() {
 
             var currentUser = this;
 
-            console.info(currentUser);
+            //console.info(currentUser);
 
             chrome.storage.sync.get('currentUser', function (items) {
                 if (items.currentUser) {
-                    console.info(items.currentUser);
+                    //console.info(items.currentUser);
 
                     currentUser.accessToken = items.currentUser.accessToken;
                     currentUser.refreshToken = items.currentUser.refreshToken;

@@ -52,7 +52,7 @@ function Options() {
                     chrome.storage.sync.get('options', function (items) {
                         if (items.options) {
                             console.info("found saved options");
-                            console.info(items.options);
+                            //console.info(items.options);
 
                             _this.axoSoftUrl = items.options.axoSoftUrl;
                             _this.axoSoftToken = items.options.axoSoftToken;

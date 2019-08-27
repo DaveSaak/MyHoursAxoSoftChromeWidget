@@ -34,7 +34,7 @@ function AllHoursApi(allHoursUrl, allHoursAccessToken) {
                         return resolve(data);
                     },
                     error: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         return reject(Error());
                     }
                 });
@@ -56,7 +56,7 @@ function AllHoursApi(allHoursUrl, allHoursAccessToken) {
                         return resolve(data ? data.user_id : "");
                     },
                     error: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         return reject(Error());
                     }
                 });
@@ -78,7 +78,7 @@ function AllHoursApi(allHoursUrl, allHoursAccessToken) {
                         return resolve(data ? data.given_name : "");
                     },
                     error: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         return reject(Error());
                     }
                 });

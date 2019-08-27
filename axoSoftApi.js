@@ -17,7 +17,7 @@ function AxoSoftApi(options) {
                 type: "GET",
 
                 success: function (response) {
-                    console.info(response);
+                    //console.info(response);
                     resolve(response.data);
                 },
                 error: function () {
@@ -41,7 +41,7 @@ function AxoSoftApi(options) {
                 type: "GET",
 
                 success: function (response) {
-                    console.info(response);
+                    //console.info(response);
                     resolve(response.data);
                 },
                 error: function () {
@@ -64,7 +64,7 @@ function AxoSoftApi(options) {
                 type: "GET",
 
                 success: function (response) {
-                    console.info(response);
+                    //console.info(response);
                     resolve(response.data);
                 },
                 error: function () {
@@ -87,7 +87,7 @@ function AxoSoftApi(options) {
                 type: "GET",
 
                 success: function (response) {
-                    console.info(response);
+                    //console.info(response);
                     resolve(response.data);
                 },
                 error: function () {
@@ -114,7 +114,7 @@ function AxoSoftApi(options) {
                 data: JSON.stringify(worklog),
 
                 success: function (response) {
-                    console.info(response);
+                    //console.info(response);
                     resolve(response.data);
                 },
                 error: function () {
@@ -153,7 +153,7 @@ function AxoSoftApi(options) {
                 //   },
 
                 success: function (response) {
-                    console.info(response);
+                    //console.info(response);
                     resolve(parseInt(response.metadata.minutes_worked));
                 },
                 error: function () {

@@ -80,8 +80,11 @@
                             <span class="button nextDay">
                                 <i class="fas fa-angle-right"></i>
                             </span>
-                            <span class="button today">
-                                <i class="fas fa-igloo"></i>
+                            <span class="button today" data-toggle="tooltip" data-placement="bottom" title="return to today">
+                                <i class="fas fa-bomb"></i>
+                            </span>
+                            <span class="button refresh" data-toggle="tooltip" data-placement="bottom" title="refresh">
+                                <i class="fas fa-sync"></i>
                             </span>
                             <span class="button is-static date">date</span>
                         </div>
@@ -107,15 +110,16 @@
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">AH</span>
                                     <span id="ahAttendance" class="tag is-info"></span>
+                                    <span id="ahRange" class="tag is-info"></span>
                                 </div>
                             </div>
 
-                            <div class="control">
+                            <!-- <div class="control">
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">AH^</span>
                                     <span id="ahRange" class="tag is-info"></span>
                                 </div>
-                            </div>
+                            </div> -->
 
 
                         </div>
