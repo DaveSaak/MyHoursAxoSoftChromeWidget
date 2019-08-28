@@ -16,14 +16,14 @@ function popup() {
 
 
     _this.currentDate = moment();
-    _this.totalMins = 0;
-
     _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
     _this.options = new Options(); //new OptionsRepo.getInstance();
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser); //new myHoursApi.getInstance();
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
     // _this.allHoursApi = new AllHoursApi(_this.currentUser);
+
+    _this.timeRatio = new TimeRatio(showRatio);
 
     //init bootstrap tooltips
     $(function () {
@@ -158,6 +158,7 @@ function popup() {
 
 
     function getLogs() {
+        _this.timeRatio.reset();
         var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107", "#FF5722", "#795548"];
 
 
@@ -373,7 +374,7 @@ function popup() {
 
                     //console.log(totalMins);
                 });
-                _this.totalMins = totalMins;
+                _this.timeRatio.setMyHours(totalMins);
                 $('#mhTotal').text(minutesToString(totalMins));
 
                 let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
@@ -427,6 +428,9 @@ function popup() {
                             if (data && data.CalculationResultValues.length > 0) {
                                 //$('#ahAttendance').text(data.CalculationResultValues[0].Value);
                                 let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+
+                                _this.timeRatio.setAllHours(attendance);
+
                                 //console.log('attendance: ' + attendance);
                                 $('#ahAttendance').text(minutesToString(attendance));
 
@@ -620,6 +624,20 @@ function popup() {
         let sumOfChars = s.split('').map(x => x.charCodeAt(0)).reduce((a, b) => a + b, 0);
         return sumOfChars % length;
     }
+
+    function showRatio(ratio){
+        let element = $('#ahRange');
+        element.removeClass('is-info').removeClass('is-success').removeClass('is-danger');
+
+        if (ratio >= 0.9 && ratio <= 1){
+            element.addClass('is-success');
+        }
+        else {
+            element.addClass('is-danger');
+        }
+    }
+
+    
 
 
 
