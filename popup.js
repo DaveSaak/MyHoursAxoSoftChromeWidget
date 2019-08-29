@@ -80,22 +80,22 @@ function popup() {
         });
 
 
-        $('.timeControl span.previousDay').click(function () {
+        $('#previousDay').click(function () {
             _this.currentDate = _this.currentDate.add(-1, 'days');
             getLogs();
         });
 
-        $('.timeControl span.nextDay').click(function () {
+        $('#nextDay').click(function () {
             _this.currentDate = _this.currentDate.add(1, 'days');
             getLogs();
         });
 
-        $('.timeControl span.today').click(function () {
+        $('#today').click(function () {
             _this.currentDate = _this.currentDate = moment().startOf('day');
             getLogs();
         });
 
-        $('.timeControl span.refresh').click(function () {
+        $('#refresh').click(function () {
             getLogs();
         });
 
@@ -626,9 +626,9 @@ function popup() {
     }
 
     function showRatio(ratio){
-        let element = $('#ahRange');
+        let element = $('#timeRatio');
         element.removeClass('is-info').removeClass('is-success').removeClass('is-danger');
-
+        element.text((ratio * 100).toFixed(0) + '%');
         if (ratio >= 0.9 && ratio <= 1){
             element.addClass('is-success');
         }
@@ -636,11 +636,6 @@ function popup() {
             element.addClass('is-danger');
         }
     }
-
-    
-
-
-
 
     initInterface();
 }

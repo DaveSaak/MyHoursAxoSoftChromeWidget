@@ -66,56 +66,112 @@
     </div>
 
     <div id='mainContainer' style="display: none" class="box12">
-        <section class="hero is-light">
-            <div class="hero-head">
-
-                <div class="columns" style="padding:10px">
-                    <!-- <div class="column is-1" style="margin-top: 6px;">
-                        <img src="images/myhourslogo.png">
-                    </div> -->
-                    <div class="column is-6">
-                        <div class="timeControl buttons has-addons">
-                            <span class="button previousDay">
+        <section class="hero is-light" style="padding: 10px">
+            <nav class="navbar navbar-expand-md">
+                    <!-- navbar-dark bg-dark -->
+                <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a id="previousDay" class="nav-link ">
                                 <i class="fas fa-angle-left"></i>
-                            </span>
-                            <span class="button nextDay">
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a id="nextDay" class="nav-link ">
                                 <i class="fas fa-angle-right"></i>
-                            </span>
-                            <span class="button today" data-toggle="tooltip" data-placement="bottom" title="return to today">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="today" class="nav-link  today" data-toggle="tooltip" data-placement="bottom"
+                                title="return to today">
                                 <i class="fas fa-bomb"></i>
-                            </span>
-                            <span class="button refresh" data-toggle="tooltip" data-placement="bottom" title="refresh">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="refresh" class="nav-link " data-toggle="tooltip" data-placement="bottom"
+                                title="refresh">
                                 <i class="fas fa-sync"></i>
-                            </span>
-                            <span class="button is-static date">date</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link date">date</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mx-auto order-0">
+                    <!-- <a class="navbar-brand mx-auto" href="#">Navbar 2</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                        <span class="navbar-toggler-icon"></span>
+                    </button> -->
+                </div>
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+
+
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+
+                            <a id='copyToAxoSoftButton' class="nav-link" data-toggle="tooltip" data-placement="bottom"
+                                title="copy to axo">
+                                <i class="fas fa-rocket"></i>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a id="optionsButton" class="nav-link" data-toggle="tooltip" data-placement="bottom"
+                                title="go to options">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a id="logOutButton" class="nav-link" data-toggle="tooltip" data-placement="bottom"
+                                title="logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </li>
+
+                        <!-- </div>
+
+    <div id="axoNotAccessible" class="notification" style="display: none">
+        Could not connect to axo.
+    </div> -->
+
+
+                    </ul>
+                </div>
+
+            </nav>
+
+
+            <div class="row" style="margin-top: 10px;">
+
+                <div class="col">
+                    <div class="field is-grouped is-grouped-multiline">
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">MH</span>
+                                <span id="mhTotal" class="tag is-info axoTotal"></span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="column is-6" style="margin-left: 10px; margin-top: 6px">
-                        <div class="field is-grouped is-grouped-multiline">
-                            <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">MH</span>
-                                    <span id="mhTotal" class="tag is-info axoTotal"></span>
-                                </div>
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">Axo</span>
+                                <span id="axoTotal" class="tag is-info"></span>
                             </div>
+                        </div>
 
-                            <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">Axo</span>
-                                    <span id="axoTotal" class="tag is-info"></span>
-                                </div>
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">AH</span>
+                                <span id="ahAttendance" class="tag is-info"></span>
+                                <span id="ahRange" class="tag is-info"></span>
+                                <span id="timeRatio" class="tag is-info"></span>
                             </div>
+                        </div>
 
-                            <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">AH</span>
-                                    <span id="ahAttendance" class="tag is-info"></span>
-                                    <span id="ahRange" class="tag is-info"></span>
-                                </div>
-                            </div>
-
-                            <!-- <div class="control">
+                        <!-- <div class="control">
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">AH^</span>
                                     <span id="ahRange" class="tag is-info"></span>
@@ -123,26 +179,26 @@
                             </div> -->
 
 
-                        </div>
+                    </div>
 
+                </div>
+            </div>
 
+    </div>
+    </section>
+
+    <section class="hero is-light" style="border-top: solid white;">
+        <div class="hero-foot" style="margin-top: 20px; margin-bottom: 20px">
+            <div class="container is-fluid" style="margin-left:0px;margin-right:0px">
+                <div id='timelineContainer' style="height: 40px;">
+                    <div id='timeline'>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="hero is-light" style="border-top: solid white;">
-            <div class="hero-foot" style="margin-top: 20px; margin-bottom: 20px">
-                <div class="container is-fluid">
-                    <div id='timelineContainer' style="height: 40px;">
-                        <div id='timeline'>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- <section class="hero ">
+    <!-- <section class="hero ">
             <div class="hero-bodyX" style="margin: 20px">
                 <div class="mainContainerContentSwitch is-fluid">
                     <div class="columns">
@@ -166,37 +222,36 @@
             </div>
         </section> -->
 
-        <section class="hero ">
-            <div class="hero-bodyX" style="margin: 20px">
-                <div class="container is-fluid">
-                    <div id='mainContainer2'>
-                        <div style="margin-bottom: 20pxx;">
-                            <ul id='logs'>
-                            </ul>
-                        </div>
+    <section class="hero ">
+        <div class="hero-bodyX" style="margin: 20px">
+            <div class="container is-fluid">
+                <div id='mainContainer2'>
+                    <div style="margin-bottom: 20pxx;">
+                        <ul id='logs'>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
 
 
-        <section class="hero is-light" style="border-top: solid white;">
-            <div class="hero-foot" style="margin: 20px">
-                <div class="container is-fluid">
-                    <div id='mainContainer3'>
-                        <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
-                        </div>
+    <section class="hero is-light" style="border-top: solid white;">
+        <div class="hero-foot" style="margin: 20px">
+            <div class="container is-fluid">
+                <div id='mainContainer3'>
+                    <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
 
-        <section class="hero is-light" style="border-top: solid white;">
+    <!-- <section class="hero is-light" style="border-top: solid white;">
             <div class="hero-foot" style="margin:10px;">
                 <div class="columns">
-                    <!-- <div class="column is-1"></div> -->
                     <div class="column is-3">
                         <button id='copyToAxoSoftButton' class="button is-info is-small" style="margin-top: 10pxx;">
                             <span>Copy to AxoSoft</span>
@@ -220,10 +275,8 @@
                     </div>
                 </div>
             </div>
+        </section> -->
     </div>
-    </section>
-    </div>
-
 
 </body>
 

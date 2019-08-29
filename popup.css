@@ -67,3 +67,8 @@
     height: 120px;
     line-height: 120px;
 }
+
+ul#logs li .column {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
