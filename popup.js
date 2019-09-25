@@ -33,7 +33,10 @@ function popup() {
 
     _this.options.load().then(
         function () {
-            _this.allHoursApi = new AllHoursApi(_this.options.allHoursUrl, _this.options.allHoursAccessToken);
+            _this.allHoursApi = new AllHoursApi(
+                _this.options.allHoursUrl, 
+                _this.options.allHoursAccessToken,
+                _this.options.allHoursRefreshToken);
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 

@@ -51,7 +51,7 @@ $(function () {
             });
         });
 
-    $('#saveButton').click(function () {
+    $('.saveButton').click(function () {
         _this.options.axoSoftUrl = $('#axoSoftUrl').val();
         _this.options.axoSoftToken = $('#axoSoftToken').val();
         _this.options.axoSoftUserId = $('#axoSoftUserId').val();
@@ -62,6 +62,49 @@ $(function () {
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
 
+        saveOptions();
+
+        // _this.options.save().then(function () {
+        //     var notificationOptions = {
+        //         type: 'basic',
+        //         iconUrl: 'logo.png',
+        //         title: 'Options saved',
+        //         message: 'Options have been saved.'
+        //     };
+        //     //chrome.notifications.create('optionsSaved', notificationOptions);
+        //     chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+        // });
+    });
+
+    $('#loginToAllHours').click(function () {
+        _this.allHoursApi.getAccessToken(
+            $('#ahUserName').val(),
+            $('#ahPassword').val()
+        ).then(function (data) {
+            console.log(data);
+            $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("All Good. Token retrieved.");
+            _this.options.allHoursAccessToken = data.access_token;
+            _this.options.allHoursRefreshToken = data.refresh_token;
+
+            _this.allHoursApi.setAccessToken(data.access_token);
+            _this.allHoursApi.getCurrentUserName().then(
+                function (data) {
+                    console.log(data);
+                    $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("Hi " + data);
+                    saveOptions();
+                },
+                function (err) { }
+            );
+        },
+            function (err) {
+                $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-success').addClass('alert-danger').text("Error while geeting token.");
+                console.info('error while geeting token');
+                console.error(err);
+            }
+        );
+    });
+
+    function saveOptions() {
         _this.options.save().then(function () {
             var notificationOptions = {
                 type: 'basic',
@@ -70,33 +113,8 @@ $(function () {
                 message: 'Options have been saved.'
             };
             //chrome.notifications.create('optionsSaved', notificationOptions);
-            chrome.notifications.create('optionsSaved', notificationOptions, function () {});
+            chrome.notifications.create('optionsSaved', notificationOptions, function () { });
         });
-    });
+    }
 
-    $('#loginToAllHours').click(function () {
-        _this.allHoursApi.getAccessToken(
-            $('#ahUserName').val(),
-            $('#ahPassword').val()
-        ).then(function (data) {
-                console.log(data);
-                $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("All Good. Token retrieved.");
-                _this.options.allHoursAccessToken = data.access_token;
-
-                _this.allHoursApi.setAccessToken(data.access_token);
-                _this.allHoursApi.getCurrentUserName().then(
-                    function (data) {
-                        console.log(data);
-                        $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("Hi " + data);
-                    },
-                    function (err) {}
-                );
-            },
-            function (err) {
-                $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-success').addClass('alert-danger').text("Error while geeting token.");
-                console.info('error while geeting token');
-                console.error(err);
-            }
-        );
-    });
 });
