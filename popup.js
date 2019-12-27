@@ -161,6 +161,10 @@ function popup() {
 
     function getLogs() {
         _this.timeRatio.reset();
+
+        var timeline = $('#timeline');
+        timeline.empty();
+
         var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107", "#FF5722", "#795548"];
 
 
@@ -177,6 +181,9 @@ function popup() {
             $("#axoTotal").text(minutesToString(minutesWorked));
         });
 
+
+        getAllHoursData();
+
         _this.myHoursApi.getLogs(_this.currentDate).then(
             function (data) {
                 _this.myHoursLogs = data;
@@ -185,8 +192,8 @@ function popup() {
                 var logsContainer = $('#logs');
                 logsContainer.empty();
 
-                var timeline = $('#timeline');
-                timeline.empty();
+                // var timeline = $('#timeline');
+                // timeline.empty();
 
                 var baseLine = $('<div>').css({
                     left: '0px',
@@ -288,23 +295,15 @@ function popup() {
                     var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
 
                     if (data.duration != null) {
-                        // var duration = moment().startOf('day').add(data.duration, 'seconds');
                         var duration = minutesToString(data.duration / 60);
                         // var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
                         var durationInfo = $('<span>').text(duration);
                         columnB.append(durationInfo);
                     }
-
-
                     var columnC = $('<div>').addClass('column is-2 statusColumn');
 
-
                     var status = ($('<div>').addClass('tags'));
-                    // statusDone.append('<i>').addClass('far fa-check-circle');
                     columnC.append(status);
-                    //columnC.hide();
-
-                    //var columnD = $('<div>').addClass('column is-2');
 
 
                     _this.myHoursApi.getTimes(data.id).then(
@@ -325,13 +324,11 @@ function popup() {
                                     "border-width": "2px",
                                     "border-style": "solid",
                                     "background-color": "white",
-                                    "border-radius": "50%"
+                                    "border-radius": "50%",
                                 });
 
                                 var timePeriod = minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                                //timePeriod = timePeriod + ': ' + minutesToString(time.duration / 60) + "h";
                                 var title = timePeriod + ' <br/>' + data.projectName + '<br/>' + data.taskName;
-
 
                                 circleGraph.prop('title', title);
                                 var barGraph = $('<div>');
@@ -346,20 +343,12 @@ function popup() {
                                     height: "24px",
                                     position: "absolute",
                                     "background-color": logColor,
-                                    // opacity: 0.9
-                                    "border-radius": "1px"
+                                    "border-radius": "1px",
+                                    "opacity":0.85,
+                                    "z-index":1
                                 });
-
-                                //data-toggle="tooltip" data-placement="top" title="Tooltip on top"
-
-
-
                                 timeline.append(barGraph);
-                                //timeline.append(circleGraph);
-
-                                //set tooltips
                                 barGraph.tooltip();
-
                             });
                         }
                     );
@@ -419,7 +408,7 @@ function popup() {
             }
         );
 
-        getAllHoursData();
+        // getAllHoursData();
 
 
     }
@@ -457,17 +446,17 @@ function popup() {
                                         var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
                                         var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
 
-                                        var timePeriod = minutesToString(segment.Value / 60) + "h (" + moment(segment.StartTime).format('LT') + " - " + moment(segment.EndTime).format('LT') + ")";
+                                        var timePeriod = minutesToString(segment.Value) + "h (" + moment(segment.StartTime).format('LT') + " - " + moment(segment.EndTime).format('LT') + ")";
 
                                         var barGraph = $('<div>');
-                                        barGraph.prop('title', timePeriod);
+                                        barGraph.prop('title', 'All Hours paid time <br/>' + timePeriod);
                                         barGraph.attr('data-toggle', "tooltip");
                                         barGraph.attr('data-placement', "bottom");
                                         barGraph.attr('data-html', "true");
                                         barGraph.css({
                                             left: left + 'px',
                                             width: right - left + 'px',
-                                            top: "20px",
+                                            top: "18px",
                                             height: "15px",
                                             position: "absolute",
                                             "background-color": 'rgba(55, 109, 148, 0.45)',

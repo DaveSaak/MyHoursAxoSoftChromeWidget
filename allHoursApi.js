@@ -94,7 +94,7 @@ function AllHoursApi(
     };    
 
     _this.getCurrentUserId = function () {
-        return new Promise(
+        let promise =  new Promise(
             function (resolve, reject) {
                 console.info(baseName + ": getting logged-in user");
                 $.ajax({
@@ -113,10 +113,11 @@ function AllHoursApi(
                 });
             }
         );
+        return checkTokenAndExecutePromise(promise);
     };
 
     _this.getCurrentUserName = function () {
-        return new Promise(
+        let promise = new Promise(
             function (resolve, reject) {
                 console.info(baseName + ": getting logged-in user");
                 $.ajax({
@@ -135,6 +136,7 @@ function AllHoursApi(
                 });
             }
         );
+        return checkTokenAndExecutePromise(promise);
     };
 
 
@@ -198,7 +200,7 @@ function AllHoursApi(
                 });
             }
         )
-        return promise;
+        return checkTokenAndExecutePromise(promise);
     }    
 
     function checkTokenAndExecutePromise(promise){
