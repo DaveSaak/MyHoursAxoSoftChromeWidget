@@ -6,7 +6,11 @@
     <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
         integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
     <script src="jquery-3.3.1.min.js"></script>
-    <script src="bootstrap.bundle.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+    <script src="popper.min.js"></script>
+    <script src="tippy-bundle.iife.min.js"></script>
+
     <script src="moment.js"></script>
     <script src="underscore-min.js"></script>
     <script src="twix.min.js"></script>
@@ -100,10 +104,7 @@
 
                     </ul>
                 </div>
-                <div 
-                class="navbar-collapse collapse w-100 order-2 dual-collapse2"
-                classX="mx-auto order-0"
-                >
+                <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" classX="mx-auto order-0">
                     <!-- <a class="navbar-brand mx-auto" href="#">Navbar 2</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                         <span class="navbar-toggler-icon"></span>
@@ -111,10 +112,10 @@
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
 
-                            <button id='copyToAxoSoftButton' class="nav-linkX btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                title="copy to axo">
+                            <button id='copyToAxoSoftButton' class="nav-linkX btn btn-primary btn-sm"
+                                data-toggle="tooltip" data-placement="bottom" title="copy to axo">
                                 <i class="fas fa-share-square"></i> send to Axo
-                        </button>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -165,32 +166,32 @@
             <div class="container py-2">
                 <!-- <div class="row" style="margin-top: 10px;"> -->
 
-                    <!-- <div class="col"> -->
-                        <div class="field is-grouped is-grouped-multiline">
-                            <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">MH</span>
-                                    <span id="mhTotal" class="tag is-info axoTotal"></span>
-                                </div>
-                            </div>
+                <!-- <div class="col"> -->
+                <div class="field is-grouped is-grouped-multiline">
+                    <div class="control">
+                        <div class="tags has-addons">
+                            <span class="tag is-dark">MH</span>
+                            <span id="mhTotal" class="tag is-info axoTotal"></span>
+                        </div>
+                    </div>
 
-                            <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">Axo</span>
-                                    <span id="axoTotal" class="tag is-info"></span>
-                                </div>
-                            </div>
+                    <div class="control">
+                        <div class="tags has-addons">
+                            <span class="tag is-dark">Axo</span>
+                            <span id="axoTotal" class="tag is-info"></span>
+                        </div>
+                    </div>
 
-                            <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">AH</span>
-                                    <span id="ahAttendance" class="tag is-success"></span>
-                                    <span id="ahRange" class="tag is-success"></span>
-                                    <span id="timeRatio" class="tag is-success"></span>
-                                </div>
-                            </div>
+                    <div class="control">
+                        <div class="tags has-addons">
+                            <span class="tag is-dark">AH</span>
+                            <span id="ahAttendance" class="tag is-success"></span>
+                            <span id="ahRange" class="tag is-success"></span>
+                            <span id="timeRatio" class="tag is-success"></span>
+                        </div>
+                    </div>
 
-                            <!-- <div class="control">
+                    <!-- <div class="control">
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">AH^</span>
                                     <span id="ahRange" class="tag is-info"></span>
@@ -198,49 +199,25 @@
                             </div> -->
 
 
-                        </div>
+                </div>
 
-                    <!-- </div> -->
+                <!-- </div> -->
                 <!-- </div> -->
             </div>
         </section>
     </div>
     <!-- </section> -->
 
-    <section class="container heroQ is-lightQ" style="border-top: solid white;">
+    <section class="container mb-4" style="border-top: solid white;">
         <div class="hero-footQ" style="margin-top: 20px; margin-bottom: 20px">
-            <div class="container is-fluid" style="margin-left:0px;margin-right:0px">
-                <div id='timelineContainer' style="height: 40px;">
+            <div id="topContainer" class="container is-fluid" style="margin-left:0px;margin-right:0px">
+                <div id='timelineContainer' style="height: 40px; width: 1320px">
                     <div id='timeline'>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- <section class="hero ">
-            <div class="hero-bodyX" style="margin: 20px">
-                <div class="mainContainerContentSwitch is-fluid">
-                    <div class="columns">
-                        <div class="column is-2">
-                            <div style="margin-bottom: 20pxx;">
-                                <a id='switchContentButton' class="panicButton sizeS">OUCH</a>
-                            </div>
-                        </div>
-                        <div class="column is-2">
-                            <div style="margin-bottom: 20pxx;">
-                                <a id='switchContentButton' class="panicButton sizeM">SLAP</a>
-                            </div>
-                        </div>
-                        <div class="column is-2">
-                            <div style="margin-bottom: 20pxx;">
-                                <a id='switchContentButton' class="panicButton sizeL">KABUUUM</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section> -->
 
     <section class="container heroQ ">
         <div class="hero-bodyX" style="margin: 20px">
@@ -267,35 +244,6 @@
             </div>
         </div>
     </section>
-
-    <!-- <section class="hero is-light" style="border-top: solid white;">
-            <div class="hero-foot" style="margin:10px;">
-                <div class="columns">
-                    <div class="column is-3">
-                        <button id='copyToAxoSoftButton' class="button is-info is-small" style="margin-top: 10pxx;">
-                            <span>Copy to AxoSoft</span>
-                        </button>
-
-                        <div id="axoNotAccessible" class="notification" style="display: none">
-                            Could not connect to axo.
-                        </div>
-
-                    </div>
-                    <div class="column"></div>
-                    <div class="column is-2" style="margin-top: 20pxx;">
-                        <a class="button is-light is-small" id="optionsButton">
-                            go to options</span>
-                        </a>
-                    </div>
-                    <div class="column is-2" style="margin-top: 20pxx;">
-                        <a class="button is-light is-small" id="logOutButton">
-                            logout&nbsp;<span id='usersName'></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section> -->
-    </div>
 
 </body>
 

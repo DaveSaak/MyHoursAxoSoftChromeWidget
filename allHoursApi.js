@@ -1,5 +1,4 @@
 function AllHoursApi(
-    // allHoursUrl, allHoursAccessToken, allHoursRefreshToken
     options
     ) {
     'use strict';
@@ -8,14 +7,6 @@ function AllHoursApi(
 
     var _this = this;
     _this.options = options;
-
-    // _this.options.allHoursAccessToken,
-    // _this.options.allHoursRefreshToken
-
-    // _this.allHoursAccessToken = allHoursAccessToken;
-    // _this.allHoursRefreshToken = allHoursRefreshToken;
-    // _this.options.allHoursUrl = allHoursUrl;
-    //_this.accessToken = undefined;
 
     _this.setAccessToken = function (accessToken) {
         _this.allHoursAccessToken = accessToken;
@@ -80,7 +71,12 @@ function AllHoursApi(
                     success: function (data) {
                         _this.options.allHoursAccessToken = data.access_token;
                         _this.options.allHoursRefreshToken = data.refresh_token;
+                        _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString(); 
                         _this.options.save();
+
+                        console.group('all hours token - referesh');
+                        console.table(data);
+                        console.groupEnd();                           
 
                         return resolve(data);
                     },
@@ -94,81 +90,152 @@ function AllHoursApi(
     };    
 
     _this.getCurrentUserId = function () {
-        let promise =  new Promise(
-            function (resolve, reject) {
-                console.info(baseName + ": getting logged-in user");
-                $.ajax({
-                    url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
-                    headers: {
-                        "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                    },
-                    type: "GET",
-                    success: function (data) {
-                        return resolve(data ? data.user_id : "");
-                    },
-                    error: function (data) {
-                        //console.log(data);
-                        return reject(Error());
-                    }
-                });
-            }
-        );
-        return checkTokenAndExecutePromise(promise);
+        let promiseFunction = function (resolve, reject){
+            console.info(baseName + ": getting logged-in user");
+            $.ajax({
+                url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                },
+                type: "GET",
+                success: function (data) {
+                    return resolve(data ? data.user_id : "");
+                },
+                error: function (data) {
+                    //console.log(data);
+                    return reject(Error());
+                }
+            });            
+        }
+
+        return checkTokenAndExecutePromise(promiseFunction);
+
+
+
+        // let promise =  new Promise(
+        //     function (resolve, reject) {
+        //         console.info(baseName + ": getting logged-in user");
+        //         $.ajax({
+        //             url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
+        //             headers: {
+        //                 "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+        //             },
+        //             type: "GET",
+        //             success: function (data) {
+        //                 return resolve(data ? data.user_id : "");
+        //             },
+        //             error: function (data) {
+        //                 //console.log(data);
+        //                 return reject(Error());
+        //             }
+        //         });
+        //     }
+        // );
+        // return checkTokenAndExecutePromise(promise);
     };
 
     _this.getCurrentUserName = function () {
-        let promise = new Promise(
-            function (resolve, reject) {
-                console.info(baseName + ": getting logged-in user");
-                $.ajax({
-                    url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
-                    headers: {
-                        "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                    },
-                    type: "GET",
-                    success: function (data) {
-                        return resolve(data ? data.given_name : "");
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        //console.log(data);
-                        return reject(Error());
-                    }
-                });
-            }
-        );
-        return checkTokenAndExecutePromise(promise);
+        let promiseFunction = function (resolve, reject){
+            console.info(baseName + ": getting logged-in user");
+            $.ajax({
+                url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                },
+                type: "GET",
+                success: function (data) {
+                    return resolve(data ? data.given_name : "");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //console.log(data);
+                    return reject(Error());
+                }
+            });            
+        }
+
+
+
+        // let promise = new Promise(
+        //     function (resolve, reject) {
+        //         console.info(baseName + ": getting logged-in user");
+        //         $.ajax({
+        //             url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
+        //             headers: {
+        //                 "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+        //             },
+        //             type: "GET",
+        //             success: function (data) {
+        //                 return resolve(data ? data.given_name : "");
+        //             },
+        //             error: function (jqXHR, textStatus, errorThrown) {
+        //                 //console.log(data);
+        //                 return reject(Error());
+        //             }
+        //         });
+        //     }
+        // );
+        return checkTokenAndExecutePromise(promiseFunction);
     };
 
 
     _this.getAttendance = function (userId, date) {
         date = date.startOf('day');
         let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
-        let promise =  new Promise(
-            function (resolve, reject) {
-                console.info(baseName + ": getting calculation");
 
-                $.ajax({
-                    url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
-                        "?date=" + dateString +
-                        "&calculationResultTypeCode=33" +
-                        "&timeEventIds=",
-                    //"?userId=" + userId,
-                    headers: {
-                        "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                        "X-Timezone-Offset": date.toDate().getTimezoneOffset()
-                    },
-                    type: "GET",
-                    success: function (data) {
-                        //can contain other dates. filter them out
-                        resolve(data);
-                    },
-                    error: function (data) {
-                        console.error(data);
-                        reject(Error());
-                    }
-                });
-            }
-        )
+        let promiseFunction = function (resolve, reject){  
+            console.info(baseName + ": getting calculation");
+
+            $.ajax({
+                url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
+                    "?date=" + dateString +
+                    "&calculationResultTypeCode=33" +
+                    "&timeEventIds=",
+                //"?userId=" + userId,
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                    "X-Timezone-Offset": date.toDate().getTimezoneOffset()
+                },
+                type: "GET",
+                success: function (data) {
+                    //can contain other dates. filter them out
+                    resolve(data);
+                },
+                error: function (data) {
+                    console.error(data);
+                    reject(Error());
+                }
+            });            
+            
+        }
+
+        return checkTokenAndExecutePromise(promiseFunction);
+
+        // let promise =  new Promise(
+        //     function (resolve, reject) {
+        //         console.info(baseName + ": getting calculation");
+
+        //         $.ajax({
+        //             url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
+        //                 "?date=" + dateString +
+        //                 "&calculationResultTypeCode=33" +
+        //                 "&timeEventIds=",
+        //             //"?userId=" + userId,
+        //             headers: {
+        //                 "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+        //                 "X-Timezone-Offset": date.toDate().getTimezoneOffset()
+        //             },
+        //             type: "GET",
+        //             success: function (data) {
+        //                 //can contain other dates. filter them out
+        //                 resolve(data);
+        //             },
+        //             error: function (data) {
+        //                 console.error(data);
+        //                 reject(Error());
+        //             }
+        //         });
+        //     }
+        // )
         return promise;
     }
 
@@ -176,43 +243,70 @@ function AllHoursApi(
     _this.getUserCalculations = function (userId, date) {
         date = date.startOf('day');
         let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
-        let promise =  new Promise(
-            function (resolve, reject) {
-                console.info(baseName + ": getting calculation");
 
-                $.ajax({
-                    url: _this.options.allHoursUrl + "usercalculations/" + userId +
-                        "?dateFrom=" + dateString +
-                        "&dateTo=" + dateString,
-                    headers: {
-                        "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                        "X-Timezone-Offset": date.toDate().getTimezoneOffset()
-                    },
-                    type: "GET",
-                    success: function (data) {
-                        //can contain other dates. filter them out
-                        resolve(data);
-                    },
-                    error: function (data) {
-                        console.error(data);
-                        reject(Error());
-                    }
-                });
-            }
-        )
-        return checkTokenAndExecutePromise(promise);
+        let promiseFunction = function (resolve, reject){  
+            console.info(baseName + ": getting calculation");
+
+            $.ajax({
+                url: _this.options.allHoursUrl + "usercalculations/" + userId +
+                    "?dateFrom=" + dateString +
+                    "&dateTo=" + dateString,
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                    "X-Timezone-Offset": date.toDate().getTimezoneOffset()
+                },
+                type: "GET",
+                success: function (data) {
+                    //can contain other dates. filter them out
+                    resolve(data);
+                },
+                error: function (data) {
+                    console.error(data);
+                    reject(Error());
+                }
+            });            
+
+        };
+
+
+        
+        // let promise =  new Promise(
+        //     function (resolve, reject) {
+        //         console.info(baseName + ": getting calculation");
+
+        //         $.ajax({
+        //             url: _this.options.allHoursUrl + "usercalculations/" + userId +
+        //                 "?dateFrom=" + dateString +
+        //                 "&dateTo=" + dateString,
+        //             headers: {
+        //                 "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+        //                 "X-Timezone-Offset": date.toDate().getTimezoneOffset()
+        //             },
+        //             type: "GET",
+        //             success: function (data) {
+        //                 //can contain other dates. filter them out
+        //                 resolve(data);
+        //             },
+        //             error: function (data) {
+        //                 console.error(data);
+        //                 reject(Error());
+        //             }
+        //         });
+        //     }
+        // )
+        return checkTokenAndExecutePromise(promiseFunction);
     }    
 
-    function checkTokenAndExecutePromise(promise){
+    function checkTokenAndExecutePromise(promiseFunction){
         const treshold = 5 * 60;
         let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
         if (allHoursTokenIsExpired){
             _this.refreshAccessToken.then(_ => {
-                return promise;
+                return new Promise(promiseFunction);
             });
         }
         else {
-            return promise;
+            return new Promise(promiseFunction);
         }
     }
 

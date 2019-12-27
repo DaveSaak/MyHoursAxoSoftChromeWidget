@@ -72,3 +72,34 @@ ul#logs li .column {
     padding-top: 9px;
     padding-bottom: 9px;
 }
+
+#topContainer {
+    overflow-x: scroll;
+    /* overflow-y: hidden; */
+    height: 60px;
+}
+
+#topContainer::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+ 
+#topContainer::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+#topContainer::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+.timelineItem:hover {
+    box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+    margin-top: 5px;
+    border: 1px solid rgba(81, 203, 238, 1);
+}
+
+.timelineItem.allHoursSegment:hover{
+    /* margin-top: 5px; */
+}

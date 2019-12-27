@@ -24,7 +24,7 @@ function popup() {
 
     _this.timeRatio = new TimeRatio(showRatio);
 
-    _this.timeLineWidth = 700;
+    _this.timeLineWidth = 1300;
 
     //init bootstrap tooltips
     $(function () {
@@ -162,6 +162,9 @@ function popup() {
     function getLogs() {
         _this.timeRatio.reset();
 
+        var topContainer = $('#topContainer');
+        topContainer.scrollLeft(300);
+
         var timeline = $('#timeline');
         timeline.empty();
 
@@ -171,9 +174,9 @@ function popup() {
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
         $('.date').text(_this.currentDate.format('dddd, ll'));
 
-        $('#ahAttendance').text('-');
-        $('#axoTotal').text('-');
-        $('#mhTotal').text('-');
+        $('#ahAttendance').text('?');
+        $('#axoTotal').text('?');
+        $('#mhTotal').text('?');
 
 
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
@@ -205,7 +208,7 @@ function popup() {
                 });
                 //timeline.append(baseLine);
 
-                for (var i = 1; i < 24; i++) {
+                for (var i = 1; i <= 24; i++) {
                     var tickColor = "lightgray";
                     if (i % 6 == 0)
                         tickColor = "#474747";
@@ -328,10 +331,11 @@ function popup() {
                                 });
 
                                 var timePeriod = minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                                var title = timePeriod + ' <br/>' + data.projectName + '<br/>' + data.taskName;
+                                var title = timePeriod + ' // ' + data.projectName + ' // ' + data.taskName;
 
                                 circleGraph.prop('title', title);
                                 var barGraph = $('<div>');
+                                barGraph.addClass('timelineItem');
                                 barGraph.prop('title', title);
                                 barGraph.attr('data-toggle', "tooltip");
                                 barGraph.attr('data-placement', "bottom");
@@ -344,11 +348,11 @@ function popup() {
                                     position: "absolute",
                                     "background-color": logColor,
                                     "border-radius": "1px",
-                                    "opacity":0.85,
+                                    "opacity":0.75,
                                     "z-index":1
                                 });
                                 timeline.append(barGraph);
-                                barGraph.tooltip();
+                                //barGraph.tooltip();
                             });
                         }
                     );
@@ -449,15 +453,17 @@ function popup() {
                                         var timePeriod = minutesToString(segment.Value) + "h (" + moment(segment.StartTime).format('LT') + " - " + moment(segment.EndTime).format('LT') + ")";
 
                                         var barGraph = $('<div>');
-                                        barGraph.prop('title', 'All Hours paid time <br/>' + timePeriod);
-                                        barGraph.attr('data-toggle', "tooltip");
-                                        barGraph.attr('data-placement', "bottom");
-                                        barGraph.attr('data-html', "true");
+                                        barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
+                                        barGraph.addClass('allHoursSegment timelineItem');
+                                        barGraph.prop('title', timePeriod);
+                                        // barGraph.attr('data-toggle', "tooltip");
+                                        // barGraph.attr('data-placement', "bottom");
+                                        // barGraph.attr('data-html', "true");
                                         barGraph.css({
                                             left: left + 'px',
                                             width: right - left + 'px',
                                             top: "18px",
-                                            height: "15px",
+                                            height: "18px",
                                             position: "absolute",
                                             "background-color": 'rgba(55, 109, 148, 0.45)',
                                             "border-radius": "1px"
@@ -465,9 +471,12 @@ function popup() {
 
                                         timeline.append(barGraph);
                                         //set tooltips
-                                        barGraph.tooltip();
+                                        //barGraph.tooltip();
+                                        //tippy('.allHoursSegment');
+
                                     }
                                 });
+                                
                             }
                         },
                         function (error) {
