@@ -12,6 +12,7 @@ function Options() {
     _this.contentSwitchZoneReEnterTime = 10;
     _this.allHoursAccessToken = '';
     _this.allHoursRefreshToken = '';
+    _this.allHoursAccessTokenValidTill = '';
     _this.allHoursUrl = '';
     _this.allHoursUserName = '';
 
@@ -64,6 +65,7 @@ function Options() {
                             _this.contentSwitchZoneReEnterTime = items.options.contentSwitchZoneReEnterTime;
                             _this.allHoursAccessToken = items.options.allHoursAccessToken;
                             _this.allHoursRefreshToken = items.options.allHoursRefreshToken;
+                            _this.allHoursAccessTokenValidTill = items.options.allHoursAccessTokenValidTill;
                             _this.allHoursUrl = items.options.allHoursUrl;
                             _this.allHoursUserName = items.options.allHoursUserName;
                         }

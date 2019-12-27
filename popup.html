@@ -65,10 +65,10 @@
         </section>
     </div>
 
-    <div id='mainContainer' style="display: none" class="box12">
-        <section class="hero is-light" style="padding: 10px">
-            <nav class="navbar navbar-expand-md">
-                    <!-- navbar-dark bg-dark -->
+    <div id='mainContainer' style="display: none;" class="box12 containerX border-bottom">
+        <section class="containerQ heroQ is-lightQ" style="padding: 0px">
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <!-- navbar-dark bg-dark -->
                 <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
@@ -85,7 +85,7 @@
                         <li class="nav-item">
                             <a id="today" class="nav-link  today" data-toggle="tooltip" data-placement="bottom"
                                 title="return to today">
-                                <i class="fas fa-bomb"></i>
+                                <i class="fas fa-calendar-day"></i>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -99,23 +99,35 @@
                         </li>
                     </ul>
                 </div>
-                <div class="mx-auto order-0">
+                <div 
+                class="navbar-collapse collapse w-100 order-2 dual-collapse2"
+                classX="mx-auto order-0"
+                >
                     <!-- <a class="navbar-brand mx-auto" href="#">Navbar 2</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                         <span class="navbar-toggler-icon"></span>
                     </button> -->
-                </div>
-                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-
-
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
 
+                            <button id='copyToAxoSoftButton' class="nav-linkX btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom"
+                                title="copy to axo">
+                                <i class="fas fa-share-square"></i> send to Axo
+                        </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar-collapse collapse w-50 order-3 dual-collapse2">
+
+
+                    <ul class="navbar-nav ml-auto">
+                        <!-- <li class="nav-item">
+
                             <a id='copyToAxoSoftButton' class="nav-link" data-toggle="tooltip" data-placement="bottom"
                                 title="copy to axo">
-                                <i class="fas fa-rocket"></i>
+                                <i class="fas fa-share-square"></i> send to Axo
                             </a>
-                        </li>
+                        </li> -->
 
                         <li class="nav-item">
                             <a id="optionsButton" class="nav-link" data-toggle="tooltip" data-placement="bottom"
@@ -143,35 +155,41 @@
 
             </nav>
 
+            <div id="alertContainer" class="rowQ" style="display: none">
+                <div class="alert alert-primary" role="alert">
+                    A simple primary alert. Check it out!
+                </div>
+            </div>
 
-            <div class="row" style="margin-top: 10px;">
+            <div class="container py-2">
+                <!-- <div class="row" style="margin-top: 10px;"> -->
 
-                <div class="col">
-                    <div class="field is-grouped is-grouped-multiline">
-                        <div class="control">
-                            <div class="tags has-addons">
-                                <span class="tag is-dark">MH</span>
-                                <span id="mhTotal" class="tag is-info axoTotal"></span>
+                    <!-- <div class="col"> -->
+                        <div class="field is-grouped is-grouped-multiline">
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">MH</span>
+                                    <span id="mhTotal" class="tag is-info axoTotal"></span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control">
-                            <div class="tags has-addons">
-                                <span class="tag is-dark">Axo</span>
-                                <span id="axoTotal" class="tag is-info"></span>
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">Axo</span>
+                                    <span id="axoTotal" class="tag is-info"></span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control">
-                            <div class="tags has-addons">
-                                <span class="tag is-dark">AH</span>
-                                <span id="ahAttendance" class="tag is-info"></span>
-                                <span id="ahRange" class="tag is-info"></span>
-                                <span id="timeRatio" class="tag is-info"></span>
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-dark">AH</span>
+                                    <span id="ahAttendance" class="tag is-success"></span>
+                                    <span id="ahRange" class="tag is-success"></span>
+                                    <span id="timeRatio" class="tag is-success"></span>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- <div class="control">
+                            <!-- <div class="control">
                                 <div class="tags has-addons">
                                     <span class="tag is-dark">AH^</span>
                                     <span id="ahRange" class="tag is-info"></span>
@@ -179,16 +197,17 @@
                             </div> -->
 
 
-                    </div>
+                        </div>
 
-                </div>
+                    <!-- </div> -->
+                <!-- </div> -->
             </div>
-
+        </section>
     </div>
-    </section>
+    <!-- </section> -->
 
-    <section class="hero is-light" style="border-top: solid white;">
-        <div class="hero-foot" style="margin-top: 20px; margin-bottom: 20px">
+    <section class="container heroQ is-lightQ" style="border-top: solid white;">
+        <div class="hero-footQ" style="margin-top: 20px; margin-bottom: 20px">
             <div class="container is-fluid" style="margin-left:0px;margin-right:0px">
                 <div id='timelineContainer' style="height: 40px;">
                     <div id='timeline'>
@@ -222,9 +241,9 @@
             </div>
         </section> -->
 
-    <section class="hero ">
+    <section class="container heroQ ">
         <div class="hero-bodyX" style="margin: 20px">
-            <div class="container is-fluid">
+            <div class="containerQ is-fluidQ">
                 <div id='mainContainer2'>
                     <div style="margin-bottom: 20pxx;">
                         <ul id='logs'>
@@ -237,9 +256,9 @@
 
 
 
-    <section class="hero is-light" style="border-top: solid white;">
-        <div class="hero-foot" style="margin: 20px">
-            <div class="container is-fluid">
+    <section class="py-3 containerX heroQ is-lightQ bg-dark" style="border-top: solid white;">
+        <div class="container hero-footQ" style="margin: 20pxX">
+            <div class="containerQ is-fluidQ">
                 <div id='mainContainer3'>
                     <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
                     </div>
@@ -247,7 +266,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- <section class="hero is-light" style="border-top: solid white;">
             <div class="hero-foot" style="margin:10px;">

@@ -17,8 +17,8 @@ $(function () {
             $('#ahUrl').val(_this.options.allHoursUrl);
             $('#ahUserName').val(_this.options.allHoursUserName);
 
-            _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
-            _this.allHoursApi = new AllHoursApi(_this.options.allHoursUrl);
+            _this.axoSoftApi = new AxoSoftApi(_this.options);
+            _this.allHoursApi = new AllHoursApi(_this.options);
 
             _this.axoSoftApi.getUsers().then(function (users) {
                 users = _.sortBy(users, function (u) {
@@ -49,6 +49,23 @@ $(function () {
                 });
                 $select.val(_this.options.axoSoftDefaultWorklogTypeId);
             });
+
+            console.group('all hours token');
+            console.log(_this.options.allHoursAccessTokenValidTill)
+            console.groupEnd();
+
+
+            //check ah token.
+            if (_this.options.allHoursAccessTokenValidTill){
+                let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill));
+                if (allHoursTokenIsExpired){
+                    setAllHoursAccessTokenStyle('alert-danger').text("Sign in. Your access token expired on " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL') + ".");
+                }
+                else {
+                    setAllHoursAccessTokenStyle('alert-primary').text("Your access will expire on " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL'));
+                }
+            }
+
         });
 
     $('.saveButton').click(function () {
@@ -61,6 +78,7 @@ $(function () {
         _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
+        
 
         saveOptions();
 
@@ -82,22 +100,28 @@ $(function () {
             $('#ahPassword').val()
         ).then(function (data) {
             console.log(data);
-            $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("All Good. Token retrieved.");
+            setAllHoursAccessTokenStyle().addClass('alert-success').text("All Good. Token retrieved.");
             _this.options.allHoursAccessToken = data.access_token;
             _this.options.allHoursRefreshToken = data.refresh_token;
+            _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString(); 
+
+            console.group('all hours token');
+            console.log('expires in (seconds): ' + data.expires_in);
+            console.log('valid till: ' + _this.options.allHoursAccessTokenValidTill);
+            console.groupEnd();            
 
             _this.allHoursApi.setAccessToken(data.access_token);
             _this.allHoursApi.getCurrentUserName().then(
                 function (data) {
                     console.log(data);
-                    $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass('alert-success').text("Hi " + data);
+                    setAllHoursAccessTokenStyle('alert-success').text("Hi " + data + ". Your access token will expire at " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL'));
                     saveOptions();
                 },
                 function (err) { }
             );
         },
             function (err) {
-                $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-success').addClass('alert-danger').text("Error while geeting token.");
+                setAllHoursAccessTokenStyle('alert-danger').text(err.message);
                 console.info('error while geeting token');
                 console.error(err);
             }
@@ -115,6 +139,10 @@ $(function () {
             //chrome.notifications.create('optionsSaved', notificationOptions);
             chrome.notifications.create('optionsSaved', notificationOptions, function () { });
         });
+    }
+
+    function setAllHoursAccessTokenStyle(style){
+        return $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
     }
 
 });

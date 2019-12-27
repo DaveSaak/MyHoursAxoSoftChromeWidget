@@ -21,22 +21,21 @@ function popup() {
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser); //new myHoursApi.getInstance();
     _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
-    // _this.allHoursApi = new AllHoursApi(_this.currentUser);
 
     _this.timeRatio = new TimeRatio(showRatio);
+
+    _this.timeLineWidth = 700;
 
     //init bootstrap tooltips
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-      })
+    })
 
 
     _this.options.load().then(
         function () {
             _this.allHoursApi = new AllHoursApi(
-                _this.options.allHoursUrl, 
-                _this.options.allHoursAccessToken,
-                _this.options.allHoursRefreshToken);
+                _this.options);
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 
@@ -113,7 +112,7 @@ function popup() {
                             title: 'Content Switch',
                             message: 'Content Switch was recorded.'
                         };
-                        chrome.notifications.create('optionsSaved', notificationOptions, function () {});
+                        chrome.notifications.create('optionsSaved', notificationOptions, function () { });
 
                         //console.log(data);
                     },
@@ -191,7 +190,7 @@ function popup() {
 
                 var baseLine = $('<div>').css({
                     left: '0px',
-                    width: '800px',
+                    width: '700px',
                     top: "15px",
                     height: "2px",
                     position: "absolute",
@@ -206,7 +205,7 @@ function popup() {
 
 
                     var tick = $('<div>').css({
-                        left: (i * 60) / 1440 * 800 + 'px',
+                        left: (i * 60) / 1440 * _this.timeLineWidth + 'px',
                         width: '1px',
                         // top: "2px",
                         height: "34px",
@@ -217,7 +216,7 @@ function popup() {
                     timeline.append(tick);
 
                     var time = $('<div>').css({
-                        left: ((i * 60) / 1440 * 800) - 10 + 'px',
+                        left: ((i * 60) / 1440 * _this.timeLineWidth) - 10 + 'px',
                         width: '20px',
                         top: "34px",
                         height: "20px",
@@ -312,8 +311,8 @@ function popup() {
                         function (times) {
                             $.each(times, function (index, time) {
                                 //console.log(time);
-                                var left = timeToPixel(time.startTime, 800);
-                                var right = timeToPixel(time.endTime, 800);
+                                var left = timeToPixel(time.startTime, _this.timeLineWidth);
+                                var right = timeToPixel(time.endTime, _this.timeLineWidth);
 
 
                                 var circleGraph = $('<div>').css({
@@ -420,6 +419,12 @@ function popup() {
             }
         );
 
+        getAllHoursData();
+
+
+    }
+
+    function getAllHoursData(){
         _this.allHoursApi.getCurrentUserId().then(
             function (data) {
 
@@ -490,7 +495,7 @@ function popup() {
 
     function getTimeLogDetails(myHoursLog, workLogTypeId) {
         var itemId = (myHoursLog.projectName
-                .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
+            .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
             .map(function (v) {
                 return +v;
             }).shift();
@@ -512,7 +517,7 @@ function popup() {
                 worklog.item.item_type = item.item_type;
                 worklog.work_log_type.id = parseInt(workLogTypeId);
                 worklog.description = myHoursLog.note;
-                worklog.date_time = myHoursLog.date;
+                worklog.date_time = moment(myHoursLog.date).add(8, 'hours').toDate();
 
                 //calc remaining time
                 var timeUnit = _.find(_this.timeUnits, function (t) {
@@ -558,9 +563,18 @@ function popup() {
 
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
-        $('#axoNotAccessible').hide();
-        try {
-            _this.axoSoftApi.getWorkLogTypes().then(
+
+        if (_this.options.axoSoftUserId == undefined) {
+            $('#alertContainer').show();
+            $('#alertContainer div.alert').text("AxoSoft user not defined. Check settings.");
+
+        }
+        else {
+            $('#alertContainer').hide();
+
+            $('#axoNotAccessible').hide();
+            try {
+                _this.axoSoftApi.getWorkLogTypes().then(
                     function (response) {
                         //console.info(response);
                         _this.worklogTypes = response;
@@ -590,14 +604,15 @@ function popup() {
 
                         });
                     },
-                    function () {})
-                .catch(
-                    function () {
-                        $('#axoNotAccessible').show();
-                    }
-                );
-        } catch (e) {
-            $('#axoNotAccessible').show();
+                    function () { })
+                    .catch(
+                        function () {
+                            $('#axoNotAccessible').show();
+                        }
+                    );
+            } catch (e) {
+                $('#axoNotAccessible').show();
+            }
         }
     }
 
@@ -628,11 +643,11 @@ function popup() {
         return sumOfChars % length;
     }
 
-    function showRatio(ratio){
+    function showRatio(ratio) {
         let element = $('#timeRatio');
         element.removeClass('is-info').removeClass('is-success').removeClass('is-danger');
         element.text((ratio * 100).toFixed(0) + '%');
-        if (ratio >= 0.9 && ratio <= 1){
+        if (ratio >= 0.9 && ratio <= 1) {
             element.addClass('is-success');
         }
         else {
