@@ -328,9 +328,9 @@ function popup() {
                                     "border-radius": "50%"
                                 });
 
-                                var timePeriod = "TIME: " + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT');
-                                timePeriod = timePeriod + ': ' + minutesToString(time.duration / 60) + "h";
-                                var title = timePeriod + ' <br/>PROJECT: ' + data.projectName + '<br/> TASK: ' + data.taskName;
+                                var timePeriod = minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
+                                //timePeriod = timePeriod + ': ' + minutesToString(time.duration / 60) + "h";
+                                var title = timePeriod + ' <br/>' + data.projectName + '<br/>' + data.taskName;
 
 
                                 circleGraph.prop('title', title);
@@ -343,7 +343,7 @@ function popup() {
                                     left: left + 'px',
                                     width: right - left + 'px',
                                     top: "3px",
-                                    height: "26px",
+                                    height: "24px",
                                     position: "absolute",
                                     "background-color": logColor,
                                     // opacity: 0.9
@@ -424,39 +424,65 @@ function popup() {
 
     }
 
-    function getAllHoursData(){
+    function getAllHoursData() {
         _this.allHoursApi.getCurrentUserId().then(
             function (data) {
 
                 if (data) {
                     _this.allHoursApi.getAttendance(data, _this.currentDate).then(
                         function (data) {
-                            //console.log(data);
-
                             if (data && data.CalculationResultValues.length > 0) {
-                                //$('#ahAttendance').text(data.CalculationResultValues[0].Value);
                                 let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-
                                 _this.timeRatio.setAllHours(attendance);
-
-                                //console.log('attendance: ' + attendance);
                                 $('#ahAttendance').text(minutesToString(attendance));
-
-                                // if (this._totalMins >= attendance * 0.9 && this._totalMins <= attendance) {
-                                //     $('#ahAttendance').removeClass('is-danger').removeClass('is-success').addClass('is-success');
-                                // } else {
-                                //     $('#ahAttendance').removeClass('is-success').removeClass('is-danger').addClass('is-danger');
-
-                                // }
-
-
-
                             }
-
-                            //console.log(data.CalculationResultValues[0].Value)
                         },
                         function (error) {
                             console.error('error while geeting attendance.');
+                        }
+                    );
+
+                    _this.allHoursApi.getUserCalculations(data, _this.currentDate).then(
+                        function (data) {
+                            if (data && data.DailyCalculations.length > 0) {
+                                let segments = data.DailyCalculations[0].CalculationResultSegments;
+                                var timeline = $('#timeline');
+
+                                console.group('all hours segments');
+                                console.table(segments);
+                                console.groupEnd();                                
+
+                                $.each(segments, function (index, segment) {
+                                    if (segment.Type === 4 && segment.StartTime && segment.StartTime.trim() !== "") {
+                                        var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
+                                        var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
+
+                                        var timePeriod = minutesToString(segment.Value / 60) + "h (" + moment(segment.StartTime).format('LT') + " - " + moment(segment.EndTime).format('LT') + ")";
+
+                                        var barGraph = $('<div>');
+                                        barGraph.prop('title', timePeriod);
+                                        barGraph.attr('data-toggle', "tooltip");
+                                        barGraph.attr('data-placement', "bottom");
+                                        barGraph.attr('data-html', "true");
+                                        barGraph.css({
+                                            left: left + 'px',
+                                            width: right - left + 'px',
+                                            top: "20px",
+                                            height: "15px",
+                                            position: "absolute",
+                                            "background-color": 'rgba(55, 109, 148, 0.45)',
+                                            "border-radius": "1px"
+                                        });
+
+                                        timeline.append(barGraph);
+                                        //set tooltips
+                                        barGraph.tooltip();
+                                    }
+                                });
+                            }
+                        },
+                        function (error) {
+                            console.error('error while geeting calculation.');
                         }
                     );
                 }

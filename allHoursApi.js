@@ -170,6 +170,37 @@ function AllHoursApi(
         return promise;
     }
 
+
+    _this.getUserCalculations = function (userId, date) {
+        date = date.startOf('day');
+        let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
+        let promise =  new Promise(
+            function (resolve, reject) {
+                console.info(baseName + ": getting calculation");
+
+                $.ajax({
+                    url: _this.options.allHoursUrl + "usercalculations/" + userId +
+                        "?dateFrom=" + dateString +
+                        "&dateTo=" + dateString,
+                    headers: {
+                        "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                        "X-Timezone-Offset": date.toDate().getTimezoneOffset()
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        //can contain other dates. filter them out
+                        resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        reject(Error());
+                    }
+                });
+            }
+        )
+        return promise;
+    }    
+
     function checkTokenAndExecutePromise(promise){
         const treshold = 5 * 60;
         let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
