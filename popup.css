@@ -7,26 +7,19 @@
 
 .narrow {
     width: 400px;
-
 }
 
 .wide {
     width: 800px;
 
     /* background: linear-gradient(-30deg, #cf215bE5, #cf215bE5 45%, #cf215b 45%) #fff; */
-
-
-    
-    
 }
 
-
-
-.panicButton{
+.panicButton {
     display: inline-block;
     text-decoration: none;
     background: #ff8181;
-    color: #FFF;
+    color: #fff;
     width: 120px;
     height: 120px;
     line-height: 120px;
@@ -37,10 +30,10 @@
     overflow: hidden;
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.29);
     border-bottom: solid 3px #bd6565;
-    transition: .4s;
+    transition: 0.4s;
 }
 
-.panicButton:active{
+.panicButton:active {
     -ms-transform: translateY(2px);
     -webkit-transform: translateY(2px);
     transform: translateY(2px);
@@ -48,21 +41,19 @@
     border-bottom: none;
 }
 
-.panicButton.sizeS{
+.panicButton.sizeS {
     width: 80px;
     height: 80px;
     line-height: 80px;
-
 }
 
-.panicButton.sizeM{
+.panicButton.sizeM {
     width: 100px;
     height: 100px;
     line-height: 100px;
-
 }
 
-.panicButton.sizeL{
+.panicButton.sizeL {
     width: 120px;
     height: 120px;
     line-height: 120px;
@@ -76,30 +67,71 @@ ul#logs li .column {
 #topContainer {
     overflow-x: scroll;
     /* overflow-y: hidden; */
-    height: 60px;
+    height: 71px;
 }
 
 #topContainer::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
- 
+
 #topContainer::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
 }
- 
+
 #topContainer::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    box-shadow: inset 0 0 6px  #2c7baf;
 }
 
 .timelineItem:hover {
     box-shadow: 0 0 5px rgba(81, 203, 238, 1);
-    margin-top: 5px;
+    margin-top: -2px;
     border: 1px solid rgba(81, 203, 238, 1);
+    /* opacity: 0.95; */
 }
 
-.timelineItem.allHoursSegment:hover{
-    /* margin-top: 5px; */
+.timelineItem.allHoursSegment:hover {
+    z-index: 2;
+    margin-top: 2px;
+}
+
+.timeline-tick {
+    width: 1px;
+    top: 0px;
+    height: 42px;
+    position: absolute;
+}
+
+.timeline-time {
+    width: 20px;
+    top: 45px;
+    height: 20px;
+    position: absolute;
+    font-size: 10px;
+    text-align: center;
+}
+
+.timeline-log {
+    top: 4px;
+    height: 24px;
+    position: absolute;
+    border-radius: 1px;
+    opacity:0.75;
+    z-index:1;
+}
+
+.timeline-segment {
+    top: 18px;
+    height: 18px;
+    position: absolute;
+    background-color: rgba(55, 109, 148);
+    border-radius: 1px;
+    opacity: 0.50;
+}
+
+#timelineContainer {
+    height: 65px; 
+    width: 1320px
 }

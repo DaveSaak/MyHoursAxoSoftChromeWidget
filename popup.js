@@ -216,25 +216,27 @@ function popup() {
 
                     var tick = $('<div>').css({
                         left: (i * 60) / 1440 * _this.timeLineWidth + 'px',
-                        width: '1px',
-                        // top: "2px",
-                        height: "34px",
-                        position: "absolute",
+                        // width: '1px',
+                        // // top: "2px",
+                        // height: "34px",
+                        // position: "absolute",
                         "background-color": tickColor,
                     });
+                    tick.addClass('timeline-tick');
                     tick.prop('title', i);
                     timeline.append(tick);
 
                     var time = $('<div>').css({
                         left: ((i * 60) / 1440 * _this.timeLineWidth) - 10 + 'px',
-                        width: '20px',
-                        top: "34px",
-                        height: "20px",
-                        position: "absolute",
-                        "font-size": "10px",
-                        "text-align": "center"
+                        // width: '20px',
+                        // top: "34px",
+                        // height: "20px",
+                        // position: "absolute",
+                        // "font-size": "10px",
+                        // "text-align": "center"
                         // "background-color": tickColor,
                     });
+                    time.addClass('timeline-time')
                     time.text(i);
                     timeline.append(time);
                 }
@@ -317,25 +319,25 @@ function popup() {
                                 var right = timeToPixel(time.endTime, _this.timeLineWidth);
 
 
-                                var circleGraph = $('<div>').css({
-                                    left: left + 'px',
-                                    width: '8px',
-                                    height: "8px",
-                                    top: "4px",
-                                    position: "absolute",
-                                    "border-color": logColor,
-                                    "border-width": "2px",
-                                    "border-style": "solid",
-                                    "background-color": "white",
-                                    "border-radius": "50%",
-                                });
+                                // var circleGraph = $('<div>').css({
+                                //     left: left + 'px',
+                                //     width: '8px',
+                                //     height: "8px",
+                                //     top: "4px",
+                                //     position: "absolute",
+                                //     "border-color": logColor,
+                                //     "border-width": "2px",
+                                //     "border-style": "solid",
+                                //     "background-color": "white",
+                                //     "border-radius": "50%",
+                                // });
 
                                 var timePeriod = minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
                                 var title = timePeriod + ' // ' + data.projectName + ' // ' + data.taskName;
 
-                                circleGraph.prop('title', title);
+                                // circleGraph.prop('title', title);
                                 var barGraph = $('<div>');
-                                barGraph.addClass('timelineItem');
+                                barGraph.addClass('timelineItem timeline-log');
                                 barGraph.prop('title', title);
                                 barGraph.attr('data-toggle', "tooltip");
                                 barGraph.attr('data-placement', "bottom");
@@ -343,13 +345,7 @@ function popup() {
                                 barGraph.css({
                                     left: left + 'px',
                                     width: right - left + 'px',
-                                    top: "3px",
-                                    height: "24px",
-                                    position: "absolute",
                                     "background-color": logColor,
-                                    "border-radius": "1px",
-                                    "opacity":0.75,
-                                    "z-index":1
                                 });
                                 timeline.append(barGraph);
                                 //barGraph.tooltip();
@@ -456,18 +452,11 @@ function popup() {
                                         barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
                                         barGraph.addClass('allHoursSegment timelineItem');
                                         barGraph.prop('title', timePeriod);
-                                        // barGraph.attr('data-toggle', "tooltip");
-                                        // barGraph.attr('data-placement', "bottom");
-                                        // barGraph.attr('data-html', "true");
                                         barGraph.css({
                                             left: left + 'px',
                                             width: right - left + 'px',
-                                            top: "18px",
-                                            height: "18px",
-                                            position: "absolute",
-                                            "background-color": 'rgba(55, 109, 148, 0.45)',
-                                            "border-radius": "1px"
                                         });
+                                        barGraph.addClass('timeline-segment')
 
                                         timeline.append(barGraph);
                                         //set tooltips
