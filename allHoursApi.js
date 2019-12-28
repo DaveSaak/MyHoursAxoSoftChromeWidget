@@ -81,7 +81,7 @@ function AllHoursApi(
                         return resolve(data);
                     },
                     error: function (data) {
-                        //console.log(data);
+                        console.error(data);
                         return reject(Error());
                     }
                 });
@@ -301,7 +301,7 @@ function AllHoursApi(
         const treshold = 5 * 60;
         let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
         if (allHoursTokenIsExpired){
-            _this.refreshAccessToken.then(_ => {
+            _this.refreshAccessToken().then(_ => {
                 return new Promise(promiseFunction);
             });
         }
