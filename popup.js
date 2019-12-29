@@ -27,9 +27,9 @@ function popup() {
     _this.timeLineWidth = 1300;
 
     //init bootstrap tooltips
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
+    // $(function () {
+    //     $('[data-toggle="tooltip"]').tooltip()
+    // })
 
 
     _this.options.load().then(
@@ -370,7 +370,7 @@ function popup() {
 
                 let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
                 let ahBottomRange = moment.duration(totalMins, 'minutes');
-                $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
+                // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
 
                 $('#tasks').empty();
                 $.each(_this.myHoursTaskSummary, function (index, summary) {

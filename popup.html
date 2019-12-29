@@ -69,9 +69,9 @@
         </section>
     </div>
 
-    <div id='mainContainer' style="display: none;" class="box12 containerX border-bottom">
+    <div id='mainContainer' style="display: none;" class="box12">
         <section class="containerQ heroQ is-lightQ" style="padding: 0px">
-            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <nav class="navbar navbar-expand-md ">
                 <!-- navbar-dark bg-dark -->
                 <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                     <ul class="navbar-nav mr-auto">
@@ -163,88 +163,83 @@
                 </div>
             </div>
 
-            <div class="container py-2">
-                <!-- <div class="row" style="margin-top: 10px;"> -->
+        </section>
 
-                <!-- <div class="col"> -->
-                <div class="field is-grouped is-grouped-multiline">
-                    <div class="control">
-                        <div class="tags has-addons">
-                            <span class="tag is-dark">MH</span>
-                            <span id="mhTotal" class="tag is-info axoTotal"></span>
-                        </div>
+        <section class="pt-2 pb-4">
+
+            <div class="card-deck mx-3">
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="mhTotal" class="axoTotal font-weight-bold"></span>
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
                     </div>
-
-                    <div class="control">
-                        <div class="tags has-addons">
-                            <span class="tag is-dark">Axo</span>
-                            <span id="axoTotal" class="tag is-info"></span>
-                        </div>
-                    </div>
-
-                    <div class="control">
-                        <div class="tags has-addons">
-                            <span class="tag is-dark">AH</span>
-                            <span id="ahAttendance" class="tag is-success"></span>
-                            <span id="ahRange" class="tag is-success"></span>
-                            <span id="timeRatio" class="tag is-success"></span>
-                        </div>
-                    </div>
-
-                    <!-- <div class="control">
-                                <div class="tags has-addons">
-                                    <span class="tag is-dark">AH^</span>
-                                    <span id="ahRange" class="tag is-info"></span>
-                                </div>
-                            </div> -->
-
-
                 </div>
 
-                <!-- </div> -->
-                <!-- </div> -->
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="axoTotal" class="axoTotal font-weight-bold"></span>
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo work logs</small>
+                    </div>
+                </div>
+
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
+                        
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>                        
+                    </div>
+                </div>
+
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
+                        
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo vs AH
+                            <!-- <span id="timeRatio" class="tag is-success"></span> -->
+                        </small>                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="container hero-footQ" style="margin: 20pxX; display: none;">
+                <div class="containerQ is-fluidQ">
+                    <div id='mainContainer3'>
+                        <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
+        
+        <section class="container mb-4" style="border-top: solid white;">
+            <div class="hero-footQ my-2">
+                <div id="topContainer" class="container is-fluid" style="margin-left:0px;margin-right:0px">
+                    <div id='timelineContainer'>
+                        <div id='timeline'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container heroQ ">
+            <div class="hero-bodyX" style="margin: 20px">
+                <div class="containerQ is-fluidQ">
+                    <div id='mainContainer2'>
+                        <div style="margin-bottom: 20pxx;">
+                            <ul id='logs'>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
     </div>
-    <!-- </section> -->
-
-    <section class="container mb-4" style="border-top: solid white;">
-        <div class="hero-footQ my-2">
-            <div id="topContainer" class="container is-fluid" style="margin-left:0px;margin-right:0px">
-                <div id='timelineContainer'>
-                    <div id='timeline'>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="container heroQ ">
-        <div class="hero-bodyX" style="margin: 20px">
-            <div class="containerQ is-fluidQ">
-                <div id='mainContainer2'>
-                    <div style="margin-bottom: 20pxx;">
-                        <ul id='logs'>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-    <section class="py-3 containerX heroQ is-lightQ bg-dark" style="border-top: solid white;">
-        <div class="container hero-footQ" style="margin: 20pxX">
-            <div class="containerQ is-fluidQ">
-                <div id='mainContainer3'>
-                    <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
 </body>
 
 </html>
