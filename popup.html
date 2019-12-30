@@ -6,10 +6,12 @@
     <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
         integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
     <script src="jquery-3.3.1.min.js"></script>
-    <script src="bootstrap.min.js"></script>
 
     <script src="popper.min.js"></script>
-    <script src="tippy-bundle.iife.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+
+    <!-- <script src="tippy-bundle.iife.min.js"></script> -->
 
     <script src="moment.js"></script>
     <script src="underscore-min.js"></script>
@@ -70,100 +72,54 @@
     </div>
 
     <div id='mainContainer' style="display: none;" class="box12">
-        <section class="containerQ heroQ is-lightQ" style="padding: 0px">
-            <nav class="navbar navbar-expand-md ">
-                <!-- navbar-dark bg-dark -->
-                <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a id="previousDay" class="nav-link ">
-                                <i class="fas fa-angle-left"></i>
-                            </a>
-                        </li>
+        <section>
+            <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
+                <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button>
 
-                        <li class="nav-item">
-                            <a id="nextDay" class="nav-link ">
-                                <i class="fas fa-angle-right"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a id="today" class="nav-link  today" data-toggle="tooltip" data-placement="bottom"
-                                title="return to today">
-                                <i class="fas fa-calendar-day"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link date">date</span>
-                        </li>
-                        <li class="nav-item">
-                            <a id="refresh" class="nav-link btn btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                title="refresh">
-                                <i class="fas fa-sync"></i>
-                            </a>
-                        </li>
+                <button id="previousDay" class="btn btn-sm">
+                    <i class="fas fa-angle-left"></i>
+                </button>
 
-                    </ul>
-                </div>
-                <div class="navbar-collapse collapse w-100 order-2 dual-collapse2" classX="mx-auto order-0">
-                    <!-- <a class="navbar-brand mx-auto" href="#">Navbar 2</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
-                        <span class="navbar-toggler-icon"></span>
-                    </button> -->
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
+                <button id="nextDay" class="btn btn-sm">
+                    <i class="fas fa-angle-right"></i>
+                </button>
 
-                            <button id='copyToAxoSoftButton' class="nav-linkX btn btn-primary btn-sm"
-                                data-toggle="tooltip" data-placement="bottom" title="copy to axo">
-                                <i class="fas fa-share-square"></i> send to Axo
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="navbar-collapse collapse w-50 order-3 dual-collapse2">
+                <!-- <button id='copyToAxoSoftButton' class="btn btn-sm ml-auto" data-toggle="tooltip"
+                    data-placement="bottom" title="copy to axo">
+                    fill out Axo worklog
+                </button> -->
 
-
-                    <ul class="navbar-nav ml-auto">
-                        <!-- <li class="nav-item">
-
-                            <a id='copyToAxoSoftButton' class="nav-link" data-toggle="tooltip" data-placement="bottom"
-                                title="copy to axo">
-                                <i class="fas fa-share-square"></i> send to Axo
-                            </a>
-                        </li> -->
-
-                        <li class="nav-item">
-                            <a id="optionsButton" class="nav-link" data-toggle="tooltip" data-placement="bottom"
-                                title="go to options">
-                                <i class="fas fa-cog"></i>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a id="logOutButton" class="nav-link" data-toggle="tooltip" data-placement="bottom"
-                                title="logout">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </a>
-                        </li>
-
-                        <!-- </div>
-
-    <div id="axoNotAccessible" class="notification" style="display: none">
-        Could not connect to axo.
-    </div> -->
-
-
-                    </ul>
-                </div>
-
-            </nav>
-
-            <div id="alertContainer" class="rowQ" style="display: none">
-                <div class="alert alert-primary" role="alert">
-                    A simple primary alert. Check it out!
+                <div class="btn-group ml-auto mr-3">
+                    <button type="button" class="btn btn-default dropdown-toggle btn-sm text-uppercase" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <!-- <i class="fas fa-cog"></i> -->
+                        <!-- <span id="usersName"></span> -->
+                        Actions
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <button id='copyToAxoSoftButton' class="dropdown-item" type="button">
+                            <!-- <i class="far fa-clock"></i> -->
+                            Fill out Axo worklog
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button id="optionsButton" class="dropdown-item" type="button">
+                            <!-- <i class="fas fa-tasks"></i> -->
+                            Settings
+                        </button>
+                        <button id="logOutButton" class="dropdown-item" type="button" title="logout">
+                            <!-- <i class="fas fa-door-closed"></i> -->
+                            Sign out of My Hours
+                        </button>
+                    </div>
                 </div>
             </div>
-
         </section>
+
+        <div id="alertContainer" class="rowQ" style="display: none">
+            <div class="alert alert-primary" role="alert">
+                A simple primary alert. Check it out!
+            </div>
+        </div>
 
         <section class="pt-2 pb-4">
 
@@ -185,18 +141,16 @@
                 <div class="card text-left shadow" style="width: 18rem;">
                     <div class="card-body">
                         <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
-                        
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>                        
+
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
                     </div>
                 </div>
 
-                <div class="card text-left shadow" style="width: 18rem;">
+                <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
                     <div class="card-body">
                         <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
-                        
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo vs AH
-                            <!-- <span id="timeRatio" class="tag is-success"></span> -->
-                        </small>                        
+
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
                     </div>
                 </div>
             </div>
@@ -210,7 +164,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="container mb-4" style="border-top: solid white;">
             <div class="hero-footQ my-2">
                 <div id="topContainer" class="container is-fluid" style="margin-left:0px;margin-right:0px">
@@ -230,9 +184,19 @@
                             <ul id='logs'>
                             </ul>
                         </div>
+
+                        <!-- <div style="position: absolute; right: 0; bottom: 0; width: 80px; height: 80px; border-top-left-radius: 50%; background-color: lightgray;">
+                            hit me</div> -->
                     </div>
+
                 </div>
             </div>
+
+            <!-- <div class="d-flex justify-content-end mb-4">
+                <button id='copyToAxoSoftButton' class="btn btn-primary shadow" style="border-radius: 15px;" type="button">
+                    Fill out Axo worklog
+                </button>
+            </div> -->
         </section>
 
 

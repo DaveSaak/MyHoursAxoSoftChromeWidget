@@ -135,3 +135,7 @@ ul#logs li .column {
     height: 65px; 
     width: 1320px
 }
+
+.axoTotal{
+    font-size: 1.2em;
+}

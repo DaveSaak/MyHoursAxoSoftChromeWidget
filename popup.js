@@ -25,6 +25,8 @@ function popup() {
     _this.timeRatio = new TimeRatio(showRatio);
 
     _this.timeLineWidth = 1300;
+    _this.noTimeDataText = "n/a";
+    _this.noNumberDataText = "n/a";
 
     //init bootstrap tooltips
     // $(function () {
@@ -97,6 +99,11 @@ function popup() {
             getLogs();
         });
 
+        $('#current-date').click(function () {
+            _this.currentDate = _this.currentDate = moment().startOf('day');
+            getLogs();
+        });        
+
         $('#refresh').click(function () {
             getLogs();
         });
@@ -161,6 +168,7 @@ function popup() {
 
     function getLogs() {
         _this.timeRatio.reset();
+        clearRatio();
 
         var topContainer = $('#topContainer');
         topContainer.scrollLeft(300);
@@ -172,11 +180,11 @@ function popup() {
 
 
         // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
-        $('.date').text(_this.currentDate.format('dddd, ll'));
+        $('.date').text(_this.currentDate.format('dddd, DD.MMM'));
 
-        $('#ahAttendance').text('?');
-        $('#axoTotal').text('?');
-        $('#mhTotal').text('?');
+        $('#ahAttendance').text(_this.noTimeDataText);
+        $('#axoTotal').text(_this.noTimeDataText);
+        $('#mhTotal').text(_this.noTimeDataText);
 
 
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
@@ -657,15 +665,20 @@ function popup() {
     }
 
     function showRatio(ratio) {
-        let element = $('#timeRatio');
-        element.removeClass('is-info').removeClass('is-success').removeClass('is-danger');
-        element.text((ratio * 100).toFixed(0) + '%');
-        if (ratio >= 0.9 && ratio <= 1) {
-            element.addClass('is-success');
-        }
-        else {
-            element.addClass('is-danger');
-        }
+        let elementCard = $('#timeRatioCard');
+        let ratioValid = (ratio >= 0.9 && ratio <= 1);
+        elementCard.toggleClass('bg-warning', !ratioValid);
+
+        let elementInfo = $('#timeRatio');
+        elementInfo.text((ratio * 100).toFixed(0) + '%');
+    }
+
+    function clearRatio(){
+        let elementCard = $('#timeRatioCard');
+        elementCard.removeClass('bg-warning');
+
+        let elementInfo = $('#timeRatio');
+        elementInfo.text(_this.noNumberDataText);
     }
 
     initInterface();
