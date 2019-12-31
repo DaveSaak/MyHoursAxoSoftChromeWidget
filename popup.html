@@ -74,44 +74,58 @@
     <div id='mainContainer' style="display: none;" class="box12">
         <section>
             <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
-                <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button>
+                <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
+                <div class="timeControls d-flex align-self-center">
 
-                <button id="previousDay" class="btn btn-sm">
-                    <i class="fas fa-angle-left"></i>
+                    <button id="previousDay" class="btn btn-sm roundButton noFocus rounded-circle ml-3 hiddenButton">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+
+                    <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
+                        <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
+                    </div>
+
+                    <button id="nextDay" class="btn btn-sm roundButton noFocus rounded-circle hiddenButton">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                </div>
+
+
+                <button id='copyToAxoSoftButton'
+                    class="ml-auto btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                    type="button" title='copy My Hours logs to Axo worklog'>
+                    <i class="fas fa-seedling"></i>
                 </button>
 
-                <button id="nextDay" class="btn btn-sm">
-                    <i class="fas fa-angle-right"></i>
+                <button id='optionsButton'
+                    class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-2"
+                    type="button" title='settings'>
+                    <i class="fas fa-tasks"></i>
                 </button>
 
-                <!-- <button id='copyToAxoSoftButton' class="btn btn-sm ml-auto" data-toggle="tooltip"
-                    data-placement="bottom" title="copy to axo">
-                    fill out Axo worklog
-                </button> -->
+                <button id='logOutButton'
+                    class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-3"
+                    type="button" title='log out from My Hours'>
+                    <i class="fas fa-door-open"></i>
+                </button>
 
-                <div class="btn-group ml-auto mr-3">
-                    <button type="button" class="btn btn-default dropdown-toggle btn-sm text-uppercase" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        <!-- <i class="fas fa-cog"></i> -->
-                        <!-- <span id="usersName"></span> -->
-                        Actions
+                <!-- <div class="btn-group mr-3 invisible">
+                    <button type="button"
+                        class="btn btn-default dropdown-toggle btn-sm noFocus text-uppercase roundButtonX"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <button id='copyToAxoSoftButton' class="dropdown-item" type="button">
-                            <!-- <i class="far fa-clock"></i> -->
-                            Fill out Axo worklog
+                        <button id="optionsButton" class="dropdown-item" type="button" title="settings">
+                            <i class="fas fa-tasks mr-2"></i>
+                            <span>settings</span>
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button id="optionsButton" class="dropdown-item" type="button">
-                            <!-- <i class="fas fa-tasks"></i> -->
-                            Settings
-                        </button>
-                        <button id="logOutButton" class="dropdown-item" type="button" title="logout">
-                            <!-- <i class="fas fa-door-closed"></i> -->
-                            Sign out of My Hours
+                        <button id="logOutButton" class="dropdown-item" type="button" title="sign out of My Hours">
+                            <i class="fas fa-door-open mr-2"></i>
+                            <span>sign out of My Hours</span>
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -126,6 +140,14 @@
             <div class="card-deck mx-3">
                 <div class="card text-left shadow" style="width: 18rem;">
                     <div class="card-body">
+                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
+
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
+                    </div>
+                </div>
+
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
                         <span id="mhTotal" class="axoTotal font-weight-bold"></span>
                         <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
                     </div>
@@ -138,13 +160,6 @@
                     </div>
                 </div>
 
-                <div class="card text-left shadow" style="width: 18rem;">
-                    <div class="card-body">
-                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
-
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
-                    </div>
-                </div>
 
                 <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
                     <div class="card-body">
@@ -165,7 +180,7 @@
             </div>
         </section>
 
-        <section class="container mb-4" style="border-top: solid white;">
+        <section class="container mb-4">
             <div class="hero-footQ my-2">
                 <div id="topContainer" class="container is-fluid" style="margin-left:0px;margin-right:0px">
                     <div id='timelineContainer'>
@@ -192,11 +207,42 @@
                 </div>
             </div>
 
-            <!-- <div class="d-flex justify-content-end mb-4">
-                <button id='copyToAxoSoftButton' class="btn btn-primary shadow" style="border-radius: 15px;" type="button">
-                    Fill out Axo worklog
-                </button>
+
+
+
+            <!-- 
+                    <div class="d-flex justify-content-center mb-4">
+                        <button id='copyToAxoSoftButton' class="btn shadow btn-sm px-2" style="border-radius: 15px;" type="button">
+                            copy logas to Axo worklog
+                        </button>
+                    </div> -->
+
+
+            <!-- <div>
+                <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
+
+                    <button id='copyToAxoSoftButton'
+                        class="ml-auto btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                        type="button" title='copy My Hours logs to Axo worklog'>
+                        <i class="fas fa-seedling"></i>
+                    </button>
+
+                    <button id='optionsButton'
+                        class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                        type="button" title='settings'>
+                        <i class="fas fa-tasks"></i>
+                    </button>
+
+                    <button id='logOutButton'
+                        class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                        type="button" title='log out from My Hours'>
+                        <i class="fas fa-door-open"></i>
+                    </button>
+                </div>
             </div> -->
+
+
+
         </section>
 
 

@@ -14,13 +14,12 @@ function popup() {
     _this.worklogTypes = undefined;
     _this.timeUnits = undefined;
 
-
     _this.currentDate = moment();
-    _this.currentUser = new CurrentUser(); //new CurrentUserRepo.getInstance();
-    _this.options = new Options(); //new OptionsRepo.getInstance();
+    _this.currentUser = new CurrentUser();
+    _this.options = new Options();
 
-    _this.myHoursApi = new MyHoursApi(_this.currentUser); //new myHoursApi.getInstance();
-    _this.axoSoftApi = new AxoSoftApi(_this.options); //new axoSoftApi.getInstance();
+    _this.myHoursApi = new MyHoursApi(_this.currentUser);
+    _this.axoSoftApi = new AxoSoftApi(_this.options);
 
     _this.timeRatio = new TimeRatio(showRatio);
 
@@ -102,7 +101,7 @@ function popup() {
         $('#current-date').click(function () {
             _this.currentDate = _this.currentDate = moment().startOf('day');
             getLogs();
-        });        
+        });
 
         $('#refresh').click(function () {
             getLogs();
@@ -128,6 +127,21 @@ function popup() {
                     });
         });
 
+        document.onkeyup = function (event) {
+            if (event.keyCode === 37) {
+                _this.currentDate = _this.currentDate.add(-1, 'days');
+                getLogs();
+            }
+            else if (event.keyCode === 39) {
+                _this.currentDate = _this.currentDate.add(1, 'days');
+                getLogs();
+            }
+            else if (event.keyCode === 32) {
+                _this.currentDate = _this.currentDate = moment().startOf('day');
+                getLogs();
+            }
+        };
+
     }
 
 
@@ -138,7 +152,6 @@ function popup() {
         $('#mainContainer').hide();
         $('#loginContainer').show();
 
-        //var currentUser = new CurrentUserRepo.getInstance();
         if (_this.currentUser.email != undefined) {
             $('input#email').val(_this.currentUser.email);
         }
@@ -154,12 +167,8 @@ function popup() {
         $('body').removeClass('narrow');
         $('body').addClass('wide');
 
-
         $('#mainContainer').show();
         $('#loginContainer').hide();
-
-
-        //var currentUser = new CurrentUserRepo.getInstance();
         $('#usersName').text(_this.currentUser.name);
 
         getLogs();
@@ -178,8 +187,6 @@ function popup() {
 
         var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107", "#FF5722", "#795548"];
 
-
-        // $('.timeControl span:nth-child(2)').text(_this.currentDate.format('dddd, LL'));
         $('.date').text(_this.currentDate.format('dddd, DD.MMM'));
 
         $('#ahAttendance').text(_this.noTimeDataText);
@@ -203,19 +210,6 @@ function popup() {
                 var logsContainer = $('#logs');
                 logsContainer.empty();
 
-                // var timeline = $('#timeline');
-                // timeline.empty();
-
-                var baseLine = $('<div>').css({
-                    left: '0px',
-                    width: '700px',
-                    top: "15px",
-                    height: "2px",
-                    position: "absolute",
-                    "background-color": "lightgray",
-                });
-                //timeline.append(baseLine);
-
                 for (var i = 1; i <= 24; i++) {
                     var tickColor = "lightgray";
                     if (i % 6 == 0)
@@ -224,10 +218,6 @@ function popup() {
 
                     var tick = $('<div>').css({
                         left: (i * 60) / 1440 * _this.timeLineWidth + 'px',
-                        // width: '1px',
-                        // // top: "2px",
-                        // height: "34px",
-                        // position: "absolute",
                         "background-color": tickColor,
                     });
                     tick.addClass('timeline-tick');
@@ -236,40 +226,23 @@ function popup() {
 
                     var time = $('<div>').css({
                         left: ((i * 60) / 1440 * _this.timeLineWidth) - 10 + 'px',
-                        // width: '20px',
-                        // top: "34px",
-                        // height: "20px",
-                        // position: "absolute",
-                        // "font-size": "10px",
-                        // "text-align": "center"
-                        // "background-color": tickColor,
                     });
                     time.addClass('timeline-time')
                     time.text(i);
                     timeline.append(time);
                 }
 
-
-
-
                 var totalMins = 0;
-
                 $.each(data, function (index, data) {
-                    //console.log(data);
-
-                    //var colorIndex = index % 4;
                     var colorIndex = nameToIndex(data.projectName, 10);
                     var logColor = colors[colorIndex];
 
                     totalMins = totalMins + (data.duration / 60);
 
                     var log = $('<li>').attr("data-logId", data.id);
-
                     var columns = $('<div>').addClass('columns');
-                    var columnA = $('<div>').addClass('column is-two-thirds');
-
+                    var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
                     var tagGroup = $('<div>').addClass('tags has-addons');
-
 
                     if (data.projectId != null) {
                         var projectInfo = $('<span>')
@@ -309,7 +282,6 @@ function popup() {
 
                     if (data.duration != null) {
                         var duration = minutesToString(data.duration / 60);
-                        // var durationInfo = $('<span>').text(duration.format("HH:mm:ss"));
                         var durationInfo = $('<span>').text(duration);
                         columnB.append(durationInfo);
                     }
@@ -318,32 +290,27 @@ function popup() {
                     var status = ($('<div>').addClass('tags'));
                     columnC.append(status);
 
+                    getAxoItem(data).then(item => {
+                        // var logStatus = $('*[data-logid="' + data.id + '"] .statusColumn .tags');
+                        // logStatus.empty();
+                        // var success = $('<span>').addClass('tag').text(" item found on Axo");
+                        // logStatus.append(success);
+                    },
+                        function (err) {
+                            var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                            logStatus.empty();
+                            var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
+                            logStatus.append(fail);
+                        });
 
                     _this.myHoursApi.getTimes(data.id).then(
                         function (times) {
                             $.each(times, function (index, time) {
-                                //console.log(time);
                                 var left = timeToPixel(time.startTime, _this.timeLineWidth);
                                 var right = timeToPixel(time.endTime, _this.timeLineWidth);
-
-
-                                // var circleGraph = $('<div>').css({
-                                //     left: left + 'px',
-                                //     width: '8px',
-                                //     height: "8px",
-                                //     top: "4px",
-                                //     position: "absolute",
-                                //     "border-color": logColor,
-                                //     "border-width": "2px",
-                                //     "border-style": "solid",
-                                //     "background-color": "white",
-                                //     "border-radius": "50%",
-                                // });
-
-                                var timePeriod = minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
+                                var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
                                 var title = timePeriod + ' // ' + data.projectName + ' // ' + data.taskName;
 
-                                // circleGraph.prop('title', title);
                                 var barGraph = $('<div>');
                                 barGraph.addClass('timelineItem timeline-log');
                                 barGraph.prop('title', title);
@@ -364,20 +331,16 @@ function popup() {
 
                     columns.append(columnB);
                     columns.append(columnA);
-
                     columns.append(columnC);
-                    //columns.append(columnD);
 
                     log.append(columns);
                     logsContainer.append(log);
-
-                    //console.log(totalMins);
                 });
                 _this.timeRatio.setMyHours(totalMins);
                 $('#mhTotal').text(minutesToString(totalMins));
 
-                let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
-                let ahBottomRange = moment.duration(totalMins, 'minutes');
+                // let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
+                // let ahBottomRange = moment.duration(totalMins, 'minutes');
                 // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
 
                 $('#tasks').empty();
@@ -391,8 +354,6 @@ function popup() {
                         taskCssClass = "is-danger"
                     }
 
-
-
                     var taskControl = $('<div>').addClass('control');
                     var taskGroup = $('<div>').addClass('tags has-addons');
                     var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
@@ -405,20 +366,12 @@ function popup() {
 
                     $('#tasks').append(taskControl);
                 });
-
-
-
-                //console.log(_this.myHoursTaskSummary);
             },
             function () {
                 console.info('failed to get logs');
                 showLoginPage();
             }
         );
-
-        // getAllHoursData();
-
-
     }
 
     function getAllHoursData() {
@@ -447,14 +400,14 @@ function popup() {
 
                                 console.group('all hours segments');
                                 console.table(segments);
-                                console.groupEnd();                                
+                                console.groupEnd();
 
                                 $.each(segments, function (index, segment) {
                                     if (segment.Type === 4 && segment.StartTime && segment.StartTime.trim() !== "") {
                                         var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
                                         var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
 
-                                        var timePeriod = minutesToString(segment.Value) + "h (" + moment(segment.StartTime).format('LT') + " - " + moment(segment.EndTime).format('LT') + ")";
+                                        var timePeriod = intervalToString(segment.startTime, segment.endTime, segment.duration)
 
                                         var barGraph = $('<div>');
                                         barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
@@ -473,7 +426,7 @@ function popup() {
 
                                     }
                                 });
-                                
+
                             }
                         },
                         function (error) {
@@ -581,6 +534,33 @@ function popup() {
         }
     }
 
+    function getAxoItem(myHoursLog) {
+        if (myHoursLog.projectName != null) {
+            var itemId = (myHoursLog.projectName
+                .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
+                .map(function (v) {
+                    return +v;
+                }).shift();
+
+            if (itemId !== undefined) {
+                return _this.axoSoftApi.getFeatureItem(itemId);
+            }
+        }
+
+        if (myHoursLog.note != null) {
+            var itemId = (myHoursLog.note
+                .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
+                .map(function (v) {
+                    return +v;
+                }).shift();
+
+            if (itemId !== undefined) {
+                return _this.axoSoftApi.getFeatureItem(itemId);
+            }
+        }
+        return Promise.reject(new Error('project not found'));
+    }
+
 
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
@@ -673,12 +653,17 @@ function popup() {
         elementInfo.text((ratio * 100).toFixed(0) + '%');
     }
 
-    function clearRatio(){
+    function clearRatio() {
         let elementCard = $('#timeRatioCard');
         elementCard.removeClass('bg-warning');
 
         let elementInfo = $('#timeRatio');
         elementInfo.text(_this.noNumberDataText);
+    }
+
+    function intervalToString(startTime, endTime, durationMinutes) {
+        let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
+        return interval + ' (' + minutesToString(durationMinutes / 60) + 'h )';
     }
 
     initInterface();

@@ -139,3 +139,33 @@ ul#logs li .column {
 .axoTotal{
     font-size: 1.2em;
 }
+
+.btn.roundButton {
+    width: 38px;
+    height: 38px;
+    color: #676d71;
+}
+
+.btn.hiddenButton {
+    display: none;
+}
+
+.btn.roundButton:hover {
+    background-color: #ececec;
+    border-radius: 50%; 
+    color: #3d4144;   
+}
+
+.btn.noFocus:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.timeControls:hover .btn.hiddenButton {
+    display: block;
+}
+
+.columns:hover{
+    /* background-color: #f0f8ff8a; */
+    /* font-size: 1.1em; */
+}
