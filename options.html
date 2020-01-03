@@ -23,137 +23,121 @@
 </head>
 
 <body>
-    <div class="container" style="max-width: 600px; margin-top: 20px;">
+    <div class="mt-4">
 
-        <div class="row align-items-center">
-            <div class="col">
-                <h1 class="title">Options</h1>
-            </div>
-            <div class="col-auto">
-                <!-- <button class="btn btn-danger saveButton">Save</button> -->
-            </div>
+        <div class="my-2">
+            <h1 class="title text-center">Options</h1>
         </div>
 
-        <!-- <div class="box"> -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm">
-                        <h3>Axo</h3>
-                    </div>
-                    <div class="col-sm-auto">
-                        <button class="btn btn-danger saveButton">Save</button>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                    <div class="form-group">
-                        <label>AxoSoft API Address</label>
-                        <input class="form-control" type="text" id='axoSoftUrl' />
-                    </div>
+        <div class="d-flex flew-overlow justify-content-center">
 
-                    <div class="form-group">
-                        <label>AxoSoft API Token</label>
-                        <input class="form-control" type="text" id='axoSoftToken' />
+            <div class="card m-3 shadow-lg" style="width: 600px">
 
-                    </div>
+                <div class="card-body">
 
-                    <div class="form-group">
-                        <label>AxoSoft User</label>
-                        <select class="form-control" style="width: 50%" id='axoSoftUserId'></select>
+                    <h3 class="card-title">
+                        Axo
+                    </h3>
 
-                    </div>
+                    <p class="card-text">
+                        <div class="form-group">
+                            <label>AxoSoft API Address</label>
+                            <input class="form-control" type="text" id='axoSoftUrl' />
+                        </div>
+
+                        <div class="form-group">
+                            <label>AxoSoft API Token</label>
+                            <input class="form-control" type="text" id='axoSoftToken' />
+
+                        </div>
+
+                        <div class="form-group">
+                            <label>AxoSoft User</label>
+                            <select class="form-control" style="width: 50%" id='axoSoftUserId'></select>
+
+                        </div>
 
 
-                    <!-- <div class="field" style="width: 50%">
+                        <!-- <div class="field" style="width: 50%">
                     <label class="label">AxoSoft Default Worklog type id</label>
                     <div class="control">
                         <input class="input" type="number" id='axoSoftDefaultWorklogTypeId' />
                     </div>
                 </div>                 -->
 
-                    <div class="form-group">
-                        <label class="label">AxoSoft Default Worklog type </label>
-                        <select class="form-control" style="width: 50%" id='axoSoftDefaultWorklogTypeId'></select>
-                    </div>
-                </p>
-            </div>
-        </div>
-
-        <div class="card mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm">
-                        <h3>Content switching</h3>
-                    </div>
-                    <div class="col-sm-auto">
-                        <button class="btn btn-danger saveButton">Save</button>
-                    </div>
+                        <div class="form-group">
+                            <label class="label">AxoSoft Default Worklog type </label>
+                            <select class="form-control" style="width: 50%" id='axoSoftDefaultWorklogTypeId'></select>
+                        </div>
+                    </p>
+                    <button class="btn btn-danger saveButton">Save</button>
                 </div>
             </div>
-            <div class="card-body">
-                <p class="card-text">
-                    <div class="form-group">
-                        <label>Content switch project id</label>
-                        <input class="form-control" type="number" id='contentSwitchProjectId' />
-                    </div>
 
-                    <div class="form-group">
-                        <label>Zone re-enter time</label>
-                        <input class="form-control" type="number" id='contentSwitchZoneReEnterTime' />minutes
-                    </div>
+            <div class="card m-3 shadow-lg d-none">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        Content switching
+                    </h3>
 
-                    <div class="form-group">
-                        <label>Development task name</label>
-                        <input class="form-control" id='developmentTaskName' />
-                    </div>
-                </p>
-            </div>
-        </div>
+                    <p class="card-text">
+                        <div class="form-group">
+                            <label>Content switch project id</label>
+                            <input class="form-control" type="number" id='contentSwitchProjectId' />
+                        </div>
 
-        <div class="card mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm">
-                        <h3>All Hours</h3>
-                    </div>
-                    <div class="col-sm-auto">
-                        <button class="btn btn-danger saveButton">Save</button>
-                    </div>
+                        <div class="form-group">
+                            <label>Zone re-enter time</label>
+                            <input class="form-control" type="number" id='contentSwitchZoneReEnterTime' />minutes
+                        </div>
+
+                        <div class="form-group">
+                            <label>Development task name</label>
+                            <input class="form-control" id='developmentTaskName' />
+                        </div>
+                    </p>
+
+                    <button class="btn btn-danger saveButton">Save</button>
                 </div>
             </div>
-            <div class="card-body">
 
-                <p class="card-text">
+            <div class="card m-3 shadow-lg" style="width: 600px">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        All Hours
+                    </h3>
 
-                    <div class="form-group">
-                        <label>All Hours API Address</label>
-                        <input class="form-control" type="url" id='ahUrl' />
-                    </div>
+                    <p class="card-text">
+                        <div class="form-group">
+                            <label>All Hours API Address</label>
+                            <input class="form-control" type="url" id='ahUrl' />
+                        </div>
 
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input class="form-control" id='ahUserName' />
-                    </div>
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input class="form-control" id='ahUserName' />
+                        </div>
 
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input class="form-control" type="password" id='ahPassword' />
-                    </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input class="form-control" type="password" id='ahPassword' />
+                        </div>
 
-                    <div class="form-group">
-                        <div id='ahAccessToken' class='alert alert-primary'>hit get access token to obtain access to
-                            your attendance data.</div>
-                    </div>
+                        <div class="form-group">
+                            <div id='ahAccessToken' class='alert alert-primary'>hit get access token to obtain access to
+                                your attendance data.</div>
+                        </div>
 
 
-                    <div class="field is-grouped is-grouped-right">
-                        <p class="control">
-                            <button id='loginToAllHours' class="btn btn-warning">Get access token</button>
-                        </p>
-                    </div>
-                </p>
+                        <div class="field is-grouped is-grouped-right">
+                            <p class="control">
+                                <button id='loginToAllHours' class="btn btn-warning">Get access token</button>
+                            </p>
+                        </div>
+                    </p>
+
+                    <button class="btn btn-danger saveButton">Save</button>
+                </div>
             </div>
         </div>
     </div>
