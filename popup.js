@@ -477,72 +477,61 @@ function popup() {
     }
 
     function getTimeLogDetails(myHoursLog, workLogTypeId) {
-        var itemId = (myHoursLog.projectName
-            .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
-            .map(function (v) {
-                return +v;
-            }).shift();
 
         var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .tags');
         logStatus.empty();
 
-        console.info('copy to axo: itemId' + itemId);
+        getAxoItem(myHoursLog).then(item => {
+            console.info('copy to axo: item Id' + item.id);
+            console.info(item);
 
-        
-        if (itemId != undefined) {
-            console.info(itemId);
+            var worklog = new Worklog;
+            worklog.user.id = parseInt(_this.options.axoSoftUserId);
+            worklog.work_done.duration = myHoursLog.duration / 60; // mins
+            worklog.item.id = item.id;
+            worklog.item.item_type = item.item_type;
+            worklog.work_log_type.id = parseInt(workLogTypeId);
+            worklog.description = myHoursLog.note;
+            worklog.date_time = moment(myHoursLog.date).add(8, 'hours').toDate();
 
-            _this.axoSoftApi.getFeatureItem(itemId).then(function (item) {
-                //console.info(item);
+            //calc remaining time
+            var timeUnit = _.find(_this.timeUnits, function (t) {
+                return t.id === item.remaining_duration.time_unit.id
+            });
+            var remainingTimeMins = timeUnit.conversion_factor * item.remaining_duration.duration;
+            worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
 
-                var worklog = new Worklog;
-                worklog.user.id = parseInt(_this.options.axoSoftUserId);
-                worklog.work_done.duration = myHoursLog.duration / 60; // mins
-                worklog.item.id = parseInt(itemId);
-                worklog.item.item_type = item.item_type;
-                worklog.work_log_type.id = parseInt(workLogTypeId);
-                worklog.description = myHoursLog.note;
-                worklog.date_time = moment(myHoursLog.date).add(8, 'hours').toDate();
-
-                //calc remaining time
-                var timeUnit = _.find(_this.timeUnits, function (t) {
-                    return t.id === item.remaining_duration.time_unit.id
-                });
-                var remainingTimeMins = timeUnit.conversion_factor * item.remaining_duration.duration;
-                worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
-
-                //console.info(worklog);
-                //console.info(JSON.stringify(worklog));
-
-                _this.axoSoftApi.addWorkLog(worklog)
-                    .then(
-                        function () {
-                            console.info('worklog added');
-                            var success = $('<span>').addClass('tag');
-                            var reminingHrs = Math.round(worklog.remaining_time.duration / 60);
-                            if (reminingHrs > 0) {
-                                success.addClass('is-success')
-                            } else {
-                                success.addClass('is-warning')
-                            }
-                            success.text(reminingHrs + " hrs left");
-
-                            logStatus.append(success);
-                            //logStatus.append('<span>').addClass('tag is-success').text("OK -- " + +" hrs left");
+            _this.axoSoftApi.addWorkLog(worklog)
+                .then(
+                    function () {
+                        console.info('worklog added');
+                        var success = $('<span>').addClass('tag');
+                        var reminingHrs = Math.round(worklog.remaining_time.duration / 60);
+                        if (reminingHrs > 0) {
+                            success.addClass('is-success')
+                        } else {
+                            success.addClass('is-warning')
                         }
-                    )
-                    .catch(
-                        function () {
-                            logStatus.append('<span>').addClass('tag is-danger').text("error adding log").css('color: red');
-                            console.info('worklog add failed');
-                        }
-                    )
+                        success.text(reminingHrs + " hrs left");
 
+                        logStatus.append(success);
+                        //logStatus.append('<span>').addClass('tag is-success').text("OK -- " + +" hrs left");
+                    }
+                )
+                .catch(
+                    function () {
+                        logStatus.append('<span>').addClass('tag is-danger').text("error adding log").css('color: red');
+                        console.info('worklog add failed');
+                    }
+                )
 
-            })
-        } else {
-            logStatus.append('<span>').addClass('tag is-danger').text("could not find the item id");
-        }
+        })
+            .catch(
+                function () {
+                    logStatus.append('<span>').addClass('tag is-danger').text("could not find the item id");
+                }
+
+            )
     }
 
     function getAxoItem(myHoursLog) {
@@ -583,16 +572,12 @@ function popup() {
         }
         else {
             $('#alertContainer').hide();
-
             $('#axoNotAccessible').hide();
             try {
                 _this.axoSoftApi.getWorkLogTypes().then(
                     function (response) {
-                        //console.info(response);
                         _this.worklogTypes = response;
-
                         _this.axoSoftApi.getTimeUnits().then(function (response) {
-                            //console.info(response);
                             _this.timeUnits = response;
 
                             $.each(_this.myHoursLogs, function (index, myHoursLog) {
