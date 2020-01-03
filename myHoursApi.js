@@ -42,27 +42,13 @@ function MyHoursApi(currentUser) {
 
                 var loginData = {
                     clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
-                    email: "davidsakelsek@gmail.com",
+                    email,
                     grantType: "password",
-                    password: "password00"
+                    password
                 };
 
-                // $.post({
-                //     //url: "https://api.myhours.com/tokens",
-                //     url: baseUrl + "tokens/login",
-                //     contentType: "application/json",
-                //     data: JSON.stringify(loginData),
-                //     success: function (data) {
-                //         return resolve(data);
-                //     },
-                //     error: function (data) {
-                //         console.log(data);
-                //         return reject(Error());
-                //     }
-                // });
 
                 $.ajax({
-                    //url: "https://api.myhours.com/tokens",
                     url: baseUrl + "tokens/login",
                     contentType: "application/json",
                     type: "POST",
@@ -78,34 +64,6 @@ function MyHoursApi(currentUser) {
             }
         )
     }
-
-    // _this.getLogs = function (date) {
-    //     return new Promise(
-    //         function (resolve, reject) {
-    //             console.info("api: getting logs");
-
-    //             $.ajax({
-    //                 //url: "https://api.myhours.com/logs",
-    //                 url: baseUrl + "logs",
-    //                 headers: {
-    //                     "Authorization": "Bearer " + _this.currentUser.accessToken
-    //                 },
-    //                 type: "GET",
-    //                 data: {
-    //                     dateFrom: moment(date).format("YYYY-MM-DD"),
-    //                     dateTo: moment(date).format("YYYY-MM-DD")
-    //                 },
-    //                 success: function (data) {
-    //                     resolve(data);
-    //                 },
-    //                 error: function (data) {
-    //                     console.error(data);
-    //                     reject(Error());
-    //                 }
-    //             });
-    //         }
-    //     )
-    // }
 
     _this.getLogs = function (date) {
         date = date.startOf('day');
@@ -146,15 +104,11 @@ function MyHoursApi(currentUser) {
                 console.info("api: getting times");
 
                 $.ajax({
-                    //url: "https://api.myhours.com/times",
                     url: baseUrl + "times/" + logId,
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
                     type: "GET",
-                    // data: JSON.stringify({
-                    //     logId: logId,
-                    // }),
                     success: function (data) {
                         resolve(data);
                     },

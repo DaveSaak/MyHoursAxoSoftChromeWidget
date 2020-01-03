@@ -15,6 +15,15 @@
     /* background: linear-gradient(-30deg, #cf215bE5, #cf215bE5 45%, #cf215b 45%) #fff; */
 }
 
+#loginContainer input{
+    font-size: 0.9em;
+}
+
+.btn.rounded-x,
+input.rounded-x {
+    border-radius: 20px;
+}
+
 .panicButton {
     display: inline-block;
     text-decoration: none;

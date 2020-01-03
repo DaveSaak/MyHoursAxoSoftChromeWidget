@@ -48,68 +48,61 @@
 <body class="narrow">
 
     <div id='loginContainer' style="display: none">
-        <section class="hero ">
-            <div class="hero-body">
-                <div class="container is-fluid">
+        <div class="m-5 d-flex flex-column align-self-center">
 
-                    <div class="box12">
-                        <img src="images/myhourslogo.png" />
-                        <div class="field">
-                            <!-- <p class="control has-icons-left has-icons-right"> -->
-                            <input class="input" type="email" placeholder="Email" id='email'>
-                            <!-- </p> -->
-                        </div>
-                        <div class="field">
-                            <!-- <p class="control has-icons-left"> -->
-                            <input class="input" type="password" placeholder="Password" id='password'>
-                            <!-- </p> -->
-                        </div>
-                        <button id='loginButton' class="button is-info">Login</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- <img src="images/myhourslogo.png" /> -->
+        <h3 class="mb-4 text-uppercase text-center">Login to My Hours</h3>
+        <div class="field">
+            <!-- <label class="text-uppercase text-sm" for="email">Email</label> -->
+            <input class="input " type="email" placeholder="email" id='email'>
+        </div>
+        <div class="field">
+            <!-- <label class="text-uppercase text-sm" for="password">password</label> -->
+            <input class="input " type="password" placeholder="Password" id='password'>
+        </div>
+        <button id='loginButton' class="btn btn-dark shadow my-2">Login</button>
+        </div>
     </div>
 
-    <!-- <div id='mainContainer' style="display: none;" class="box12"> -->
-    <section>
-        <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
-            <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
-            <div class="timeControls d-flex align-self-center">
+    <div id='mainContainer' style="display: none;" class="box12">
+        <section>
+            <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
+                <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
+                <div class="timeControls d-flex align-self-center">
 
-                <button id="previousDay" class="btn btn-sm roundButton noFocus rounded-circle ml-3 hiddenButton">
-                    <i class="fas fa-angle-left"></i>
-                </button>
+                    <button id="previousDay" class="btn btn-sm roundButton noFocus rounded-circle ml-3 hiddenButton">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
 
-                <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
-                    <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
+                    <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
+                        <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
+                    </div>
+
+                    <button id="nextDay" class="btn btn-sm roundButton noFocus rounded-circle hiddenButton">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
                 </div>
 
-                <button id="nextDay" class="btn btn-sm roundButton noFocus rounded-circle hiddenButton">
-                    <i class="fas fa-angle-right"></i>
+
+                <button id='copyToAxoSoftButton'
+                    class="ml-auto mr-2 btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                    type="button" title='copy My Hours logs to Axo worklog'>
+                    <i class="fas fa-seedling"></i>
                 </button>
-            </div>
 
+                <button id='optionsButton'
+                    class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                    type="button" title='settings'>
+                    <i class="fas fa-cog"></i>
+                </button>
 
-            <button id='copyToAxoSoftButton'
-                class="ml-auto mr-2 btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
-                type="button" title='copy My Hours logs to Axo worklog'>
-                <i class="fas fa-seedling"></i>
-            </button>
+                <button id='logOutButton'
+                    class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-3"
+                    type="button" title='log out from My Hours'>
+                    <i class="fas fa-door-open"></i>
+                </button>
 
-            <button id='optionsButton'
-                class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
-                type="button" title='settings'>
-                <i class="fas fa-cog"></i>
-            </button>
-
-            <button id='logOutButton'
-                class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-3"
-                type="button" title='log out from My Hours'>
-                <i class="fas fa-door-open"></i>
-            </button>
-
-            <!-- <div class="btn-group mr-3 invisible">
+                <!-- <div class="btn-group mr-3 invisible">
                     <button type="button"
                         class="btn btn-default dropdown-toggle btn-sm noFocus text-uppercase roundButtonX"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -126,84 +119,85 @@
                         </button>
                     </div>
                 </div> -->
-        </div>
-    </section>
-
-    <div id="alertContainer" class="rowQ" style="display: none">
-        <div class="alert alert-primary" role="alert">
-            A simple primary alert. Check it out!
-        </div>
-    </div>
-
-    <section class="pt-2 pb-2">
-
-        <div class="card-deck mx-3">
-            <div class="card text-left shadow" style="width: 18rem;">
-                <div class="card-body">
-                    <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
-
-                    <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
-                </div>
             </div>
+        </section>
 
-            <div class="card text-left shadow" style="width: 18rem;">
-                <div class="card-body">
-                    <span id="mhTotal" class="axoTotal font-weight-bold"></span>
-                    <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
-                </div>
-            </div>
-
-            <div class="card text-left shadow" style="width: 18rem;">
-                <div class="card-body">
-                    <span id="axoTotal" class="axoTotal font-weight-bold"></span>
-                    <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo</small>
-                </div>
-            </div>
-
-
-            <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
-                <div class="card-body">
-                    <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
-
-                    <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
-                </div>
+        <div id="alertContainer" class="rowQ" style="display: none">
+            <div class="alert alert-primary" role="alert">
+                A simple primary alert. Check it out!
             </div>
         </div>
 
-        <div class="container hero-footQ" style="margin: 20pxX; display: none;">
-            <div class="containerQ is-fluidQ">
-                <div id='mainContainer3'>
-                    <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
+        <section class="pt-2 pb-2">
+
+            <div class="card-deck mx-3">
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
+
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
+                    </div>
+                </div>
+
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="mhTotal" class="axoTotal font-weight-bold"></span>
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
+                    </div>
+                </div>
+
+                <div class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="axoTotal" class="axoTotal font-weight-bold"></span>
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo</small>
+                    </div>
+                </div>
+
+
+                <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
+                    <div class="card-body">
+                        <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
+
+                        <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section class="container mb-4 mt-4">
-        <div class="hero-footQ my-2">
-            <div id="topContainer" class="container is-fluid customScroller" style="margin-left:0px;margin-right:0px">
-                <div id='timelineContainer'>
-                    <div id='timeline'>
+            <div class="container hero-footQ" style="margin: 20pxX; display: none;">
+                <div class="containerQ is-fluidQ">
+                    <div id='mainContainer3'>
+                        <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section>
-        <div class="mx-4" id="logsContainer">
-            <ul id='logs' class="customScroller">
-            </ul>
+        <section class="container mb-4 mt-4">
+            <div class="hero-footQ my-2">
+                <div id="topContainer" class="container is-fluid customScroller"
+                    style="margin-left:0px;margin-right:0px">
+                    <div id='timelineContainer'>
+                        <div id='timeline'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <!-- <div class="d-flex justify-content-start my-4 pt-3">
+        <section>
+            <div class="mx-4" id="logsContainer">
+                <ul id='logs' class="customScroller">
+                </ul>
+
+                <!-- <div class="d-flex justify-content-start my-4 pt-3">
                 <button id='copyToAxoSoftButton' class="actionButton p-2 shadow" type="button">
                     <span class="px-3">copy logs to Axo worklog</span>
                 </button>
             </div> -->
 
-        </div>
-    </section>
+            </div>
+        </section>
     </div>
 </body>
 

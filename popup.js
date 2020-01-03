@@ -302,7 +302,7 @@ function popup() {
                     getAxoItem(data).then(item => {
                         // var logStatus = $('*[data-logid="' + data.id + '"] .statusColumn .tags');
                         // logStatus.empty();
-                        // var success = $('<span>').addClass('tag').text(" item found on Axo");
+                        // var success = $('<span>').addClass('tag').text(item.name);
                         // logStatus.append(success);
                     },
                         function (err) {
@@ -477,20 +477,24 @@ function popup() {
     }
 
     function getTimeLogDetails(myHoursLog, workLogTypeId) {
-        var itemId = (myHoursLog.projectName
-            .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
-            .map(function (v) {
-                return +v;
-            }).shift();
+        // var itemId = (myHoursLog.projectName
+        //     .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
+        //     .map(function (v) {
+        //         return +v;
+        //     }).shift();
 
         var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .tags');
         logStatus.empty();
 
         console.info('copy to axo: itemId' + itemId);
+
+        getAxoItem(myHoursLog).then(item =>
+
         if (itemId != undefined) {
             console.info(itemId);
 
-            _this.axoSoftApi.getFeatureItem(itemId).then(function (item) {
+            _this.axoSoftApi.getFeatureItem(itemId).then(function (item) 
+            {
                 //console.info(item);
 
                 var worklog = new Worklog;
