@@ -70,17 +70,17 @@ ul#logs li .column {
     height: 71px;
 }
 
-#topContainer::-webkit-scrollbar {
+.customScroller::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-#topContainer::-webkit-scrollbar-track {
+.customScroller::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
 }
 
-#topContainer::-webkit-scrollbar-thumb {
+.customScroller::-webkit-scrollbar-thumb {
     border-radius: 10px;
     box-shadow: inset 0 0 6px  #2c7baf;
 }
@@ -169,3 +169,62 @@ ul#logs li .column {
     /* background-color: #f0f8ff8a; */
     /* font-size: 1.1em; */
 }
+
+ul#logs{
+    /* max-height: 220px;
+    overflow-y: scroll;
+    overflow-x: hidden; */
+}
+
+
+
+.actionButton {
+    border: none;
+    display: inline-block;
+    border-radius: 99px;
+    /* color: white; */
+    position: relative;
+    z-index: 1;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .actionButton:before, 
+  .actionButton:after {
+    content: ' ';
+    position: absolute;
+    border-radius: 99px;
+  }
+  
+  .actionButton:before {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -2;
+    background: #503b9a;
+    background: linear-gradient(to right, #503b9a 0%,#269cc1 100%);
+  }
+  
+  .actionButton:after {
+    top: 2px; 
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    /* background-color: #d8d8d873; */
+    background-color: white;
+    z-index: -1;
+    opacity: 1;
+    transition: all 0.6s ease-in-out;
+    
+  }
+  
+  .actionButton:hover:after {
+    opacity: 0;
+    color:white;
+  }
+
+  .actionButton:hover {
+    color:white;
+  }

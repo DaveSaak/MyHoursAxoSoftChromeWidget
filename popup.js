@@ -202,6 +202,10 @@ function popup() {
 
         getAllHoursData();
 
+        var logsContainer2 = $('#logsContainer');
+        // logsContainer2.toggleClass('d-none', true);
+        // topContainer.toggleClass('d-none', true);
+
         _this.myHoursApi.getLogs(_this.currentDate).then(
             function (data) {
                 _this.myHoursLogs = data;
@@ -233,6 +237,11 @@ function popup() {
                 }
 
                 var totalMins = 0;
+
+                logsContainer2.toggleClass('d-none', data.length === 0);
+                topContainer.toggleClass('d-none', data.length === 0);
+
+
                 $.each(data, function (index, data) {
                     var colorIndex = nameToIndex(data.projectName, 10);
                     var logColor = colors[colorIndex];

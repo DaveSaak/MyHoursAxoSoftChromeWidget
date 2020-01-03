@@ -71,45 +71,45 @@
         </section>
     </div>
 
-    <div id='mainContainer' style="display: none;" class="box12">
-        <section>
-            <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
-                <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
-                <div class="timeControls d-flex align-self-center">
+    <!-- <div id='mainContainer' style="display: none;" class="box12"> -->
+    <section>
+        <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
+            <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
+            <div class="timeControls d-flex align-self-center">
 
-                    <button id="previousDay" class="btn btn-sm roundButton noFocus rounded-circle ml-3 hiddenButton">
-                        <i class="fas fa-angle-left"></i>
-                    </button>
+                <button id="previousDay" class="btn btn-sm roundButton noFocus rounded-circle ml-3 hiddenButton">
+                    <i class="fas fa-angle-left"></i>
+                </button>
 
-                    <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
-                        <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
-                    </div>
-
-                    <button id="nextDay" class="btn btn-sm roundButton noFocus rounded-circle hiddenButton">
-                        <i class="fas fa-angle-right"></i>
-                    </button>
+                <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
+                    <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
                 </div>
 
-
-                <button id='copyToAxoSoftButton'
-                    class="ml-auto btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
-                    type="button" title='copy My Hours logs to Axo worklog'>
-                    <i class="fas fa-seedling"></i>
+                <button id="nextDay" class="btn btn-sm roundButton noFocus rounded-circle hiddenButton">
+                    <i class="fas fa-angle-right"></i>
                 </button>
+            </div>
 
-                <button id='optionsButton'
-                    class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-2"
-                    type="button" title='settings'>
-                    <i class="fas fa-tasks"></i>
-                </button>
 
-                <button id='logOutButton'
-                    class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-3"
-                    type="button" title='log out from My Hours'>
-                    <i class="fas fa-door-open"></i>
-                </button>
+            <button id='copyToAxoSoftButton'
+                class="ml-auto mr-2 btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                type="button" title='copy My Hours logs to Axo worklog'>
+                <i class="fas fa-seedling"></i>
+            </button>
 
-                <!-- <div class="btn-group mr-3 invisible">
+            <button id='optionsButton'
+                class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
+                type="button" title='settings'>
+                <i class="fas fa-cog"></i>
+            </button>
+
+            <button id='logOutButton'
+                class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center mr-3"
+                type="button" title='log out from My Hours'>
+                <i class="fas fa-door-open"></i>
+            </button>
+
+            <!-- <div class="btn-group mr-3 invisible">
                     <button type="button"
                         class="btn btn-default dropdown-toggle btn-sm noFocus text-uppercase roundButtonX"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -126,129 +126,84 @@
                         </button>
                     </div>
                 </div> -->
-            </div>
-        </section>
+        </div>
+    </section>
 
-        <div id="alertContainer" class="rowQ" style="display: none">
-            <div class="alert alert-primary" role="alert">
-                A simple primary alert. Check it out!
+    <div id="alertContainer" class="rowQ" style="display: none">
+        <div class="alert alert-primary" role="alert">
+            A simple primary alert. Check it out!
+        </div>
+    </div>
+
+    <section class="pt-2 pb-2">
+
+        <div class="card-deck mx-3">
+            <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
+
+                    <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
+                </div>
+            </div>
+
+            <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <span id="mhTotal" class="axoTotal font-weight-bold"></span>
+                    <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
+                </div>
+            </div>
+
+            <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <span id="axoTotal" class="axoTotal font-weight-bold"></span>
+                    <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo</small>
+                </div>
+            </div>
+
+
+            <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
+                <div class="card-body">
+                    <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
+
+                    <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
+                </div>
             </div>
         </div>
 
-        <section class="pt-2 pb-4">
-
-            <div class="card-deck mx-3">
-                <div class="card text-left shadow" style="width: 18rem;">
-                    <div class="card-body">
-                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
-
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
-                    </div>
-                </div>
-
-                <div class="card text-left shadow" style="width: 18rem;">
-                    <div class="card-body">
-                        <span id="mhTotal" class="axoTotal font-weight-bold"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
-                    </div>
-                </div>
-
-                <div class="card text-left shadow" style="width: 18rem;">
-                    <div class="card-body">
-                        <span id="axoTotal" class="axoTotal font-weight-bold"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo work logs</small>
-                    </div>
-                </div>
-
-
-                <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
-                    <div class="card-body">
-                        <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
-
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
+        <div class="container hero-footQ" style="margin: 20pxX; display: none;">
+            <div class="containerQ is-fluidQ">
+                <div id='mainContainer3'>
+                    <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="container hero-footQ" style="margin: 20pxX; display: none;">
-                <div class="containerQ is-fluidQ">
-                    <div id='mainContainer3'>
-                        <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
-                        </div>
+    <section class="container mb-4 mt-4">
+        <div class="hero-footQ my-2">
+            <div id="topContainer" class="container is-fluid customScroller" style="margin-left:0px;margin-right:0px">
+                <div id='timelineContainer'>
+                    <div id='timeline'>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="container mb-4">
-            <div class="hero-footQ my-2">
-                <div id="topContainer" class="container is-fluid" style="margin-left:0px;margin-right:0px">
-                    <div id='timelineContainer'>
-                        <div id='timeline'>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section>
+        <div class="mx-4" id="logsContainer">
+            <ul id='logs' class="customScroller">
+            </ul>
 
-        <section class="container heroQ ">
-            <div class="hero-bodyX" style="margin: 20px">
-                <div class="containerQ is-fluidQ">
-                    <div id='mainContainer2'>
-                        <div style="margin-bottom: 20pxx;">
-                            <ul id='logs'>
-                            </ul>
-                        </div>
-
-                        <!-- <div style="position: absolute; right: 0; bottom: 0; width: 80px; height: 80px; border-top-left-radius: 50%; background-color: lightgray;">
-                            hit me</div> -->
-                    </div>
-
-                </div>
-            </div>
-
-
-
-
-            <!-- 
-                    <div class="d-flex justify-content-center mb-4">
-                        <button id='copyToAxoSoftButton' class="btn shadow btn-sm px-2" style="border-radius: 15px;" type="button">
-                            copy logas to Axo worklog
-                        </button>
-                    </div> -->
-
-
-            <!-- <div>
-                <div class="d-flex flex-wrap align-self-center mx-3 mt-3 mb-2">
-
-                    <button id='copyToAxoSoftButton'
-                        class="ml-auto btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
-                        type="button" title='copy My Hours logs to Axo worklog'>
-                        <i class="fas fa-seedling"></i>
-                    </button>
-
-                    <button id='optionsButton'
-                        class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
-                        type="button" title='settings'>
-                        <i class="fas fa-tasks"></i>
-                    </button>
-
-                    <button id='logOutButton'
-                        class="btn roundButton noFocus rounded-circle d-flex align-self-center justify-content-center"
-                        type="button" title='log out from My Hours'>
-                        <i class="fas fa-door-open"></i>
-                    </button>
-                </div>
+            <!-- <div class="d-flex justify-content-start my-4 pt-3">
+                <button id='copyToAxoSoftButton' class="actionButton p-2 shadow" type="button">
+                    <span class="px-3">copy logs to Axo worklog</span>
+                </button>
             </div> -->
 
-
-
-        </section>
-
-
-
-
-
+        </div>
+    </section>
     </div>
 </body>
 
