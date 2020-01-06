@@ -246,21 +246,10 @@ ul#logs{
     border: solid black 0px;
   }
 
-
   .btn.btn-toggle:hover {
-    /* border-radius: 0; */
-    /* position: absolute; */
-    /* top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0; */
-    /* background-color: rgba(0, 0, 0, 1); */
     background-color: white;
     color: black;
     transition: border-color 0.4s ease 0s, background-color 0.4s ease 0s, color 0.4s ease 0s;
-
-    
-
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     border: solid rgba(95, 95, 95, 1) 0px;
   }
