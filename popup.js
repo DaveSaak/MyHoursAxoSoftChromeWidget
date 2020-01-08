@@ -200,187 +200,205 @@ function popup() {
         });
 
 
-        getAllHoursData();
+        _this.axoSoftApi.getWorkLogTypes().then(
+            function (response) {
+                _this.worklogTypes = response;
 
-        var logsContainer2 = $('#logsContainer');
-        // logsContainer2.toggleClass('d-none', true);
-        // topContainer.toggleClass('d-none', true);
+                getAllHoursData();
 
-        _this.myHoursApi.getLogs(_this.currentDate).then(
-            function (data) {
-                _this.myHoursLogs = data;
-                _this.myHoursTaskSummary = {};
+                var logsContainer2 = $('#logsContainer');
+                // logsContainer2.toggleClass('d-none', true);
+                // topContainer.toggleClass('d-none', true);
 
-                var logsContainer = $('#logs');
-                logsContainer.empty();
+                _this.myHoursApi.getLogs(_this.currentDate).then(
+                    function (data) {
+                        _this.myHoursLogs = data;
+                        _this.myHoursTaskSummary = {};
 
-                for (var i = 1; i <= 24; i++) {
-                    var tickColor = "lightgray";
-                    if (i % 6 == 0)
-                        tickColor = "#474747";
+                        var logsContainer = $('#logs');
+                        logsContainer.empty();
 
-
-                    var tick = $('<div>').css({
-                        left: (i * 60) / 1440 * _this.timeLineWidth + 'px',
-                        "background-color": tickColor,
-                    });
-                    tick.addClass('timeline-tick');
-                    tick.prop('title', i);
-                    timeline.append(tick);
-
-                    var time = $('<div>').css({
-                        left: ((i * 60) / 1440 * _this.timeLineWidth) - 10 + 'px',
-                    });
-                    time.addClass('timeline-time')
-                    time.text(i);
-                    timeline.append(time);
-                }
-
-                var totalMins = 0;
-
-                logsContainer2.toggleClass('d-none', data.length === 0);
-                topContainer.toggleClass('d-none', data.length === 0);
+                        for (var i = 1; i <= 24; i++) {
+                            var tickColor = "lightgray";
+                            if (i % 6 == 0)
+                                tickColor = "#474747";
 
 
-                $.each(data, function (index, data) {
-                    var colorIndex = nameToIndex(data.projectName, 10);
-                    var logColor = colors[colorIndex];
-
-                    totalMins = totalMins + (data.duration / 60);
-
-                    var log = $('<li>').attr("data-logId", data.id);
-                    var columns = $('<div>').addClass('columns');
-                    var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
-                    var tagGroup = $('<div>').addClass('tags has-addons');
-
-                    if (data.projectId != null) {
-                        var projectInfo = $('<span>')
-                            .text(data.projectName)
-                            .addClass('tag is-info')
-                            .css("background-color", logColor);
-                        tagGroup.append(projectInfo);
-                    } else {
-                        var projectInfo = $('<span>')
-                            .text("Unassigned time log. Will not be copied to Axo")
-                            .addClass('tag is-light is-rounded')
-                            .css("font-style", "italic");
-
-                        tagGroup.append(projectInfo);
-                    }
-
-                    if (data.taskId != null) {
-                        var taskInfo = $('<span>').text(data.taskName).addClass('tag is-dark').css("font-style", "italic");;
-                        tagGroup.append(taskInfo);
-
-                        if (_this.myHoursTaskSummary[data.taskName] == undefined) {
-                            _this.myHoursTaskSummary[data.taskName] = data.duration;
-                        } else {
-                            _this.myHoursTaskSummary[data.taskName] = _this.myHoursTaskSummary[data.taskName] + data.duration;
-                        }
-                    } else {
-                        if (_this.myHoursTaskSummary['_'] == undefined) {
-                            _this.myHoursTaskSummary['_'] = data.duration;
-                        } else {
-                            _this.myHoursTaskSummary['_'] = _this.myHoursTaskSummary['_'] + data.duration;
-                        }
-
-                    }
-                    columnA.append(tagGroup);
-
-                    var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
-
-                    if (data.duration != null) {
-                        var duration = minutesToString(data.duration / 60);
-                        var durationInfo = $('<span>').text(duration);
-                        columnB.append(durationInfo);
-                    }
-                    var columnC = $('<div>').addClass('column is-2 statusColumn');
-
-                    var status = ($('<div>').addClass('tags'));
-                    columnC.append(status);
-
-                    getAxoItem(data).then(item => {
-                        // var logStatus = $('*[data-logid="' + data.id + '"] .statusColumn .tags');
-                        // logStatus.empty();
-                        // var success = $('<span>').addClass('tag').text(item.name);
-                        // logStatus.append(success);
-                    },
-                        function (err) {
-                            var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                            logStatus.empty();
-                            var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
-                            logStatus.append(fail);
-                        });
-
-                    _this.myHoursApi.getTimes(data.id).then(
-                        function (times) {
-                            $.each(times, function (index, time) {
-                                var left = timeToPixel(time.startTime, _this.timeLineWidth);
-                                var right = timeToPixel(time.endTime, _this.timeLineWidth);
-                                var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                                var title = timePeriod + ' // ' + data.projectName + ' // ' + data.taskName;
-
-                                var barGraph = $('<div>');
-                                barGraph.addClass('timelineItem timeline-log');
-                                barGraph.prop('title', title);
-                                barGraph.attr('data-toggle', "tooltip");
-                                barGraph.attr('data-placement', "bottom");
-                                barGraph.attr('data-html', "true");
-                                barGraph.css({
-                                    left: left + 'px',
-                                    width: right - left + 'px',
-                                    "background-color": logColor,
-                                });
-                                timeline.append(barGraph);
-                                //barGraph.tooltip();
+                            var tick = $('<div>').css({
+                                left: (i * 60) / 1440 * _this.timeLineWidth + 'px',
+                                "background-color": tickColor,
                             });
+                            tick.addClass('timeline-tick');
+                            tick.prop('title', i);
+                            timeline.append(tick);
+
+                            var time = $('<div>').css({
+                                left: ((i * 60) / 1440 * _this.timeLineWidth) - 10 + 'px',
+                            });
+                            time.addClass('timeline-time')
+                            time.text(i);
+                            timeline.append(time);
                         }
-                    );
+
+                        var totalMins = 0;
+
+                        logsContainer2.toggleClass('d-none', data.length === 0);
+                        topContainer.toggleClass('d-none', data.length === 0);
+
+                        $.each(data, function (index, data) {
+                            var colorIndex = nameToIndex(data.projectName, 10);
+                            var logColor = colors[colorIndex];
+
+                            totalMins = totalMins + (data.duration / 60);
+
+                            var log = $('<li>').attr("data-logId", data.id);
+                            var columns = $('<div>').addClass('columns');
+                            var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
+                            var tagGroup = $('<div>').addClass('tags has-addons');
+
+                            // if (data.projectId != null) {
+                            //     var projectInfo = $('<span>')
+                            //         .text(data.projectName)
+                            //         .addClass('tag is-info')
+                            //         .css("background-color", logColor);
+                            //     tagGroup.append(projectInfo);
+                            // } else {
+                            //     var projectInfo = $('<span>')
+                            //         .text("Unassigned time log. Will not be copied to Axo")
+                            //         .addClass('tag is-light is-rounded')
+                            //         .css("font-style", "italic");
+                            //     tagGroup.append(projectInfo);
+                            // }
+
+                            if (data.taskId != null) {
+                                let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes);
+                                let worklogTypeName = getWorklogTypeName(worklogTypeId, _this.worklogTypes);
+
+                                var worklogTypeInfo = $('<span>')
+                                    .text(worklogTypeName)
+                                    .addClass('tag is-dark worklogType')
+                                    .css("font-style", "italic");
+                                tagGroup.prepend(worklogTypeInfo);
+
+                                //var taskInfo = $('<span>').text(data.taskName).addClass('tag is-dark').css("font-style", "italic");
+                                // tagGroup.append(taskInfo);
+
+                                // if (_this.myHoursTaskSummary[data.taskName] == undefined) {
+                                //     _this.myHoursTaskSummary[data.taskName] = data.duration;
+                                // } else {
+                                //     _this.myHoursTaskSummary[data.taskName] = _this.myHoursTaskSummary[data.taskName] + data.duration;
+                                // }
+                            } else {
+                                // if (_this.myHoursTaskSummary['_'] == undefined) {
+                                //     _this.myHoursTaskSummary['_'] = data.duration;
+                                // } else {
+                                //     _this.myHoursTaskSummary['_'] = _this.myHoursTaskSummary['_'] + data.duration;
+                                // }
+
+                            }
+                            columnA.append(tagGroup);
+
+                            var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
+
+                            if (data.duration != null) {
+                                var duration = minutesToString(data.duration / 60);
+                                var durationInfo = $('<span>').text(duration);
+                                columnB.append(durationInfo);
+                            }
+                            var columnC = $('<div>').addClass('column is-2 statusColumn');
+
+                            var status = ($('<div>').addClass('tags'));
+                            columnC.append(status);
+
+                            getAxoItem(data).then(item => {
+                                data.axoName = item.name;
+                                var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                                // logStatus.empty();
+                                var success = $('<span>')
+                                    .addClass('tag')
+                                    .text('#' + item.id + " -- " + item.name)
+                                    .css("background-color", logColor)
+                                    .css("color", "white");
+                                logStatus.append(success);
+                            },
+                                function (err) {
+                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                                    logStatus.empty();
+                                    var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
+                                    logStatus.append(fail);
+                                });
+
+                            _this.myHoursApi.getTimes(data.id).then(
+                                function (times) {
+                                    $.each(times, function (index, time) {
+                                        var left = timeToPixel(time.startTime, _this.timeLineWidth);
+                                        var right = timeToPixel(time.endTime, _this.timeLineWidth);
+                                        //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
+                                        var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
+
+                                        var barGraph = $('<div>');
+                                        barGraph.addClass('timelineItem timeline-log');
+                                        barGraph.prop('title', title);
+                                        barGraph.attr('data-toggle', "tooltip");
+                                        barGraph.attr('data-placement', "bottom");
+                                        barGraph.attr('data-html', "true");
+                                        barGraph.css({
+                                            left: left + 'px',
+                                            width: right - left + 'px',
+                                            "background-color": logColor,
+                                        });
+                                        timeline.append(barGraph);
+                                        //barGraph.tooltip();
+                                    });
+                                }
+                            );
 
 
-                    columns.append(columnB);
-                    columns.append(columnA);
-                    columns.append(columnC);
+                            columns.append(columnB);
+                            columns.append(columnA);
+                            columns.append(columnC);
 
-                    log.append(columns);
-                    logsContainer.append(log);
-                });
-                _this.timeRatio.setMyHours(totalMins);
-                $('#mhTotal').text(minutesToString(totalMins));
+                            log.append(columns);
+                            logsContainer.append(log);
+                        });
+                        _this.timeRatio.setMyHours(totalMins);
+                        $('#mhTotal').text(minutesToString(totalMins));
 
-                // let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
-                // let ahBottomRange = moment.duration(totalMins, 'minutes');
-                // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
+                        // let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
+                        // let ahBottomRange = moment.duration(totalMins, 'minutes');
+                        // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
 
-                $('#tasks').empty();
-                $.each(_this.myHoursTaskSummary, function (index, summary) {
-                    let summaryHours = Math.round(summary / 60 / 60 * 100) / 100;
+                        $('#tasks').empty();
+                        $.each(_this.myHoursTaskSummary, function (index, summary) {
+                            let summaryHours = Math.round(summary / 60 / 60 * 100) / 100;
 
-                    let taskCssClass = "is-info";
-                    if (index == 'development' && summaryHours >= 4) {
-                        taskCssClass = "is-success"
-                    } else if (index == 'development' && summaryHours < 1) {
-                        taskCssClass = "is-danger"
+                            let taskCssClass = "is-info";
+                            if (index == 'development' && summaryHours >= 4) {
+                                taskCssClass = "is-success"
+                            } else if (index == 'development' && summaryHours < 1) {
+                                taskCssClass = "is-danger"
+                            }
+
+                            var taskControl = $('<div>').addClass('control');
+                            var taskGroup = $('<div>').addClass('tags has-addons');
+                            var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
+                            var taskTime = $('<span>').text(minutesToString(summary / 60)).addClass('tag').addClass(taskCssClass);
+
+                            taskGroup.append(taskName);
+                            taskGroup.append(taskTime);
+
+                            taskControl.append(taskGroup);
+
+                            $('#tasks').append(taskControl);
+                        });
+                    },
+                    function () {
+                        console.info('failed to get logs');
+                        showLoginPage();
                     }
-
-                    var taskControl = $('<div>').addClass('control');
-                    var taskGroup = $('<div>').addClass('tags has-addons');
-                    var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
-                    var taskTime = $('<span>').text(minutesToString(summary / 60)).addClass('tag').addClass(taskCssClass);
-
-                    taskGroup.append(taskName);
-                    taskGroup.append(taskTime);
-
-                    taskControl.append(taskGroup);
-
-                    $('#tasks').append(taskControl);
-                });
-            },
-            function () {
-                console.info('failed to get logs');
-                showLoginPage();
+                );
             }
-        );
+        )
     }
 
     function getAllHoursData() {
@@ -416,12 +434,12 @@ function popup() {
                                         var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
                                         var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
 
-                                        var timePeriod = intervalToString(segment.startTime, segment.endTime, segment.duration)
+                                        //var timePeriod = intervalToString(segment.startTime, segment.endTime, segment.duration)
 
                                         var barGraph = $('<div>');
-                                        barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
+                                        //barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
                                         barGraph.addClass('allHoursSegment timelineItem');
-                                        barGraph.prop('title', timePeriod);
+                                        barGraph.prop('title', intervalToString(segment.StartTime, segment.EndTime, segment.Value));
                                         barGraph.css({
                                             left: left + 'px',
                                             width: right - left + 'px',
@@ -612,6 +630,33 @@ function popup() {
             }
         }
     }
+
+    function getWorklogTypeId(taskName, worklogTypes) {
+        if (taskName != undefined) {
+            var workLogType = _.find(worklogTypes,
+                function (w) {
+                    return w.name.toUpperCase() === taskName.toUpperCase();
+                });
+
+            if (workLogType != undefined) {
+                return workLogType.id;
+            }
+        }
+        return _this.options.axoSoftDefaultWorklogTypeId;
+    }
+
+    function getWorklogTypeName(id, worklogTypes) {
+        var workLogType = _.find(worklogTypes,
+            function (w) {
+                return w.id.toString() === id.toString();
+            });
+
+        if (workLogType) {
+            return workLogType.name;
+        }
+        return 'unknown worklog type'
+    }
+
 
     function timeToPixel(date, fullLength) {
         var mmt = moment(date);
