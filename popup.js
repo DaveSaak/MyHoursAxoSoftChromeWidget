@@ -312,47 +312,51 @@ function popup() {
 
                             getAxoItem(data).then(item => {
                                 data.axoName = item.name;
+                                data.axoId = item.id;
+                                data.color = colors[nameToIndex(data.axoName, 10)];
+    
+
                                 var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                 // logStatus.empty();
                                 var success = $('<span>')
                                     .addClass('tag')
-                                    .text('#' + item.id + " -- " + item.name)
-                                    .css("background-color", logColor)
+                                    .text('#' + data.axoId + " -- " + data.axoName)
+                                    .css("background-color", data.color)
                                     .css("color", "white");
                                 logStatus.append(success);
-                            },
-                                function (err) {
-                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                                    logStatus.empty();
-                                    var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
-                                    logStatus.append(fail);
-                                });
 
-                            _this.myHoursApi.getTimes(data.id).then(
-                                function (times) {
-                                    $.each(times, function (index, time) {
-                                        var left = timeToPixel(time.startTime, _this.timeLineWidth);
-                                        var right = timeToPixel(time.endTime, _this.timeLineWidth);
-                                        //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                                        var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
-
-                                        var barGraph = $('<div>');
-                                        barGraph.addClass('timelineItem timeline-log');
-                                        barGraph.prop('title', title);
-                                        barGraph.attr('data-toggle', "tooltip");
-                                        barGraph.attr('data-placement', "bottom");
-                                        barGraph.attr('data-html', "true");
-                                        barGraph.css({
-                                            left: left + 'px',
-                                            width: right - left + 'px',
-                                            "background-color": logColor,
+                                _this.myHoursApi.getTimes(data.id).then(
+                                    function (times) {
+                                        $.each(times, function (index, time) {
+                                            var left = timeToPixel(time.startTime, _this.timeLineWidth);
+                                            var right = timeToPixel(time.endTime, _this.timeLineWidth);
+                                            //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
+                                            var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
+    
+                                            var barGraph = $('<div>');
+                                            barGraph.addClass('timelineItem timeline-log');
+                                            barGraph.prop('title', title);
+                                            barGraph.attr('data-toggle', "tooltip");
+                                            barGraph.attr('data-placement', "bottom");
+                                            barGraph.attr('data-html', "true");
+                                            barGraph.css({
+                                                left: left + 'px',
+                                                width: right - left + 'px',
+                                                "background-color": data.color,
+                                            });
+                                            timeline.append(barGraph);
+                                            //barGraph.tooltip();
                                         });
-                                        timeline.append(barGraph);
-                                        //barGraph.tooltip();
-                                    });
-                                }
-                            );
+                                    }
+                                );
 
+                            },
+                            function (err) {
+                                var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                                logStatus.empty();
+                                var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
+                                logStatus.append(fail);
+                            });
 
                             columns.append(columnB);
                             columns.append(columnA);
