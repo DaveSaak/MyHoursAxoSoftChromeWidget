@@ -277,7 +277,8 @@ function popup() {
                                 var worklogTypeInfo = $('<span>')
                                     .text(worklogTypeName)
                                     .addClass('tag is-dark worklogType')
-                                    .css("font-style", "italic");
+                                    .css("font-style", "italicX")
+                                    .css("width", "120px")
                                 tagGroup.prepend(worklogTypeInfo);
 
                                 //var taskInfo = $('<span>').text(data.taskName).addClass('tag is-dark').css("font-style", "italic");
