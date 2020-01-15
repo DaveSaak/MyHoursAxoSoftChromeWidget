@@ -156,6 +156,8 @@ function popup() {
             $('input#email').val(_this.currentUser.email);
         }
 
+        $('#password').focus();
+
     }
 
     function showOptionsPage() {
