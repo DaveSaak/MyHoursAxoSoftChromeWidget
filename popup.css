@@ -158,9 +158,6 @@ ul#logs li .column {
     background-color: white;    
 }
 
-.btn.hiddenButton {
-    display: none;
-}
 
 .btn.roundButton:hover {
     background-color: #cacaca;
@@ -173,9 +170,13 @@ ul#logs li .column {
     box-shadow: none;
 }
 
+/* .btn.hiddenButton {
+    display: none;
+}
+
 .timeControls:hover .btn.hiddenButton {
     display: block;
-}
+} */
 
 .columns:hover{
     /* background-color: #f0f8ff8a; */
