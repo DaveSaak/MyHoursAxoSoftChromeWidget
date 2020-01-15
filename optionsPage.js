@@ -68,6 +68,12 @@ $(function () {
 
         });
 
+        $('input#ahPassword').keyup(function (e) {
+            if (e.keyCode == 13) {
+                loginToAllHours();
+            }
+        });         
+
     $('.saveButton').click(function () {
         _this.options.axoSoftUrl = $('#axoSoftUrl').val();
         _this.options.axoSoftToken = $('#axoSoftToken').val();
@@ -95,6 +101,10 @@ $(function () {
     });
 
     $('#loginToAllHours').click(function () {
+        loginToAllHours();
+    });
+
+    function loginToAllHours(){
         _this.allHoursApi.getAccessToken(
             $('#ahUserName').val(),
             $('#ahPassword').val()
@@ -125,8 +135,8 @@ $(function () {
                 console.info('error while geeting token');
                 console.error(err);
             }
-        );
-    });
+        );        
+    }
 
     function saveOptions() {
         _this.options.save().then(function () {
