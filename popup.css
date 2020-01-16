@@ -158,9 +158,25 @@ ul#logs li .column {
     background-color: white;    
 }
 
+.btn.roundButton.flat {
+    box-shadow: none;
+}
+
 
 .btn.roundButton:hover {
     background-color: #cacaca;
+    border-radius: 50%; 
+    color: #3d4144;   
+}
+
+.btn.roundButton.success:hover {
+    background-color: darkseagreen;
+    border-radius: 50%; 
+    color: #3d4144;   
+}
+
+.btn.roundButton.danger:hover {
+    background-color: coral;
     border-radius: 50%; 
     color: #3d4144;   
 }
