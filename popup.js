@@ -187,7 +187,7 @@ function popup() {
         var timeline = $('#timeline');
         timeline.empty();
 
-        var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107", "#FF5722", "#795548"];
+        var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
         $('.date').text(_this.currentDate.format('dddd, DD.MMM'));
 
@@ -248,7 +248,7 @@ function popup() {
                         topContainer.toggleClass('d-none', data.length === 0);
 
                         $.each(data, function (index, data) {
-                            var colorIndex = nameToIndex(data.projectName, 10);
+                            var colorIndex = nameToIndex(data.projectName, 8);
                             var logColor = colors[colorIndex];
 
                             totalMins = totalMins + (data.duration / 60);
@@ -316,7 +316,7 @@ function popup() {
                             getAxoItem(data).then(item => {
                                 data.axoName = item.name;
                                 data.axoId = item.id;
-                                data.color = colors[nameToIndex(data.axoName, 10)];
+                                data.color = colors[nameToIndex(data.axoName, 8)];
     
 
                                 var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
