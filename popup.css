@@ -280,11 +280,24 @@ ul#logs{
     border: solid rgba(95, 95, 95, 1) 0px;
   }
 
-  .tagX.tag-button {
+  .tag.tag-button {
       display: none;
       /* background-color: darkseagreen; */
   }
 
-  ul#logs li:hover .tagX.tag-button {
+  ul#logs li:hover .tag.tag-button {
       display: block;
   }
+
+  li.logContainer.active .mainColumn .tags {
+    transform: scale(1.1) translate(17px, 0px);
+    transition: all 0.2s;
+  }
+
+  .tag.worklogType {
+      width: 120px;
+  }
+
+  /* .tag.axoItemName {
+      max-width: 200px;
+  } */

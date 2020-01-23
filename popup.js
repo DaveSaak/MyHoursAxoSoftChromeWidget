@@ -278,7 +278,9 @@ function popup() {
 
                             totalMins = totalMins + (data.duration / 60);
 
-                            var log = $('<li>').attr("data-logId", data.id);
+                            var log = $('<li>')
+                                .attr("data-logId", data.id)
+                                .addClass("logContainer");
                             var columns = $('<div>').addClass('columns');
                             var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
                             var tagGroup = $('<div>').addClass('tags has-addons');
@@ -305,7 +307,7 @@ function popup() {
                                     .text(worklogTypeName)
                                     .addClass('tag is-dark worklogType')
                                     .css("font-style", "italicX")
-                                    .css("width", "120px")
+                                    //.css("width", "120px")
                                 tagGroup.prepend(worklogTypeInfo);
 
                                 //var taskInfo = $('<span>').text(data.taskName).addClass('tag is-dark').css("font-style", "italic");
@@ -333,7 +335,7 @@ function popup() {
                                 var durationInfo = $('<span>').text(duration);
                                 columnB.append(durationInfo);
                             }
-                            var columnC = $('<div>').addClass('column is-2 statusColumn');
+                            var columnC = $('<div>').addClass('column is-3 statusColumn');
 
                             var status = ($('<div>').addClass('tags'));
                             columnC.append(status);
@@ -350,7 +352,7 @@ function popup() {
                                 var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                 // logStatus.empty();
                                 var success = $('<span>')
-                                    .addClass('tag')
+                                    .addClass('tag axoItemName')
                                     .text('' + data.axoId + " -- " + data.axoName)
                                     .css("background-color", data.color)
                                     .css("color", "white")
@@ -367,13 +369,13 @@ function popup() {
                                 if (data.projectId){
 
                                     var button = $('<a>')
-                                        //.text('project details')
-                                        .addClass('tagX tag-button')
+                                        .text('open MH project details')
+                                        .addClass('tag tag-button')
                                         .click(function (event) {
                                             event.preventDefault();
                                             window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');                                        
                                         });
-                                        button.append($('<i class="fas fa-external-link-alt"></i>'));
+                                        // button.append($('<i class="fas fa-external-link-alt"></i>'));
                                         status.append(button);                                    
                                 }
 
@@ -389,6 +391,7 @@ function popup() {
     
                                             var barGraph = $('<div>');
                                             barGraph.addClass('timelineItem timeline-log');
+                                            barGraph.attr("data-logId", data.id);
                                             barGraph.prop('title', title);
                                             barGraph.attr('data-toggle', "tooltip");
                                             barGraph.attr('data-placement', "bottom");
@@ -398,6 +401,13 @@ function popup() {
                                                 width: right - left + 'px',
                                                 "background-color": data.color,
                                             });
+                                            barGraph.mouseenter(function(){
+                                                $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", true);
+                                            });
+                                            barGraph.mouseleave(function(){
+                                                $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", false);
+                                            });
+
                                             timeline.append(barGraph);
                                             //barGraph.tooltip();
                                         });
