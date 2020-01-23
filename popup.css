@@ -279,3 +279,12 @@ ul#logs{
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     border: solid rgba(95, 95, 95, 1) 0px;
   }
+
+  .tagX.tag-button {
+      display: none;
+      /* background-color: darkseagreen; */
+  }
+
+  ul#logs li:hover .tagX.tag-button {
+      display: block;
+  }
