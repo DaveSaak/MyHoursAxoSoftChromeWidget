@@ -317,15 +317,20 @@ function popup() {
                                 data.axoName = item.name;
                                 data.axoId = item.id;
                                 data.color = colors[nameToIndex(data.axoName, 8)];
-    
+   
 
                                 var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                 // logStatus.empty();
                                 var success = $('<span>')
                                     .addClass('tag')
-                                    .text('#' + data.axoId + " -- " + data.axoName)
+                                    .text('' + data.axoId + " -- " + data.axoName)
                                     .css("background-color", data.color)
                                     .css("color", "white");
+                                
+                                if (data.note){
+                                    success.attr('title', data.note);
+                                }
+
                                 logStatus.append(success);
 
                                 _this.myHoursApi.getTimes(data.id).then(
@@ -580,6 +585,13 @@ function popup() {
                 }).shift();
 
             if (itemId !== undefined) {
+                //remove id from the note 
+                let noteParts = myHoursLog.note.split(/\d+\.\d+|\d+\b|\d+(?=\w)/g);
+                if (noteParts.length > 0){
+                    myHoursLog.note = noteParts[1].trim();
+                }
+
+
                 return _this.axoSoftApi.getFeatureItem(itemId);
             }
         }
