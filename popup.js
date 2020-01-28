@@ -387,7 +387,8 @@ function popup() {
                                             var left = timeToPixel(time.startTime, _this.timeLineWidth);
                                             var right = timeToPixel(time.endTime, _this.timeLineWidth);
                                             //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                                            var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
+                                            // var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
+                                            var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + data.note;
     
                                             var barGraph = $('<div>');
                                             barGraph.addClass('timelineItem timeline-log');
