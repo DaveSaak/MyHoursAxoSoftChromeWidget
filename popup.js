@@ -27,6 +27,9 @@ function popup() {
     _this.noTimeDataText = "n/a";
     _this.noNumberDataText = "n/a";
 
+    _this.isResizing = false;
+    _this.lastDownX = 0;
+
     //init bootstrap tooltips
     // $(function () {
     //     $('[data-toggle="tooltip"]').tooltip()
@@ -141,6 +144,25 @@ function popup() {
                 getLogs();
             }
         };
+
+        /*
+        let timeline = $('#timeline');
+        $(timeline).on('mousemove', function (e) {
+            // we don't want to do anything if we aren't resizing.
+            if (!_this.isResizing) 
+                return;
+            
+            var offsetRight = timeline.width() - (e.clientX - timeline.offset().left);
+
+            let target = $(e.target);
+    
+            target.css('right', offsetRight);
+            // right.css('width', offsetRight);
+        }).on('mouseup', function (e) {
+            // stop resizing
+            _this.isResizing = false;
+        });   
+        */     
 
     }
 
@@ -394,9 +416,22 @@ function popup() {
                                             barGraph.addClass('timelineItem timeline-log');
                                             barGraph.attr("data-logId", data.id);
                                             barGraph.prop('title', title);
-                                            barGraph.attr('data-toggle', "tooltip");
-                                            barGraph.attr('data-placement', "bottom");
-                                            barGraph.attr('data-html', "true");
+                                            // barGraph.attr('data-toggle', "tooltip");
+                                            // barGraph.attr('data-placement', "bottom");
+                                            // barGraph.attr('data-html', "true");
+                                            
+                                            var leftDragHandle = $("<div class='leftDrag'>");
+                                            leftDragHandle.mousedown(function(event){
+                                                startDrag(event);
+                                            });
+                                            barGraph.append(leftDragHandle);
+
+                                            var rightDragHandle = $("<div class='rightDrag'>");
+                                            rightDragHandle.mousedown(function(event){
+                                                startDrag(event);
+                                            });                                            
+                                            barGraph.append(rightDragHandle);
+                                            
                                             barGraph.css({
                                                 left: left + 'px',
                                                 width: right - left + 'px',
@@ -787,6 +822,11 @@ function popup() {
     function intervalToString(startTime, endTime, durationMinutes) {
         let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
         return interval + ' (' + minutesToString(durationMinutes / 60) + 'h )';
+    }
+
+    function startDrag(e){
+        _this.isResizing = true;
+        _this.lastDownX = e.clientX;
     }
 
     initInterface();
