@@ -114,7 +114,6 @@ function popup() {
             _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
                 .then(
                     function (data) {
-
                         var notificationOptions = {
                             type: 'basic',
                             iconUrl: 'logo.png',
@@ -122,8 +121,6 @@ function popup() {
                             message: 'Content Switch was recorded.'
                         };
                         chrome.notifications.create('optionsSaved', notificationOptions, function () { });
-
-                        //console.log(data);
                     },
                     function (error) {
                         console.log(error);
@@ -281,34 +278,18 @@ function popup() {
                                 var columns = $('<div>').addClass('columns');
                                 var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
                                 var tagGroup = $('<div>').addClass('tags has-addons');
+                                
+                                let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes);
+                                data.axoWorklogTypeId = worklogTypeId;
+                                let worklogTypeName = getWorklogTypeName(worklogTypeId, _this.worklogTypes);
+                                data.axoWorklogTypeName = worklogTypeName;
 
-                                if (data.taskId != null) {
-                                    let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes);
-                                    let worklogTypeName = getWorklogTypeName(worklogTypeId, _this.worklogTypes);
-
-                                    var worklogTypeInfo = $('<span>')
-                                        .text(worklogTypeName)
-                                        .addClass('tag is-dark worklogType')
-                                        .css("font-style", "italicX")
-                                        //.css("width", "120px")
-                                    tagGroup.prepend(worklogTypeInfo);
-
-                                    //var taskInfo = $('<span>').text(data.taskName).addClass('tag is-dark').css("font-style", "italic");
-                                    // tagGroup.append(taskInfo);
-
-                                    // if (_this.myHoursTaskSummary[data.taskName] == undefined) {
-                                    //     _this.myHoursTaskSummary[data.taskName] = data.duration;
-                                    // } else {
-                                    //     _this.myHoursTaskSummary[data.taskName] = _this.myHoursTaskSummary[data.taskName] + data.duration;
-                                    // }
-                                } else {
-                                    // if (_this.myHoursTaskSummary['_'] == undefined) {
-                                    //     _this.myHoursTaskSummary['_'] = data.duration;
-                                    // } else {
-                                    //     _this.myHoursTaskSummary['_'] = _this.myHoursTaskSummary['_'] + data.duration;
-                                    // }
-
-                                }
+                                var worklogTypeInfo = $('<span>')
+                                    .text(worklogTypeName)
+                                    .addClass('tag is-dark worklogType')
+                                    .css("font-style", "italicX")
+                                    //.css("width", "120px")
+                                tagGroup.prepend(worklogTypeInfo);                            
                                 columnA.append(tagGroup);
 
                                 var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
@@ -329,6 +310,7 @@ function popup() {
                                     data.axoItemType = item.item_type;
                                     data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
                                     data.axoRemainingDuration = item.remaining_duration.duration;
+                                    data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
                                     data.color = colors[nameToIndex(data.axoName, 8)];
     
 
@@ -349,19 +331,38 @@ function popup() {
                                         success.attr('title', data.note);
                                     }
 
-                                    if (data.projectId){
+                                    {
+                                        var remainingHoursInfo = $('<span>').addClass('tag');
+                                        var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
+                                        remainingHoursInfo.text(reminingHrs + " hrs left");
+                                        status.append(remainingHoursInfo);
+                                    }
 
+                                    if (data.axoId){
+                                        var buttonCopyToAxo = $('<a>')
+                                            //.title('copy to AXO')
+                                            .addClass('tag tag-button')
+                                            .click(function (event) {
+                                                event.preventDefault();
+                                                addAxoWorkLog(data);
+                                            });
+                                        buttonCopyToAxo.html('<i class="fas fa-seedling" aria-hidden="true"></i>');
+                                        status.append(buttonCopyToAxo);                                    
+                                    }
+
+                                    
+                                    if (data.projectId){
                                         var button = $('<a>')
-                                            .text('open MH project details')
+                                            //.text('open My Hours project details')
                                             .addClass('tag tag-button')
                                             .click(function (event) {
                                                 event.preventDefault();
                                                 window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');                                        
                                             });
-                                            // button.append($('<i class="fas fa-external-link-alt"></i>'));
-                                            status.append(button);                                    
+                                            button.html('<i class="fas fa-external-link-alt"></i>');
+                                        status.append(button);                                    
                                     }
-
+                                    
                                     logStatus.append(success);
 
                                     _this.myHoursApi.getTimes(data.id).then(
@@ -560,7 +561,14 @@ function popup() {
         )
     }
 
-    function getTimeLogDetails(myHoursLog, workLogTypeId) {
+    function getRemainingMinutes(timeUnitId, duration){
+        let timeUnit = _.find(_this.timeUnits, function (t) {
+            return t.id === timeUnitId; 
+        });
+        return timeUnit.conversion_factor * duration;
+    }
+
+    function addAxoWorkLog(myHoursLog) {
 
         var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .tags');
         logStatus.empty();
@@ -580,15 +588,19 @@ function popup() {
         worklog.work_done.duration = myHoursLog.duration / 60; // mins
         worklog.item.id = myHoursLog.axoId;
         worklog.item.item_type = myHoursLog.axoItemType; //item.item_type;
-        worklog.work_log_type.id = parseInt(workLogTypeId);
+        worklog.work_log_type.id = myHoursLog.axoWorklogTypeId;
         worklog.description = myHoursLog.note;
         worklog.date_time = moment(myHoursLog.date).add(8, 'hours').toDate();
 
         //calc remaining time
+        /*
         var timeUnit = _.find(_this.timeUnits, function (t) {
             return t.id === myHoursLog.axoRemainingDurationTimeUnitId; //item.remaining_duration.time_unit.id
         });
         var remainingTimeMins = timeUnit.conversion_factor * myHoursLog.axoRemainingDuration //item.remaining_duration.duration;
+*/
+        let remainingTimeMins = getRemainingMinutes(myHoursLog.axoRemainingDurationTimeUnitId, myHoursLog.axoRemainingDuration);
+
         worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
 
         _this.axoSoftApi.addWorkLog(worklog)
@@ -651,7 +663,6 @@ function popup() {
         return Promise.reject(new Error('project not found'));
     }
 
-
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
 
@@ -664,24 +675,9 @@ function popup() {
             $('#axoNotAccessible').hide();
             try {
                 $.each(_this.myHoursLogs, function (index, myHoursLog) {
-                    console.info('copy to axo: ' + index);
-                    if (myHoursLog.projectId != undefined && myHoursLog.projectName != undefined) {
-
-                        var workLogTypeId = _this.options.axoSoftDefaultWorklogTypeId;
-                        if (myHoursLog.taskId != undefined && myHoursLog.taskName != undefined) {
-                            var workLogType = _.find(_this.worklogTypes,
-                                function (w) {
-                                    return w.name.toUpperCase() === myHoursLog.taskName.toUpperCase();
-                                });
-
-                            if (workLogType != undefined) {
-                                workLogTypeId = workLogType.id;
-                            }
-                        }
-                        getTimeLogDetails(myHoursLog, workLogTypeId);
-                    }
+                    addAxoWorkLog(myHoursLog);
                 });
-            } catch (e) {
+              } catch (e) {
                 $('#axoNotAccessible').show();
             }
         }
