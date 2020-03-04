@@ -94,7 +94,14 @@ ul#logs li .column {
     box-shadow: inset 0 0 6px  #2c7baf;
 }
 
-.timelineItem:hover {
+.timelineItem {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 24px;    
+}
+
+.timelineItem:hover,
+.timelineItem.active {
     box-shadow: 0 0 5px rgba(81, 203, 238, 1);
     margin-top: -2px;
     border: 1px solid rgba(81, 203, 238, 1);

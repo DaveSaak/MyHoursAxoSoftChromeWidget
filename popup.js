@@ -278,6 +278,15 @@ function popup() {
                                 var columns = $('<div>').addClass('columns');
                                 var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
                                 var tagGroup = $('<div>').addClass('tags has-addons');
+
+                                log.mouseenter(function(){
+                                    $('#timeline .timeline-log[data-logId="'+ data.id + '"]').toggleClass("active", true);
+                                });
+                                log.mouseleave(function(){
+                                    $('#timeline .timeline-log[data-logId="'+ data.id + '"]').toggleClass("active", false);
+                                });
+            
+
                                 
                                 let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes);
                                 data.axoWorklogTypeId = worklogTypeId;
@@ -364,60 +373,16 @@ function popup() {
                                     }
                                     
                                     logStatus.append(success);
-
-                                    _this.myHoursApi.getTimes(data.id).then(
-                                        function (times) {
-                                            $.each(times, function (index, time) {
-                                                var left = timeToPixel(time.startTime, _this.timeLineWidth);
-                                                var right = timeToPixel(time.endTime, _this.timeLineWidth);
-                                                //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                                                // var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
-                                                var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + data.note;
-        
-                                                var barGraph = $('<div>');
-                                                barGraph.addClass('timelineItem timeline-log');
-                                                barGraph.attr("data-logId", data.id);
-                                                barGraph.prop('title', title);
-                                                // barGraph.attr('data-toggle', "tooltip");
-                                                // barGraph.attr('data-placement', "bottom");
-                                                // barGraph.attr('data-html', "true");
-                                                
-                                                var leftDragHandle = $("<div class='leftDrag'>");
-                                                leftDragHandle.mousedown(function(event){
-                                                    startDrag(event);
-                                                });
-                                                barGraph.append(leftDragHandle);
-
-                                                var rightDragHandle = $("<div class='rightDrag'>");
-                                                rightDragHandle.mousedown(function(event){
-                                                    startDrag(event);
-                                                });                                            
-                                                barGraph.append(rightDragHandle);
-                                                
-                                                barGraph.css({
-                                                    left: left + 'px',
-                                                    width: right - left + 'px',
-                                                    "background-color": data.color,
-                                                });
-                                                barGraph.mouseenter(function(){
-                                                    $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", true);
-                                                });
-                                                barGraph.mouseleave(function(){
-                                                    $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", false);
-                                                });
-
-                                                timeline.append(barGraph);
-                                                //barGraph.tooltip();
-                                            });
-                                        }
-                                    );
-
+                                    getTimes(data, timeline);
                                 },
                                 function (err) {
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                     logStatus.empty();
                                     var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
                                     logStatus.append(fail);
+
+                                    data.color = 'whitesmoke';
+                                    getTimes(data, timeline);
                                 });
 
                                 columns.append(columnB);
@@ -467,6 +432,62 @@ function popup() {
             }
         )
     }
+
+    function getTimes(data, timeline){
+        _this.myHoursApi.getTimes(data.id).then(
+            function (times) {
+                $.each(times, function (index, time) {
+                    var left = timeToPixel(time.startTime, _this.timeLineWidth);
+                    var right = timeToPixel(time.endTime, _this.timeLineWidth);
+                    //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
+                    // var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
+                    var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + data.note;
+
+                    var barGraph = $('<div>');
+                    barGraph.addClass('timelineItem timeline-log');
+                    barGraph.attr("data-logId", data.id);
+                    barGraph.prop('title', title);
+                    // barGraph.attr('data-toggle', "tooltip");
+                    // barGraph.attr('data-placement', "bottom");
+                    // barGraph.attr('data-html', "true");
+
+                    if (!data.axoId){
+                        barGraph.append('<i class="fas fa-skull-crossbones ml-2" aria-hidden="true"></i>');
+                    }
+                    
+                    var leftDragHandle = $("<div class='leftDrag'>");
+                    leftDragHandle.mousedown(function(event){
+                        startDrag(event);
+                    });
+                    barGraph.append(leftDragHandle);
+
+                    var rightDragHandle = $("<div class='rightDrag'>");
+                    rightDragHandle.mousedown(function(event){
+                        startDrag(event);
+                    });                                            
+                    barGraph.append(rightDragHandle);
+                    
+                    barGraph.css({
+                        left: left + 'px',
+                        width: right - left + 'px',
+                        "background-color": data.color,
+                    });
+                    barGraph.mouseenter(function(){
+                        $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", true);
+                    });
+                    barGraph.mouseleave(function(){
+                        $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", false);
+                    });
+
+                    timeline.append(barGraph);
+                    //barGraph.tooltip();
+                });
+            }
+        );
+
+
+    }
+
 
     function getAllHoursData() {
         _this.allHoursApi.getCurrentUserId().then(
