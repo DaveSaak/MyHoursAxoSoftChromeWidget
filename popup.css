@@ -100,13 +100,30 @@ ul#logs li .column {
     line-height: 24px;    
 }
 
-.timelineItem:hover,
-.timelineItem.active {
+/* .timelineItem:hover {
     box-shadow: 0 0 5px rgba(81, 203, 238, 1);
     margin-top: -2px;
     border: 1px solid rgba(81, 203, 238, 1);
-    /* opacity: 0.95; */
+} */
+
+/* .timelineItem:hover {
+    transform: scale(1.1) translate(0px, -2px);
+    transition: all 0.2s;
+} */
+
+.timelineItem.timeline-log:hover,
+.timelineItem.timeline-log.active {
+    transform: scale(1.1) translate(0px, -5px);
+    opacity: 0.85;
+    transition: all 0.2s;
+    z-index: 2;
 }
+
+/* .timelineItem.deactivate {
+    -webkit-filter: grayscale(80%) brightness(200%);;
+    transition: all 0.2s;
+} */
+
 
 .timelineItem.allHoursSegment:hover {
     z-index: 2;
@@ -296,7 +313,9 @@ ul#logs{
       display: block;
   }
 
-  li.logContainer.active .mainColumn .tags {
+  li.logContainer.active .mainColumn .tags,
+  li.logContainer:hover .mainColumn .tags
+   {
     transform: scale(1.1) translate(17px, 0px);
     transition: all 0.2s;
   }

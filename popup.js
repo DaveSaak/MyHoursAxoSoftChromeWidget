@@ -281,9 +281,11 @@ function popup() {
 
                                 log.mouseenter(function(){
                                     $('#timeline .timeline-log[data-logId="'+ data.id + '"]').toggleClass("active", true);
+                                    $('#timeline .timeline-log').not('[data-logId="'+ data.id + '"]').toggleClass("deactivate", true);
                                 });
                                 log.mouseleave(function(){
                                     $('#timeline .timeline-log[data-logId="'+ data.id + '"]').toggleClass("active", false);
+                                    $('#timeline .timeline-log').not('[data-logId="'+ data.id + '"]').toggleClass("deactivate", false);
                                 });
             
 
