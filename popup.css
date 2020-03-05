@@ -113,7 +113,7 @@ ul#logs li .column {
 
 .timelineItem.timeline-log:hover,
 .timelineItem.timeline-log.active {
-    transform: scale(1.1) translate(0px, -5px);
+    transform: scale(1.1) translate(0px, -3px);
     opacity: 0.85;
     transition: all 0.2s;
     z-index: 2;
