@@ -267,7 +267,8 @@ function popup() {
                             topContainer.toggleClass('d-none', data.length === 0);
 
                             $.each(data, function (index, data) {
-                                var colorIndex = nameToIndex(data.projectName, 8);
+                                //var colorIndex = nameToIndex(data.projectName, 8);
+                                var colorIndex = numberToIndex(data.projectId, 8);
                                 var logColor = colors[colorIndex];
 
                                 totalMins = totalMins + (data.duration / 60);
@@ -322,8 +323,8 @@ function popup() {
                                     data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
                                     data.axoRemainingDuration = item.remaining_duration.duration;
                                     data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
-                                    data.color = colors[nameToIndex(data.axoName, 8)];
-    
+                                    //data.color = colors[nameToIndex(data.axoName, 8)];
+                                    data.color = colors[numberToIndex(data.axoId, 8)];
 
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                     // logStatus.empty();
@@ -759,6 +760,13 @@ function popup() {
         let sumOfChars = s.split('').map(x => x.charCodeAt(0)).reduce((a, b) => a + b, 0);
         return sumOfChars % length;
     }
+
+    function numberToIndex(num, length) {
+        if (!num) {
+            return 0;
+        }
+        return num % length;
+    }    
 
     function showRatio(ratio) {
         let elementCard = $('#timeRatioCard');
