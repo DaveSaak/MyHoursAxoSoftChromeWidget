@@ -4,7 +4,7 @@ var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", 
 
 
 chrome.runtime.onMessage.addListener(function (request) {
-    console.log('hello from content script - got request: ');
+    console.log('content script - got request: ' + request.type);
     console.log(request);
 
     if (request && request.type === 'logs-changed') {
@@ -24,16 +24,36 @@ chrome.runtime.onMessage.addListener(function (request) {
             }
 
             let colorIndex = numberToIndex(itemId, 8);
-            let logStyle = 'solid 6px ' + colors[colorIndex];
+            let logColor = 'whitesmoke';
+            if (colorIndex > -1){
+                logColor = colors[colorIndex];
+            }
+
+            let logStyle = 'solid 6px ' + logColor;
             $(data).css('border-left', logStyle);
+        });
+    }
+
+    else if (request && request.type === 'copy-to-clipboard'){
+        navigator.clipboard.writeText(request.branchName).then(function () {
+            console.log('Async: Copying to clipboard was successful!');
+        }, function (err) {
+            console.error('Async: Could not copy text: ', err);
         });
     }
 });
 
 
+var requestData = {"action": "createContextMenuItem"};
+//send request to background script
+chrome.extension.sendRequest(requestData);
+
+
+
+
 function numberToIndex(num, length) {
     if (!num) {
-        return 0;
+        return -1;
     }
     return num % length;
 }  

@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "1",
+    "version": "2.0.0",
     "author": "Dave",
     "browser_action": {
         "default_popup": "popup.html",
@@ -16,8 +16,13 @@
     "content_scripts": [
         {
             "matches": ["https://app.myhours.com/*"],
-            "js": ["jquery-3.3.1.min.js", "moment.js", "underscore-min.js", "content-script.js"],
+            "js": ["jquery-3.3.1.min.js", "content-script.js"],
             "css": ["myhours.css"]
+        },
+        {
+            "matches": ["http://despacito.spica.si/*"],
+            "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
+            "css": ["axo.css"]
         }
     ],
     "permissions": [
@@ -26,11 +31,14 @@
         "activeTab",
         "notifications",
         "webRequest",
+        "contextMenus",
+        "clipboardWrite",
         "https://app.myhours.com/*",
         "https://api.myhours.com/*",
         "https://api2.myhours.com/*",
         "https://myhoursproduction-api.azurewebsites.net/api/*",
         "http://despacito.spica.si/OnTime/api/*",
+        "http://despacito.spica.si/OnTime/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
         "https://kit.fontawesome.com/*"
