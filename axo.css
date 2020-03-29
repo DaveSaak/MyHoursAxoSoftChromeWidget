@@ -1,6 +1,9 @@
 #getBranchNameButton {
-    margin-top: 10px;
     color: #1c2933;
     border-color: #d7e0e0;
     background-color: #edf1f2;    
+}
+
+#getBranchNameButton span.fa {
+    margin-right: 5px;
 }

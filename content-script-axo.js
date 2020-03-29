@@ -1,4 +1,4 @@
-var copyButtonText = "copy branch name to clipboard";
+var copyButtonText = "Copy Git branch name";
 
 chrome.runtime.onMessage.addListener(function (request) {
     console.log('content script - got request: ' + request.type);
@@ -7,18 +7,29 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (request && request.type === 'axo-item-loaded') {
         console.log('content script - axo-item-loaded');
 
-        let itemHeader = $('.axo-view-item .item-body-header');
+        //let itemHeader = $('.axo-view-item .item-body-header');
+        let itemHeader = $('#gridHeader .axo-view-item-content .axo-menubar-content.axo-menu-content ul');
 
-        let existingButton = $('#getBranchNameButton');
+        let existingButtonWrapper = $('#getBranchNameButtonWrapper');
 
-        if (existingButton.length === 0) {
-            let button = $('<button id="getBranchNameButton">')
-                .text(copyButtonText)
-                .addClass('button--basic button--small')
-                .click(getBranchName);
-
-            itemHeader.append(button);
+        if (existingButtonWrapper.length > 0) {
+            existingButtonWrapper.remove();
         }
+        
+        let button = $('<button id="getBranchNameButton">')
+            .addClass('button button--basic')
+            .click(getBranchName);
+
+        let icon = $('<span>').addClass("fa fa-gitlab");
+        button.append(icon);
+        let text = $('<span id="getBranchNameButtonText">').text(copyButtonText);
+        button.append(text);
+
+        let buttonWrapper = $('<li id="getBranchNameButtonWrapper">');
+        buttonWrapper.append(button);
+
+        itemHeader.append(buttonWrapper);
+        
     }
 });
 
@@ -42,10 +53,10 @@ function getBranchName() {
         text: fullBranchName
     });
 
-    $(this).text('copied.');
+    $('#getBranchNameButtonText').text('Wohoo. Copied.');
     setTimeout(
         function(copyButton){ 
-            $(copyButton).text(copyButtonText); 
+            $('#getBranchNameButtonText').text(copyButtonText); 
         }
         , 2000, this);
 }
