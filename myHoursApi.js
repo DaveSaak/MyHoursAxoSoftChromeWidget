@@ -65,6 +65,34 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    _this.getRefreshToken = function (refreshToken) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: using refresh token");
+
+                var refreshData = {
+                    grantType: "refresh_token",
+                    clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
+                    refreshToken: refreshToken                    
+                };
+
+                $.ajax({
+                    url: baseUrl + "tokens/refresh",
+                    contentType: "application/json",
+                    type: "POST",
+                    data: JSON.stringify(refreshData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        return reject(Error());
+                    }
+                });
+            }
+        )
+    }
+
     _this.getLogs = function (date) {
         date = date.startOf('day');
         return new Promise(

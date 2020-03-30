@@ -52,8 +52,29 @@ function popup() {
 
                     showLoginPage();
                 } else {
-                    //myHoursApi.accessToken = currentUser.accessToken;
-                    showMainPage();
+                    console.info('got current user.');
+                    if (_this.currentUser.refreshToken != undefined) {
+                        console.info('refresh token found. lets use it.');
+                        showLoadingPage();
+                        _this.myHoursApi.getRefreshToken(_this.currentUser.refreshToken).then(
+                            function (token) { 
+                                console.info('got refresh token. token: ');
+                                console.info(token);
+
+                                _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
+                                _this.currentUser.save();
+                                showMainPage();
+                            }
+                        ),
+                        function (error) {
+                            console.error('error: ' + error);
+                            showLoginPage();
+                        };
+                    }
+                    else {
+                        //myHoursApi.accessToken = currentUser.accessToken;
+                        showMainPage();
+                    }
                 }
             })
         }
@@ -159,7 +180,7 @@ function popup() {
             // stop resizing
             _this.isResizing = false;
         });   
-        */     
+        */
 
     }
 
@@ -168,6 +189,7 @@ function popup() {
         $('body').addClass('narrow');
         $('body').removeClass('wide');
 
+        $('#mainContainer').hide();
         $('#mainContainer').hide();
         $('#loginContainer').show();
 
@@ -190,12 +212,23 @@ function popup() {
 
         $('#mainContainer').show();
         $('#loginContainer').hide();
+        $('#loadingContainer').hide();
         $('#usersName').text(_this.currentUser.name);
 
         getLogs();
     }
 
-    function drawTimeLineTimes(timelineContainer){
+    function showLoadingPage(){
+        $('body').removeClass('narrow');
+        $('body').addClass('wide');
+
+        $('#mainContainer').hide();
+        $('#loginContainer').hide();
+        $('#loadingContainer').show();
+       
+    }
+
+    function drawTimeLineTimes(timelineContainer) {
         for (var i = 1; i <= 24; i++) {
             var tickColor = "lightgray";
             if (i % 6 == 0)
@@ -216,12 +249,14 @@ function popup() {
             time.addClass('timeline-time')
             time.text(i);
             timelineContainer.append(time);
-        }        
+        }
     }
 
     function getLogs() {
+        console.log('getting logs');
         _this.timeRatio.reset();
         clearRatio();
+        //hideAlert();
 
         var topContainer = $('#topContainer');
         topContainer.scrollLeft(300);
@@ -244,6 +279,10 @@ function popup() {
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
             $("#axoTotal").text(minutesToString(minutesWorked));
+        },
+        function(error){
+            console.log(error);
+            showAlert('could not connect to Axo.');
         });
 
         _this.axoSoftApi.getWorkLogTypes().then(
@@ -280,17 +319,17 @@ function popup() {
                                 var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
                                 var tagGroup = $('<div>').addClass('tags has-addons');
 
-                                log.mouseenter(function(){
-                                    $('#timeline .timeline-log[data-logId="'+ data.id + '"]').toggleClass("active", true);
-                                    $('#timeline .timeline-log').not('[data-logId="'+ data.id + '"]').toggleClass("deactivate", true);
+                                log.mouseenter(function () {
+                                    $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
+                                    $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", true);
                                 });
-                                log.mouseleave(function(){
-                                    $('#timeline .timeline-log[data-logId="'+ data.id + '"]').toggleClass("active", false);
-                                    $('#timeline .timeline-log').not('[data-logId="'+ data.id + '"]').toggleClass("deactivate", false);
+                                log.mouseleave(function () {
+                                    $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", false);
+                                    $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", false);
                                 });
-            
 
-                                
+
+
                                 let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes);
                                 data.axoWorklogTypeId = worklogTypeId;
                                 let worklogTypeName = getWorklogTypeName(worklogTypeId, _this.worklogTypes);
@@ -300,8 +339,8 @@ function popup() {
                                     .text(worklogTypeName)
                                     .addClass('tag is-dark worklogType')
                                     .css("font-style", "italicX")
-                                    //.css("width", "120px")
-                                tagGroup.prepend(worklogTypeInfo);                            
+                                //.css("width", "120px")
+                                tagGroup.prepend(worklogTypeInfo);
                                 columnA.append(tagGroup);
 
                                 var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
@@ -334,12 +373,12 @@ function popup() {
                                         .css("background-color", data.color)
                                         .css("color", "white")
                                         .click(function (event) {
-                                            if (data.projectId && event.ctrlKey){
-                                                window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');                                        
+                                            if (data.projectId && event.ctrlKey) {
+                                                window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
                                             }
                                         });
-                                    
-                                    if (data.note){
+
+                                    if (data.note) {
                                         success.attr('title', data.note);
                                     }
 
@@ -350,7 +389,7 @@ function popup() {
                                         status.append(remainingHoursInfo);
                                     }
 
-                                    if (data.axoId){
+                                    if (data.axoId) {
                                         var buttonCopyToAxo = $('<a>')
                                             //.title('copy to AXO')
                                             .addClass('tag tag-button')
@@ -359,34 +398,34 @@ function popup() {
                                                 addAxoWorkLog(data);
                                             });
                                         buttonCopyToAxo.html('<i class="fas fa-seedling" aria-hidden="true"></i>');
-                                        status.append(buttonCopyToAxo);                                    
+                                        status.append(buttonCopyToAxo);
                                     }
 
-                                    
-                                    if (data.projectId){
+
+                                    if (data.projectId) {
                                         var button = $('<a>')
                                             //.text('open My Hours project details')
                                             .addClass('tag tag-button')
                                             .click(function (event) {
                                                 event.preventDefault();
-                                                window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');                                        
+                                                window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
                                             });
-                                            button.html('<i class="fas fa-external-link-alt"></i>');
-                                        status.append(button);                                    
+                                        button.html('<i class="fas fa-external-link-alt"></i>');
+                                        status.append(button);
                                     }
-                                    
+
                                     logStatus.append(success);
                                     getTimes(data, timeline);
                                 },
-                                function (err) {
-                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                                    logStatus.empty();
-                                    var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
-                                    logStatus.append(fail);
+                                    function (err) {
+                                        var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                                        logStatus.empty();
+                                        var fail = $('<span>').addClass('tag is-light').html("<i class='fas fa-skull-crossbones mr-2'></i>Item was not found on Axo.<i class='fas fa-skull-crossbones ml-2'></i>");
+                                        logStatus.append(fail);
 
-                                    data.color = 'whitesmoke';
-                                    getTimes(data, timeline);
-                                });
+                                        data.color = 'whitesmoke';
+                                        getTimes(data, timeline);
+                                    });
 
                                 columns.append(columnB);
                                 columns.append(columnA);
@@ -432,11 +471,15 @@ function popup() {
                         }
                     );
                 });
+            },
+            function(error){
+                console.log(error);
+                showAlert('could not connect to Axo.');
             }
         )
     }
 
-    function getTimes(data, timeline){
+    function getTimes(data, timeline) {
         _this.myHoursApi.getTimes(data.id).then(
             function (times) {
                 $.each(times, function (index, time) {
@@ -454,32 +497,32 @@ function popup() {
                     // barGraph.attr('data-placement', "bottom");
                     // barGraph.attr('data-html', "true");
 
-                    if (!data.axoId){
+                    if (!data.axoId) {
                         barGraph.append('<i class="fas fa-skull-crossbones ml-2" aria-hidden="true"></i>');
                     }
-                    
+
                     var leftDragHandle = $("<div class='leftDrag'>");
-                    leftDragHandle.mousedown(function(event){
+                    leftDragHandle.mousedown(function (event) {
                         startDrag(event);
                     });
                     barGraph.append(leftDragHandle);
 
                     var rightDragHandle = $("<div class='rightDrag'>");
-                    rightDragHandle.mousedown(function(event){
+                    rightDragHandle.mousedown(function (event) {
                         startDrag(event);
-                    });                                            
+                    });
                     barGraph.append(rightDragHandle);
-                    
+
                     barGraph.css({
                         left: left + 'px',
                         width: right - left + 'px',
                         "background-color": data.color,
                     });
-                    barGraph.mouseenter(function(){
-                        $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", true);
+                    barGraph.mouseenter(function () {
+                        $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
                     });
-                    barGraph.mouseleave(function(){
-                        $('li.logContainer[data-logId="'+ data.id + '"]').toggleClass("active", false);
+                    barGraph.mouseleave(function () {
+                        $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
                     });
 
                     timeline.append(barGraph);
@@ -585,9 +628,9 @@ function popup() {
         )
     }
 
-    function getRemainingMinutes(timeUnitId, duration){
+    function getRemainingMinutes(timeUnitId, duration) {
         let timeUnit = _.find(_this.timeUnits, function (t) {
-            return t.id === timeUnitId; 
+            return t.id === timeUnitId;
         });
         return timeUnit.conversion_factor * duration;
     }
@@ -599,7 +642,7 @@ function popup() {
 
         //getAxoItem(myHoursLog).then(item => {
 
-        if (!myHoursLog.axoId){
+        if (!myHoursLog.axoId) {
             logStatus.append('<span>').addClass('tag is-danger').text("axo item not found");
             return;
         }
@@ -676,7 +719,7 @@ function popup() {
             if (itemId !== undefined) {
                 //remove id from the note 
                 let noteParts = myHoursLog.note.split(/\d+\.\d+|\d+\b|\d+(?=\w)/g);
-                if (noteParts.length > 0){
+                if (noteParts.length > 0) {
                     myHoursLog.note = noteParts[1].trim();
                 }
 
@@ -701,7 +744,7 @@ function popup() {
                 $.each(_this.myHoursLogs, function (index, myHoursLog) {
                     addAxoWorkLog(myHoursLog);
                 });
-              } catch (e) {
+            } catch (e) {
                 $('#axoNotAccessible').show();
             }
         }
@@ -766,7 +809,7 @@ function popup() {
             return 0;
         }
         return num % length;
-    }    
+    }
 
     function showRatio(ratio) {
         let elementCard = $('#timeRatioCard');
@@ -790,9 +833,18 @@ function popup() {
         return interval + ' (' + minutesToString(durationMinutes / 60) + 'h )';
     }
 
-    function startDrag(e){
+    function startDrag(e) {
         _this.isResizing = true;
         _this.lastDownX = e.clientX;
+    }
+
+    function showAlert(message){
+        $('#alertContainer span').text(message);
+        $('#alertContainer').show;
+    }
+
+    function hideAlert(){
+        $('#alertContainer').hide;
     }
 
     initInterface();

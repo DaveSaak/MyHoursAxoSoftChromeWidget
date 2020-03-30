@@ -122,9 +122,9 @@
             </div>
         </section>
 
-        <div id="alertContainer" class="rowQ" style="display: none">
+        <div id="alertContainer" class="" style="display: none">
             <div class="alert alert-primary" role="alert">
-                A simple primary alert. Check it out!
+                <span id='alertText'></span>
             </div>
         </div>
 
@@ -198,6 +198,14 @@
 
             </div>
         </section>
+    </div>
+
+    <div id='loadingContainer' style="display: none;">
+        <div class="d-flex justify-content-center m-4">
+            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+              <span class="sr-only">connecting to myhours...</span>
+            </div>
+          </div>
     </div>
 </body>
 
