@@ -29,7 +29,10 @@ chrome.webRequest.onCompleted.addListener(function (details) {
         }
     }
 },
-    { urls: ["http://despacito.spica.si/OnTime/api/*"] }
+    { urls: [
+        "http://despacito.spica.si/OnTime/api/*",
+        "https://ontime.spica.com:442/OnTime/api/*",
+    ] }
 );
 
 chrome.runtime.onMessage.addListener(function(message) {

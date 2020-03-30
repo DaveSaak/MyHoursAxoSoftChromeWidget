@@ -20,7 +20,10 @@
             "css": ["myhours.css"]
         },
         {
-            "matches": ["http://despacito.spica.si/*"],
+            "matches": [
+                "http://despacito.spica.si/*",
+                "https://ontime.spica.com:442/OnTime/*"
+            ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
             "css": ["axo.css"]
         }
@@ -39,6 +42,8 @@
         "https://myhoursproduction-api.azurewebsites.net/api/*",
         "http://despacito.spica.si/OnTime/api/*",
         "http://despacito.spica.si/OnTime/*",
+        "https://ontime.spica.com:442/OnTime/*",
+        "https://ontime.spica.com:442/OnTime/api/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
         "https://kit.fontawesome.com/*"
