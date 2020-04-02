@@ -12,7 +12,10 @@ chrome.webRequest.onCompleted.addListener(function (details) {
         }
     }
 },
-    { urls: ["https://myhoursproduction-api.azurewebsites.net/api/*"] }
+    { urls: [
+        "https://myhoursproduction-api.azurewebsites.net/api/*",
+        "https://api2.myhours.com/api/*"
+    ]}
 );
 
 chrome.webRequest.onCompleted.addListener(function (details) {
