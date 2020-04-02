@@ -328,15 +328,8 @@ function popup() {
                                     $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", false);
                                 });
 
-
-
-                                let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes);
-                                data.axoWorklogTypeId = worklogTypeId;
-                                let worklogTypeName = getWorklogTypeName(worklogTypeId, _this.worklogTypes);
-                                data.axoWorklogTypeName = worklogTypeName;
-
                                 var worklogTypeInfo = $('<span>')
-                                    .text(worklogTypeName)
+                                    //.text(worklogTypeName)
                                     .addClass('tag is-dark worklogType')
                                     .css("font-style", "italicX")
                                 //.css("width", "120px")
@@ -364,6 +357,22 @@ function popup() {
                                     data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
                                     //data.color = colors[nameToIndex(data.axoName, 8)];
                                     data.color = colors[numberToIndex(data.axoId, 8)];
+
+                                    if (data.taskName){    
+                                        let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
+                                        data.axoWorklogTypeId = worklogTypeId;
+                                    }
+                                    else{
+                                        let partialWorkLogTypeName = getPartialWorkLogType(data);
+                                        let worklogTypeId = getWorklogTypeId(partialWorkLogTypeName, _this.worklogTypes, true);
+                                        data.axoWorklogTypeId = worklogTypeId;                                        
+                                    }
+                                    let worklogTypeName = getWorklogTypeName(data.axoWorklogTypeId, _this.worklogTypes);
+                                    data.axoWorklogTypeName = worklogTypeName;
+
+                                    worklogTypeInfo.text(data.axoWorklogTypeName);
+    
+
 
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                     // logStatus.empty();
@@ -718,6 +727,21 @@ function popup() {
         return Promise.reject(new Error('project not found'));
     }
 
+    function getPartialWorkLogType(myHoursLog) {
+        let workLogTypeRegEx = new RegExp('^\/[A-Za-z]*');
+        if (myHoursLog.note != null) {
+
+            let workLogTypeInfo = workLogTypeRegEx.exec(myHoursLog.note);
+
+            if (workLogTypeInfo !== undefined) {
+                // remove id from the note 
+                myHoursLog.note = myHoursLog.note.replace(workLogTypeRegEx, '').trim();
+                return workLogTypeInfo[0].substr(1);
+            }
+        }
+        return Promise.reject(new Error('project not found'));
+    }    
+
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
 
@@ -738,11 +762,16 @@ function popup() {
         }
     }
 
-    function getWorklogTypeId(taskName, worklogTypes) {
+    function getWorklogTypeId(taskName, worklogTypes, partialMatch) {
         if (taskName != undefined) {
             var workLogType = _.find(worklogTypes,
                 function (w) {
-                    return w.name.toUpperCase() === taskName.toUpperCase();
+                    if (!partialMatch){
+                        return w.name.toUpperCase() === taskName.toUpperCase();
+                    }
+                    else {
+                        return w.name.toUpperCase().startsWith(taskName.toUpperCase());
+                    }
                 });
 
             if (workLogType != undefined) {
