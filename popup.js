@@ -65,11 +65,12 @@ function popup() {
                                 _this.currentUser.save();
                                 showMainPage();
                             }
-                        ),
-                        function (error) {
+                        )
+                        .catch(error => {
                             console.error('error: ' + error);
                             showLoginPage();
-                        };
+
+                        });
                     }
                     else {
                         //myHoursApi.accessToken = currentUser.accessToken;
@@ -279,14 +280,15 @@ function popup() {
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
             $("#axoTotal").text(minutesToString(minutesWorked));
-        },
-        function(error){
+        })
+        .catch(error => {
             console.log(error);
             showAlert('could not connect to Axo.');
         });
 
-        _this.axoSoftApi.getWorkLogTypes().then(
-            function (response) {
+        _this.axoSoftApi.getWorkLogTypes()
+            .then(response => 
+            {
                 _this.worklogTypes = response;
 
                 _this.axoSoftApi.getTimeUnits().then(function (response) {
@@ -471,12 +473,12 @@ function popup() {
                         }
                     );
                 });
-            },
-            function(error){
+            })
+            .catch(error => {
                 console.log(error);
                 showAlert('could not connect to Axo.');
-            }
-        )
+            });
+        
     }
 
     function getTimes(data, timeline) {
@@ -595,11 +597,12 @@ function popup() {
                         }
                     );
                 }
-            },
-            function (error) {
-                console.error('error while geeting the AH current. token may be expired');
-            }
-        );
+            })
+            .catch(error => {
+                showAlert('error logging to AH');
+                console.error('error while getting the AH current. token may be expired');
+            })
+        
     }
 
     function login(email, password) {
@@ -641,6 +644,11 @@ function popup() {
         logStatus.empty();
 
         //getAxoItem(myHoursLog).then(item => {
+
+        if (myHoursLog.duration === 0){
+            logStatus.append('<span>').addClass('tag is-warning').text("empty log. skipping.");
+            return;
+        }
 
         if (!myHoursLog.axoId) {
             logStatus.append('<span>').addClass('tag is-danger').text("axo item not found");
@@ -840,11 +848,11 @@ function popup() {
 
     function showAlert(message){
         $('#alertContainer span').text(message);
-        $('#alertContainer').show;
+        $('#alertContainer').show();
     }
 
     function hideAlert(){
-        $('#alertContainer').hide;
+        $('#alertContainer').hide();
     }
 
     initInterface();
