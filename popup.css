@@ -349,6 +349,8 @@ ul#logs{
     /* cursor: w-resize;       */
   }
 
-  /* #loadingContainer {
-      height: 100px;
-  } */
+  #logsContainer {
+    max-height: 290px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
