@@ -708,20 +708,19 @@ function popup() {
     function getAxoItem(myHoursLog) {
         let itemNumberRegEx = new RegExp('^[0-9]*');
         if (myHoursLog.projectName != null) {
-            let itemId = itemNumberRegEx.exec(myHoursLog.projectName);
-            if (itemId !== undefined) {
-                return _this.axoSoftApi.getFeatureItem(itemId);
+            let regExResults = itemNumberRegEx.exec(myHoursLog.projectName);
+            if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
+                return _this.axoSoftApi.getFeatureItem(regExResults[0]);
             }
         }
 
         if (myHoursLog.note != null) {
+            let regExResults = itemNumberRegEx.exec(myHoursLog.note);
 
-            let itemId = itemNumberRegEx.exec(myHoursLog.note);
-
-            if (itemId !== undefined) {
+            if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
                 //remove id from the note 
                 myHoursLog.note = myHoursLog.note.replace(itemNumberRegEx, '');
-                return _this.axoSoftApi.getFeatureItem(itemId);
+                return _this.axoSoftApi.getFeatureItem(regExResults[0]);
             }
         }
         return Promise.reject(new Error('project not found'));
@@ -731,15 +730,15 @@ function popup() {
         let workLogTypeRegEx = new RegExp('^\/[A-Za-z]*');
         if (myHoursLog.note != null) {
 
-            let workLogTypeInfo = workLogTypeRegEx.exec(myHoursLog.note);
+            let regExResults = workLogTypeRegEx.exec(myHoursLog.note);
 
-            if (workLogTypeInfo !== undefined) {
+            if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
                 // remove id from the note 
                 myHoursLog.note = myHoursLog.note.replace(workLogTypeRegEx, '').trim();
-                return workLogTypeInfo[0].substr(1);
+                return regExResults[0].substr(1);
             }
         }
-        return Promise.reject(new Error('project not found'));
+        return '';
     }    
 
     function copyTimelogs() {
