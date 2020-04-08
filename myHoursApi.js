@@ -86,7 +86,7 @@ function MyHoursApi(currentUser) {
                     },
                     error: function (data) {
                         console.log(data);
-                        return reject(Error());
+                        return reject(data);
                     }
                 });
             }
@@ -119,7 +119,7 @@ function MyHoursApi(currentUser) {
                     },
                     error: function (data) {
                         console.error(data);
-                        reject(Error());
+                        reject(data);
                     }
                 });
             }
@@ -142,7 +142,7 @@ function MyHoursApi(currentUser) {
                     },
                     error: function (data) {
                         console.error(data);
-                        reject(Error());
+                        reject(data);
                     }
                 });
             }
@@ -181,7 +181,7 @@ function MyHoursApi(currentUser) {
                     },
                     error: function (data) {
                         console.error(data);
-                        return reject(Error());
+                        return reject(data);
                     }
                 });
             }
