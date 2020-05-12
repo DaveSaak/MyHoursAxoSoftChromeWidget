@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "author": "Dave",
     "browser_action": {
         "default_popup": "popup.html",
@@ -10,7 +10,7 @@
     },
     "options_page": "options.html",
     "background": {
-        "scripts": ["background.js"],
+        "page": "background.html",
         "persistent": true
     },
     "content_scripts": [
@@ -28,6 +28,11 @@
             "css": ["axo.css"]
         }
     ],
+    "icons": {
+        "16": "AH-16.png",
+        "48": "AH-48.png",
+        "128": "AH-128.png"
+      },
     "permissions": [
         "storage",
         "tabs",

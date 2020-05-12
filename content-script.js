@@ -2,7 +2,6 @@ console.log('hello from content script');
 
 var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
-
 chrome.runtime.onMessage.addListener(function (request) {
     console.log('content script - got request: ' + request.type);
     console.log(request);
