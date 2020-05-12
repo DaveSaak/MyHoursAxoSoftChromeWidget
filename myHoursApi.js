@@ -187,4 +187,39 @@ function MyHoursApi(currentUser) {
             }
         )
     }
+
+    _this.startLog = function (comment) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: staring log");
+
+                var currentTime = moment();
+                var newLogData = {
+                    note: comment,
+                    date: currentTime.format('YYYY-MM-DD'),
+                    start: currentTime.toISOString(true),
+                    end: null
+                };
+
+                console.info(newLogData);
+
+                $.ajax({
+                    url: baseUrl + "logs/startNewLog",
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    data: JSON.stringify(newLogData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }    
 };

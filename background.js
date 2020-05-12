@@ -1,4 +1,3 @@
-
 chrome.webRequest.onCompleted.addListener(function (details) {
     const parsedUrl = new URL(details.url);
     if (details.tabId) {
@@ -12,10 +11,12 @@ chrome.webRequest.onCompleted.addListener(function (details) {
         }
     }
 },
-    { urls: [
-        "https://myhoursproduction-api.azurewebsites.net/api/*",
-        "https://api2.myhours.com/api/*"
-    ]}
+    {
+        urls: [
+            "https://myhoursproduction-api.azurewebsites.net/api/*",
+            "https://api2.myhours.com/api/*"
+        ]
+    }
 );
 
 chrome.webRequest.onCompleted.addListener(function (details) {
@@ -32,13 +33,15 @@ chrome.webRequest.onCompleted.addListener(function (details) {
         }
     }
 },
-    { urls: [
-        "http://despacito.spica.si/OnTime/api/*",
-        "https://ontime.spica.com:442/OnTime/api/*",
-    ] }
+    {
+        urls: [
+            "http://despacito.spica.si/OnTime/api/*",
+            "https://ontime.spica.com:442/OnTime/api/*",
+        ]
+    }
 );
 
-chrome.runtime.onMessage.addListener(function(message) {
+chrome.runtime.onMessage.addListener(function (message) {
     if (message && message.type == 'copy') {
         var input = document.createElement('textarea');
         document.body.appendChild(input);
@@ -50,7 +53,7 @@ chrome.runtime.onMessage.addListener(function(message) {
     }
 });
 
-/*
+
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
     if (request.action == 'createContextMenuItem') {
         chrome.contextMenus.create({
@@ -59,8 +62,55 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             onclick: getBranchName
         });
     }
+    else if (request.action == 'createContextMenuItemStartLog') {
+        chrome.contextMenus.create({
+            title: "Start tracking time for item %s",
+            contexts: ["selection"],
+            onclick: startTrackingTime
+        });
+    }
 }
 );
+
+function startTrackingTime(info, tab) {
+
+    let currentUser = new CurrentUser();
+    let options = new Options();
+    let myHoursApi = new MyHoursApi(currentUser);
+
+    options.load().then(
+        function () {
+            currentUser.load(function () {
+                console.info();
+                myHoursApi.startLog(info.selectionText + '/' + options.axoSoftDefaultWorklogTypeId + ': ')
+                    .then(
+                        function (data) {
+                            var notificationOptions = {
+                                type: 'basic',
+                                iconUrl: 'mh-badge.jpg',
+                                title: 'MyHours',
+                                message: 'Log started.'
+                            };
+                            //chrome.notifications.create('', 'Log started');
+                            chrome.notifications.create('', notificationOptions, function () { });
+                        },
+                        function (error) {
+                            console.log(error);
+                            var notificationOptions = {
+                                type: 'basic',
+                                iconUrl: 'mh-badge.jpg',
+                                title: 'MyHours',
+                                message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                            };
+                            //chrome.notifications.create('', 'Bummer something went wrong.');
+                            chrome.notifications.create('', notificationOptions, function () { });
+                        }
+                    );
+            });
+
+        });
+}
+
 
 function getBranchName(info, tab) {
     console.log("selection: " + info.selectionText);
@@ -77,5 +127,5 @@ function getBranchName(info, tab) {
 
 
 }
-*/
+
 
