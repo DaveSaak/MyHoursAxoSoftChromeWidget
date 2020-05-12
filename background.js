@@ -81,33 +81,63 @@ function startTrackingTime(info, tab) {
     options.load().then(
         function () {
             currentUser.load(function () {
-                console.info();
-                myHoursApi.startLog(info.selectionText + '/' + options.axoSoftDefaultWorklogTypeId + ': ')
-                    .then(
-                        function (data) {
-                            var notificationOptions = {
-                                type: 'basic',
-                                iconUrl: 'mh-badge.jpg',
-                                title: 'MyHours',
-                                message: 'Log started.'
-                            };
-                            //chrome.notifications.create('', 'Log started');
-                            chrome.notifications.create('', notificationOptions, function () { });
-                        },
-                        function (error) {
-                            console.log(error);
-                            var notificationOptions = {
-                                type: 'basic',
-                                iconUrl: 'mh-badge.jpg',
-                                title: 'MyHours',
-                                message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                            };
-                            //chrome.notifications.create('', 'Bummer something went wrong.');
-                            chrome.notifications.create('', notificationOptions, function () { });
-                        }
-                    );
-            });
+                let axoSoftApi = new AxoSoftApi(options);
 
+                axoSoftApi.getWorkLogTypes()
+                    .then(response => {
+                        let defaultWorkLogType = "";
+                        let worklogTypes = response;
+                        var workLogType = _.find(worklogTypes,
+                            function (w) {
+                                return w.id.toString() === options.axoSoftDefaultWorklogTypeId.toString();
+                            });
+
+                        if (workLogType) {
+                            defaultWorkLogType = workLogType.name;
+                        }
+
+                        let myHoursNote = info.selectionText;
+                        if (defaultWorkLogType !== "") {
+                            myHoursNote = myHoursNote + '/' + defaultWorkLogType
+                        }
+
+
+                        myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+                            function (token) {
+                                console.info('got refresh token. token: ');
+                                console.info(token);
+
+                                currentUser.setTokenData(token.accessToken, token.refreshToken);
+                                currentUser.save();
+
+                                myHoursApi.startLog(myHoursNote + ' ')
+                                    .then(
+                                        function (data) {
+                                            var notificationOptions = {
+                                                type: 'basic',
+                                                iconUrl: 'mh-badge.jpg',
+                                                title: 'MyHours',
+                                                message: 'Log started.'
+                                            };
+                                            //chrome.notifications.create('', 'Log started');
+                                            chrome.notifications.create('', notificationOptions, function () { });
+                                        },
+                                        function (error) {
+                                            console.log(error);
+                                            var notificationOptions = {
+                                                type: 'basic',
+                                                iconUrl: 'mh-badge.jpg',
+                                                title: 'MyHours',
+                                                message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                                            };
+                                            //chrome.notifications.create('', 'Bummer something went wrong.');
+                                            chrome.notifications.create('', notificationOptions, function () { });
+                                        }
+                                    );
+                            }
+                        )
+                    });
+            });
         });
 }
 
