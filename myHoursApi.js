@@ -221,5 +221,87 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }    
+    }   
+    
+    _this.stopTimer = function (comment) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: stop timer");
+
+                _this.getRunning().then(
+                    function (logs) {
+                        console.info('got running log: ');
+                        console.info(logs);
+
+                        if (logs.length > 0) {
+                            var currentTime = moment();
+                            var stopTimerData = {
+                                logId: logs[0].id,
+                                time: currentTime.toISOString(true),
+                            };
+            
+                            console.info(stopTimerData);
+            
+                            $.ajax({
+                                url: baseUrl + "logs/stopTimer",
+                                type: "POST",
+                                contentType: "application/json",
+                                headers: {
+                                    "Authorization": "Bearer " + _this.currentUser.accessToken
+                                },
+                                data: JSON.stringify(stopTimerData),
+                                success: function (data) {
+                                    return resolve(data);
+                                },
+                                error: function (data) {
+                                    console.error(data);
+                                    return reject(data);
+                                }
+                            });
+                        }
+                        else {
+                            return resolve(null);
+                        }
+                    }
+                )
+                .catch(error => {
+                    console.error('error: ' + error);
+                    return reject(error);
+                });
+            }
+        )
+    }  
+    
+    _this.getRunning = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: get running timer");
+
+                var currentTime = moment();
+                // var runningData = {
+                //     date: currentTime.format('YYYY-MM-DD'),
+                // };
+
+                // console.info(runningData);
+
+                $.ajax({
+                    url: baseUrl + "logs/running",
+                    type: "GET",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    // data: JSON.stringify(runningData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }        
+
 };

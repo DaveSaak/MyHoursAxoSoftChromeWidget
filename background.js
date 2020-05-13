@@ -21,9 +21,9 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 
 chrome.webRequest.onCompleted.addListener(function (details) {
     const parsedUrl = new URL(details.url);
-    console.log(details);
+    //console.log(details);
     if (details.tabId) {
-        console.log(details);
+        //console.log(details);
 
         if (details.method === "GET" &&
             parsedUrl.pathname.includes("/OnTime/api/v6/features") &&
@@ -63,11 +63,29 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         });
     }
     else if (request.action == 'createContextMenuItemStartLog') {
+
+        chrome.contextMenus.remove("mhParent");
+
         chrome.contextMenus.create({
-            title: "Start tracking time for item %s",
+            title: "My Hours tools",
+            id: "mhParent",
+            contexts:["all"]
+          });
+          
+        chrome.contextMenus.create({
+            title: "Start tracking time: '%s'",
+            parentId: "mhParent",
             contexts: ["selection"],
             onclick: startTrackingTime
         });
+
+
+        chrome.contextMenus.create({
+            title: "Stop running log",
+            parentId: "mhParent",
+            contexts: ["all"],
+            onclick: stopTimer
+        });        
     }
 }
 );
@@ -98,7 +116,7 @@ function startTrackingTime(info, tab) {
 
                         let myHoursNote = info.selectionText;
                         if (defaultWorkLogType !== "") {
-                            myHoursNote = myHoursNote + '/' + defaultWorkLogType
+                            myHoursNote = myHoursNote + '/' + defaultWorkLogType.toLowerCase();
                         }
 
 
@@ -137,6 +155,60 @@ function startTrackingTime(info, tab) {
                             }
                         )
                     });
+            });
+        });
+}
+
+function stopTimer(info, tab) {
+
+    let currentUser = new CurrentUser();
+    let options = new Options();
+    let myHoursApi = new MyHoursApi(currentUser);
+
+    options.load().then(
+        function () {
+            currentUser.load(function () {
+                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+                    function (token) {
+                        console.info('got refresh token. token: ');
+                        console.info(token);
+
+                        currentUser.setTokenData(token.accessToken, token.refreshToken);
+                        currentUser.save();
+
+                        myHoursApi.stopTimer()
+                            .then(
+                                function (data) {
+                                    var notificationOptions = {
+                                        type: 'basic',
+                                        iconUrl: 'mh-badge.jpg',
+                                        title: 'MyHours',
+                                    };
+                                    if (data) {
+                                        notificationOptions.message = "Timer stopped: " + data.note
+                                    }
+                                    else {
+                                        notificationOptions.message = "There are no running logs."
+                                    }
+
+                                    //chrome.notifications.create('', 'Log started');
+                                    chrome.notifications.create('', notificationOptions, function () { });
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    var notificationOptions = {
+                                        type: 'basic',
+                                        iconUrl: 'mh-badge.jpg',
+                                        title: 'MyHours',
+                                        message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                                    };
+                                    //chrome.notifications.create('', 'Bummer something went wrong.');
+                                    chrome.notifications.create('', notificationOptions, function () { });
+                                }
+                            );
+                    }
+                )
+                  
             });
         });
 }
