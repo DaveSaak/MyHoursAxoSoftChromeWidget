@@ -56,11 +56,11 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
     if (request.action == 'createContextMenuItem') {
-        chrome.contextMenus.create({
-            title: "convert %s to branch name and copy it to clipboard",
-            contexts: ["selection"],
-            onclick: getBranchName
-        });
+        // chrome.contextMenus.create({
+        //     title: "convert %s to branch name and copy it to clipboard",
+        //     contexts: ["selection"],
+        //     onclick: getBranchName
+        // });
     }
     else if (request.action == 'createContextMenuItemStartLog') {
 
