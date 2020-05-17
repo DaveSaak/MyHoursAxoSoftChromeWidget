@@ -549,71 +549,77 @@ function popup() {
 
 
     function getAllHoursData() {
-        _this.allHoursApi.getCurrentUserId().then(
-            function (data) {
+        let currentUserPromise = _this.allHoursApi.getCurrentUserId();
 
-                if (data) {
-                    _this.allHoursApi.getAttendance(data, _this.currentDate).then(
-                        function (data) {
-                            if (data && data.CalculationResultValues.length > 0) {
-                                let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                _this.timeRatio.setAllHours(attendance);
-                                $('#ahAttendance').text(minutesToString(attendance));
+        if (currentUserPromise != undefined){
+            currentUserPromise.then(
+                function (data) {
+
+                    if (data) {
+                        _this.allHoursApi.getAttendance(data, _this.currentDate).then(
+                            function (data) {
+                                if (data && data.CalculationResultValues.length > 0) {
+                                    let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                                    _this.timeRatio.setAllHours(attendance);
+                                    $('#ahAttendance').text(minutesToString(attendance));
+                                }
+                            },
+                            function (error) {
+                                console.error('error while geeting attendance.');
                             }
-                        },
-                        function (error) {
-                            console.error('error while geeting attendance.');
-                        }
-                    );
+                        );
 
-                    _this.allHoursApi.getUserCalculations(data, _this.currentDate).then(
-                        function (data) {
-                            if (data && data.DailyCalculations.length > 0) {
-                                let segments = data.DailyCalculations[0].CalculationResultSegments;
-                                var timeline = $('#timeline');
+                        _this.allHoursApi.getUserCalculations(data, _this.currentDate).then(
+                            function (data) {
+                                if (data && data.DailyCalculations.length > 0) {
+                                    let segments = data.DailyCalculations[0].CalculationResultSegments;
+                                    var timeline = $('#timeline');
 
-                                console.group('all hours segments');
-                                console.table(segments);
-                                console.groupEnd();
+                                    console.group('all hours segments');
+                                    console.table(segments);
+                                    console.groupEnd();
 
-                                $.each(segments, function (index, segment) {
-                                    if (segment.Type === 4 && segment.StartTime && segment.StartTime.trim() !== "") {
-                                        var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
-                                        var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
+                                    $.each(segments, function (index, segment) {
+                                        if (segment.Type === 4 && segment.StartTime && segment.StartTime.trim() !== "") {
+                                            var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
+                                            var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
 
-                                        //var timePeriod = intervalToString(segment.startTime, segment.endTime, segment.duration)
+                                            //var timePeriod = intervalToString(segment.startTime, segment.endTime, segment.duration)
 
-                                        var barGraph = $('<div>');
-                                        //barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
-                                        barGraph.addClass('allHoursSegment timelineItem');
-                                        barGraph.prop('title', intervalToString(segment.StartTime, segment.EndTime, segment.Value));
-                                        barGraph.css({
-                                            left: left + 'px',
-                                            width: right - left + 'px',
-                                        });
-                                        barGraph.addClass('timeline-segment')
+                                            var barGraph = $('<div>');
+                                            //barGraph.prop('data-tippy-content', 'All Hours paid time <br/>' + timePeriod);
+                                            barGraph.addClass('allHoursSegment timelineItem');
+                                            barGraph.prop('title', intervalToString(segment.StartTime, segment.EndTime, segment.Value));
+                                            barGraph.css({
+                                                left: left + 'px',
+                                                width: right - left + 'px',
+                                            });
+                                            barGraph.addClass('timeline-segment')
 
-                                        timeline.append(barGraph);
-                                        //set tooltips
-                                        //barGraph.tooltip();
-                                        //tippy('.allHoursSegment');
+                                            timeline.append(barGraph);
+                                            //set tooltips
+                                            //barGraph.tooltip();
+                                            //tippy('.allHoursSegment');
 
-                                    }
-                                });
+                                        }
+                                    });
 
+                                }
+                            },
+                            function (error) {
+                                console.error('error while geeting calculation.');
                             }
-                        },
-                        function (error) {
-                            console.error('error while geeting calculation.');
-                        }
-                    );
-                }
-            })
-            .catch(error => {
-                showAlert('error logging to AH');
-                console.error('error while getting the AH current. token may be expired');
-            })
-        
+                        );
+                    }
+                })
+                .catch(error => {
+                    showAlert('error logging to AH');
+                    console.error('error while getting the AH current. token may be expired');
+                })
+        }
+        else {
+            showAlert('error logging to AH');
+        }
     }
 
     function login(email, password) {
