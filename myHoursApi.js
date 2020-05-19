@@ -302,6 +302,49 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }        
+    }   
+    
+    _this.crateProject = function (projectName) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: creating project log");
+
+                var currentTime = moment();
+                var newProjectData = {
+                        name: projectName,
+                        // clientId": 0,
+                        // invoiceMethod": 0,
+                        // budgetType": 1,
+                        // budgetValue": 0,
+                        // budgetAlertPercent": 0,
+                        // notes": "string",
+                        // approved": false,
+                        // rate": 0,
+                        // autoAssignUserId": 0,
+                        // roundType": 0,
+                        // roundInterval": 0
+                };
+
+                console.info(newProjectData);
+
+                $.ajax({
+                    url: baseUrl + "project",
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    data: JSON.stringify(newProjectData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }     
 
 };

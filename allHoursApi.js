@@ -24,6 +24,7 @@ function AllHoursApi(
                 var loginData = {
                     username: email,
                     grant_type: "password",
+                    client_id: "ro_client",
                     password: password
                 };
 
@@ -81,8 +82,9 @@ function AllHoursApi(
                         return resolve(data);
                     },
                     error: function (data) {
-                        console.error(data);
-                        return reject(Error());
+                        //console.error(data);
+                        return reject();
+                        // return reject(Error());
                     }
                 });
             }
@@ -303,6 +305,10 @@ function AllHoursApi(
         if (allHoursTokenIsExpired){
             _this.refreshAccessToken().then(_ => {
                 return new Promise(promiseFunction);
+            })
+            .catch(error => {
+                console.error('error while using refresh token: ' + error);
+                return new Promise.reject();
             });
         }
         else {

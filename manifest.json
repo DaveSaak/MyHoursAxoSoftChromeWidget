@@ -41,9 +41,12 @@
         "webRequest",
         "contextMenus",
         "clipboardWrite",
+        "identity",
         "https://app.myhours.com/*",
         "https://api.myhours.com/*",
         "https://api2.myhours.com/*",
+        "https://login.allhours.com/*",
+        "https://pro.allhours.com/",
         "https://myhoursproduction-api.azurewebsites.net/api/*",
         "http://despacito.spica.si/OnTime/api/*",
         "http://despacito.spica.si/OnTime/*",
@@ -51,6 +54,7 @@
         "https://ontime.spica.com:442/OnTime/api/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
+        "https://api3.allhours.com/*",
         "https://kit.fontawesome.com/*"
     ]
 }

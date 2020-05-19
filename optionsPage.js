@@ -101,8 +101,62 @@ $(function () {
     });
 
     $('#loginToAllHours').click(function () {
-        loginToAllHours();
+        //loginToAllHours();
+        loginToLevelZero();
     });
+
+
+    function loginToLevelZero(){
+
+        /*
+        //const redirectURL = chrome.identity.getRedirectURL();
+        //const redirectURL = chrome.identity.getRedirectURL('oauth2');
+        const redirectURL = 'https://allhoursproduction-portal.azurewebsites.net';
+        const returnURL = '/callback';
+        const clientID = "pkce_client";  
+        const scopes = ["openid", "api", "profile", "offline_access"];
+        let authURL = "https://login.allhours.com/Account/Login";
+        authURL += `?client_id=${clientID}`;
+        authURL += `&response_type=code`;
+        authURL += `&redirect_uri=${encodeURIComponent(redirectURL)}`;
+        authURL += `&scope=${encodeURIComponent(scopes.join(' '))}`;  
+        authURL += `&code_challenge=-4_qwlxvSgC5vuEwwi06ec2vCMUc7CY-GFq_xI4FaHI`;
+        authURL += `&code_challenge_method=S256`;   
+        authURL += `&state=S3Z1N1MyaXNOLmcxa0d3c1Y2Wm1VaWJOTjM3bmh1ZzF3ZC1NZjJvaU8uZDhp`;
+        authURL += `&ReturnUrl=${encodeURIComponent(returnURL)}`;
+        //authURL += `&returnUrl=${encodeURIComponent(redirectURL)}`;  
+        */
+       
+        //let authURL=`https://login.allhours.com/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fresponse_type%3Dcode%26client_id%3Dpkce_client%26state%3DR0dRYV9oYUw3ZUljNHVvemJjcnllLXprazNIeHNyQkZZeWxWdUNDdWowZGdE%26redirect_uri%3Dhttps%253A%252F%252Fallhoursproduction-portal.azurewebsites.net%252Fauth-callback%26scope%3Dopenid%2520profile%2520api%2520offline_access%26code_challenge%3DN3XhYBcljXrCHE2xjfkIY1lFYmPytkZ4PjWV-Ng9q40%26code_challenge_method%3DS256`;
+        const redirectURL = chrome.identity.getRedirectURL();
+        console.log(redirectURL);
+        //let authURL=`https://login.allhours.com`;
+        //let authURL=`https://spicaidentityserverdevelopment.azurewebsites.net`;
+        //authURL +=`/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fresponse_type%3Dcode%26client_id%3Dpkce_client%26state%3DR0dRYV9oYUw3ZUljNHVvemJjcnllLXprazNIeHNyQkZZeWxWdUNDdWowZGdE%26scope%3Dopenid%2520profile%2520api%2520offline_access%26code_challenge%3DN3XhYBcljXrCHE2xjfkIY1lFYmPytkZ4PjWV-Ng9q40%26code_challenge_method%3DS256`;
+        //authURL += `%26redirect_uri%3Dhttps%253A%252F%252Fallhoursproduction-portal.azurewebsites.net%252Fauth-callback`;
+        //authURL += `%26redirect_uri%3Dhttps%253A%252F%252Fejfeamnngdpogapmijokhbomdldkebcd.chromiumapp.org%252Fauth-callback`;
+        let authURL=`https://spicaidentityserverdevelopment.azurewebsites.net/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fresponse_type%3Dcode%26client_id%3Dpkce_client%26state%3DcFYycX4uNW5RRXNvc2VIX0Z-TzJleng5NS5qd1l5WktscHBmaWdNbldGdjJq%26redirect_uri%3Dhttps%253A%252F%252Fahdevelopment-portal.azurewebsites.net%252signin-oidc%26scope%3Dopenid%2520profile%2520api%2520offline_access%26code_challenge%3DtiR-1J1ipd_dJSu5LgMrQFJX4LKolnr6RaZk15HYouI%26code_challenge_method%3DS256`;
+
+        console.log(authURL);
+
+        let options = {
+            url: authURL,
+            interactive: true
+        };
+
+
+        chrome.identity.launchWebAuthFlow(options, function(redirectUri) {
+
+            if (chrome.runtime.lastError) {
+                console.log(chrome.runtime.lastError.message);
+                return;
+            }
+
+
+            console.log('redirect url: ' + redirectUri);
+        });
+
+    }
 
     function loginToAllHours(){
         _this.allHoursApi.getAccessToken(

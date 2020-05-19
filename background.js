@@ -55,14 +55,15 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
-    if (request.action == 'createContextMenuItem') {
+    //if (request.action == 'createContextMenuItem') {
         // chrome.contextMenus.create({
         //     title: "convert %s to branch name and copy it to clipboard",
         //     contexts: ["selection"],
         //     onclick: getBranchName
         // });
-    }
-    else if (request.action == 'createContextMenuItemStartLog') {
+    // }
+    //else 
+    if (request.action == 'createContextMenuItemStartLog') {
 
         chrome.contextMenus.remove("mhParent");
 
@@ -73,11 +74,18 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
           });
           
         chrome.contextMenus.create({
-            title: "Start tracking time: '%s'",
+            title: "Start tracking time for Axo Item #%s",
+            parentId: "mhParent",
+            contexts: ["selection"],
+            onclick: startTrackingTimeAxo
+        });
+
+        chrome.contextMenus.create({
+            title: "Start tracking time with description: '%s'",
             parentId: "mhParent",
             contexts: ["selection"],
             onclick: startTrackingTime
-        });
+        });        
 
 
         chrome.contextMenus.create({
@@ -85,12 +93,20 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             parentId: "mhParent",
             contexts: ["all"],
             onclick: stopTimer
-        });        
+        });  
+        
+        chrome.contextMenus.create({
+            title: "Add new project: '%s'",
+            parentId: "mhParent",
+            contexts: ["selection"],
+            onclick: createProject
+        });         
+
     }
 }
 );
 
-function startTrackingTime(info, tab) {
+function startTrackingTimeAxo(info, tab) {
 
     let currentUser = new CurrentUser();
     let options = new Options();
@@ -135,7 +151,7 @@ function startTrackingTime(info, tab) {
                                                 type: 'basic',
                                                 iconUrl: 'mh-badge.jpg',
                                                 title: 'MyHours',
-                                                message: 'Log started.'
+                                                message: 'Log started. Axo item #' + info.selectionText
                                             };
                                             //chrome.notifications.create('', 'Log started');
                                             chrome.notifications.create('', notificationOptions, function () { });
@@ -157,6 +173,48 @@ function startTrackingTime(info, tab) {
                     });
             });
         });
+}
+
+function startTrackingTime(info, tab) {
+
+    let currentUser = new CurrentUser();
+    let myHoursApi = new MyHoursApi(currentUser);
+
+    myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+        function (token) {
+            console.info('got refresh token. token: ');
+            console.info(token);
+
+            currentUser.setTokenData(token.accessToken, token.refreshToken);
+            currentUser.save();
+
+            myHoursApi.startLog(info.selectionText)
+                .then(
+                    function (data) {
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: 'mh-badge.jpg',
+                            title: 'MyHours',
+                            message: 'Log started. Description: ' + info.selectionText
+                        };
+                        //chrome.notifications.create('', 'Log started');
+                        chrome.notifications.create('', notificationOptions, function () { });
+                    },
+                    function (error) {
+                        console.log(error);
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: 'mh-badge.jpg',
+                            title: 'MyHours',
+                            message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                        };
+                        //chrome.notifications.create('', 'Bummer something went wrong.');
+                        chrome.notifications.create('', notificationOptions, function () { });
+                    }
+                );
+        }
+    )    
+
 }
 
 function stopTimer(info, tab) {
@@ -213,6 +271,47 @@ function stopTimer(info, tab) {
         });
 }
 
+function createProject(info, tab) {
+
+    let currentUser = new CurrentUser();
+    let myHoursApi = new MyHoursApi(currentUser);
+
+    myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+        function (token) {
+            console.info('got refresh token. token: ');
+            console.info(token);
+
+            currentUser.setTokenData(token.accessToken, token.refreshToken);
+            currentUser.save();
+
+            myHoursApi.createProject(info.selectionText)
+                .then(
+                    function (data) {
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: 'mh-badge.jpg',
+                            title: 'MyHours',
+                            message: 'Project created.'
+                        };
+                        //chrome.notifications.create('', 'Log started');
+                        chrome.notifications.create('', notificationOptions, function () { });
+                    },
+                    function (error) {
+                        console.log(error);
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: 'mh-badge.jpg',
+                            title: 'MyHours',
+                            message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                        };
+                        //chrome.notifications.create('', 'Bummer something went wrong.');
+                        chrome.notifications.create('', notificationOptions, function () { });
+                    }
+                );
+        }
+    )    
+
+}
 
 function getBranchName(info, tab) {
     console.log("selection: " + info.selectionText);
