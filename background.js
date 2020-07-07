@@ -100,6 +100,13 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             parentId: "mhParent",
             contexts: ["selection"],
             onclick: createProject
+        });  
+        
+        chrome.contextMenus.create({
+            title: "Add '%s' to running log description",
+            parentId: "mhParent",
+            contexts: ["selection"],
+            onclick: updateRunningLogDescription
         });         
 
     }
@@ -311,6 +318,61 @@ function createProject(info, tab) {
         }
     )    
 
+}
+
+function updateRunningLogDescription(info, tab) {
+
+    let currentUser = new CurrentUser();
+    let options = new Options();
+    let myHoursApi = new MyHoursApi(currentUser);
+
+    options.load().then(
+        function () {
+            currentUser.load(function () {
+                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+                    function (token) {
+                        console.info('got refresh token. token: ');
+                        console.info(token);
+
+                        currentUser.setTokenData(token.accessToken, token.refreshToken);
+                        currentUser.save();
+
+                        myHoursApi.updateRunningLogDescription(info.selectionText)
+                            .then(
+                                function (updatedLog) {
+                                    var notificationOptions = {
+                                        type: 'basic',
+                                        iconUrl: 'mh-badge.jpg',
+                                        title: 'MyHours',
+                                    };
+                                    if (updatedLog) {
+                                        console.log(updatedLog);
+                                        notificationOptions.message = "Description updated: " + updatedLog.note
+                                    }
+                                    else {
+                                        notificationOptions.message = "There are no running logs."
+                                    }
+
+                                    //chrome.notifications.create('', 'Log started');
+                                    chrome.notifications.create('', notificationOptions, function () { });
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    var notificationOptions = {
+                                        type: 'basic',
+                                        iconUrl: 'mh-badge.jpg',
+                                        title: 'MyHours',
+                                        message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                                    };
+                                    //chrome.notifications.create('', 'Bummer something went wrong.');
+                                    chrome.notifications.create('', notificationOptions, function () { });
+                                }
+                            );
+                    }
+                )
+                  
+            });
+        });
 }
 
 function getBranchName(info, tab) {

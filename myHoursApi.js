@@ -126,6 +126,36 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    _this.getLog = function (runningLog) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: getting log " + runningLog.id);
+
+                _this.getLogs(moment(runningLog.date))
+                .then(logs => {
+                    //find log
+                    let log = logs.filter(function (x) {
+                        return x.id === runningLog.id;
+                    });
+
+                    if (log.length === 1){
+                        resolve(log[0]);
+                    }
+                    else {
+                        resolve(null);
+                    }
+                })
+                .catch(error => {
+                    console.error('error: ' + error);
+                    return reject(error);
+                });
+
+
+                
+            }
+        )
+    }    
+
     _this.getTimes = function (logId) {
         return new Promise(
             function (resolve, reject) {
@@ -272,6 +302,59 @@ function MyHoursApi(currentUser) {
         )
     }  
     
+    _this.updateRunningLogDescription = function (comment) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: update running log description");
+
+                _this.getRunning().then(
+                    function (logs) {
+                        console.info('got running log: ');
+                        console.info(logs);
+
+                        if (logs.length === 1) {
+                            _this.getLog(logs[0])
+                            .then(runningLog => {
+                                var updatedLogData = {
+                                    id: runningLog.id,
+                                    note: runningLog.note + ' ' + comment
+                                };
+                            
+                                $.ajax({
+                                    url: baseUrl + "logs/updatedescription?id=" + updatedLogData.id,
+                                    type: "PUT",
+                                    contentType: "application/json",
+                                    headers: {
+                                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                                    },
+                                    data: JSON.stringify(updatedLogData),
+                                    success: function (data) {
+                                        return resolve(data);
+                                    },
+                                    error: function (data) {
+                                        console.error(data);
+                                        return reject(data);
+                                    }
+                                });
+                            })
+                            .catch(error => {
+                                console.error('error: ' + error);
+                                return reject(error);
+                            });
+                        }
+                        else {
+                            return resolve(null);
+                        }
+                    }
+                )
+                .catch(error => {
+                    console.error('error: ' + error);
+                    return reject(error);
+                });
+            }
+        )
+    }  
+
     _this.getRunning = function () {
         return new Promise(
             function (resolve, reject) {

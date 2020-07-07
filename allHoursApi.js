@@ -53,6 +53,60 @@ function AllHoursApi(
         );
     };
 
+    _this.getAccessTokenUsingCode = function (code, codeVerifier) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info(baseName + ": getting token");
+
+                var loginData = {
+                    grant_type: "authorization_code",
+                    code: code,
+                    // redirect_uri:"https://ejfeamnngdpogapmijokhbomdldkebcd.chromiumapp.org",
+                    redirect_uri: "https://ahdevelopment-portal.azurewebsites.net/auth-callback",
+                    code_verifier:codeVerifier,
+                    client_id: "pkce_client"
+                };
+
+
+                
+/*
+                grant_type: authorization_code
+                code: Ua01YXoAqFEYmcoYmJX8_hOvH0fSNylpqdYMD7EK1Ss
+                redirect_uri: https://ahdevelopment-portal.azurewebsites.net/auth-callback
+                code_verifier: T0dXaDJONjVlc0hjRHl1bUNXaXdfbGk4akFZa35Da3VHUFFuSFlYSUFfSzVG
+                client_id: pk
+*/
+                console.log(loginData);
+
+                $.ajax({
+                    headers: {          
+                        Accept: "application/json, text/plain, */*",         
+                    },     
+                    url: "https://spicaidentityserverdevelopment.azurewebsites.net/connect/token",
+                    //url: "https://spicalevelzerodevelopment.azurewebsites.net/api/connect/token",
+                    contentType: "application/x-www-form-urlencoded",
+                    type: "POST",
+                    data: loginData,
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        //console.log(data);
+                        if (jqXHR.status == 401){
+                            return reject(Error("invalid credentials"));
+                        }
+                        else if (jqXHR.status == 404){
+                            return reject(Error("invalid All Hours API Address"));
+                        }                        
+                        else{
+                            return reject(Error("Error while geeting token."));
+                        }
+                    }
+                });
+            }
+        );
+    };
+
     _this.refreshAccessToken = function () {
         return new Promise(
             function (resolve, reject) {
