@@ -9,6 +9,7 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (request && request.type === 'logs-changed') {
         console.log('hello from content script - page rendered');
 
+        //old track view
         $('log-action-toolbar').parent().parent().each(function(index, data) {
 
             var dataContainer = $(data).find('.d-flex.flex-column');
@@ -31,6 +32,31 @@ chrome.runtime.onMessage.addListener(function (request) {
             let logStyle = 'solid 6px ' + logColor;
             $(data).css('border-left', logStyle);
         });
+
+
+        //new track view
+        $('.logs-wrapper .list-log').each(function(index, data) {
+
+            var dataContainer = $(data);
+            var description = dataContainer.find('h5 span').text();
+            console.log('description: ' + description);
+
+            var itemId = getAxoItemId(description);
+            if (!itemId){
+                var clientProjectTask = $(data).find('[data-projectid]').text();
+                console.log('clientProjectTask: ' + clientProjectTask);
+                itemId = getAxoItemId(clientProjectTask);
+            }
+
+            let colorIndex = numberToIndex(itemId, 8);
+            let logColor = 'whitesmoke';
+            if (colorIndex > -1){
+                logColor = colors[colorIndex];
+            }
+
+            let logStyle = 'solid 6px ' + logColor;
+            $(data).find('.row').css('border-left', logStyle);
+        });        
     }
 
     else if (request && request.type === 'copy-to-clipboard'){
