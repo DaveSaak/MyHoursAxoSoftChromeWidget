@@ -357,9 +357,13 @@ function popup() {
                                     data.axoName = item.name;
                                     data.axoId = item.id;
                                     data.axoItemType = item.item_type;
-                                    data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
-                                    data.axoRemainingDuration = item.remaining_duration.duration;
-                                    data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
+                                    let remainingDurationIsAvailable = (item.remaining_duration.time_unit.id !== 0)
+
+                                    if (remainingDurationIsAvailable){
+                                        data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
+                                        data.axoRemainingDuration = item.remaining_duration.duration;
+                                        data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
+                                    }
                                     //data.color = colors[nameToIndex(data.axoName, 8)];
                                     data.color = colors[numberToIndex(data.axoId, 8)];
 
@@ -398,8 +402,14 @@ function popup() {
 
                                     {
                                         var remainingHoursInfo = $('<span>').addClass('tag');
-                                        var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
-                                        remainingHoursInfo.text(reminingHrs + " hrs left");
+
+                                        if (remainingDurationIsAvailable){
+                                            var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
+                                            remainingHoursInfo.text(reminingHrs + " hrs left");
+                                        } else {
+                                            remainingHoursInfo.addClass('is-danger');
+                                            remainingHoursInfo.text("enter estimate to sync");
+                                        }
                                         status.append(remainingHoursInfo);
                                     }
 
