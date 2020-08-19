@@ -23,6 +23,10 @@ table.table>tbody>tr:not(.ng-scope):hover div.btn-group {
 table.table tr>td.table-cell-title{
     font-size: 14px;
 }
+
+.logs-wrapper .list-log.hiLite {
+    background-color: #dceefa;
+}
 /* @media (min-width: 992px) {
     .container {
         width: initial;
