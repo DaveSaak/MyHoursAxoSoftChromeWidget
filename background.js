@@ -127,7 +127,7 @@ function startTrackingTime(info, tab) {
                                             var notificationOptions = {
                                                 type: 'basic',
                                                 iconUrl: './images/MH-badge.png',
-                                                title: 'MyHours',
+                                                title: 'My Hours',
                                                 message: 'Log started.'
                                             };
                                             //chrome.notifications.create('', 'Log started');
@@ -138,7 +138,7 @@ function startTrackingTime(info, tab) {
                                             var notificationOptions = {
                                                 type: 'basic',
                                                 iconUrl: './images/MH-badge.png',
-                                                title: 'MyHours',
+                                                title: 'My Hours',
                                                 message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                             };
                                             //chrome.notifications.create('', 'Bummer something went wrong.');
@@ -175,7 +175,7 @@ function stopTimer(info, tab) {
                                     var notificationOptions = {
                                         type: 'basic',
                                         iconUrl: './images/MH-badge.png',
-                                        title: 'MyHours',
+                                        title: 'My Hours',
                                     };
                                     if (data) {
                                         notificationOptions.message = "Timer stopped: " + data.note
@@ -192,7 +192,7 @@ function stopTimer(info, tab) {
                                     var notificationOptions = {
                                         type: 'basic',
                                         iconUrl: './images/MH-badge.png',
-                                        title: 'MyHours',
+                                        title: 'My Hours',
                                         message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                     };
                                     //chrome.notifications.create('', 'Bummer something went wrong.');

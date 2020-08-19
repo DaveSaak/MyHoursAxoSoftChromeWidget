@@ -143,7 +143,7 @@ $(function () {
             var notificationOptions = {
                 type: 'basic',
                 iconUrl: './images/TS-badge.png',
-                title: 'Options saved',
+                title: 'Time & Space Suite Extension',
                 message: 'Options have been saved.'
             };
             //chrome.notifications.create('optionsSaved', notificationOptions);
