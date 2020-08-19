@@ -55,23 +55,16 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
-    if (request.action == 'createContextMenuItem') {
-        // chrome.contextMenus.create({
-        //     title: "convert %s to branch name and copy it to clipboard",
-        //     contexts: ["selection"],
-        //     onclick: getBranchName
-        // });
-    }
-    else if (request.action == 'createContextMenuItemStartLog') {
+    if (request.action == 'createContextMenuItemStartLog') {
 
         chrome.contextMenus.remove("mhParent");
 
         chrome.contextMenus.create({
             title: "My Hours tools",
             id: "mhParent",
-            contexts:["all"]
-          });
-          
+            contexts: ["all"]
+        });
+
         chrome.contextMenus.create({
             title: "Start tracking time: '%s'",
             parentId: "mhParent",
@@ -85,7 +78,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             parentId: "mhParent",
             contexts: ["all"],
             onclick: stopTimer
-        });        
+        });
     }
 }
 );
@@ -208,7 +201,7 @@ function stopTimer(info, tab) {
                             );
                     }
                 )
-                  
+
             });
         });
 }

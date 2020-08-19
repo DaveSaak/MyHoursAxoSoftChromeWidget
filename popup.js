@@ -325,10 +325,12 @@ function popup() {
                                 log.mouseenter(function () {
                                     $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
                                     $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", true);
+                                    hiLiteMyHoursLog(data.id);
                                 });
                                 log.mouseleave(function () {
                                     $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", false);
                                     $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", false);
+                                    hiLiteMyHoursLog();
                                 });
 
                                 var worklogTypeInfo = $('<span>')
@@ -878,6 +880,12 @@ function popup() {
 
     function hideAlert(){
         $('#alertContainer').hide();
+    }
+
+    function hiLiteMyHoursLog(logId){
+        chrome.tabs.query({currentWindow: true,active: true}, function(tabs){ 
+            chrome.tabs.sendMessage(tabs[0].id, { type: 'hilite-log', logId });
+        });
     }
 
     initInterface();

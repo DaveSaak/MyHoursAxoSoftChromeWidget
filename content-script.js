@@ -66,6 +66,14 @@ chrome.runtime.onMessage.addListener(function (request) {
             console.error('Async: Could not copy text: ', err);
         });
     }
+
+    else if (request && request.type === 'hilite-log'){
+        console.log(request.logId);
+        $('.logs-wrapper .list-log').removeClass('hiLite');         
+        $('.logs-wrapper .list-log[data-logid="'+ request.logId + '"]').addClass('hiLite');
+        console.log($('.logs-wrapper .list-log[data-logid="'+ request.logId + '"]'));
+        
+    }
 });
 
 
