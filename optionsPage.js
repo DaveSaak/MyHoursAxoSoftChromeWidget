@@ -142,7 +142,7 @@ $(function () {
         _this.options.save().then(function () {
             var notificationOptions = {
                 type: 'basic',
-                iconUrl: 'logo.png',
+                iconUrl: './images/TS-badge.png',
                 title: 'Options saved',
                 message: 'Options have been saved.'
             };

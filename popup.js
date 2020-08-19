@@ -137,7 +137,7 @@ function popup() {
                     function (data) {
                         var notificationOptions = {
                             type: 'basic',
-                            iconUrl: 'logo.png',
+                            iconUrl: './images/TS-badge.png',
                             title: 'Content Switch',
                             message: 'Content Switch was recorded.'
                         };

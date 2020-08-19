@@ -6,7 +6,7 @@
     "author": "Dave",
     "browser_action": {
         "default_popup": "popup.html",
-        "default_icon": "logo.png"
+        "default_icon": "./images/TS-badge.png"
     },
     "options_page": "options.html",
     "background": {
@@ -29,9 +29,9 @@
         }
     ],
     "icons": {
-        "16": "AH-16.png",
-        "48": "AH-48.png",
-        "128": "AH-128.png"
+        "16": "./images/TS-badge16.png",
+        "48": "./images/TS-badge48.png",
+        "128": "./images/TS-badge128.png"
       },
     "permissions": [
         "storage",

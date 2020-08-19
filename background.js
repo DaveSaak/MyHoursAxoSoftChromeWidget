@@ -126,7 +126,7 @@ function startTrackingTime(info, tab) {
                                         function (data) {
                                             var notificationOptions = {
                                                 type: 'basic',
-                                                iconUrl: 'mh-badge.jpg',
+                                                iconUrl: './images/MH-badge.png',
                                                 title: 'MyHours',
                                                 message: 'Log started.'
                                             };
@@ -137,7 +137,7 @@ function startTrackingTime(info, tab) {
                                             console.log(error);
                                             var notificationOptions = {
                                                 type: 'basic',
-                                                iconUrl: 'mh-badge.jpg',
+                                                iconUrl: './images/MH-badge.png',
                                                 title: 'MyHours',
                                                 message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                             };
@@ -174,7 +174,7 @@ function stopTimer(info, tab) {
                                 function (data) {
                                     var notificationOptions = {
                                         type: 'basic',
-                                        iconUrl: 'mh-badge.jpg',
+                                        iconUrl: './images/MH-badge.png',
                                         title: 'MyHours',
                                     };
                                     if (data) {
@@ -191,7 +191,7 @@ function stopTimer(info, tab) {
                                     console.log(error);
                                     var notificationOptions = {
                                         type: 'basic',
-                                        iconUrl: 'mh-badge.jpg',
+                                        iconUrl: './images/MH-badge.png',
                                         title: 'MyHours',
                                         message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                     };
