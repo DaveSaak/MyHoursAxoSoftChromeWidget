@@ -545,9 +545,11 @@ function popup() {
                     });
                     barGraph.mouseenter(function () {
                         $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
+                        hiLiteMyHoursLog(data.id);
                     });
                     barGraph.mouseleave(function () {
                         $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
+                        hiLiteMyHoursLog();
                     });
 
                     timeline.append(barGraph);
