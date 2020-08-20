@@ -65,11 +65,11 @@ function popup() {
                                 showMainPage();
                             }
                         )
-                        .catch(error => {
-                            console.error('error: ' + error);
-                            showLoginPage();
+                            .catch(error => {
+                                console.error('error: ' + error);
+                                showLoginPage();
 
-                        });
+                            });
                     }
                     else {
                         //myHoursApi.accessToken = currentUser.accessToken;
@@ -129,6 +129,17 @@ function popup() {
 
         $('#refresh').click(function () {
             getLogs();
+        });
+
+        $('#showLogsSwitch').click(function () {
+            let show = $('#showLogsSwitch').prop("checked");
+            if (show) { 
+                $('#logsContainer').show(); 
+            }
+            else { 
+                $('#logsContainer').hide(); 
+            }
+
         });
 
         $('#switchContentButton').click(function () {
@@ -281,15 +292,14 @@ function popup() {
             $("#axoTotal").text(minutesToString(minutesWorked));
 
         })
-        .catch(error => {
-            console.log(error);
-            showAlert('could not connect to Axo.');
-        });
+            .catch(error => {
+                console.log(error);
+                showAlert('could not connect to Axo.');
+            });
 
 
         _this.axoSoftApi.getWorkLogTypes()
-            .then(response => 
-            {
+            .then(response => {
                 _this.worklogTypes = response;
 
                 _this.axoSoftApi.getTimeUnits().then(function (response) {
@@ -359,7 +369,7 @@ function popup() {
                                     data.axoItemType = item.item_type;
                                     let remainingDurationIsAvailable = (item.remaining_duration.time_unit.id !== 0)
 
-                                    if (remainingDurationIsAvailable){
+                                    if (remainingDurationIsAvailable) {
                                         data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
                                         data.axoRemainingDuration = item.remaining_duration.duration;
                                         data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
@@ -367,20 +377,20 @@ function popup() {
                                     //data.color = colors[nameToIndex(data.axoName, 8)];
                                     data.color = colors[numberToIndex(data.axoId, 8)];
 
-                                    if (data.taskName){    
+                                    if (data.taskName) {
                                         let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
                                         data.axoWorklogTypeId = worklogTypeId;
                                     }
-                                    else{
+                                    else {
                                         let partialWorkLogTypeName = getPartialWorkLogType(data);
                                         let worklogTypeId = getWorklogTypeId(partialWorkLogTypeName, _this.worklogTypes, true);
-                                        data.axoWorklogTypeId = worklogTypeId;                                        
+                                        data.axoWorklogTypeId = worklogTypeId;
                                     }
                                     let worklogTypeName = getWorklogTypeName(data.axoWorklogTypeId, _this.worklogTypes);
                                     data.axoWorklogTypeName = worklogTypeName;
 
                                     worklogTypeInfo.text(data.axoWorklogTypeName);
-    
+
 
 
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
@@ -403,7 +413,7 @@ function popup() {
                                     {
                                         var remainingHoursInfo = $('<span>').addClass('tag');
 
-                                        if (remainingDurationIsAvailable){
+                                        if (remainingDurationIsAvailable) {
                                             var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
                                             remainingHoursInfo.text(reminingHrs + " hrs left");
                                         } else {
@@ -501,7 +511,7 @@ function popup() {
                 console.log(error);
                 showAlert('could not connect to Axo.');
             });
-        
+
     }
 
     function getTimes(data, timeline) {
@@ -565,7 +575,7 @@ function popup() {
     function getAllHoursData() {
         let currentUserPromise = _this.allHoursApi.getCurrentUserId();
 
-        if (currentUserPromise != undefined){
+        if (currentUserPromise != undefined) {
             currentUserPromise.then(
                 function (data) {
 
@@ -676,7 +686,7 @@ function popup() {
 
         //getAxoItem(myHoursLog).then(item => {
 
-        if (myHoursLog.duration === 0){
+        if (myHoursLog.duration === 0) {
             logStatus.append('<span>').addClass('tag is-warning').text("empty log. skipping.");
             return;
         }
@@ -769,7 +779,7 @@ function popup() {
             }
         }
         return '';
-    }    
+    }
 
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
@@ -795,7 +805,7 @@ function popup() {
         if (taskName != undefined) {
             var workLogType = _.find(worklogTypes,
                 function (w) {
-                    if (!partialMatch){
+                    if (!partialMatch) {
                         return w.name.toUpperCase() === taskName.toUpperCase();
                     }
                     else {
@@ -890,12 +900,12 @@ function popup() {
     }
 
 
-    function hideAlert(){
+    function hideAlert() {
         $('#alertContainer').hide();
     }
 
-    function hiLiteMyHoursLog(logId){
-        chrome.tabs.query({currentWindow: true,active: true}, function(tabs){ 
+    function hiLiteMyHoursLog(logId) {
+        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
             chrome.tabs.sendMessage(tabs[0].id, { type: 'hilite-log', logId });
         });
     }
