@@ -16,6 +16,7 @@ $(function () {
             $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
             $('#ahUrl').val(_this.options.allHoursUrl);
             $('#ahUserName').val(_this.options.allHoursUserName);
+            $('#isSecret').val(_this.options.isSecret);
 
             _this.axoSoftApi = new AxoSoftApi(_this.options);
             _this.allHoursApi = new AllHoursApi(_this.options);
@@ -84,6 +85,7 @@ $(function () {
         _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
+        _this.options.isSecret = $('#isSecret').val();
         
 
         saveOptions();
