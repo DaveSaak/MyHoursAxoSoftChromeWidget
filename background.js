@@ -66,6 +66,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         });
 
         chrome.contextMenus.create({
+            // title: "Start tracking time for Axo Item",
             title: "Start tracking time for Axo Item #%s",
             parentId: "mhParent",
             contexts: ["selection"],
@@ -73,6 +74,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         });
 
         chrome.contextMenus.create({
+            // title: "Start tracking time with description",
             title: "Start tracking time with description: '%s'",
             parentId: "mhParent",
             contexts: ["selection"],
@@ -80,17 +82,18 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         });
 
         chrome.contextMenus.create({
-            title: "Add '%s' to running log description",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: updateRunningLogDescription
-        });         
-
-        chrome.contextMenus.create({
             type: 'separator',
             parentId: "mhParent",
             contexts: ["all"],
-        });        
+        });     
+        
+        chrome.contextMenus.create({
+            // title: "Add to running log description",
+            title: "Add to running log description",
+            parentId: "mhParent",
+            contexts: ["selection"],
+            onclick: updateRunningLogDescription
+        });          
 
         chrome.contextMenus.create({
             title: "Stop running log",
