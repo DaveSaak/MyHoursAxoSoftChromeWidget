@@ -63,7 +63,7 @@ function AllHoursApi(
                     password: password,
                     client_id: "ro_client",
                     scope: "api profile offline_access openid",
-                    client_secret: _this.options.isSecret//"qz16y7vh12dbet6rac2gqqr1wxby3i"
+                    client_secret: _this.options.isSecret
                 };
 
                 // Convert the project to a x-form-urlencoded string
