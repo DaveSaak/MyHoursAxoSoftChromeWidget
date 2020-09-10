@@ -15,6 +15,7 @@ function Options() {
     _this.allHoursAccessTokenValidTill = '';
     _this.allHoursUrl = '';
     _this.allHoursUserName = '';
+    _this.isSecret = '';
 
 
     _this.save = function () {
@@ -68,6 +69,7 @@ function Options() {
                             _this.allHoursAccessTokenValidTill = items.options.allHoursAccessTokenValidTill;
                             _this.allHoursUrl = items.options.allHoursUrl;
                             _this.allHoursUserName = items.options.allHoursUserName;
+                            _this.isSecret = items.options.isSecret;
                         }
 
                         resolve();
