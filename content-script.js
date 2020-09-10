@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (request) {
                     console.log(timelineContentItem);
                     let timelineItem = $(timelineContentItem).closest('.vis-item');
                     // timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:white !important; border-color:' + logColor + ' !important;');
-                    timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:' + logColor + ' !important; border-color:' + logColor + ' !important;');
+                    timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:' + logColor + ' !important; border-color:' + logColor + ' !important; border-radius: 0 !important;');
                     
                     //timelineItem.css('background-color', logColor);
                     // timelineItem.css('color', 'white');
