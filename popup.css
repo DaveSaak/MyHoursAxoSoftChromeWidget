@@ -68,7 +68,7 @@ input.rounded-x {
     line-height: 120px;
 }
 
-ul#logs li .column {
+div#logs li .column {
     padding-top: 9px;
     padding-bottom: 9px;
 }
@@ -217,27 +217,6 @@ ul#logs li .column {
     box-shadow: none;
 }
 
-/* .btn.hiddenButton {
-    display: none;
-}
-
-.timeControls:hover .btn.hiddenButton {
-    display: block;
-} */
-
-.columns:hover{
-    /* background-color: #f0f8ff8a; */
-    /* font-size: 1.1em; */
-}
-
-ul#logs{
-    /* max-height: 220px;
-    overflow-y: scroll;
-    overflow-x: hidden; */
-}
-
-
-
 .actionButton {
     border: none;
     display: inline-block;
@@ -310,12 +289,12 @@ ul#logs{
       /* background-color: darkseagreen; */
   }
 
-  ul#logs li:hover .tag.tag-button {
+  div#logs div:hover .tag.tag-button {
       display: block;
   }
 
-  li.logContainer.active .mainColumn .tags,
-  li.logContainer:hover .mainColumn .tags
+  div.logContainer.active .mainColumn .tags,
+  div.logContainer:hover .mainColumn .tags
    {
     transform: scale(1.1) translate(17px, 0px);
     transition: all 0.2s;
@@ -358,4 +337,21 @@ ul#logs{
 
 .noselect {
     user-select: none; 
+}
+
+.tagX {
+    align-items: center;
+    background-color: whitesmoke;
+    border-radius: 4px;
+    color: #4a4a4a;
+    display: initial;
+    font-size: 0.75rem;
+    height: 2em;
+    justify-content: center;
+    line-height: 1.5;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    white-space: nowrap;
 }

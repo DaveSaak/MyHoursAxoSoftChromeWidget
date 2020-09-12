@@ -309,28 +309,29 @@ function popup() {
                     var logsContainer2 = $('#logsContainer');
 
                     _this.myHoursApi.getLogs(_this.currentDate).then(
-                        function (data) {
-                            _this.myHoursLogs = data;
+                        function (logs) {
+                            _this.myHoursLogs = logs;
                             _this.myHoursTaskSummary = {};
 
                             var totalMins = 0;
 
-                            logsContainer2.toggleClass('d-none', data.length === 0);
-                            topContainer.toggleClass('d-none', data.length === 0);
+                            logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
+                            topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
 
-                            $.each(data, function (index, data) {
+                            $.each(_this.myHoursLogs, function (index, data) {
                                 //var colorIndex = nameToIndex(data.projectName, 8);
                                 //var colorIndex = numberToIndex(data.projectId, 8);
                                 //var logColor = colors[colorIndex];
 
                                 totalMins = totalMins + (data.duration / 60);
 
-                                var log = $('<li>')
+                                var log = $('<div>')
                                     .attr("data-logId", data.id)
-                                    .addClass("logContainer");
-                                var columns = $('<div>').addClass('columns');
-                                var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
-                                var tagGroup = $('<div>').addClass('tags has-addons');
+                                    .addClass("row logContainer my-1");
+                                //var columns = $('<div>').addClass('row');
+                                var columnMain = $('<div>').addClass('col-6 mainColumn ');
+                                //var tagGroup = $('<div>').addClass('tagsX has-addons');
+                                var columnAxoWorklogType = $('<div>').addClass('col-2 axoWorklogTypeColumn');
 
                                 log.mouseenter(function () {
                                     $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
@@ -343,25 +344,24 @@ function popup() {
                                     hiLiteMyHoursLog();
                                 });
 
-                                var worklogTypeInfo = $('<span>')
-                                    //.text(worklogTypeName)
-                                    .addClass('tag is-dark worklogType')
-                                    .css("font-style", "italicX")
-                                //.css("width", "120px")
-                                tagGroup.prepend(worklogTypeInfo);
-                                columnA.append(tagGroup);
+                                var worklogTypeInfo = $('<div>')
+                                    .addClass('tag is-dark worklogType ');
+                                    
+                                //tagGroup.prepend(worklogTypeInfo);
+                                //columnMain.append(tagGroup);
+                                columnAxoWorklogType.append(worklogTypeInfo);
 
-                                var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
+                                var columnTime = $('<div>').addClass('col-1').css('text-align', 'right').css('font-weight', '600');
 
                                 if (data.duration != null) {
                                     var duration = minutesToString(data.duration / 60);
                                     var durationInfo = $('<span>').text(duration);
-                                    columnB.append(durationInfo);
+                                    columnTime.append(durationInfo);
                                 }
-                                var columnC = $('<div>').addClass('column is-3 statusColumn');
+                                var columnStatus = $('<div>').addClass('col-3 statusColumn');
 
                                 var status = ($('<div>').addClass('tags'));
-                                columnC.append(status);
+                                columnStatus.append(status);
 
                                 getAxoItem(data).then(item => {
                                     data.axoName = item.name;
@@ -393,10 +393,11 @@ function popup() {
 
 
 
-                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
+                                    // var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                     // logStatus.empty();
-                                    var success = $('<span>')
-                                        .addClass('tag axoItemName')
+                                    var success = $('<div>')
+                                        .addClass('tagX axoItemName text-truncate')
                                         .text('' + data.axoId + " -- " + data.axoName)
                                         .css("background-color", data.color)
                                         .css("color", "white")
@@ -461,11 +462,13 @@ function popup() {
                                         getTimes(data, timeline);
                                     });
 
-                                columns.append(columnB);
-                                columns.append(columnA);
-                                columns.append(columnC);
+                                
+                                log.append(columnAxoWorklogType);
+                                log.append(columnMain);
+                                log.append(columnTime);
+                                log.append(columnStatus);
 
-                                log.append(columns);
+                                log.append(log);
                                 logsContainer.append(log);
                             });
                             _this.timeRatio.setMyHours(totalMins);
@@ -528,25 +531,22 @@ function popup() {
                     barGraph.addClass('timelineItem timeline-log');
                     barGraph.attr("data-logId", data.id);
                     barGraph.prop('title', title);
-                    // barGraph.attr('data-toggle', "tooltip");
-                    // barGraph.attr('data-placement', "bottom");
-                    // barGraph.attr('data-html', "true");
 
                     if (!data.axoId) {
                         barGraph.append('<i class="fas fa-skull-crossbones ml-2" aria-hidden="true"></i>');
                     }
 
-                    var leftDragHandle = $("<div class='leftDrag'>");
-                    leftDragHandle.mousedown(function (event) {
-                        startDrag(event);
-                    });
-                    barGraph.append(leftDragHandle);
+                    // var leftDragHandle = $("<div class='leftDrag'>");
+                    // leftDragHandle.mousedown(function (event) {
+                    //     startDrag(event);
+                    // });
+                    // barGraph.append(leftDragHandle);
 
-                    var rightDragHandle = $("<div class='rightDrag'>");
-                    rightDragHandle.mousedown(function (event) {
-                        startDrag(event);
-                    });
-                    barGraph.append(rightDragHandle);
+                    // var rightDragHandle = $("<div class='rightDrag'>");
+                    // rightDragHandle.mousedown(function (event) {
+                    //     startDrag(event);
+                    // });
+                    // barGraph.append(rightDragHandle);
 
                     barGraph.css({
                         left: left + 'px',
@@ -554,11 +554,11 @@ function popup() {
                         "background-color": data.color,
                     });
                     barGraph.mouseenter(function () {
-                        $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
+                        $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
                         hiLiteMyHoursLog(data.id);
                     });
                     barGraph.mouseleave(function () {
-                        $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
+                        $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
                         hiLiteMyHoursLog();
                     });
 
