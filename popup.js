@@ -21,6 +21,7 @@ function popup() {
     _this.axoSoftApi = new AxoSoftApi(_this.options);
 
     _this.timeRatio = new TimeRatio(showRatio);
+    _this.timeRatioAllHourAxo = new TimeRatio(showRatioAllHoursAxo);
 
     _this.timeLineWidth = 1300;
     _this.noTimeDataText = "n/a";
@@ -266,6 +267,7 @@ function popup() {
     function getLogs() {
         console.log('getting logs');
         _this.timeRatio.reset();
+        _this.timeRatioAllHourAxo.reset();
         clearRatio();
         //hideAlert();
 
@@ -290,6 +292,7 @@ function popup() {
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
             $("#axoTotal").text(minutesToString(minutesWorked));
+            _this.timeRatioAllHourAxo.setMyHours(minutesWorked);
 
         })
             .catch(error => {
@@ -396,9 +399,10 @@ function popup() {
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
                                     // var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                     // logStatus.empty();
+                                    var truncatedAxoName = truncateText(data.axoName, 50);
                                     var success = $('<div>')
                                         .addClass('tagX axoItemName text-truncate')
-                                        .text('' + data.axoId + " -- " + data.axoName)
+                                        .text('' + data.axoId + " -- " + truncatedAxoName)
                                         .css("background-color", data.color)
                                         .css("color", "white")
                                         .click(function (event) {
@@ -585,6 +589,7 @@ function popup() {
                                 if (data && data.CalculationResultValues.length > 0) {
                                     let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
                                     _this.timeRatio.setAllHours(attendance);
+                                    _this.timeRatioAllHourAxo.setAllHours(attendance);
                                     $('#ahAttendance').text(minutesToString(attendance));
                                 }
                             },
@@ -832,6 +837,12 @@ function popup() {
         return 'unknown worklog type'
     }
 
+    function truncateText(text, maxLength){
+        if (text.length > maxLength){
+            return text.substring(0,maxLength) + '...';
+        }
+        return text;
+    }
 
     function timeToPixel(date, fullLength) {
         var mmt = moment(date);
@@ -875,6 +886,16 @@ function popup() {
         let elementInfo = $('#timeRatio');
         elementInfo.text((ratio * 100).toFixed(0) + '%');
     }
+
+    function showRatioAllHoursAxo(ratio) {
+        //console.log(ratio);
+        // let elementCard = $('#timeRatioCard');
+        // let ratioValid = (ratio >= 0.9 && ratio <= 1);
+        // elementCard.toggleClass('bg-warning', !ratioValid);
+
+        // let elementInfo = $('#timeRatio');
+        // elementInfo.text((ratio * 100).toFixed(0) + '%');
+    }    
 
     function clearRatio() {
         let elementCard = $('#timeRatioCard');

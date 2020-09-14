@@ -66,9 +66,9 @@
 
     <div id='mainContainer' style="display: none;" class="box12">
         <section>
-            <div class="d-flex flex-wrap align-self-center m-3">
+            <div class="d-flex flex-wrap align-self-center m-2">
                 <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
-                <div class="timeControls d-flex align-self-center ml-4">
+                <div class="timeControls d-flex align-self-center">
 
                     <button id="previousDay" class="btn btn-sm roundButton flat noFocus rounded-circle ml-3 hiddenButton">
                         <i class="fas fa-angle-left"></i>
@@ -134,34 +134,32 @@
 
         <section class="pt-2 pb-2">
 
-            <div class="card-deck mx-3">
-                <div class="card text-left shadow" style="width: 18rem;">
+            <div class="card-deck mx-3" id="stats">
+                <div class="card text-left shadow-sm border-0 allHoursStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
-
+                        <span id="ahAttendance" class="axoTotal font-weight-bold-x"></span>
                         <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
                     </div>
                 </div>
 
-                <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card text-left shadow-sm border-0 myHoursStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="mhTotal" class="axoTotal font-weight-bold"></span>
+                        <span id="mhTotal" class="axoTotal font-weight-bold-x"></span>
                         <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
                     </div>
                 </div>
 
-                <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card text-left shadow-sm border-0 axoStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="axoTotal" class="axoTotal font-weight-bold"></span>
+                        <span id="axoTotal" class="axoTotal font-weight-bold-x"></span>
                         <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo</small>
                     </div>
                 </div>
 
 
-                <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
+                <div id="timeRatioCard" class="card text-left shadow-sm border-0" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
-
+                        <span id="timeRatio" class="axoTotal font-weight-bold-x is-success"></span>
                         <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
                     </div>
                 </div>
