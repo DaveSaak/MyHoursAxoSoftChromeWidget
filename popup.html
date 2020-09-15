@@ -70,13 +70,13 @@
                 <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
                 <div class="timeControls d-flex align-self-center">
 
-                    <button id="previousDay" class="btn btn-sm roundButton flat noFocus rounded-circle ml-3 hiddenButton">
-                        <i class="fas fa-angle-left"></i>
-                    </button>
-
                     <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
                         <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
                     </div>
+
+                    <button id="previousDay" class="btn btn-sm roundButton flat noFocus rounded-circle mr-1 hiddenButton">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
 
                     <button id="nextDay" class="btn btn-sm roundButton flat noFocus rounded-circle hiddenButton">
                         <i class="fas fa-angle-right"></i>
@@ -187,9 +187,9 @@
             </div>
         </section>
 
-        <section>
+        <section class="mb-3 mr-3 customScroller" style="overflow: auto; max-height: 330px;">
             <div class="mx-4 mb-3" id="logsContainer">
-                <div id='logs' class="customScroller ">
+                <div id='logs'>
                 </div>
 
                 <!-- <div class="d-flex justify-content-start my-4 pt-3">

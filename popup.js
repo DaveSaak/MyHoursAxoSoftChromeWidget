@@ -174,26 +174,6 @@ function popup() {
                 getLogs();
             }
         };
-
-        /*
-        let timeline = $('#timeline');
-        $(timeline).on('mousemove', function (e) {
-            // we don't want to do anything if we aren't resizing.
-            if (!_this.isResizing) 
-                return;
-            
-            var offsetRight = timeline.width() - (e.clientX - timeline.offset().left);
-
-            let target = $(e.target);
-    
-            target.css('right', offsetRight);
-            // right.css('width', offsetRight);
-        }).on('mouseup', function (e) {
-            // stop resizing
-            _this.isResizing = false;
-        });   
-        */
-
     }
 
 
@@ -330,11 +310,21 @@ function popup() {
 
                                 var log = $('<div>')
                                     .attr("data-logId", data.id)
-                                    .addClass("row logContainer my-1");
-                                //var columns = $('<div>').addClass('row');
-                                var columnMain = $('<div>').addClass('col-6 mainColumn ');
-                                //var tagGroup = $('<div>').addClass('tagsX has-addons');
-                                var columnAxoWorklogType = $('<div>').addClass('col-2 axoWorklogTypeColumn');
+                                    .addClass("d-flex logContainer my-1 p-1 align-items-center");
+
+                                var columnColorBar = $('<div>')
+                                    .addClass('columnColorBar rounded mr-2');
+
+
+                                var columnMain = $('<div>')
+                                    .addClass('mainColumn columnMain d-flex flex-column');
+
+                                var columnAxoWorklogType = $('<div>')
+                                    .addClass('axoWorklogTypeColumn');
+
+                                columnMain.append(columnAxoWorklogType);
+
+                            
 
                                 log.mouseenter(function () {
                                     $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
@@ -348,22 +338,26 @@ function popup() {
                                 });
 
                                 var worklogTypeInfo = $('<div>')
-                                    .addClass('tag is-dark worklogType ');
+                                    .addClass('text-muted text-lowercase worklogType')
+                                    .css('font-size', '0.7rem');
                                     
-                                //tagGroup.prepend(worklogTypeInfo);
-                                //columnMain.append(tagGroup);
                                 columnAxoWorklogType.append(worklogTypeInfo);
 
-                                var columnTime = $('<div>').addClass('col-1').css('text-align', 'right').css('font-weight', '600');
+                                var columnTime = $('<div>')
+                                    .addClass('columnTime text-right');
+                                    //.css('text-align', 'right')
+                                    //.css('font-weight', '600');
 
                                 if (data.duration != null) {
                                     var duration = minutesToString(data.duration / 60);
                                     var durationInfo = $('<span>').text(duration);
                                     columnTime.append(durationInfo);
                                 }
-                                var columnStatus = $('<div>').addClass('col-3 statusColumn');
+                                var columnStatus = $('<div>')
+                                    .addClass('statusColumn ml-auto');
 
-                                var status = ($('<div>').addClass('tags'));
+                                var status = ($('<div>')
+                                    .addClass('tags columnStatus'));
                                 columnStatus.append(status);
 
                                 getAxoItem(data).then(item => {
@@ -379,6 +373,8 @@ function popup() {
                                     }
                                     //data.color = colors[nameToIndex(data.axoName, 8)];
                                     data.color = colors[numberToIndex(data.axoId, 8)];
+                                    columnColorBar.css("background-color", data.color);
+                                    
 
                                     if (data.taskName) {
                                         let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
@@ -399,12 +395,12 @@ function popup() {
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
                                     // var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                     // logStatus.empty();
-                                    var truncatedAxoName = truncateText(data.axoName, 50);
+                                    var truncatedAxoName = data.axoName; //truncateText(data.axoName, 50);
                                     var success = $('<div>')
-                                        .addClass('tagX axoItemName text-truncate')
+                                        .addClass('tagXZ axoItemName text-truncate')
                                         .text('' + data.axoId + " -- " + truncatedAxoName)
-                                        .css("background-color", data.color)
-                                        .css("color", "white")
+                                        //.css("background-color", data.color)
+                                        //.css("color", "white")
                                         .click(function (event) {
                                             if (data.projectId && event.ctrlKey) {
                                                 window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
@@ -466,8 +462,8 @@ function popup() {
                                         getTimes(data, timeline);
                                     });
 
-                                
-                                log.append(columnAxoWorklogType);
+                                log.append(columnColorBar);
+                                //log.append(columnAxoWorklogType);
                                 log.append(columnMain);
                                 log.append(columnTime);
                                 log.append(columnStatus);
