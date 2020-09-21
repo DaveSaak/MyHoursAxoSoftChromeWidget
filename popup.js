@@ -98,6 +98,17 @@ function popup() {
             copyTimelogs();
         });
 
+        $('#ahAttendance').click(function () {
+            $('#mainContainer').hide();
+            $('#homeContainer').show();
+            getCurrentBalance();
+        });
+
+        $('#closeHome').click(function () {
+            $('#mainContainer').show();
+            $('#homeContainer').hide();
+        });
+
         $('#logOutButton').click(function () {
             _this.currentUser.clear();
             showLoginPage();
@@ -132,13 +143,18 @@ function popup() {
             getLogs();
         });
 
+        $('#refreshHome').click(function () {
+            getCurrentBalance();
+        });
+
+
         $('#showLogsSwitch').click(function () {
             let show = $('#showLogsSwitch').prop("checked");
-            if (show) { 
-                $('#logsContainer').show(); 
+            if (show) {
+                $('#logsContainer').show();
             }
-            else { 
-                $('#logsContainer').hide(); 
+            else {
+                $('#logsContainer').hide();
             }
 
         });
@@ -324,7 +340,7 @@ function popup() {
 
                                 columnMain.append(columnAxoWorklogType);
 
-                            
+
 
                                 log.mouseenter(function () {
                                     $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
@@ -340,13 +356,13 @@ function popup() {
                                 var worklogTypeInfo = $('<div>')
                                     .addClass('text-muted text-lowercase worklogType')
                                     .css('font-size', '0.7rem');
-                                    
+
                                 columnAxoWorklogType.append(worklogTypeInfo);
 
                                 var columnTime = $('<div>')
                                     .addClass('columnTime text-right');
-                                    //.css('text-align', 'right')
-                                    //.css('font-weight', '600');
+                                //.css('text-align', 'right')
+                                //.css('font-weight', '600');
 
                                 if (data.duration != null) {
                                     var duration = minutesToString(data.duration / 60);
@@ -374,7 +390,7 @@ function popup() {
                                     //data.color = colors[nameToIndex(data.axoName, 8)];
                                     data.color = colors[numberToIndex(data.axoId, 8)];
                                     columnColorBar.css("background-color", data.color);
-                                    
+
 
                                     if (data.taskName) {
                                         let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
@@ -393,11 +409,9 @@ function popup() {
 
 
                                     var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
-                                    // var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                                    // logStatus.empty();
                                     var truncatedAxoName = data.axoName; //truncateText(data.axoName, 50);
                                     var success = $('<div>')
-                                        .addClass('tagXZ axoItemName text-truncate')
+                                        .addClass('axoItemName text-truncate')
                                         .text('' + data.axoId + " -- " + truncatedAxoName)
                                         //.css("background-color", data.color)
                                         //.css("color", "white")
@@ -638,13 +652,114 @@ function popup() {
                     }
                 })
                 .catch(error => {
-                    showAlert('error logging to AH');
+                    $('#ahAttendance').text('error logging in');
+                    //showAlert('error logging to AH');
                     console.error('error while getting the AH current. token may be expired');
                 })
         }
         else {
-            showAlert('error logging to AH');
+            $('#ahAttendance').text('error logging in');
+            //showAlert('error logging to AH');
         }
+    }
+
+    function getCurrentBalance() {
+        $('#currentBalancePlan').text('-');
+        $('#currentBalanceAttendance').text('-');
+        $('#currentBalanceRunning').text('-');
+        $('#currentBalanceDiff').text('-');
+
+        let currentUserPromise = _this.allHoursApi.getCurrentUserId();
+
+        if (currentUserPromise != undefined) {
+            currentUserPromise.then(
+                function (data) {
+                    var userId = data;
+
+                    if (data) {
+
+                        _this.allHoursApi.getCurrentBalance(data).then(
+                            function (data) {
+                                var currentBalance = parseInt(data.CurrentBalanceMinutes);
+                                console.log(data.CurrentBalanceMinutes);
+                                $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
+
+                                $('#homeGreeting>h5').text(data.Greeting);
+
+                                var today = moment().startOf('day');
+                                _this.allHoursApi.getUserCalculations(userId, today).then(
+                                    function (data) {
+        
+                                        //
+                                        let dayCalc = data.DailyCalculations[0];
+        
+                                        //day balance
+                                        var currentBalanceAlternation = 0;
+                                        var dayDiff = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 4);
+                                        if (dayDiff.length > 0) {
+                                            let dayDiffValue = parseInt(dayDiff[0].Value);
+                                            currentBalanceAlternation = currentBalance - dayDiffValue;
+                
+                                            // $('#currentBalanceDiff').text(minutesToString(parseInt(dayDiff[0].Value)));
+                                        }
+        
+        
+                                        //plan
+                                        var planAccrual = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 1);
+                                        if (planAccrual.length > 0) {
+                                            $('#currentBalancePlan').text(minutesToString(parseInt(planAccrual[0].Value)));
+                                        }
+        
+                                        //attendance
+                                        var planAttendance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 33);
+                                        if (planAttendance.length > 0) {
+                                            let planAttendanceValue = parseInt(planAttendance[0].Value);
+                                            planAttendanceValue = planAttendanceValue + currentBalanceAlternation;
+                                            $('#currentBalanceAttendance').text(minutesToString(planAttendanceValue));
+                                        } else if(currentBalanceAlternation != 0) {
+                                            $('#currentBalanceAttendance').text(minutesToString(currentBalanceAlternation));
+                                        }
+                
+                                        //running balance
+                                        var runningBalance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 24);
+                                        if (runningBalance.length > 0) {
+                                            let runningBalanceValue = parseInt(runningBalance[0].Value);
+                                            runningBalanceValue = runningBalanceValue + currentBalanceAlternation;
+
+                                            $('#currentBalanceRunning').text(minutesToString(runningBalanceValue, true));
+                                        } 
+        
+                                    },
+                                    function (error) {
+                                        console.error('error while geeting attendance.');
+                                    }
+                                );
+
+
+                            },
+                            function (error) {
+                                console.error('error while geeting attendance.');
+                            }
+                        );
+
+
+
+
+
+                    }
+                })
+                .catch(error => {
+                    $('#currentBalanceMinutes').text('error logging in');
+                    //showAlert('error logging to AH');
+                    console.error('error while getting the AH current. token may be expired');
+                })
+        }
+        else {
+            $('#currentBalanceMinutes').text('error logging in');
+            //showAlert('error logging to AH');
+        }
+
+
     }
 
     function login(email, password) {
@@ -833,9 +948,9 @@ function popup() {
         return 'unknown worklog type'
     }
 
-    function truncateText(text, maxLength){
-        if (text.length > maxLength){
-            return text.substring(0,maxLength) + '...';
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
         }
         return text;
     }
@@ -849,11 +964,22 @@ function popup() {
 
     }
 
-    function minutesToString(minutes) {
+    function minutesToString(minutes, showSign) {
+        let sign = Math.sign(minutes);
+
+        minutes = Math.abs(minutes);
+
         let duration = moment.duration(minutes, 'minutes');
         let minutesString = (duration.days() * 24) + duration.hours() + ':' + duration.minutes().toString().padStart(2, '0');
 
         //console.log('format minutes: ' + minutes + ' -> ' + minutesString);
+
+        if (sign < 0) {
+            minutesString = "-" + minutesString;
+        }
+        else if (showSign){
+            minutesString = "+" + minutesString;
+        }
         return minutesString;
 
         //return (Math.round(minutes / 60 * 100) / 100) + "h";
@@ -891,7 +1017,7 @@ function popup() {
 
         // let elementInfo = $('#timeRatio');
         // elementInfo.text((ratio * 100).toFixed(0) + '%');
-    }    
+    }
 
     function clearRatio() {
         let elementCard = $('#timeRatioCard');

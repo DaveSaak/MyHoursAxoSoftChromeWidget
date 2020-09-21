@@ -39,6 +39,7 @@
     <!-- <script src="popper.min.js"></script> -->
 
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="fontawesome.css" media="screen" />
 
     <!-- <script src="https://kit.fontawesome.com/a8696dba34.js"></script> -->
 
@@ -74,7 +75,8 @@
                         <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
                     </div>
 
-                    <button id="previousDay" class="btn btn-sm roundButton flat noFocus rounded-circle mr-1 hiddenButton">
+                    <button id="previousDay"
+                        class="btn btn-sm roundButton flat noFocus rounded-circle mr-1 hiddenButton">
                         <i class="fas fa-angle-left"></i>
                     </button>
 
@@ -87,6 +89,12 @@
                     <input type="checkbox" class="custom-control-input" id="showLogsSwitch" checked>
                     <label class="custom-control-label noselect" for="showLogsSwitch">Show logs</label>
                 </div>
+
+                <!-- <button id='showHomeView'
+                    class="mr-2 btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
+                    type="button" title='open Home'>
+                    <i class="fas fa-star"></i>
+                </button> -->
 
                 <button id='copyToAxoSoftButton'
                     class="mr-2 btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
@@ -137,30 +145,30 @@
             <div class="card-deck mx-3" id="stats">
                 <div class="card text-left shadow-sm border-0 allHoursStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="ahAttendance" class="axoTotal font-weight-bold-x"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">All Hours</small>
+                        <p id="ahAttendance" class="axoTotal font-weight-bold-x card-text"></p>
                     </div>
                 </div>
 
                 <div class="card text-left shadow-sm border-0 myHoursStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="mhTotal" class="axoTotal font-weight-bold-x"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">My Hours</small>
+                        <p id="mhTotal" class="axoTotal card-text font-weight-bold-x"></p>
                     </div>
                 </div>
 
                 <div class="card text-left shadow-sm border-0 axoStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="axoTotal" class="axoTotal font-weight-bold-x"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">Axo</small>
+                        <p id="axoTotal" class="axoTotal card-text font-weight-bold-x"></p>
                     </div>
                 </div>
 
 
                 <div id="timeRatioCard" class="card text-left shadow-sm border-0" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="timeRatio" class="axoTotal font-weight-bold-x is-success"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">MH vs AH</small>
+                        <p id="timeRatio" class="axoTotal card-text font-weight-bold-x is-success"></p>
                     </div>
                 </div>
             </div>
@@ -202,12 +210,66 @@
         </section>
     </div>
 
+    <div id="homeContainer" style="display: none;" class=''>
+        <div class="d-flex m-2">
+            <div id="homeGreeting">
+                <h5></h5>
+            </div>
+            <div class="ml-auto">
+                <button id='refreshHome'
+                    class="btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
+                    type="button" title='back'>
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>            
+            <div class="ml-2">
+                <button id='closeHome'
+                    class="btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
+                    type="button" title='back'>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-deck m-3">
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">attendance</small>
+                    <p id="currentBalanceAttendance" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">plan</small>
+                    <p id="currentBalancePlan" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">diff</small>
+                    <p id="currentBalanceDiff" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">running</small>
+                    <p id="currentBalanceRunning" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
     <div id='loadingContainer' style="display: none;">
         <div class="d-flex justify-content-center m-4">
             <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
-              <span class="sr-only">connecting to myhours...</span>
+                <span class="sr-only">connecting to myhours...</span>
             </div>
-          </div>
+        </div>
     </div>
 </body>
 

@@ -360,8 +360,8 @@ div.logContainer:hover {
 
 .card > .card-body {
     /* padding: 1rem; */
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
 }
 
 .card.allHoursStats {
@@ -376,6 +376,11 @@ div.logContainer:hover {
 
 .card.axoStats {
     background-color: #2c314f;
+    color: white;
+}
+
+.card.attendanceStats {
+    background-color: rgb(0 175 220);
     color: white;
 }
 
@@ -401,4 +406,17 @@ div.logContainer:hover {
 
 .columnStatus {
     width: 150px;
+}
+
+#homeContainer .statistics {
+    height: 5rem;
+    width: 18rem;
+}
+
+/* #home .statistics .sublabel{
+    font-size: 0.8rem;
+} */
+
+#homeContainer .statistics .sublabel{
+    font-size: 0.8rem;
 }
