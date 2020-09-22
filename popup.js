@@ -426,22 +426,21 @@ function popup() {
                                     }
 
                                     {
-                                        var remainingHoursInfo = $('<span>').addClass('tag');
+                                        var remainingHoursInfo = $('<span>').addClass('badge');
 
                                         if (remainingDurationIsAvailable) {
                                             var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
                                             remainingHoursInfo.text(reminingHrs + " hrs left");
                                         } else {
-                                            remainingHoursInfo.addClass('is-danger');
+                                            remainingHoursInfo.addClass('badge-danger');
                                             remainingHoursInfo.text("enter estimate to sync");
                                         }
                                         status.append(remainingHoursInfo);
                                     }
 
                                     if (data.axoId) {
-                                        var buttonCopyToAxo = $('<a>')
-                                            //.title('copy to AXO')
-                                            .addClass('tag tag-button')
+                                        var buttonCopyToAxo = $('<a title="copy to AXO woklog">')
+                                            .addClass('btn roundButton')
                                             .click(function (event) {
                                                 event.preventDefault();
                                                 addAxoWorkLog(data);
@@ -452,9 +451,8 @@ function popup() {
 
 
                                     if (data.projectId) {
-                                        var button = $('<a>')
-                                            //.text('open My Hours project details')
-                                            .addClass('tag tag-button')
+                                        var button = $('<a title="open My Hours project details">')
+                                            .addClass('btn roundButton')
                                             .click(function (event) {
                                                 event.preventDefault();
                                                 window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
@@ -462,6 +460,17 @@ function popup() {
                                         button.html('<i class="fas fa-external-link-alt"></i>');
                                         status.append(button);
                                     }
+
+                                    if (data.axoId) {
+                                        var buttonOpenAxoItem = $('<a title="open AXO item">')
+                                            .addClass('btn roundButton')
+                                            .click(function (event) {
+                                                event.preventDefault();
+                                                window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
+                                            });
+                                            buttonOpenAxoItem.html('<i class="fas fa-external-link-alt"></i>');
+                                        status.append(buttonOpenAxoItem);
+                                    }                                    
 
                                     logStatus.append(success);
                                     getTimes(data, timeline);
