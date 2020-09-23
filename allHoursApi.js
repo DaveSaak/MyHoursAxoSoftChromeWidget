@@ -179,28 +179,6 @@ function AllHoursApi(
                 }
             });
         }
-
-
-
-        // let promise = new Promise(
-        //     function (resolve, reject) {
-        //         console.info(baseName + ": getting logged-in user");
-        //         $.ajax({
-        //             url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
-        //             headers: {
-        //                 "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-        //             },
-        //             type: "GET",
-        //             success: function (data) {
-        //                 return resolve(data ? data.given_name : "");
-        //             },
-        //             error: function (jqXHR, textStatus, errorThrown) {
-        //                 //console.log(data);
-        //                 return reject(Error());
-        //             }
-        //         });
-        //     }
-        // );
         return checkTokenAndExecutePromise(promiseFunction);
     };
 
@@ -299,35 +277,41 @@ function AllHoursApi(
             });
 
         };
-
-
-
-        // let promise =  new Promise(
-        //     function (resolve, reject) {
-        //         console.info(baseName + ": getting calculation");
-
-        //         $.ajax({
-        //             url: _this.options.allHoursUrl + "usercalculations/" + userId +
-        //                 "?dateFrom=" + dateString +
-        //                 "&dateTo=" + dateString,
-        //             headers: {
-        //                 "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-        //                 "X-Timezone-Offset": date.toDate().getTimezoneOffset()
-        //             },
-        //             type: "GET",
-        //             success: function (data) {
-        //                 //can contain other dates. filter them out
-        //                 resolve(data);
-        //             },
-        //             error: function (data) {
-        //                 console.error(data);
-        //                 reject(Error());
-        //             }
-        //         });
-        //     }
-        // )
         return checkTokenAndExecutePromise(promiseFunction);
     }
+
+    _this.getUserClockings = function (userId, dateFrom, dateTo) {
+        dateFrom = dateFrom.clone().startOf('day');
+        let dateFromString = dateFrom.format('YYYY-MM-DD') + 'T00:00:00';
+
+        dateTo = dateTo.clone().startOf('day');
+        let dateToString = dateTo.format('YYYY-MM-DD') + 'T00:00:00';
+
+        let promiseFunction = function (resolve, reject) {
+            console.info(baseName + ": getting clockings");
+
+            $.ajax({
+                url: _this.options.allHoursUrl + "clockings/getclockings" +
+                    "?dateFrom=" + dateFromString +
+                    "&dateTo=" + dateToString,
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                    "X-Timezone-Offset": dateFrom.toDate().getTimezoneOffset()
+                },
+                type: "GET",
+                success: function (data) {
+                    //can contain other dates. filter them out
+                    resolve(data);
+                },
+                error: function (data) {
+                    console.error(data);
+                    reject(Error());
+                }
+            });
+
+        };
+        return checkTokenAndExecutePromise(promiseFunction);
+    }    
 
     // function checkTokenAndExecutePromise(promiseFunction) {
     //     const treshold = 5* 60;
