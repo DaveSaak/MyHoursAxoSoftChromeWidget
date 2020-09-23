@@ -21,6 +21,7 @@ function popup() {
     _this.axoSoftApi = new AxoSoftApi(_this.options);
 
     _this.timeRatio = new TimeRatio(showRatio);
+    _this.timeRatioAllHourAxo = new TimeRatio(showRatioAllHoursAxo);
 
     _this.timeLineWidth = 1300;
     _this.noTimeDataText = "n/a";
@@ -97,6 +98,17 @@ function popup() {
             copyTimelogs();
         });
 
+        $('#ahAttendance').click(function () {
+            $('#mainContainer').hide();
+            $('#homeContainer').show();
+            getCurrentBalance();
+        });
+
+        $('#closeHome').click(function () {
+            $('#mainContainer').show();
+            $('#homeContainer').hide();
+        });
+
         $('#logOutButton').click(function () {
             _this.currentUser.clear();
             showLoginPage();
@@ -131,13 +143,18 @@ function popup() {
             getLogs();
         });
 
+        $('#refreshHome').click(function () {
+            getCurrentBalance();
+        });
+
+
         $('#showLogsSwitch').click(function () {
             let show = $('#showLogsSwitch').prop("checked");
-            if (show) { 
-                $('#logsContainer').show(); 
+            if (show) {
+                $('#logsContainer').show();
             }
-            else { 
-                $('#logsContainer').hide(); 
+            else {
+                $('#logsContainer').hide();
             }
 
         });
@@ -173,26 +190,6 @@ function popup() {
                 getLogs();
             }
         };
-
-        /*
-        let timeline = $('#timeline');
-        $(timeline).on('mousemove', function (e) {
-            // we don't want to do anything if we aren't resizing.
-            if (!_this.isResizing) 
-                return;
-            
-            var offsetRight = timeline.width() - (e.clientX - timeline.offset().left);
-
-            let target = $(e.target);
-    
-            target.css('right', offsetRight);
-            // right.css('width', offsetRight);
-        }).on('mouseup', function (e) {
-            // stop resizing
-            _this.isResizing = false;
-        });   
-        */
-
     }
 
 
@@ -227,6 +224,7 @@ function popup() {
         $('#usersName').text(_this.currentUser.name);
 
         getLogs();
+       
     }
 
     function showLoadingPage() {
@@ -266,6 +264,7 @@ function popup() {
     function getLogs() {
         console.log('getting logs');
         _this.timeRatio.reset();
+        _this.timeRatioAllHourAxo.reset();
         clearRatio();
         //hideAlert();
 
@@ -290,6 +289,7 @@ function popup() {
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
             $("#axoTotal").text(minutesToString(minutesWorked));
+            _this.timeRatioAllHourAxo.setMyHours(minutesWorked);
 
         })
             .catch(error => {
@@ -309,28 +309,39 @@ function popup() {
                     var logsContainer2 = $('#logsContainer');
 
                     _this.myHoursApi.getLogs(_this.currentDate).then(
-                        function (data) {
-                            _this.myHoursLogs = data;
+                        function (logs) {
+                            _this.myHoursLogs = logs;
                             _this.myHoursTaskSummary = {};
 
                             var totalMins = 0;
 
-                            logsContainer2.toggleClass('d-none', data.length === 0);
-                            topContainer.toggleClass('d-none', data.length === 0);
+                            logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
+                            topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
 
-                            $.each(data, function (index, data) {
+                            $.each(_this.myHoursLogs, function (index, data) {
                                 //var colorIndex = nameToIndex(data.projectName, 8);
                                 //var colorIndex = numberToIndex(data.projectId, 8);
                                 //var logColor = colors[colorIndex];
 
                                 totalMins = totalMins + (data.duration / 60);
 
-                                var log = $('<li>')
+                                var log = $('<div>')
                                     .attr("data-logId", data.id)
-                                    .addClass("logContainer");
-                                var columns = $('<div>').addClass('columns');
-                                var columnA = $('<div>').addClass('column is-two-thirds mainColumn');
-                                var tagGroup = $('<div>').addClass('tags has-addons');
+                                    .addClass("d-flex logContainer my-1 p-1 align-items-center");
+
+                                var columnColorBar = $('<div>')
+                                    .addClass('columnColorBar rounded mr-2');
+
+
+                                var columnMain = $('<div>')
+                                    .addClass('mainColumn columnMain d-flex flex-column');
+
+                                var columnAxoWorklogType = $('<div>')
+                                    .addClass('axoWorklogTypeColumn');
+
+                                columnMain.append(columnAxoWorklogType);
+
+
 
                                 log.mouseenter(function () {
                                     $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
@@ -343,25 +354,28 @@ function popup() {
                                     hiLiteMyHoursLog();
                                 });
 
-                                var worklogTypeInfo = $('<span>')
-                                    //.text(worklogTypeName)
-                                    .addClass('tag is-dark worklogType')
-                                    .css("font-style", "italicX")
-                                //.css("width", "120px")
-                                tagGroup.prepend(worklogTypeInfo);
-                                columnA.append(tagGroup);
+                                var worklogTypeInfo = $('<div>')
+                                    .addClass('text-muted text-lowercase worklogType')
+                                    .css('font-size', '0.7rem');
 
-                                var columnB = $('<div>').addClass('column is-1').css('text-align', 'right').css('font-weight', '600');
+                                columnAxoWorklogType.append(worklogTypeInfo);
+
+                                var columnTime = $('<div>')
+                                    .addClass('columnTime text-right');
+                                //.css('text-align', 'right')
+                                //.css('font-weight', '600');
 
                                 if (data.duration != null) {
                                     var duration = minutesToString(data.duration / 60);
                                     var durationInfo = $('<span>').text(duration);
-                                    columnB.append(durationInfo);
+                                    columnTime.append(durationInfo);
                                 }
-                                var columnC = $('<div>').addClass('column is-3 statusColumn');
+                                var columnStatus = $('<div>')
+                                    .addClass('statusColumn ml-auto');
 
-                                var status = ($('<div>').addClass('tags'));
-                                columnC.append(status);
+                                var status = ($('<div>')
+                                    .addClass('tags columnStatus'));
+                                columnStatus.append(status);
 
                                 getAxoItem(data).then(item => {
                                     data.axoName = item.name;
@@ -376,6 +390,8 @@ function popup() {
                                     }
                                     //data.color = colors[nameToIndex(data.axoName, 8)];
                                     data.color = colors[numberToIndex(data.axoId, 8)];
+                                    columnColorBar.css("background-color", data.color);
+
 
                                     if (data.taskName) {
                                         let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
@@ -393,13 +409,13 @@ function popup() {
 
 
 
-                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                                    // logStatus.empty();
-                                    var success = $('<span>')
-                                        .addClass('tag axoItemName')
-                                        .text('' + data.axoId + " -- " + data.axoName)
-                                        .css("background-color", data.color)
-                                        .css("color", "white")
+                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
+                                    var truncatedAxoName = data.axoName; //truncateText(data.axoName, 50);
+                                    var success = $('<div>')
+                                        .addClass('axoItemName text-truncate')
+                                        .text('' + data.axoId + " -- " + truncatedAxoName)
+                                        //.css("background-color", data.color)
+                                        //.css("color", "white")
                                         .click(function (event) {
                                             if (data.projectId && event.ctrlKey) {
                                                 window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
@@ -411,22 +427,21 @@ function popup() {
                                     }
 
                                     {
-                                        var remainingHoursInfo = $('<span>').addClass('tag');
+                                        var remainingHoursInfo = $('<span>').addClass('badge');
 
                                         if (remainingDurationIsAvailable) {
                                             var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
                                             remainingHoursInfo.text(reminingHrs + " hrs left");
                                         } else {
-                                            remainingHoursInfo.addClass('is-danger');
+                                            remainingHoursInfo.addClass('badge-danger');
                                             remainingHoursInfo.text("enter estimate to sync");
                                         }
                                         status.append(remainingHoursInfo);
                                     }
 
                                     if (data.axoId) {
-                                        var buttonCopyToAxo = $('<a>')
-                                            //.title('copy to AXO')
-                                            .addClass('tag tag-button')
+                                        var buttonCopyToAxo = $('<a title="copy to AXO woklog">')
+                                            .addClass('btn roundButton')
                                             .click(function (event) {
                                                 event.preventDefault();
                                                 addAxoWorkLog(data);
@@ -437,15 +452,25 @@ function popup() {
 
 
                                     if (data.projectId) {
-                                        var button = $('<a>')
-                                            //.text('open My Hours project details')
-                                            .addClass('tag tag-button')
+                                        var button = $('<a title="open My Hours project details">')
+                                            .addClass('btn roundButton')
                                             .click(function (event) {
                                                 event.preventDefault();
                                                 window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
                                             });
                                         button.html('<i class="fas fa-external-link-alt"></i>');
                                         status.append(button);
+                                    }
+
+                                    if (data.axoId) {
+                                        var buttonOpenAxoItem = $('<a title="open AXO item">')
+                                            .addClass('btn roundButton')
+                                            .click(function (event) {
+                                                event.preventDefault();
+                                                window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
+                                            });
+                                        buttonOpenAxoItem.html('<i class="fas fa-external-link-alt"></i>');
+                                        status.append(buttonOpenAxoItem);
                                     }
 
                                     logStatus.append(success);
@@ -461,11 +486,13 @@ function popup() {
                                         getTimes(data, timeline);
                                     });
 
-                                columns.append(columnB);
-                                columns.append(columnA);
-                                columns.append(columnC);
+                                log.append(columnColorBar);
+                                //log.append(columnAxoWorklogType);
+                                log.append(columnMain);
+                                log.append(columnTime);
+                                log.append(columnStatus);
 
-                                log.append(columns);
+                                log.append(log);
                                 logsContainer.append(log);
                             });
                             _this.timeRatio.setMyHours(totalMins);
@@ -528,25 +555,22 @@ function popup() {
                     barGraph.addClass('timelineItem timeline-log');
                     barGraph.attr("data-logId", data.id);
                     barGraph.prop('title', title);
-                    // barGraph.attr('data-toggle', "tooltip");
-                    // barGraph.attr('data-placement', "bottom");
-                    // barGraph.attr('data-html', "true");
 
                     if (!data.axoId) {
                         barGraph.append('<i class="fas fa-skull-crossbones ml-2" aria-hidden="true"></i>');
                     }
 
-                    var leftDragHandle = $("<div class='leftDrag'>");
-                    leftDragHandle.mousedown(function (event) {
-                        startDrag(event);
-                    });
-                    barGraph.append(leftDragHandle);
+                    // var leftDragHandle = $("<div class='leftDrag'>");
+                    // leftDragHandle.mousedown(function (event) {
+                    //     startDrag(event);
+                    // });
+                    // barGraph.append(leftDragHandle);
 
-                    var rightDragHandle = $("<div class='rightDrag'>");
-                    rightDragHandle.mousedown(function (event) {
-                        startDrag(event);
-                    });
-                    barGraph.append(rightDragHandle);
+                    // var rightDragHandle = $("<div class='rightDrag'>");
+                    // rightDragHandle.mousedown(function (event) {
+                    //     startDrag(event);
+                    // });
+                    // barGraph.append(rightDragHandle);
 
                     barGraph.css({
                         left: left + 'px',
@@ -554,11 +578,11 @@ function popup() {
                         "background-color": data.color,
                     });
                     barGraph.mouseenter(function () {
-                        $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
+                        $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
                         hiLiteMyHoursLog(data.id);
                     });
                     barGraph.mouseleave(function () {
-                        $('li.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
+                        $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
                         hiLiteMyHoursLog();
                     });
 
@@ -585,6 +609,7 @@ function popup() {
                                 if (data && data.CalculationResultValues.length > 0) {
                                     let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
                                     _this.timeRatio.setAllHours(attendance);
+                                    _this.timeRatioAllHourAxo.setAllHours(attendance);
                                     $('#ahAttendance').text(minutesToString(attendance));
                                 }
                             },
@@ -593,7 +618,7 @@ function popup() {
                             }
                         );
 
-                        _this.allHoursApi.getUserCalculations(data, _this.currentDate).then(
+                        _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
                                 if (data && data.DailyCalculations.length > 0) {
                                     let segments = data.DailyCalculations[0].CalculationResultSegments;
@@ -637,14 +662,355 @@ function popup() {
                     }
                 })
                 .catch(error => {
-                    showAlert('error logging to AH');
+                    $('#ahAttendance').text('error logging in');
+                    //showAlert('error logging to AH');
                     console.error('error while getting the AH current. token may be expired');
                 })
         }
         else {
-            showAlert('error logging to AH');
+            $('#ahAttendance').text('error logging in');
+            //showAlert('error logging to AH');
         }
     }
+
+    function getCurrentBalance() {
+        $('#currentBalancePlan').text('-');
+        $('#currentBalanceAttendance').text('-');
+        $('#currentBalanceRunning').text('-');
+        $('#currentBalanceDiff').text('-');
+
+        let currentUserPromise = _this.allHoursApi.getCurrentUserId();
+
+        if (currentUserPromise != undefined) {
+            currentUserPromise.then(
+                function (data) {
+                    var userId = data;
+
+                    if (data) {
+                        var today = moment().startOf('day');
+
+                        _this.allHoursApi.getCurrentBalance(data).then(
+                            function (data) {
+                                var currentBalance = parseInt(data.CurrentBalanceMinutes);
+                                console.log(data.CurrentBalanceMinutes);
+                                $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
+
+                                $('#homeGreeting>h5').text(data.Greeting);
+
+
+                                _this.allHoursApi.getUserCalculations(userId, today, today.clone()).then(
+                                    function (data) {
+
+                                        //
+                                        let dayCalc = data.DailyCalculations[0];
+
+                                        //day balance
+                                        var currentBalanceAlternation = 0;
+                                        var dayDiff = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 4);
+                                        if (dayDiff.length > 0) {
+                                            let dayDiffValue = parseInt(dayDiff[0].Value);
+                                            currentBalanceAlternation = currentBalance - dayDiffValue;
+
+                                            // $('#currentBalanceDiff').text(minutesToString(parseInt(dayDiff[0].Value)));
+                                        }
+
+
+                                        //plan
+                                        var planAccrual = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 1);
+                                        if (planAccrual.length > 0) {
+                                            $('#currentBalancePlan').text(minutesToString(parseInt(planAccrual[0].Value)));
+                                        }
+
+                                        //attendance
+                                        var planAttendance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 33);
+                                        if (planAttendance.length > 0) {
+                                            let planAttendanceValue = parseInt(planAttendance[0].Value);
+                                            planAttendanceValue = planAttendanceValue + currentBalanceAlternation;
+                                            $('#currentBalanceAttendance').text(minutesToString(planAttendanceValue));
+                                        } else if (currentBalanceAlternation != 0) {
+                                            $('#currentBalanceAttendance').text(minutesToString(currentBalanceAlternation));
+                                        }
+
+                                        //running balance
+                                        var runningBalance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 24);
+                                        if (runningBalance.length > 0) {
+                                            let runningBalanceValue = parseInt(runningBalance[0].Value);
+                                            runningBalanceValue = runningBalanceValue + currentBalanceAlternation;
+
+                                            $('#currentBalanceRunning').text(minutesToString(runningBalanceValue, true));
+                                        }
+
+                                    },
+                                    function (error) {
+                                        console.error('error while geeting attendance.');
+                                    }
+                                );
+
+
+                            },
+                            function (error) {
+                                console.error('error while geeting attendance.');
+                            }
+                        );
+
+
+
+                        drawDayBalanceChart(userId, today);
+
+                        drawClockingsHeatMap(userId, today);
+
+                    }
+                })
+                .catch(error => {
+                    $('#currentBalanceMinutes').text('error logging in');
+                    //showAlert('error logging to AH');
+                    console.error('error while getting the AH current. token may be expired');
+                })
+        }
+        else {
+            $('#currentBalanceMinutes').text('error logging in');
+            //showAlert('error logging to AH');
+        }
+
+
+    }
+
+
+    function drawDayBalanceChart(userId, today) {
+        var tenDaysAgo = today.clone().add(-14, 'day');
+
+        _this.allHoursApi.getUserCalculations(userId, tenDaysAgo, today.clone().add(-1, 'day')).then(
+            function (data) {
+                var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.DailyBalanceValue);
+                var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+
+                console.log(dayDifferences);
+
+                var ctx = document.getElementById('dayBalanceChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels, //['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                        datasets: [{
+                            // label: '# of Votes',
+                            data: dayDifferences, //[12, 19, 3, 5, 2, 3],
+                            // backgroundColor: [
+                            //     'rgba(255, 99, 132, 0.2)',
+                            //     'rgba(54, 162, 235, 0.2)',
+                            //     'rgba(255, 206, 86, 0.2)',
+                            //     'rgba(75, 192, 192, 0.2)',
+                            //     'rgba(153, 102, 255, 0.2)',
+                            //     'rgba(255, 159, 64, 0.2)'
+                            // ],
+                            // borderColor: [
+                            //     'rgba(255, 99, 132, 1)',
+                            //     'rgba(54, 162, 235, 1)',
+                            //     'rgba(255, 206, 86, 1)',
+                            //     'rgba(75, 192, 192, 1)',
+                            //     'rgba(153, 102, 255, 1)',
+                            //     'rgba(255, 159, 64, 1)'
+                            // ],
+                            //borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                    display: false
+                                },
+                                ticks: {
+                                    // maxTicksLimit: 7,
+                                    display: false, //this removed the labels on the x-axis
+                                },
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                    display: false
+                                },
+                                ticks: {
+                                    // maxTicksLimit: 7,
+                                    display: false, //this removed the labels on the x-axis
+                                },
+                            }]
+                        }
+                    }
+                });
+
+
+            }
+        );
+    }
+
+    function drawClockingsHeatMap(userId, today) {
+        var tenDaysAgo = today.clone().add(-14, 'day');
+
+        _this.allHoursApi.getUserClockings(userId, tenDaysAgo, today.clone().add(-1, 'day')).then(
+            function (data) {
+                var geoData = data.filter(x => x.Latitude).map(x => ({ lat: x.Latitude, lon: x.Longitude }));
+
+
+
+
+
+
+            })
+
+
+
+
+        // mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRzYWtlbHNlayIsImEiOiIzM2ExRklBIn0.mx4QxSrjca5HAkaH9SVDuA';
+        // var map = new mapboxgl.Map({
+        //     container: 'map',
+        //     style: 'mapbox://styles/mapbox/streets-v11'
+        // });
+
+        // initMap();
+
+    }
+
+    function initMap() {
+        map.on('load', function () {
+            // Add a geojson point source.
+            // Heatmap layers also work with a vector tile source.
+            map.addSource('earthquakes', {
+                'type': 'geojson',
+                'data':
+                    'https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson'
+            });
+
+            map.addLayer(
+                {
+                    'id': 'earthquakes-heat',
+                    'type': 'heatmap',
+                    'source': 'earthquakes',
+                    'maxzoom': 9,
+                    'paint': {
+                        // Increase the heatmap weight based on frequency and property magnitude
+                        'heatmap-weight': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'mag'],
+                            0,
+                            0,
+                            6,
+                            1
+                        ],
+                        // Increase the heatmap color weight weight by zoom level
+                        // heatmap-intensity is a multiplier on top of heatmap-weight
+                        'heatmap-intensity': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            0,
+                            1,
+                            9,
+                            3
+                        ],
+                        // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+                        // Begin color ramp at 0-stop with a 0-transparancy color
+                        // to create a blur-like effect.
+                        'heatmap-color': [
+                            'interpolate',
+                            ['linear'],
+                            ['heatmap-density'],
+                            0,
+                            'rgba(33,102,172,0)',
+                            0.2,
+                            'rgb(103,169,207)',
+                            0.4,
+                            'rgb(209,229,240)',
+                            0.6,
+                            'rgb(253,219,199)',
+                            0.8,
+                            'rgb(239,138,98)',
+                            1,
+                            'rgb(178,24,43)'
+                        ],
+                        // Adjust the heatmap radius by zoom level
+                        'heatmap-radius': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            0,
+                            2,
+                            9,
+                            20
+                        ],
+                        // Transition from heatmap to circle layer by zoom level
+                        'heatmap-opacity': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            7,
+                            1,
+                            9,
+                            0
+                        ]
+                    }
+                },
+                'waterway-label'
+            );
+
+            map.addLayer(
+                {
+                    'id': 'earthquakes-point',
+                    'type': 'circle',
+                    'source': 'earthquakes',
+                    'minzoom': 7,
+                    'paint': {
+                        // Size circle radius by earthquake magnitude and zoom level
+                        'circle-radius': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            7,
+                            ['interpolate', ['linear'], ['get', 'mag'], 1, 1, 6, 4],
+                            16,
+                            ['interpolate', ['linear'], ['get', 'mag'], 1, 5, 6, 50]
+                        ],
+                        // Color circle by earthquake magnitude
+                        'circle-color': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'mag'],
+                            1,
+                            'rgba(33,102,172,0)',
+                            2,
+                            'rgb(103,169,207)',
+                            3,
+                            'rgb(209,229,240)',
+                            4,
+                            'rgb(253,219,199)',
+                            5,
+                            'rgb(239,138,98)',
+                            6,
+                            'rgb(178,24,43)'
+                        ],
+                        'circle-stroke-color': 'white',
+                        'circle-stroke-width': 1,
+                        // Transition from heatmap to circle layer by zoom level
+                        'circle-opacity': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            7,
+                            0,
+                            8,
+                            1
+                        ]
+                    }
+                },
+                'waterway-label'
+            );
+        });
+    }
+
 
     function login(email, password) {
         _this.myHoursApi.getAccessToken(email, password).then(
@@ -832,6 +1198,12 @@ function popup() {
         return 'unknown worklog type'
     }
 
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    }
 
     function timeToPixel(date, fullLength) {
         var mmt = moment(date);
@@ -842,11 +1214,22 @@ function popup() {
 
     }
 
-    function minutesToString(minutes) {
+    function minutesToString(minutes, showSign) {
+        let sign = Math.sign(minutes);
+
+        minutes = Math.abs(minutes);
+
         let duration = moment.duration(minutes, 'minutes');
         let minutesString = (duration.days() * 24) + duration.hours() + ':' + duration.minutes().toString().padStart(2, '0');
 
         //console.log('format minutes: ' + minutes + ' -> ' + minutesString);
+
+        if (sign < 0) {
+            minutesString = "-" + minutesString;
+        }
+        else if (showSign) {
+            minutesString = "+" + minutesString;
+        }
         return minutesString;
 
         //return (Math.round(minutes / 60 * 100) / 100) + "h";
@@ -874,6 +1257,16 @@ function popup() {
 
         let elementInfo = $('#timeRatio');
         elementInfo.text((ratio * 100).toFixed(0) + '%');
+    }
+
+    function showRatioAllHoursAxo(ratio) {
+        //console.log(ratio);
+        // let elementCard = $('#timeRatioCard');
+        // let ratioValid = (ratio >= 0.9 && ratio <= 1);
+        // elementCard.toggleClass('bg-warning', !ratioValid);
+
+        // let elementInfo = $('#timeRatio');
+        // elementInfo.text((ratio * 100).toFixed(0) + '%');
     }
 
     function clearRatio() {
@@ -909,6 +1302,9 @@ function popup() {
             chrome.tabs.sendMessage(tabs[0].id, { type: 'hilite-log', logId });
         });
     }
+
+
+
 
     initInterface();
 }

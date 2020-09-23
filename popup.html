@@ -16,6 +16,7 @@
     <script src="moment.js"></script>
     <script src="underscore-min.js"></script>
     <script src="twix.min.js"></script>
+    <script src="chart.min.js"></script>
 
     <script src="myHoursApi.js"></script>
     <script src="allHoursApi.js"></script>
@@ -39,6 +40,10 @@
     <!-- <script src="popper.min.js"></script> -->
 
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="fontawesome.css" media="screen" />
+
+    <script src='mapbox-gl.js'></script>
+    <link href='mapbox-gl.css' rel='stylesheet' />    
 
     <!-- <script src="https://kit.fontawesome.com/a8696dba34.js"></script> -->
 
@@ -66,17 +71,18 @@
 
     <div id='mainContainer' style="display: none;" class="box12">
         <section>
-            <div class="d-flex flex-wrap align-self-center m-3">
+            <div class="d-flex flex-wrap align-self-center m-2">
                 <!-- <button id="current-date" class="date text-uppercase d-flex align-self-center ml-2 btn" style='width: 180px'>date</button> -->
-                <div class="timeControls d-flex align-self-center ml-4">
-
-                    <button id="previousDay" class="btn btn-sm roundButton flat noFocus rounded-circle ml-3 hiddenButton">
-                        <i class="fas fa-angle-left"></i>
-                    </button>
+                <div class="timeControls d-flex align-self-center">
 
                     <div class="d-flex align-self-center justify-content-center" style='width: 180px'>
                         <button id="current-date" class="date text-uppercase d-flex align-self-center btn">date</button>
                     </div>
+
+                    <button id="previousDay"
+                        class="btn btn-sm roundButton flat noFocus rounded-circle mr-1 hiddenButton">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
 
                     <button id="nextDay" class="btn btn-sm roundButton flat noFocus rounded-circle hiddenButton">
                         <i class="fas fa-angle-right"></i>
@@ -87,6 +93,12 @@
                     <input type="checkbox" class="custom-control-input" id="showLogsSwitch" checked>
                     <label class="custom-control-label noselect" for="showLogsSwitch">Show logs</label>
                 </div>
+
+                <!-- <button id='showHomeView'
+                    class="mr-2 btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
+                    type="button" title='open Home'>
+                    <i class="fas fa-star"></i>
+                </button> -->
 
                 <button id='copyToAxoSoftButton'
                     class="mr-2 btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
@@ -134,35 +146,33 @@
 
         <section class="pt-2 pb-2">
 
-            <div class="card-deck mx-3">
-                <div class="card text-left shadow" style="width: 18rem;">
+            <div class="card-deck mx-3" id="stats">
+                <div class="card text-left shadow-sm border-0 allHoursStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="ahAttendance" class="axoTotal font-weight-bold"></span>
-
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">All Hours</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">All Hours</small>
+                        <p id="ahAttendance" class="axoTotal font-weight-bold-x card-text"></p>
                     </div>
                 </div>
 
-                <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card text-left shadow-sm border-0 myHoursStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="mhTotal" class="axoTotal font-weight-bold"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">My Hours</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">My Hours</small>
+                        <p id="mhTotal" class="axoTotal card-text font-weight-bold-x"></p>
                     </div>
                 </div>
 
-                <div class="card text-left shadow" style="width: 18rem;">
+                <div class="card text-left shadow-sm border-0 axoStats" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="axoTotal" class="axoTotal font-weight-bold"></span>
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">Axo</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">Axo</small>
+                        <p id="axoTotal" class="axoTotal card-text font-weight-bold-x"></p>
                     </div>
                 </div>
 
 
-                <div id="timeRatioCard" class="card text-left shadow" style="width: 18rem;">
+                <div id="timeRatioCard" class="card text-left shadow-sm border-0" style="width: 18rem;">
                     <div class="card-body">
-                        <span id="timeRatio" class="axoTotal font-weight-bold tagX is-success"></span>
-
-                        <small style='font-size: 0.6em' class="card-text small text-uppercase">MH vs AH</small>
+                        <small style='font-size: 0.7em' class="card-title small text-uppercase">MH vs AH</small>
+                        <p id="timeRatio" class="axoTotal card-text font-weight-bold-x is-success"></p>
                     </div>
                 </div>
             </div>
@@ -189,10 +199,10 @@
             </div>
         </section>
 
-        <section>
+        <section class="mb-3 mr-3 customScroller" style="overflow: auto; max-height: 330px;">
             <div class="mx-4 mb-3" id="logsContainer">
-                <ul id='logs' class="customScroller">
-                </ul>
+                <div id='logs'>
+                </div>
 
                 <!-- <div class="d-flex justify-content-start my-4 pt-3">
                 <button id='copyToAxoSoftButton' class="actionButton p-2 shadow" type="button">
@@ -204,12 +214,73 @@
         </section>
     </div>
 
+    <div id="homeContainer" style="display: none;" class=''>
+        <div class="d-flex m-2">
+            <div id="homeGreeting">
+                <h5></h5>
+            </div>
+            <div class="ml-auto">
+                <button id='refreshHome'
+                    class="btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
+                    type="button" title='back'>
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>            
+            <div class="ml-2">
+                <button id='closeHome'
+                    class="btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
+                    type="button" title='back'>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-deck m-3">
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">attendance</small>
+                    <p id="currentBalanceAttendance" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">plan</small>
+                    <p id="currentBalancePlan" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">diff</small>
+                    <p id="currentBalanceDiff" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">running</small>
+                    <p id="currentBalanceRunning" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div>
+            <canvas id="dayBalanceChart" width="380" height="50"></canvas>
+        </div>
+
+        <!-- <div id='map' style='width: 380px; height: 300px;'></div> -->
+
+
+    </div>
+
     <div id='loadingContainer' style="display: none;">
         <div class="d-flex justify-content-center m-4">
             <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
-              <span class="sr-only">connecting to myhours...</span>
+                <span class="sr-only">connecting to myhours...</span>
             </div>
-          </div>
+        </div>
     </div>
 </body>
 
