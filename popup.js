@@ -468,9 +468,9 @@ function popup() {
                                                 event.preventDefault();
                                                 window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
                                             });
-                                            buttonOpenAxoItem.html('<i class="fas fa-external-link-alt"></i>');
+                                        buttonOpenAxoItem.html('<i class="fas fa-external-link-alt"></i>');
                                         status.append(buttonOpenAxoItem);
-                                    }                                    
+                                    }
 
                                     logStatus.append(success);
                                     getTimes(data, timeline);
@@ -617,7 +617,7 @@ function popup() {
                             }
                         );
 
-                        _this.allHoursApi.getUserCalculations(data, _this.currentDate).then(
+                        _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
                                 if (data && data.DailyCalculations.length > 0) {
                                     let segments = data.DailyCalculations[0].CalculationResultSegments;
@@ -686,6 +686,7 @@ function popup() {
                     var userId = data;
 
                     if (data) {
+                        var today = moment().startOf('day');
 
                         _this.allHoursApi.getCurrentBalance(data).then(
                             function (data) {
@@ -695,40 +696,40 @@ function popup() {
 
                                 $('#homeGreeting>h5').text(data.Greeting);
 
-                                var today = moment().startOf('day');
-                                _this.allHoursApi.getUserCalculations(userId, today).then(
+
+                                _this.allHoursApi.getUserCalculations(userId, today, today.clone()).then(
                                     function (data) {
-        
+
                                         //
                                         let dayCalc = data.DailyCalculations[0];
-        
+
                                         //day balance
                                         var currentBalanceAlternation = 0;
                                         var dayDiff = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 4);
                                         if (dayDiff.length > 0) {
                                             let dayDiffValue = parseInt(dayDiff[0].Value);
                                             currentBalanceAlternation = currentBalance - dayDiffValue;
-                
+
                                             // $('#currentBalanceDiff').text(minutesToString(parseInt(dayDiff[0].Value)));
                                         }
-        
-        
+
+
                                         //plan
                                         var planAccrual = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 1);
                                         if (planAccrual.length > 0) {
                                             $('#currentBalancePlan').text(minutesToString(parseInt(planAccrual[0].Value)));
                                         }
-        
+
                                         //attendance
                                         var planAttendance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 33);
                                         if (planAttendance.length > 0) {
                                             let planAttendanceValue = parseInt(planAttendance[0].Value);
                                             planAttendanceValue = planAttendanceValue + currentBalanceAlternation;
                                             $('#currentBalanceAttendance').text(minutesToString(planAttendanceValue));
-                                        } else if(currentBalanceAlternation != 0) {
+                                        } else if (currentBalanceAlternation != 0) {
                                             $('#currentBalanceAttendance').text(minutesToString(currentBalanceAlternation));
                                         }
-                
+
                                         //running balance
                                         var runningBalance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 24);
                                         if (runningBalance.length > 0) {
@@ -736,8 +737,8 @@ function popup() {
                                             runningBalanceValue = runningBalanceValue + currentBalanceAlternation;
 
                                             $('#currentBalanceRunning').text(minutesToString(runningBalanceValue, true));
-                                        } 
-        
+                                        }
+
                                     },
                                     function (error) {
                                         console.error('error while geeting attendance.');
@@ -753,7 +754,7 @@ function popup() {
 
 
 
-
+                        drawDayBalanceChart(userId, today);
 
                     }
                 })
@@ -770,6 +771,80 @@ function popup() {
 
 
     }
+
+
+    function drawDayBalanceChart(userId, today) {
+        var tenDaysAgo = today.clone().add(-10, 'day');
+
+        _this.allHoursApi.getUserCalculations(userId, tenDaysAgo, today.clone().add(-1, 'day')).then(
+            function (data) {
+                var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.DailyBalanceValue);
+                var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+
+                console.log(dayDifferences);
+
+                var ctx = document.getElementById('dayBalanceChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels, //['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                        datasets: [{
+                            // label: '# of Votes',
+                            data: dayDifferences, //[12, 19, 3, 5, 2, 3],
+                            // backgroundColor: [
+                            //     'rgba(255, 99, 132, 0.2)',
+                            //     'rgba(54, 162, 235, 0.2)',
+                            //     'rgba(255, 206, 86, 0.2)',
+                            //     'rgba(75, 192, 192, 0.2)',
+                            //     'rgba(153, 102, 255, 0.2)',
+                            //     'rgba(255, 159, 64, 0.2)'
+                            // ],
+                            // borderColor: [
+                            //     'rgba(255, 99, 132, 1)',
+                            //     'rgba(54, 162, 235, 1)',
+                            //     'rgba(255, 206, 86, 1)',
+                            //     'rgba(75, 192, 192, 1)',
+                            //     'rgba(153, 102, 255, 1)',
+                            //     'rgba(255, 159, 64, 1)'
+                            // ],
+                            //borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                    display:false
+                                },
+                                ticks: {
+                                    // maxTicksLimit: 7,
+                                    display: false, //this removed the labels on the x-axis
+                                  },
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                    display:false
+                                },
+                                ticks: {
+                                    // maxTicksLimit: 7,
+                                    display: false, //this removed the labels on the x-axis
+                                  }, 
+                            }]
+                        }
+                    }
+                });
+                
+
+            }
+        );
+    }
+
+
 
     function login(email, password) {
         _this.myHoursApi.getAccessToken(email, password).then(
@@ -986,7 +1061,7 @@ function popup() {
         if (sign < 0) {
             minutesString = "-" + minutesString;
         }
-        else if (showSign){
+        else if (showSign) {
             minutesString = "+" + minutesString;
         }
         return minutesString;

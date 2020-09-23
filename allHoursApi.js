@@ -268,20 +268,24 @@ function AllHoursApi(
         return checkTokenAndExecutePromise(promiseFunction);
     }
 
-    _this.getUserCalculations = function (userId, date) {
-        date = date.startOf('day');
-        let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
+
+    _this.getUserCalculations = function (userId, dateFrom, dateTo) {
+        dateFrom = dateFrom.clone().startOf('day');
+        let dateFromString = dateFrom.format('YYYY-MM-DD') + 'T00:00:00';
+
+        dateTo = dateTo.clone().startOf('day');
+        let dateToString = dateTo.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
             console.info(baseName + ": getting calculation");
 
             $.ajax({
                 url: _this.options.allHoursUrl + "usercalculations/" + userId +
-                    "?dateFrom=" + dateString +
-                    "&dateTo=" + dateString,
+                    "?dateFrom=" + dateFromString +
+                    "&dateTo=" + dateToString,
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                    "X-Timezone-Offset": date.toDate().getTimezoneOffset()
+                    "X-Timezone-Offset": dateFrom.toDate().getTimezoneOffset()
                 },
                 type: "GET",
                 success: function (data) {
