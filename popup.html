@@ -43,7 +43,15 @@
     <link rel="stylesheet" type="text/css" href="fontawesome.css" media="screen" />
 
     <script src='mapbox-gl.js'></script>
-    <link href='mapbox-gl.css' rel='stylesheet' />    
+    <link href='mapbox-gl.css' rel='stylesheet' />
+
+
+    <!-- LEAFLET -->
+    <link rel="stylesheet" href="leaflet.css" />
+    <script src="leaflet.js"></script>
+    <script src="leaflet.heat.js"></script>
+    <script src="heatmap.js"></script>
+
 
     <!-- <script src="https://kit.fontawesome.com/a8696dba34.js"></script> -->
 
@@ -144,37 +152,54 @@
             </div>
         </div>
 
-        <section class="pt-2 pb-2">
+        <section>
 
-            <div class="card-deck mx-3" id="stats">
-                <div class="card text-left shadow-sm border-0 allHoursStats" style="width: 18rem;">
+            <div class="stats-card-deck" id="stats">
+                <div class="card text-left shadow-sm border-0 allHoursStats">
                     <div class="card-body">
-                        <small style='font-size: 0.7em' class="card-title small text-uppercase">All Hours</small>
+                        <small id="ahAttendanceTitle" style='font-size: 0.7em'
+                            class="card-title small text-uppercase">All Hours</small>
                         <p id="ahAttendance" class="axoTotal font-weight-bold-x card-text"></p>
                     </div>
                 </div>
 
-                <div class="card text-left shadow-sm border-0 myHoursStats" style="width: 18rem;">
+                <div class="card text-left shadow-sm border-0 myHoursStats">
                     <div class="card-body">
                         <small style='font-size: 0.7em' class="card-title small text-uppercase">My Hours</small>
-                        <p id="mhTotal" class="axoTotal card-text font-weight-bold-x"></p>
+                        <div class="d-flex flex-row">
+                            <div>
+                                <p id="mhTotal" class="axoTotal card-text font-weight-bold-x"></p>
+                            </div>
+                            <div class="ml-auto d-flex align-self-center justify-content-center">
+                                <div id="mhAhRatioText"></div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
 
-                <div class="card text-left shadow-sm border-0 axoStats" style="width: 18rem;">
+                <div class="card text-left shadow-sm border-0 axoStats">
                     <div class="card-body">
                         <small style='font-size: 0.7em' class="card-title small text-uppercase">Axo</small>
-                        <p id="axoTotal" class="axoTotal card-text font-weight-bold-x"></p>
+                        <div class="d-flex flex-row">
+                            <div>
+                                <p id="axoTotal" class="axoTotal card-text font-weight-bold-x"></p>
+                            </div>
+                            <div class="ml-auto d-flex align-self-center justify-content-center">
+                                <div id="axoAhRatioText"></div>
+                                <!-- <canvas id="axoAhRatioChart" width="45" height="45"></canvas> -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
 
-                <div id="timeRatioCard" class="card text-left shadow-sm border-0" style="width: 18rem;">
+                <!-- <div id="timeRatioCard" class="card text-left shadow-sm border-0" style="width: 18rem;">
                     <div class="card-body">
                         <small style='font-size: 0.7em' class="card-title small text-uppercase">MH vs AH</small>
-                        <p id="timeRatio" class="axoTotal card-text font-weight-bold-x is-success"></p>
+                        
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="container hero-footQ" style="margin: 20pxX; display: none;">
@@ -225,7 +250,7 @@
                     type="button" title='back'>
                     <i class="fas fa-sync"></i>
                 </button>
-            </div>            
+            </div>
             <div class="ml-2">
                 <button id='closeHome'
                     class="btn roundButton noFocus rounded-circle success d-flex align-self-center justify-content-center"
@@ -235,7 +260,7 @@
             </div>
         </div>
 
-        <div class="card-deck m-3">
+        <div class="stats-card-deck">
             <div class="statistics card text-left shadow-none border-0 attendanceStats">
                 <div class="card-body">
                     <small style='font-size: 0.7em' class="card-title small text-uppercase">attendance</small>
@@ -243,7 +268,7 @@
                 </div>
             </div>
 
-            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+            <div class="statistics card text-left shadow-none border-0 attendanceStats d-none">
                 <div class="card-body">
                     <small style='font-size: 0.7em' class="card-title small text-uppercase">plan</small>
                     <p id="currentBalancePlan" class="axoTotal font-weight-bold-x card-text">-</p>
@@ -264,13 +289,24 @@
                 </div>
             </div>
 
+            <div class="statistics card text-left shadow-none border-0 attendanceStats">
+                <div class="card-body">
+                    <small style='font-size: 0.7em' class="card-title small text-uppercase">vacation</small>
+                    <p id="currentVacationDays" class="axoTotal font-weight-bold-x card-text">-</p>
+                </div>
+            </div>
+
         </div>
 
-        <div>
+        <div class="m-3">
             <canvas id="dayBalanceChart" width="380" height="50"></canvas>
         </div>
 
-        <!-- <div id='map' style='width: 380px; height: 300px;'></div> -->
+        <!-- <div>
+            <canvas id="runningBalanceChart" width="380" height="50"></canvas>
+        </div> -->
+
+        <!-- <div id='map-canvas' style='width: 770px; height: 300px;'></div> -->
 
 
     </div>

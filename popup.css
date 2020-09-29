@@ -5,7 +5,7 @@ html {
     transition: width 1s ease-in-out; */
 
     font-size: 14px !important;
-} 
+}
 
 .narrow {
     width: 400px;
@@ -298,12 +298,11 @@ div#logs div:hover .tag.tag-button {
 div.logContainer.active,
 div.logContainer:hover {
     box-shadow: 0 0 3px 0px #6d8396;
-    
+
     /* background-color: aliceblue; */
 
     /* transform: scale(1.1) translate(17px, 0px); */
     /* transition: all 0.2s; */
-
 }
 
 .tag.worklogType {
@@ -365,6 +364,7 @@ div.logContainer:hover {
     /* padding: 1rem; */
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
+    cursor: default;
 }
 
 .card.allHoursStats {
@@ -411,15 +411,37 @@ div.logContainer:hover {
     width: 170px;
 }
 
-#homeContainer .statistics {
-    height: 5rem;
-    width: 18rem;
-}
 
 /* #home .statistics .sublabel{
     font-size: 0.8rem;
 } */
 
-#homeContainer .statistics .sublabel{
+#homeContainer .statistics .sublabel {
     font-size: 0.8rem;
+}
+
+#ahAttendanceTitle {
+    cursor: pointer;
+}
+
+.blink {
+    animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.stats-card-deck {
+    display: flex;
+    margin: 1rem;
+    /* justify-content: center; */
+}
+
+.stats-card-deck > .card {
+    margin-right: 1rem;
+    width: 12rem;
+    height: 5rem;
 }

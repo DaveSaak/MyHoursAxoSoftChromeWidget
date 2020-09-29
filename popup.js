@@ -30,6 +30,9 @@ function popup() {
     _this.isResizing = false;
     _this.lastDownX = 0;
 
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRzYWtlbHNlayIsImEiOiIzM2ExRklBIn0.mx4QxSrjca5HAkaH9SVDuA';
+
     //init bootstrap tooltips
     // $(function () {
     //     $('[data-toggle="tooltip"]').tooltip()
@@ -98,10 +101,8 @@ function popup() {
             copyTimelogs();
         });
 
-        $('#ahAttendance').click(function () {
-            $('#mainContainer').hide();
-            $('#homeContainer').show();
-            getCurrentBalance();
+        $('#ahAttendanceTitle').click(function () {
+            showHomePage();
         });
 
         $('#closeHome').click(function () {
@@ -211,7 +212,6 @@ function popup() {
 
     function showOptionsPage() {
         chrome.runtime.openOptionsPage();
-
     }
 
     function showMainPage() {
@@ -224,7 +224,7 @@ function popup() {
         $('#usersName').text(_this.currentUser.name);
 
         getLogs();
-       
+
     }
 
     function showLoadingPage() {
@@ -235,6 +235,12 @@ function popup() {
         $('#loginContainer').hide();
         $('#loadingContainer').show();
 
+    }
+
+    function showHomePage() {
+        $('#mainContainer').hide();
+        $('#homeContainer').show();
+        getCurrentBalance();
     }
 
     function drawTimeLineTimes(timelineContainer) {
@@ -678,6 +684,7 @@ function popup() {
         $('#currentBalanceAttendance').text('-');
         $('#currentBalanceRunning').text('-');
         $('#currentBalanceDiff').text('-');
+        $('currentVacationDays').text('-');
 
         let currentUserPromise = _this.allHoursApi.getCurrentUserId();
 
@@ -692,11 +699,12 @@ function popup() {
                         _this.allHoursApi.getCurrentBalance(data).then(
                             function (data) {
                                 var currentBalance = parseInt(data.CurrentBalanceMinutes);
+                                drawDayBalanceChart(userId, today, currentBalance);
+
                                 console.log(data.CurrentBalanceMinutes);
                                 $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
-
                                 $('#homeGreeting>h5').text(data.Greeting);
-
+                                $('#currentVacationDays').text(data.VacationBalance);
 
                                 _this.allHoursApi.getUserCalculations(userId, today, today.clone()).then(
                                     function (data) {
@@ -722,14 +730,15 @@ function popup() {
                                         }
 
                                         //attendance
+                                        var currentBalanceAttendance = 0;
                                         var planAttendance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 33);
                                         if (planAttendance.length > 0) {
                                             let planAttendanceValue = parseInt(planAttendance[0].Value);
-                                            planAttendanceValue = planAttendanceValue + currentBalanceAlternation;
-                                            $('#currentBalanceAttendance').text(minutesToString(planAttendanceValue));
+                                            currentBalanceAttendance = planAttendanceValue + currentBalanceAlternation;
                                         } else if (currentBalanceAlternation != 0) {
-                                            $('#currentBalanceAttendance').text(minutesToString(currentBalanceAlternation));
+                                            currentBalanceAttendance = currentBalanceAlternation;
                                         }
+                                        $('#currentBalanceAttendance').text(minutesToString(currentBalanceAttendance));
 
                                         //running balance
                                         var runningBalance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 24);
@@ -739,6 +748,11 @@ function popup() {
 
                                             $('#currentBalanceRunning').text(minutesToString(runningBalanceValue, true));
                                         }
+
+
+                                        
+
+                                        
 
                                     },
                                     function (error) {
@@ -755,7 +769,7 @@ function popup() {
 
 
 
-                        drawDayBalanceChart(userId, today);
+
 
                         drawClockingsHeatMap(userId, today);
 
@@ -776,41 +790,89 @@ function popup() {
     }
 
 
-    function drawDayBalanceChart(userId, today) {
+    function drawDayBalanceChart(userId, today, currentAttendance) {
         var tenDaysAgo = today.clone().add(-14, 'day');
 
         _this.allHoursApi.getUserCalculations(userId, tenDaysAgo, today.clone().add(-1, 'day')).then(
             function (data) {
                 var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.DailyBalanceValue);
-                var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+                dayDifferences.push(currentAttendance);
 
-                console.log(dayDifferences);
+                var runningDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.RunningBalanceValue);
 
-                var ctx = document.getElementById('dayBalanceChart').getContext('2d');
-                var myChart = new Chart(ctx, {
+                // var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+                // labels.push(today.format('ddd'));
+
+                var labels = data.DailyCalculations.map(x => moment(x.DateTime));
+                labels.push(today);
+
+                var dailyCtx = document.getElementById('dayBalanceChart').getContext('2d');
+                var dailyChart = new Chart(dailyCtx, {
                     type: 'line',
                     data: {
-                        labels: labels, //['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                        labels: labels,
                         datasets: [{
-                            // label: '# of Votes',
-                            data: dayDifferences, //[12, 19, 3, 5, 2, 3],
-                            // backgroundColor: [
-                            //     'rgba(255, 99, 132, 0.2)',
-                            //     'rgba(54, 162, 235, 0.2)',
-                            //     'rgba(255, 206, 86, 0.2)',
-                            //     'rgba(75, 192, 192, 0.2)',
-                            //     'rgba(153, 102, 255, 0.2)',
-                            //     'rgba(255, 159, 64, 0.2)'
-                            // ],
-                            // borderColor: [
-                            //     'rgba(255, 99, 132, 1)',
-                            //     'rgba(54, 162, 235, 1)',
-                            //     'rgba(255, 206, 86, 1)',
-                            //     'rgba(75, 192, 192, 1)',
-                            //     'rgba(153, 102, 255, 1)',
-                            //     'rgba(255, 159, 64, 1)'
-                            // ],
-                            //borderWidth: 1
+                            data: dayDifferences,
+                        },
+                            // {
+                            //     data: runningDifferences, 
+                            // }
+                        ]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                    display: false
+                                },
+                                ticks: {
+                                    // maxTicksLimit: 7,
+                                    display: false, //this removed the labels on the x-axis
+                                },
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                    display: false
+                                },
+                                ticks: {
+                                    // maxTicksLimit: 7,
+                                    display: false, //this removed the labels on the x-axis
+                                },
+                            }]
+                        },
+                        tooltips: {
+                            displayColors: false,
+                            callbacks: {
+                                title: function (tooltipItem, data) {
+                                    return tooltipItem[0].xLabel.format('dddd, LL');
+                                    //return value.format('dddd');
+                                },
+                                label: function (tooltipItem, data) {
+                                    let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                    return minutesToString(value, true);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                /*
+                var runningDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.RunningBalanceValue);
+                //runningDifferences.push(currentAttendance);
+                var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+                //labels.push(today.format('ddd'));
+                var runningCtx = document.getElementById('runningBalanceChart').getContext('2d');
+                var runningChart = new Chart(runningCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels, 
+                        datasets: [{
+                            data: runningDifferences, 
                         }]
                     },
                     options: {
@@ -840,38 +902,275 @@ function popup() {
                             }]
                         }
                     }
-                });
-
+                });                
+*/
 
             }
         );
     }
 
+    /*
+    function drawAxoAhRatioChart(ratio) {
+        var chartCtx = document.getElementById('axoAhRatioChart').getContext('2d');
+
+        var axoPartColor = "green";
+        if (ratio === undefined){
+            ratio = 0;
+            axoPartColor = "red";
+        }
+        if (ratio < 0.9) {
+            axoPartColor = "red";
+        }
+        if (ratio > 1) {
+            axoPartColor = "red";
+            ratio = 1
+        }
+
+        var cutOut = 0.30;
+        var axoPart = ratio * (1-cutOut);
+        var missingPart = 1 - axoPart - cutOut;
+
+
+
+        var colors = [axoPartColor, "grey", "#2c314f"];
+        var data = {
+            datasets: [{
+                data: [axoPart, missingPart, cutOut],
+                backgroundColor: colors,
+                borderColor: colors,
+                labels: [
+                    'Axo',
+                    'missing',
+                    'cutout'
+                ],
+                
+            }]
+        };
+
+        var myDoughnutChart = new Chart(chartCtx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                cutoutPercentage: 85,
+                rotation: 2 * Math.PI * 0.4,
+                legend: {
+                    display: false
+                }
+            }
+        });
+    }
+    */
+
     function drawClockingsHeatMap(userId, today) {
-        var tenDaysAgo = today.clone().add(-14, 'day');
+        var tenDaysAgo = today.clone().add(-2, 'day');
+
+        // var geoData = {
+        //     type: "FeatureCollection",
+        //     features: []
+        // };
+
+        var clockingsGeoData = [];
+
+        //https://developer.here.com/blog/an-introduction-to-geojson
 
         _this.allHoursApi.getUserClockings(userId, tenDaysAgo, today.clone().add(-1, 'day')).then(
+
             function (data) {
-                var geoData = data.filter(x => x.Latitude).map(x => ({ lat: x.Latitude, lon: x.Longitude }));
+                data.filter(x => x.Latitude).map(x => {
+                    clockingsGeoData.push(L.latLng(x.Latitude, x.Longitude));
+
+                    // geoData.features.push({
+                    //     type: "Feature",
+                    //     geometry: {
+                    //         type: "Point",
+                    //         coordinates: [ x.Longitude, x.Latitude ]
+                    //     },
+                    //     properties: {
+                    //         userName: x.UserFullName
+                    //     }
+                    // })
+                });
+
+
+                // don't forget to include leaflet-heatmap.js
+                var testData = {
+                    max: 1,
+                    data: clockingsGeoData
+                };
+
+                var baseLayer = L.tileLayer(
+                    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '...',
+                    maxZoom: 18
+                }
+                );
+
+                var cfg = {
+                    // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+                    // if scaleRadius is false it will be the constant radius used in pixels
+                    "radius": 2,
+                    "maxOpacity": .8,
+                    // scales the radius based on map zoom
+                    "scaleRadius": true,
+                    // if set to false the heatmap uses the global maximum for colorization
+                    // if activated: uses the data maximum within the current map boundaries
+                    //   (there will always be a red spot with useLocalExtremas true)
+                    "useLocalExtrema": true,
+                    // which field name in your data represents the latitude - default "lat"
+                    latField: 'lat',
+                    // which field name in your data represents the longitude - default "lng"
+                    lngField: 'lng',
+                    // which field name in your data represents the data value - default "value"
+                    valueField: 'count'
+                };
+
+
+
+                /*
+                                var map = new L.Map('map-canvas', {
+                                    center: new L.LatLng(25.6586, -80.3568),
+                                    zoom: 4,
+                                    layers: [baseLayer, heatmapLayer]
+                                });
+                
+                                var heatmapLayer = new HeatmapOverlay(cfg);
+                                heatmapLayer.addTo(map);
+                                heatmapLayer.setData(testData);
+                
+                
+                */
+
+                //let firstGeoPoint = geoData.features[0];
+                /*let firstGeoPoint = clockingsGeoData[0];
+
+                /*
+                var mymap = L.map('map').setView([51.505, -0.09], 13);
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: 'pk.eyJ1IjoiZGF2aWRzYWtlbHNlayIsImEiOiIzM2ExRklBIn0.mx4QxSrjca5HAkaH9SVDuA'
+                }).addTo(mymap);
+                */
+
+                // L.map('map').setView([firstGeoPoint.geometry.coordinates[0], firstGeoPoint.geometry.coordinates[1]], 13);
+
+
+                // don't forget to include leaflet-heatmap.js
+                /*
+                var testData = {
+                    max: 8,
+                    data: [{ lat: 24.6408, lng: 46.7728, count: 3 }, { lat: 50.75, lng: -1.55, count: 1 }]
+                };
+
+                var baseLayer = L.tileLayer(
+                    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '...',
+                    maxZoom: 18
+                }
+                );
+
+
+/*
+                
+                var cfg = {
+                    // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+                    // if scaleRadius is false it will be the constant radius used in pixels
+                    "radius": 2,
+                    "maxOpacity": .8,
+                    // scales the radius based on map zoom
+                    "scaleRadius": true,
+                    // if set to false the heatmap uses the global maximum for colorization
+                    // if activated: uses the data maximum within the current map boundaries
+                    //   (there will always be a red spot with useLocalExtremas true)
+                    "useLocalExtrema": true,
+                    // which field name in your data represents the latitude - default "lat"
+                    latField: 'lat',
+                    // which field name in your data represents the longitude - default "lng"
+                    lngField: 'lng',
+                    // which field name in your data represents the data value - default "value"
+                    valueField: 'count'
+                };
+                
+
+                /*
+                var L = require('leaflet');
+                var HeatmapOverlay = require('leaflet-heatmap');
+                
+                var heatmapLayer = new HeatmapOverlay(cfg);
+                */
+
+                /*
+                var map = new L.Map('map', {
+                    center: new L.LatLng(25.6586, -80.3568),
+                    zoom: 4,
+                    layers: [baseLayer]
+                });
+
+                var heatmapLayer = new HeatmapOverlay(cfg).addTo(map);
+                heatmapLayer.setData(testData);
+
+                /*
+                // minimal heatmap instance configuration
+                var heatmapInstance = h337.create({
+                    // only container is required, the rest will be defaults
+                    container: document.querySelector('#map')
+                });
+
+                // L.tileLayer('http://tiles.mapc.org/basemap/{z}/{x}/{y}.png',
+                // {
+                //   attribution: 'Tiles by <a href="http://mapc.org">MAPC</a>, Data by <a href="http://mass.gov/mgis">MassGIS</a>',
+                //   maxZoom: 17,
+                //   minZoom: 9
+                // }).addTo(heatmapInstance);                
+
+                // now generate some random data
+                var points = [];
+                var max = 0;
+                var width = 840;
+                var height = 400;
+                var len = 200;
+
+                while (len--) {
+                    var val = Math.floor(Math.random() * 100);
+                    max = Math.max(max, val);
+                    var point = {
+                        x: Math.floor(Math.random() * width),
+                        y: Math.floor(Math.random() * height),
+                        value: val
+                    };
+                    points.push(point);
+                }
+                // heatmap data format
+                var data = {
+                    max: max,
+                    data: points
+                };
+                // if you have a set of datapoints always use setData instead of addData
+                // for data initialization
+                heatmapInstance.setData(data);
+                */
+
+
+                //map.addLayer(heatmapInstance);
 
 
 
 
+
+
+                // var heat = L.heatLayer(clockingsGeoData, { radius: 35 });
+                // map.addLayer(heat);
+
+
+
+
+                //heatmapLayer.setData(testData);
 
 
             })
-
-
-
-
-        // mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRzYWtlbHNlayIsImEiOiIzM2ExRklBIn0.mx4QxSrjca5HAkaH9SVDuA';
-        // var map = new mapboxgl.Map({
-        //     container: 'map',
-        //     style: 'mapbox://styles/mapbox/streets-v11'
-        // });
-
-        // initMap();
-
     }
 
     function initMap() {
@@ -1251,23 +1550,26 @@ function popup() {
     }
 
     function showRatio(ratio) {
-        let elementCard = $('#timeRatioCard');
-        let ratioValid = (ratio >= 0.9 && ratio <= 1);
-        elementCard.toggleClass('bg-warning', !ratioValid);
-
-        let elementInfo = $('#timeRatio');
-        elementInfo.text((ratio * 100).toFixed(0) + '%');
+        showRatioOnCard(ratio, $('#mhAhRatioText'));
     }
 
     function showRatioAllHoursAxo(ratio) {
-        //console.log(ratio);
-        // let elementCard = $('#timeRatioCard');
-        // let ratioValid = (ratio >= 0.9 && ratio <= 1);
-        // elementCard.toggleClass('bg-warning', !ratioValid);
-
-        // let elementInfo = $('#timeRatio');
-        // elementInfo.text((ratio * 100).toFixed(0) + '%');
+        showRatioOnCard(ratio, $('#axoAhRatioText'));
+        //drawAxoAhRatioChart(ratio);
     }
+
+    function showRatioOnCard(ratio, element) {
+        let elementInfo = $(element);
+        elementInfo.removeClass('blink');
+        if (ratio !== undefined){
+            elementInfo.text((ratio * 100).toFixed(0) + '%');
+            let ratioValid = (ratio >= 0.9 && ratio <= 1);
+            elementInfo.toggleClass('blink', !ratioValid);
+        }
+        else {
+            elementInfo.text('--');        
+        }
+    }    
 
     function clearRatio() {
         let elementCard = $('#timeRatioCard');

@@ -24,7 +24,7 @@ function TimeRatio(callback) {
 
     _this.calcRatio = function(){
         //console.log("mhTotalTime:" + this.m);
-        if (_this.mhTotalTime && _this.ahAttendance){
+        if (_this.mhTotalTime !== undefined && _this.ahAttendance !== undefined){
             var ratio = undefined;
             if (_this.ahAttendance > 0){
                 ratio = _this.mhTotalTime/_this.ahAttendance;
