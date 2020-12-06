@@ -18,8 +18,11 @@ $(function () {
             $('#ahUserName').val(_this.options.allHoursUserName);
             $('#isSecret').val(_this.options.isSecret);
 
+            _this.currentUser = new CurrentUser();
             _this.axoSoftApi = new AxoSoftApi(_this.options);
             _this.allHoursApi = new AllHoursApi(_this.options);
+            _this.myHoursApi = new MyHoursApi(_this.currentUser);
+            _this.chromeNotifications = new ChromeNotifications();
 
             _this.axoSoftApi.getUsers().then(function (users) {
                 users = _.sortBy(users, function (u) {
@@ -51,15 +54,19 @@ $(function () {
                 $select.val(_this.options.axoSoftDefaultWorklogTypeId);
             });
 
+            _this.currentUser.load(x => {
+                $('#mhUserName').val(_this.currentUser.email);
+            });
+
             console.group('all hours token');
             console.log(_this.options.allHoursAccessTokenValidTill)
             console.groupEnd();
 
 
             //check ah token.
-            if (_this.options.allHoursAccessTokenValidTill){
+            if (_this.options.allHoursAccessTokenValidTill) {
                 let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill));
-                if (allHoursTokenIsExpired){
+                if (allHoursTokenIsExpired) {
                     setAllHoursAccessTokenStyle('alert-danger').text("Sign in. Your access token expired on " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL') + ".");
                 }
                 else {
@@ -69,24 +76,24 @@ $(function () {
 
         });
 
-        $('input#ahPassword').keyup(function (e) {
-            if (e.keyCode == 13) {
-                loginToAllHours();
-            }
-        });         
+    $('input#ahPassword').keyup(function (e) {
+        if (e.keyCode == 13) {
+            loginToAllHours();
+        }
+    });
 
     $('.saveButton').click(function () {
-        _this.options.axoSoftUrl = $('#axoSoftUrl').val();
-        _this.options.axoSoftToken = $('#axoSoftToken').val();
-        _this.options.axoSoftUserId = $('#axoSoftUserId').val();
-        _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
-        _this.options.contentSwitchProjectId = $('#contentSwitchProjectId').val();
-        _this.options.developmentTaskName = $('#developmentTaskName').val();
-        _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
+        // _this.options.axoSoftUrl = $('#axoSoftUrl').val();
+        // _this.options.axoSoftToken = $('#axoSoftToken').val();
+        // _this.options.axoSoftUserId = $('#axoSoftUserId').val();
+        // _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
+        // _this.options.contentSwitchProjectId = $('#contentSwitchProjectId').val();
+        // _this.options.developmentTaskName = $('#developmentTaskName').val();
+        // _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
-        
+
 
         saveOptions();
 
@@ -102,11 +109,69 @@ $(function () {
         // });
     });
 
+    $('#saveAllHoursButton').click(function () {
+        _this.options.allHoursUrl = $('#ahUrl').val();
+        _this.options.allHoursUserName = $('#ahUserName').val();
+        _this.options.isSecret = $('#isSecret').val();
+        saveOptions();
+        _this.chromeNotifications.showNotification('Save All Hours settings', 'All Hours settings saved', 'SaveAllHoursSettings');
+    });    
+
+    $('#saveAxoButton').click(function () {
+        _this.options.axoSoftUrl = $('#axoSoftUrl').val();
+        _this.options.axoSoftToken = $('#axoSoftToken').val();
+        _this.options.axoSoftUserId = $('#axoSoftUserId').val();
+        _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
+        saveOptions();
+        _this.chromeNotifications.showNotification('Save Axo settings', 'Axo settings saved', 'SaveAxoSettings');
+
+    });    
+
+    $('#clearUserButton').click(x => {
+        let currentUser = new CurrentUser();
+        currentUser.clear();
+        _this.chromeNotifications.showNotification('Clear user data', 'User data was cleared. You will need to login.', 'ClearUserData');
+    });
+
     $('#loginToAllHours').click(function () {
         loginToAllHours();
     });
 
-    function loginToAllHours(){
+    $('#loginToMyHours').click(function () {
+        let loginToMyHoursInfo = $('#loginToMyHoursInfo');
+        loginToMyHoursInfo.text('logging in...');
+
+        let email = $('#mhUserName').val();
+        let password = $('#mhPassword').val();
+        _this.myHoursApi.getAccessToken(email, password).then(
+            function (token) {
+                //var currentUser = new CurrentUserRepo.getInstance();
+                _this.currentUser.email = email;
+                _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
+                _this.currentUser.save();
+
+                //myHoursApi.accessToken = token.accessToken;
+                _this.myHoursApi.getUser().then(function (user) {
+                    _this.currentUser.setUserData(user.id, user.name);
+                    _this.currentUser.save();
+                    _this.chromeNotifications.showNotification('My Hours Login', 'You are now logged into your My Hours account.', 'MyHoursLoginSuccess');
+                }, function (err) {
+                    console.info('error while geeting the user data');
+                    _this.chromeNotifications.showNotification('My Hours Login', 'Error while getting the user data.', 'MyHoursGetUserDataFailed');
+                });
+
+                loginToMyHoursInfo.text('success');
+
+            },
+            function (error) {
+                console.info('error while geeting the access token');
+                _this.chromeNotifications.showNotification('My Hours Login', 'Error logging in.', 'MyHoursLoginFailed');
+                loginToMyHoursInfo.text('fail');
+            }
+        )
+    })
+
+    function loginToAllHours() {
         _this.allHoursApi.getAccessToken(
             $('#ahUserName').val(),
             $('#ahPassword').val()
@@ -115,12 +180,12 @@ $(function () {
             setAllHoursAccessTokenStyle().addClass('alert-success').text("All Good. Token retrieved.");
             _this.options.allHoursAccessToken = data.access_token;
             _this.options.allHoursRefreshToken = data.refresh_token;
-            _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString(); 
+            _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString();
 
             console.group('all hours token');
             console.log('expires in (seconds): ' + data.expires_in);
             console.log('valid till: ' + _this.options.allHoursAccessTokenValidTill);
-            console.groupEnd();            
+            console.groupEnd();
 
             _this.allHoursApi.setAccessToken(data.access_token);
             _this.allHoursApi.getCurrentUserName().then(
@@ -137,23 +202,23 @@ $(function () {
                 console.info('error while geeting token');
                 console.error(err);
             }
-        );        
+        );
     }
 
     function saveOptions() {
         _this.options.save().then(function () {
-            var notificationOptions = {
-                type: 'basic',
-                iconUrl: './images/TS-badge.png',
-                title: 'Time & Space Suite Extension',
-                message: 'Options have been saved.'
-            };
-            //chrome.notifications.create('optionsSaved', notificationOptions);
-            chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+            // var notificationOptions = {
+            //     type: 'basic',
+            //     iconUrl: './images/TS-badge.png',
+            //     title: 'Time & Space Suite Extension',
+            //     message: 'Options have been saved.'
+            // };
+            // //chrome.notifications.create('optionsSaved', notificationOptions);
+            // chrome.notifications.create('optionsSaved', notificationOptions, function () { });
         });
     }
 
-    function setAllHoursAccessTokenStyle(style){
+    function setAllHoursAccessTokenStyle(style) {
         return $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
     }
 

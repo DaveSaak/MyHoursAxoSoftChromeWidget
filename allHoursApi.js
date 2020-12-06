@@ -329,8 +329,10 @@ function AllHoursApi(
         const treshold = 5 * 60;
         let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
         if (allHoursTokenIsExpired) {
+            console.log('ah token expired');
             _this.refreshAccessToken().then(
                 function (x) {
+                    console.log('ah token refreshed');
                     return new Promise(promiseFunction);
                 }
             )

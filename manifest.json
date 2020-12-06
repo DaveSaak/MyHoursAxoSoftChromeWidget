@@ -33,6 +33,11 @@
         "48": "./images/TS-badge48.png",
         "128": "./images/TS-badge128.png"
       },
+      "web_accessible_resources": [
+        "fonts/*.ttf",
+        "css/*.css",
+        "webfonts/*" 
+      ],      
     "permissions": [
         "storage",
         "tabs",
@@ -51,8 +56,6 @@
         "https://ontime.spica.com:442/OnTime/api/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
-        "https://kit.fontawesome.com/*",
-
-        "https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"
+        "https://kit.fontawesome.com/*"
     ]
 }

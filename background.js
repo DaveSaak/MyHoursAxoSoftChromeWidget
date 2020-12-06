@@ -163,7 +163,7 @@ function startTrackingTimeAxo(info, tab) {
                                         function (data) {
                                             var notificationOptions = {
                                                 type: 'basic',
-                                                iconUrl: './images/MH-badge.png',
+                                                iconUrl: './images/ts-badge.png',
                                                 title: 'My Hours',
                                                 message: 'Log started. Axo item #' + info.selectionText
                                             };
@@ -174,7 +174,7 @@ function startTrackingTimeAxo(info, tab) {
                                             console.log(error);
                                             var notificationOptions = {
                                                 type: 'basic',
-                                                iconUrl: './images/MH-badge.png',
+                                                iconUrl: './images/ts-badge.png',
                                                 title: 'My Hours',
                                                 message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                             };
@@ -207,7 +207,7 @@ function startTrackingTime(info, tab) {
                     function (data) {
                         var notificationOptions = {
                             type: 'basic',
-                            iconUrl: 'mh-badge.jpg',
+                            iconUrl: './images/ts-badge.png',
                             title: 'MyHours',
                             message: 'Log started. Description: ' + info.selectionText
                         };
@@ -218,7 +218,7 @@ function startTrackingTime(info, tab) {
                         console.log(error);
                         var notificationOptions = {
                             type: 'basic',
-                            iconUrl: 'mh-badge.jpg',
+                            iconUrl: './images/ts-badge.png',
                             title: 'MyHours',
                             message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                         };
@@ -253,7 +253,7 @@ function stopTimer(info, tab) {
                                 function (data) {
                                     var notificationOptions = {
                                         type: 'basic',
-                                        iconUrl: './images/MH-badge.png',
+                                        iconUrl: './images/ts-badge.png',
                                         title: 'My Hours',
                                     };
                                     if (data) {
@@ -270,7 +270,7 @@ function stopTimer(info, tab) {
                                     console.log(error);
                                     var notificationOptions = {
                                         type: 'basic',
-                                        iconUrl: './images/MH-badge.png',
+                                        iconUrl: './images/ts-badge.png',
                                         title: 'My Hours',
                                         message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                     };
@@ -303,7 +303,7 @@ function createProject(info, tab) {
                     function (data) {
                         var notificationOptions = {
                             type: 'basic',
-                            iconUrl: 'mh-badge.jpg',
+                            iconUrl: './images/ts-badge.png',
                             title: 'MyHours',
                             message: 'Project created.'
                         };
@@ -314,7 +314,7 @@ function createProject(info, tab) {
                         console.log(error);
                         var notificationOptions = {
                             type: 'basic',
-                            iconUrl: 'mh-badge.jpg',
+                            iconUrl: './images/ts-badge.png',
                             title: 'MyHours',
                             message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                         };
@@ -349,7 +349,7 @@ function updateRunningLogDescription(info, tab) {
                                 function (updatedLog) {
                                     var notificationOptions = {
                                         type: 'basic',
-                                        iconUrl: 'mh-badge.jpg',
+                                        iconUrl: './images/ts-badge.png',
                                         title: 'MyHours',
                                     };
                                     if (updatedLog) {
@@ -367,7 +367,7 @@ function updateRunningLogDescription(info, tab) {
                                     console.log(error);
                                     var notificationOptions = {
                                         type: 'basic',
-                                        iconUrl: 'mh-badge.jpg',
+                                        iconUrl: './images/ts-badge.png',
                                         title: 'MyHours',
                                         message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
                                     };

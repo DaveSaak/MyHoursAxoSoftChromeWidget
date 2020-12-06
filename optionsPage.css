@@ -1,0 +1,22 @@
+.settings-section {
+    /* border-bottom: 1px solid blue; */
+    margin: 2rem;
+    padding-bottom: 1.5rem;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    width: 700px;
+} 
+
+.settings-header {
+    width: 200px;
+}
+
+.settings-data {
+    width: 100%;
+}
+
+#settings-title {
+    background-image: -webkit-gradient(linear, left top, right bottom, from(#3b8fc2), to(#DD203E));
+    color: white;
+}

@@ -5,6 +5,18 @@ html {
     transition: width 1s ease-in-out; */
 
     font-size: 14px !important;
+    
+    /* background-image: -webkit-gradient(linear, left top, left bottom, from(#64c7a5), to(#17889e)); */
+    /* border: 5px solid white;
+    border-radius: 10px; */
+
+    /* background-image: -webkit-gradient(linear, left top, right bottom, from(#EC978C), to(#FC5296)); */
+
+    
+}
+
+html {
+    height: initial !important;
 }
 
 .narrow {
@@ -13,6 +25,7 @@ html {
 
 .wide {
     width: 800px;
+    background: transparent;
 
     /* background: linear-gradient(-30deg, #cf215bE5, #cf215bE5 45%, #cf215b 45%) #fff; */
 }
@@ -179,9 +192,9 @@ div#logs li .column {
 }
 
 .btn.roundButton {
-    padding: 10px;
-    width: 38px;
-    height: 38px;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
     /* color: #676d71; */
 
     /* background-color: white; */
@@ -199,11 +212,11 @@ div#logs li .column {
 }
 
 .btn.roundButton:hover {
-    /* background-color: #cacaca; */
+    background-color: #cacaca55;
     border-radius: 50%;
     /* color: #3d4144;    */
     /* box-shadow: 1px 4px 11px #0000000f; */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); */
 }
 
 .btn.roundButton.success:hover {
@@ -295,11 +308,17 @@ div#logs div:hover .tag.tag-button {
     display: block;
 }
 
+div.logContainer {
+    border-radius: 0.25rem;
+}
+
 div.logContainer.active,
 div.logContainer:hover {
-    box-shadow: 0 0 3px 0px #6d8396;
+    /* box-shadow: 0 0 3px 0px #6d8396; */
 
-    /* background-color: aliceblue; */
+    background-color: #dbe4ea9e;
+    /* font-weight: 800; */
+    /* color: black; */
 
     /* transform: scale(1.1) translate(17px, 0px); */
     /* transition: all 0.2s; */
@@ -362,9 +381,9 @@ div.logContainer:hover {
 
 .card > .card-body {
     /* padding: 1rem; */
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    cursor: default;
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+    /* cursor: default; */
 }
 
 .card.allHoursStats {
@@ -400,7 +419,7 @@ div.logContainer:hover {
 }
 
 .columnMain {
-    width: 460px;
+    width: 480px;
 }
 
 .columnTime {
@@ -411,7 +430,6 @@ div.logContainer:hover {
     width: 170px;
 }
 
-
 /* #home .statistics .sublabel{
     font-size: 0.8rem;
 } */
@@ -420,28 +438,138 @@ div.logContainer:hover {
     font-size: 0.8rem;
 }
 
-#ahAttendanceTitle {
+#stats .card:hover{
     cursor: pointer;
 }
 
 .blink {
-    animation: blinker 1.5s linear infinite;
+    animation: blinker 2.5s linear infinite;
 }
 
 @keyframes blinker {
     50% {
-        opacity: 0;
+        opacity: 0.5;
     }
 }
 
 .stats-card-deck {
     display: flex;
-    margin: 1rem;
-    /* justify-content: center; */
+    /* margin: 1rem; */
 }
 
-.stats-card-deck > .card {
-    margin-right: 1rem;
-    width: 12rem;
-    height: 5rem;
+.stats-card-deck >.card {
+    margin-right: 0.5rem;
+    width: 10rem;
+    /* height: 5rem; */
+}
+
+.statistics-sm {
+    margin-right: 0.25rem;
+    height: 2.3rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    /* background-color: #c8e3ff; */
+    /* border-radius: 0.25rem; */
+    /* font-size: 0.85em; */
+    /* text-transform: uppercase; */
+    font-weight: 600;
+    cursor: default;
+}
+
+.statistics-sm div:first-child{
+    margin-right: 0.25rem;
+    font-size: 1.2rem;
+    /* width: 3rem; */
+    /* text-align: right; */
+}
+
+.statistics-sm div:nth-child(2){
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+
+/* .stats-card-deck > .statistics-sm.card .card-body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0.25rem;
+} */
+
+.stats-card-deck > .card .card-body{
+    /* display: flex;
+    justify-content: space-between; */
+}
+.columnLastSeen {
+    width: 90px;
+}
+
+.columnCountInfo {
+    width: 30px;
+}
+
+.columnWorkDoneInfo {
+    width: 50px;
+}
+
+.headerBar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.axoItemName{
+    font-weight: 600;
+}
+
+
+.btn-clock-in {
+
+}
+
+.stats-label{
+    font-size: 0.9em;
+}
+
+.stats-data{
+    font-weight: 600;
+}
+
+.stats-sub-data{
+    /* font-weight: 300;
+    font-size: 0.8em; */
+}
+
+#pills-tab {
+    background-image: -webkit-gradient(linear, left top, right bottom, from(#3b8fc2), to(#DD203E));
+}
+
+#pills-tab a.nav-link:not(.active),
+#pills-tab a.nav-link:hover:not(.active) {
+    color: white !important; 
+}
+
+#pills-tab a.nav-link.active {
+    /* border-bottom: rgb(102, 153, 204) 2px solid; */
+    font-size: 1.5em;
+    background-color: transparent !important;
+}
+
+.btn-transparent {
+    color: #212529;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.btn-transparent:hover {
+    color: #212529;
+    background-color: #e2e7ec;
+    border-color: #dae1e7;
+}
+
+.btn-group button.btn-transparent:first-child{
+    border-color: transparent;
 }

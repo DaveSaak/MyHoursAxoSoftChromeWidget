@@ -73,7 +73,7 @@ function MyHoursApi(currentUser) {
                 var refreshData = {
                     grantType: "refresh_token",
                     clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
-                    refreshToken: refreshToken                    
+                    refreshToken: refreshToken
                 };
 
                 $.ajax({
@@ -132,29 +132,29 @@ function MyHoursApi(currentUser) {
                 console.info("api: getting log " + runningLog.id);
 
                 _this.getLogs(moment(runningLog.date))
-                .then(logs => {
-                    //find log
-                    let log = logs.filter(function (x) {
-                        return x.id === runningLog.id;
+                    .then(logs => {
+                        //find log
+                        let log = logs.filter(function (x) {
+                            return x.id === runningLog.id;
+                        });
+
+                        if (log.length === 1) {
+                            resolve(log[0]);
+                        }
+                        else {
+                            resolve(null);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('error: ' + error);
+                        return reject(error);
                     });
 
-                    if (log.length === 1){
-                        resolve(log[0]);
-                    }
-                    else {
-                        resolve(null);
-                    }
-                })
-                .catch(error => {
-                    console.error('error: ' + error);
-                    return reject(error);
-                });
 
 
-                
             }
         )
-    }    
+    }
 
     _this.getTimes = function (logId) {
         return new Promise(
@@ -231,6 +231,8 @@ function MyHoursApi(currentUser) {
                     end: null
                 };
 
+                
+
                 console.info(newLogData);
 
                 $.ajax({
@@ -251,8 +253,41 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }   
-    
+    }
+
+    _this.startFromExisting = function(logId){
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: staring log from existing");
+
+                var currentTime = moment();
+                var newLogData = {
+                    logId: logId,
+                    startTime: currentTime.toISOString(true),
+                };
+
+                console.info(newLogData);
+
+                $.ajax({
+                    url: baseUrl + "logs/insertAndStartFromExisting",
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    data: JSON.stringify(newLogData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }
+
     _this.stopTimer = function (comment) {
         return new Promise(
             function (resolve, reject) {
@@ -269,9 +304,9 @@ function MyHoursApi(currentUser) {
                                 logId: logs[0].id,
                                 time: currentTime.toISOString(true),
                             };
-            
+
                             console.info(stopTimerData);
-            
+
                             $.ajax({
                                 url: baseUrl + "logs/stopTimer",
                                 type: "POST",
@@ -294,14 +329,14 @@ function MyHoursApi(currentUser) {
                         }
                     }
                 )
-                .catch(error => {
-                    console.error('error: ' + error);
-                    return reject(error);
-                });
+                    .catch(error => {
+                        console.error('error: ' + error);
+                        return reject(error);
+                    });
             }
         )
-    }  
-    
+    }
+
     _this.updateRunningLogDescription = function (comment) {
         return new Promise(
             function (resolve, reject) {
@@ -314,46 +349,46 @@ function MyHoursApi(currentUser) {
 
                         if (logs.length === 1) {
                             _this.getLog(logs[0])
-                            .then(runningLog => {
-                                var updatedLogData = {
-                                    id: runningLog.id,
-                                    note: runningLog.note + ' ' + comment
-                                };
-                            
-                                $.ajax({
-                                    url: baseUrl + "logs/updatedescription?id=" + updatedLogData.id,
-                                    type: "PUT",
-                                    contentType: "application/json",
-                                    headers: {
-                                        "Authorization": "Bearer " + _this.currentUser.accessToken
-                                    },
-                                    data: JSON.stringify(updatedLogData),
-                                    success: function (data) {
-                                        return resolve(data);
-                                    },
-                                    error: function (data) {
-                                        console.error(data);
-                                        return reject(data);
-                                    }
+                                .then(runningLog => {
+                                    var updatedLogData = {
+                                        id: runningLog.id,
+                                        note: runningLog.note + ' ' + comment
+                                    };
+
+                                    $.ajax({
+                                        url: baseUrl + "logs/updatedescription?id=" + updatedLogData.id,
+                                        type: "PUT",
+                                        contentType: "application/json",
+                                        headers: {
+                                            "Authorization": "Bearer " + _this.currentUser.accessToken
+                                        },
+                                        data: JSON.stringify(updatedLogData),
+                                        success: function (data) {
+                                            return resolve(data);
+                                        },
+                                        error: function (data) {
+                                            console.error(data);
+                                            return reject(data);
+                                        }
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('error: ' + error);
+                                    return reject(error);
                                 });
-                            })
-                            .catch(error => {
-                                console.error('error: ' + error);
-                                return reject(error);
-                            });
                         }
                         else {
                             return resolve(null);
                         }
                     }
                 )
-                .catch(error => {
-                    console.error('error: ' + error);
-                    return reject(error);
-                });
+                    .catch(error => {
+                        console.error('error: ' + error);
+                        return reject(error);
+                    });
             }
         )
-    }  
+    }
 
     _this.getRunning = function () {
         return new Promise(
@@ -385,8 +420,8 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }   
-    
+    }
+
     _this.crateProject = function (projectName) {
         return new Promise(
             function (resolve, reject) {
@@ -394,18 +429,18 @@ function MyHoursApi(currentUser) {
 
                 var currentTime = moment();
                 var newProjectData = {
-                        name: projectName,
-                        // clientId": 0,
-                        // invoiceMethod": 0,
-                        // budgetType": 1,
-                        // budgetValue": 0,
-                        // budgetAlertPercent": 0,
-                        // notes": "string",
-                        // approved": false,
-                        // rate": 0,
-                        // autoAssignUserId": 0,
-                        // roundType": 0,
-                        // roundInterval": 0
+                    name: projectName,
+                    // clientId": 0,
+                    // invoiceMethod": 0,
+                    // budgetType": 1,
+                    // budgetValue": 0,
+                    // budgetAlertPercent": 0,
+                    // notes": "string",
+                    // approved": false,
+                    // rate": 0,
+                    // autoAssignUserId": 0,
+                    // roundType": 0,
+                    // roundInterval": 0
                 };
 
                 console.info(newProjectData);
@@ -428,6 +463,6 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }     
+    }
 
 };
