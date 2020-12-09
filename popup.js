@@ -259,7 +259,7 @@ function popup() {
         $('#usersName').text(_this.currentUser.name);
 
         getLogs();
-        getCurrentBalance();
+        // getCurrentBalance();
         getRecentAxoItems();
 
     }
@@ -795,6 +795,7 @@ function popup() {
         if (currentUserPromise != undefined) {
             currentUserPromise.then(
                 function (data) {
+                    getCurrentBalance();
 
                     if (data) {
                         if (_this.currentDate.isSame(moment(), 'day')) {
@@ -1284,7 +1285,7 @@ function popup() {
             options: {
                 startAngle: -36,
                 legend: {
-                    //display: false
+                    display: false,
                     position: 'right'
                 },
 
