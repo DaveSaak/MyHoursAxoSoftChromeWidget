@@ -625,7 +625,7 @@ function popup() {
     function getActionsDropDown(data) {
         let buttonGroup = $('<div>').addClass('btn-group ml-auto');
         buttonGroup.append($('<button type="button" class="btn btn-transparent dropdown-toggleX" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">')
-            .append($('<i class="far fa-magic">'))
+            .append($('<i class="far fa-ellipsis-v">'))
             //.text('Actions')
         );
 
@@ -633,7 +633,7 @@ function popup() {
 
 
         let startTrackingTime = $('<a class="dropdown-item" href="#">');
-        startTrackingTime.append('<i class="far fa-history fa-flip-horizontal"></i> <span class="ml-1">Start tracing time on this item</span>')
+        startTrackingTime.append('<i class="far fa-play"></i> <span class="ml-1">Start tracing time</span>')
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -684,7 +684,7 @@ function popup() {
 
 
         let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1");
-        startTrackingTimeShortcut.append($('<i class="far fa-history fa-flip-horizontal">').attr("title","Start tracking time"))
+        startTrackingTimeShortcut.append($('<i class="far fa-play">').attr("title","Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -710,7 +710,7 @@ function popup() {
     function getRecentAxoItemsActionsDropDown(data) {
 
         return $('<button class="btn btn-transparent">')
-            .append('<i class="far fa-history fa-flip-horizontal"></i>')
+            .append($('<i class="far fa-play"></i>').attr("title","Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 let note = data.itemId + "/" + data.workLogTypeName;
@@ -1091,15 +1091,19 @@ function popup() {
 
                 let developmentMinutes = recentWorkTypes.find(x => x.workLogTypeId === 1);
                 let internalWorkMinutes = recentWorkTypes.find(x => x.workLogTypeId === 3);
+                let researchWorkMinutes = recentWorkTypes.find(x => x.workLogTypeId === 7);
 
                 let developmentPercentage = '-';
                 let internalWorkPercentage = '-';
+                let researchWorkPercentage = '-';
                 if (totalWorked !== 0) {
-                    developmentPercentage = Math.round(developmentMinutes.workDone / totalWorked * 100);
-                    internalWorkPercentage = Math.round(internalWorkMinutes.workDone / totalWorked * 100);
+                    developmentPercentage = developmentMinutes ? Math.round(developmentMinutes.workDone / totalWorked * 100) : 0;
+                    internalWorkPercentage = internalWorkMinutes ? Math.round(internalWorkMinutes.workDone / totalWorked * 100) : 0;
+                    researchWorkPercentage = researchWorkMinutes ? Math.round(researchWorkMinutes.workDone / totalWorked * 100) : 0;
                 }
                 $('#recentItemsDevelopmentPercentage').text(developmentPercentage + '%');
                 $('#recentItemsInternalWorkPercentage').text(internalWorkPercentage + '%');
+                $('#recentItemsResearchPercentage').text(researchWorkPercentage + '%');
 
                 // var worklogTypeData = {
                 //     datasets: [
