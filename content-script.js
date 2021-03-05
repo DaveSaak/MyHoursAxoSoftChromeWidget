@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 
 
         //new track view
-        $('.logs-wrapper .list-log').each(function (index, data) {
+        $('.list-log').each(function (index, data) {
 
             var dataContainer = $(data);
             var description = dataContainer.find('h5 #textDisplay p').text();
