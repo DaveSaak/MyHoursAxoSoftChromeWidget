@@ -143,7 +143,7 @@ function AllHoursApi(
         let promiseFunction = function (resolve, reject) {
             console.info(baseName + ": getting logged-in user");
             $.ajax({
-                url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
+                url: _this.options.allHoursUrl + "UserInfo",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                 },
@@ -165,7 +165,7 @@ function AllHoursApi(
         let promiseFunction = function (resolve, reject) {
             console.info(baseName + ": getting logged-in user");
             $.ajax({
-                url: _this.options.allHoursUrl + "UserAccount/GetLoggedIn",
+                url: _this.options.allHoursUrl + "UserInfo",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                 },
