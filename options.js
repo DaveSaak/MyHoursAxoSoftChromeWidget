@@ -16,6 +16,8 @@ function Options() {
     _this.allHoursUrl = '';
     _this.allHoursUserName = '';
     _this.isSecret = '';
+    _this.myHoursDefaultTagId = '';
+    _this.myHoursRootClientId = '';
 
 
     _this.save = function () {
@@ -70,6 +72,8 @@ function Options() {
                             _this.allHoursUrl = items.options.allHoursUrl;
                             _this.allHoursUserName = items.options.allHoursUserName;
                             _this.isSecret = items.options.isSecret;
+                            _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
+                            _this.myHoursRootClientId = items.options.myHoursRootClientId;
                         }
 
                         resolve();

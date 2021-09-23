@@ -56,13 +56,23 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
     if (request.action == 'createContextMenuItemStartLog') {
-        
+        console.log(chrome.contextMenus);
+
         chrome.contextMenus.remove("mhParent");
 
+        console.log('create mh tools');
         chrome.contextMenus.create({
             title: "My Hours tools",
             id: "mhParent",
             contexts: ["all"]
+        });
+
+        chrome.contextMenus.create({
+            // title: "Start tracking time for Axo Item",
+            title: "Start tracking time for DevOps Item #%s",
+            parentId: "mhParent",
+            contexts: ["selection"],
+            onclick: startTrackingTimeDevOps
         });
 
         chrome.contextMenus.create({
@@ -188,6 +198,140 @@ function startTrackingTimeAxo(info, tab) {
             });
         });
 }
+
+function startTrackingTimeDevOps(info, tab) {
+
+    let currentUser = new CurrentUser();
+    let options = new Options();
+    let myHoursApi = new MyHoursApi(currentUser);
+
+    options.load().then(
+        function () {
+            currentUser.load(function () {
+                let defaultTagId = currentUser.myHoursDefaultTagId;
+
+                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+                    function (token) {
+                        console.info('got refresh token. token: ');
+                        console.info(token);
+
+                        currentUser.setTokenData(token.accessToken, token.refreshToken);
+                        currentUser.save();
+
+                        myHoursApi.getProjects().then(projects => {
+                            var rootProjects = _.filter(projects,
+                                function (p) {
+                                    return p.clientId == options.myHoursRootClientId;
+                                });                            
+
+                            //get tasklists for projects
+                            
+                            
+
+                            let projectTaskListPromises = [];
+                            rootProjects.forEach(project => {
+                                projectTaskListPromises.push(myHoursApi.getProjectTaskList(project.id));
+                            });
+
+                            Promise.allSettled(projectTaskListPromises).then(results => {
+                                console.log(results);
+
+                                let projectTasks = [];
+                                results.forEach(result => {
+                                    if (result.status == 'fulfilled') {
+                                        result.value.forEach(v => {
+                                            v.incompletedTasks.map(t => {
+                                                projectTasks.push(
+                                                {
+                                                    projectId: result.value.projectId,
+                                                    taskId: t.id,
+                                                    taskName: t.name
+                                                });
+                                            });
+                                            // console.log(v);
+                                        });
+                                    }
+                                })
+                                console.log(projectTasks);
+
+                                var matchingTask = _.find(projectTasks,
+                                    function (t) {
+                                        return t.taskName.startsWith(info.selectionText + ' ');
+                                    }); 
+                                    
+                                if (matchingTask) {
+                                    console.log(matchingTask);
+
+                                    myHoursApi.startLog('', matchingTask.projectId, matchingTask.taskId, options.myHoursDefaultTagId)
+                                        .then(
+                                            function (data) {
+                                                let tagName = '';
+                                                if (data.tags?.length > 0) {
+                                                    tagName = ', work type: ' + data.tags[0].name;
+                                                }
+
+
+                                                var notificationOptions = {
+                                                    type: 'basic',
+                                                    iconUrl: './images/ts-badge.png',
+                                                    title: 'My Hours',
+                                                    message: 'Log started. DevOps item #' + info.selectionText + tagName
+                                                };
+                                                //chrome.notifications.create('', 'Log started');
+                                                chrome.notifications.create('', notificationOptions, function () { });
+                                            },
+                                            function (error) {
+                                                console.log(error);
+                                                var notificationOptions = {
+                                                    type: 'basic',
+                                                    iconUrl: './images/ts-badge.png',
+                                                    title: 'My Hours',
+                                                    message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
+                                                };
+                                                //chrome.notifications.create('', 'Bummer something went wrong.');
+                                                chrome.notifications.create('', notificationOptions, function () { });
+                                            }
+                                        );
+
+
+
+                                }
+
+
+                            });
+                            //reach here regardless
+                            // {status: "fulfilled", value: 33}
+                         });
+
+
+                        // myHoursApi.getTasks().then(tasks => {
+                        //     //find task that starts with selected input
+                        //     var matchingTasks = _.find(tasks,
+                        //         function (t) {
+                        //             return t.name.startsWith(info.selectionText + ' ');
+                        //         });
+
+                        //     var task = matchingTasks ? matchingTasks[0]: undefined;
+
+
+                        //     console.log(tasks);
+
+
+
+
+
+                        // });
+
+
+
+
+                    }
+                        
+                    );
+            });
+        });
+}
+
 
 function startTrackingTime(info, tab) {
 
