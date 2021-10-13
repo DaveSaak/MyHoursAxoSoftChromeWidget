@@ -68,24 +68,24 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         });
 
         chrome.contextMenus.create({
-            // title: "Start tracking time for Axo Item",
-            title: "Start tracking time for DevOps Item #%s",
+            // title: "Start timer for Axo Item",
+            title: "Axo: start timer for Item #%s",
+            parentId: "mhParent",
+            contexts: ["selection"],
+            onclick: startTrackingTimeAxo
+        });
+    
+        chrome.contextMenus.create({
+            // title: "Start timer for Axo Item",
+            title: "DevOps: start timer for Item #%s",
             parentId: "mhParent",
             contexts: ["selection"],
             onclick: startTrackingTimeDevOps
         });
 
         chrome.contextMenus.create({
-            // title: "Start tracking time for Axo Item",
-            title: "Start tracking time for Axo Item #%s",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTimeAxo
-        });
-
-        chrome.contextMenus.create({
-            // title: "Start tracking time with description",
-            title: "Start tracking time with description: '%s'",
+            // title: "Start timer with description",
+            title: "Start timer with description: '%s'",
             parentId: "mhParent",
             contexts: ["selection"],
             onclick: startTrackingTime
@@ -118,12 +118,12 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             contexts: ["all"],
         });          
 
-        chrome.contextMenus.create({
-            title: "Add new project: '%s'",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: createProject
-        });  
+        // chrome.contextMenus.create({
+        //     title: "Add new project: '%s'",
+        //     parentId: "mhParent",
+        //     contexts: ["selection"],
+        //     onclick: createProject
+        // });  
             
 
     }
