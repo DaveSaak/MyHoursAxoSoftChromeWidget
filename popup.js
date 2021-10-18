@@ -675,7 +675,7 @@ function popup() {
                 .append('<i class="far fa-seedling"></i><span class="ml-1">Copy time to AXO worklog</span>')
                 .click(function (event) {
                     event.preventDefault();
-                    _this.addAxoWorkLog(data).then(x => console.log('added axo work log'));
+                    _this.addAxoWorkLog(data, data.duration).then(x => console.log('added axo work log'));
                 }));
         }
 
@@ -1577,15 +1577,7 @@ function popup() {
         return timeUnit.conversion_factor * duration;
     }
 
-    _this.addAxoWorkLog = function(myHoursLog) {
-
-        // return new Promise(resolve => {
-        //     setTimeout(() => {
-        //       resolve();
-        //     }, 5000);
-        // });
-
-
+    _this.addAxoWorkLog = function(myHoursLog, myHoursTotalMinsDoneForAxoId) {
         return new Promise(
             function (resolve, reject) {
                 console.log(myHoursLog);        
@@ -1620,7 +1612,8 @@ function popup() {
                 console.log(`remaining item mins: remaining time mins: ${remainingTimeMins}`);
                 console.log(`remaining item mins: worklog done mins: ${worklog.work_done.duration}`);
 
-                worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
+                //worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
+                worklog.remaining_time.duration = Math.max(remainingTimeMins - myHoursTotalMinsDoneForAxoId, 0);
                 console.log(`remaining item mins: new remaining time mins: ${worklog.remaining_time.duration}`);
 
                 _this.axoSoftApi.addWorkLog(worklog)
@@ -1688,6 +1681,7 @@ function popup() {
         return '';
     }
 
+
     function copyTimelogs() {
         console.info(_this.myHoursLogs);
 
@@ -1699,36 +1693,15 @@ function popup() {
             $('#alertContainer').hide();
             $('#axoNotAccessible').hide();
             try {
+                const totalMinsDurationByAxoId = _this.myHoursLogs.reduce((result, worklog) => {
+                    result[worklog.axoId] = result[worklog.axoId] ? result[worklog.axoId] + (worklog.duration / 60) : (worklog.duration / 60);
+                    return result;
+                },{});  
+                console.table(totalMinsDurationByAxoId);
 
-                //recursive all 
-                const doNextPromise = (d) => {
-                    _this.addAxoWorkLog(_this.myHoursLogs[d])
-                      .then(x => {
-                        console.log(`posted call ${d}`);
-                        d++;
-                        if (d < _this.myHoursLogs.length)
-                          doNextPromise(d)
-                        else
-                          console.log(`Total: ${d} calls`);
-                      })
-                  }
-
-                doNextPromise(0);
-
-
-
-                // _this.myHoursLogs.forEach(
-                //     myHoursLog => addAxoWorkLog(myHoursLog)
-                //       .then(message => console.log(message))
-                //       .catch(reason => console.log(message))
-                //   );
-
-
-                // $.each(_this.myHoursLogs, function (index, myHoursLog) {
-                //     addAxoWorkLog(myHoursLog);
-                // });
-
-
+                _this.myHoursLogs.forEach(worklog => {
+                    _this.addAxoWorkLog(worklog, totalMinsDurationByAxoId[worklog.axoId]);
+                });
             } catch (e) {
                 console.log(e);
                 $('#axoNotAccessible').show();
