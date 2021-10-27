@@ -490,6 +490,10 @@ function popup() {
                                         success.attr('title', data.note);
                                     }
 
+                                    var itemComment = $('<div>')
+                                    .addClass('text-muted small worklogType')
+                                    .text('' + data.note);
+
                                     {
                                         var remainingHoursInfo = $('<span>').addClass('small');
 
@@ -540,6 +544,7 @@ function popup() {
                                     // }
 
                                     logStatus.append(success);
+                                    logStatus.append(itemComment);
                                     getTimes(data, timeline);
                                 },
                                     function (err) {
