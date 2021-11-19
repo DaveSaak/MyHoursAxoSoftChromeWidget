@@ -120,6 +120,55 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
 }
 );
 
+
+var checkInterval = 5;
+chrome.alarms.create("checkAxoWorklogForYesterday", {
+    delayInMinutes: 0,
+    periodInMinutes: checkInterval
+});
+
+chrome.alarms.onAlarm.addListener(function(alarm) {
+    if (alarm.name === "checkAxoWorklogForYesterday") {
+        console.log('checkAxoWorklogForYesterday');
+
+
+        let currentUser = new CurrentUser();
+        let options = new Options();        
+        options.load().then(
+            function () {
+                currentUser.load(function () {
+                    let axoSoftApi = new AxoSoftApi(options);
+                    axoSoftApi.getWorkLogMinutesWorked(moment()).then(
+                        function (minutesWorked) {
+                            console.info(minutesWorked);
+                            if (minutesWorked > 0) {
+                                chrome.browserAction.setBadgeText({ text: '' });  
+                            }
+                            else {
+                                chrome.browserAction.setBadgeText({ text: '$' }); 
+                                chrome.browserAction.setBadgeBackgroundColor({
+                                    color: '#5D29E6'
+                                });                                 
+                            }
+                    
+                        }
+                    )
+                    .catch(error => {
+                        console.log(error);
+                        showAlert('could not connect to Axo.');
+                        chrome.browserAction.setBadgeText({ text: 'Err' }); 
+                        chrome.browserAction.setBadgeBackgroundColor({
+                            color: '#222222'
+                        });                                 
+                    });
+                })
+            }
+        )
+    }
+});
+
+
+
 function startTrackingTimeAxo(info, tab) {
 
     let currentUser = new CurrentUser();
