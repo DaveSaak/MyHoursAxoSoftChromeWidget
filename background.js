@@ -51,6 +51,7 @@ chrome.runtime.onMessage.addListener(function (message) {
         document.execCommand('Copy');
         input.remove();
     }
+
 });
 
 
@@ -121,53 +122,83 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
 );
 
 
-var checkInterval = 5;
+var checkInterval = 10;
 chrome.alarms.create("checkAxoWorklogForYesterday", {
-    delayInMinutes: 0,
+    delayInMinutes: 1,
     periodInMinutes: checkInterval
 });
 
 chrome.alarms.onAlarm.addListener(function(alarm) {
     if (alarm.name === "checkAxoWorklogForYesterday") {
-        console.log('checkAxoWorklogForYesterday');
-
-
-        let currentUser = new CurrentUser();
-        let options = new Options();        
-        options.load().then(
-            function () {
-                currentUser.load(function () {
-                    let axoSoftApi = new AxoSoftApi(options);
-                    axoSoftApi.getWorkLogMinutesWorked(moment()).then(
-                        function (minutesWorked) {
-                            console.info(minutesWorked);
-                            if (minutesWorked > 0) {
-                                chrome.browserAction.setBadgeText({ text: '' });  
-                            }
-                            else {
-                                chrome.browserAction.setBadgeText({ text: '$' }); 
-                                chrome.browserAction.setBadgeBackgroundColor({
-                                    color: '#5D29E6'
-                                });                                 
-                            }
-                    
-                        }
-                    )
-                    .catch(error => {
-                        console.log(error);
-                        showAlert('could not connect to Axo.');
-                        chrome.browserAction.setBadgeText({ text: 'Err' }); 
-                        chrome.browserAction.setBadgeBackgroundColor({
-                            color: '#222222'
-                        });                                 
-                    });
-                })
-            }
-        )
+        console.log('alarm - checkAxoWorklogForYesterday');
+        refreshBadge();
     }
 });
 
+function refreshBadge(){
+    let currentUser = new CurrentUser();
+    let options = new Options();        
+    options.load().then(
+        function () {
+            currentUser.load(function () {
+                let axoSoftApi = new AxoSoftApi(options);
+                let allHoursApi = new AllHoursApi(options);
 
+                let yesterday = moment().add(-1, 'days').startOf('day');
+
+                axoSoftApi.getWorkLogMinutesWorked(yesterday).then(
+                    function (axoMinutes) {
+                        console.info(`axo minutes ${axoMinutes}`);
+
+                        allHoursApi.getCurrentUserId().then(
+                            function (currentUserId) {
+
+                                allHoursApi.getAttendance(currentUserId, yesterday).then(
+                                    function (data) {
+                                        if (data && data.CalculationResultValues.length > 0) {
+                                            let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                                            console.info(`ah attendance ${attendance}`);
+
+                                            if (attendance > 0) {
+
+                                                let ratio = axoMinutes/attendance;
+                                                console.info(`ratio ${ratio}`);
+
+                                                if (ratio < 90 && ratio > 100 ) {
+                                                    chrome.browserAction.setBadgeText({ text: `{ratio * 100}` }); 
+                                                    chrome.browserAction.setBadgeBackgroundColor({
+                                                        color: '#5D29E6'
+                                                    });
+                                                }
+                                                else {
+                                                    //chrome.browserAction.setBadgeText({ text: '' });  
+                                                    chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}` }); 
+                                                    chrome.browserAction.setBadgeBackgroundColor({
+                                                        color: '#339933'
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    },
+                                    function (error) {
+                                        console.error('error while geting attendance.');
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+                .catch(error => {
+                    console.log(error);
+                    chrome.browserAction.setBadgeText({ text: 'Err' }); 
+                    chrome.browserAction.setBadgeBackgroundColor({
+                        color: '#222222'
+                    });                                 
+                });
+            })
+        }
+    )
+}
 
 function startTrackingTimeAxo(info, tab) {
 
