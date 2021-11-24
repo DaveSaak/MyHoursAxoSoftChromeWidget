@@ -35,6 +35,7 @@ function popup() {
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
+    chrome.runtime.sendMessage({ type: 'refreshBadge'});
 
     _this.options.load().then(
         function () {
@@ -1636,6 +1637,8 @@ function popup() {
 
                             logStatus.append(success);
                             //logStatus.append('<span>').addClass('tag is-success').text("OK -- " + +" hrs left");
+
+                            chrome.runtime.sendMessage({ type: 'refreshBadge'});
 
                             return resolve();
                         }
