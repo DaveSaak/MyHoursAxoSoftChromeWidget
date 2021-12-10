@@ -1800,8 +1800,8 @@ function popup() {
         return num % length;
     }
 
-    function showRatio(ratio) {
-        showRatioOnCard(ratio, $('#mhAhRatioText'));
+    function showRatio(timeRatio) {
+        showRatioOnCard(timeRatio, $('#mhAhRatioText'));
     }
 
     function showRatioAllHoursAxo(ratio) {
@@ -1809,18 +1809,30 @@ function popup() {
         //drawAxoAhRatioChart(ratio);
     }
 
-    function showRatioOnCard(ratio, element) {
+    function showRatioOnCard(timeRatio, element) {
         let elementInfo = $(element);
-        let parent = elementInfo.parent();
+        let parent = elementInfo.parent();        
         // elementInfo.removeClass('blink');
-        if (ratio !== undefined) {
+        if (timeRatio?.ratio !== undefined) {
             elementInfo.hide();
+            let ratioValid = (timeRatio.ratio >= 0.9 && timeRatio.ratio <= 1);
             //elementInfo.text((ratio * 100).toFixed(0) + '%');
-            parent.attr('title', 'Ratio: ' + (ratio * 100).toFixed(0) + '%');
-            let ratioValid = (ratio >= 0.9 && ratio <= 1);
+            
             if (!ratioValid) {
+                let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
+                let diffMinutes = timeRatio.mhTotalTime - timeRatio.ahAttendance;
+                if (diffMinutes > 0){
+                  cardText += ' Too much: ' + minutesToString(Math.abs(timeRatio.ahAttendance - timeRatio.ahAttendance * timeRatio.ratio));
+                }
+                else if (diffMinutes < 0)
+                {
+                  cardText += ' Missing: ' + minutesToString(timeRatio.ahAttendance * 0.9 - timeRatio.ahAttendance * timeRatio.ratio);      
+                }                                  
+                cardText += 
+                parent.attr('title',  cardText);
                 elementInfo.show();
-            }
+            }            
+            
             // elementInfo.toggleClass('blink', !ratioValid);
         }
         else {
