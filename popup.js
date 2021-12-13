@@ -35,6 +35,8 @@ function popup() {
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
+    _this.fetchLogsId = 0;
+
     chrome.runtime.sendMessage({ type: 'refreshBadge'});
 
     _this.options.load().then(
@@ -312,7 +314,10 @@ function popup() {
     }
 
     function getLogs() {
-        console.log('getting logs');
+        let fetchLogsId = moment().valueOf();
+        _this.fetchLogsId = fetchLogsId;
+
+        console.log(`getting logs. fetch id: ${fetchLogsId}`);
         _this.timeRatio.reset();
         _this.timeRatioAllHourAxo.reset();
         clearRatio();
@@ -343,277 +348,300 @@ function popup() {
         }));
 
         $('#ahAttendance').text(_this.noTimeDataText);
+        $('#ahAttendance').empty().append(getSpinner()); 
+
         $('#axoTotal').text(_this.noTimeDataText);
+        $('#axoTotal').empty().append(getSpinner()); 
+
         $('#mhTotal').text(_this.noTimeDataText);
+        $('#mhTotal').empty().append(getSpinner()); 
 
         var logsContainer = $('#logs');
         logsContainer.empty();
 
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
+            
+            if (fetchLogsId !== _this.fetchLogsId){
+                console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
+                return;
+            }
+
+
             $("#axoTotal").text(minutesToString(minutesWorked));
             _this.timeRatioAllHourAxo.setMyHours(minutesWorked);
-
         })
-            .catch(error => {
-                console.log(error);
-                showAlert('could not connect to Axo.');
-            });
+        .catch(error => {
+            console.log(error);
+            showAlert('could not connect to Axo.');
+        });
 
 
         _this.axoSoftApi.getWorkLogTypes()
-            .then(response => {
-                _this.worklogTypes = response;
+        .then(response => {
 
-                _this.axoSoftApi.getTimeUnits().then(function (response) {
-                    _this.timeUnits = response;
+            if (fetchLogsId !== _this.fetchLogsId){
+                console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
+                return;
+            }
 
-                    getAllHoursData();
-                    var logsContainer2 = $('#logsContainer');
+            _this.worklogTypes = response;
+            _this.axoSoftApi.getTimeUnits().then(function (response) {
+                _this.timeUnits = response;
 
-                    _this.myHoursApi.getLogs(_this.currentDate).then(
-                        function (logs) {
-                            $('#copyToAxoSoftButton').prop('disabled', logs.length == 0);
+                getAllHoursData(fetchLogsId);
+                var logsContainer2 = $('#logsContainer');
 
-                            _this.myHoursLogs = logs;
-                            _this.myHoursTaskSummary = {};
+                _this.myHoursApi.getLogs(_this.currentDate).then(
+                    function (logs) {
 
-                            var totalMins = 0;
+                        if (fetchLogsId !== _this.fetchLogsId){
+                            console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
+                            return;
+                        }
 
-                            logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
-                            topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
+                        $('#copyToAxoSoftButton').prop('disabled', logs.length == 0);
 
-                            $.each(_this.myHoursLogs, function (index, data) {
-                                totalMins = totalMins + (data.duration / 60);
+                        _this.myHoursLogs = logs;
+                        _this.myHoursTaskSummary = {};
 
-                                var log = $('<div>')
-                                    .attr("data-logId", data.id)
-                                    .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
+                        var totalMins = 0;
 
-                                var columnColorBar = $('<div>')
-                                    .addClass('columnColorBar rounded mr-2');
+                        logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
+                        topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
 
+                        $.each(_this.myHoursLogs, function (index, data) {
+                            totalMins = totalMins + (data.duration / 60);
 
-                                var columnMain = $('<div>')
-                                    .addClass('mainColumn columnMain d-flex flex-column');
+                            var log = $('<div>')
+                                .attr("data-logId", data.id)
+                                .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
 
-                                var columnAxoWorklogType = $('<div>')
-                                    .addClass('axoWorklogTypeColumn');
-
-                                columnMain.append(columnAxoWorklogType);
+                            var columnColorBar = $('<div>')
+                                .addClass('columnColorBar rounded mr-2');
 
 
+                            var columnMain = $('<div>')
+                                .addClass('mainColumn columnMain d-flex flex-column');
 
-                                log.mouseenter(function () {
-                                    $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
-                                    $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", true);
-                                    hiLiteMyHoursLog(data.id);
-                                });
-                                log.mouseleave(function () {
-                                    $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", false);
-                                    $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", false);
-                                    hiLiteMyHoursLog();
-                                });
+                            var columnAxoWorklogType = $('<div>')
+                                .addClass('axoWorklogTypeColumn');
 
-                                var worklogTypeInfo = $('<div>')
-                                    .addClass('text-muted text-lowercase worklogType')
-                                    .css('font-size', '0.7rem');
+                            columnMain.append(columnAxoWorklogType);
 
-                                columnAxoWorklogType.append(worklogTypeInfo);
 
-                                var columnTime = $('<div>')
-                                    .addClass('columnTime text-right');
-                                //.css('text-align', 'right')
-                                //.css('font-weight', '600');
 
-                                if (data.duration != null) {
-                                    var durationInfo = $('<i class="far fa-spinner-third fa-spin"></i>');
-                                    if (!data.running) {
-                                        var duration = minutesToString(data.duration / 60);
-                                        durationInfo = $('<span>').text(duration);
-                                    }
-                                    columnTime.append(durationInfo);
+                            log.mouseenter(function () {
+                                $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
+                                $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", true);
+                                hiLiteMyHoursLog(data.id);
+                            });
+                            log.mouseleave(function () {
+                                $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", false);
+                                $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", false);
+                                hiLiteMyHoursLog();
+                            });
+
+                            var worklogTypeInfo = $('<div>')
+                                .addClass('text-muted text-lowercase worklogType')
+                                .css('font-size', '0.7rem');
+
+                            columnAxoWorklogType.append(worklogTypeInfo);
+
+                            var columnTime = $('<div>')
+                                .addClass('columnTime text-right');
+                            //.css('text-align', 'right')
+                            //.css('font-weight', '600');
+
+                            if (data.duration != null) {
+                                var durationInfo = $('<i class="far fa-spinner-third fa-spin"></i>');
+                                if (!data.running) {
+                                    var duration = minutesToString(data.duration / 60);
+                                    durationInfo = $('<span>').text(duration);
                                 }
+                                columnTime.append(durationInfo);
+                            }
 
 
-                                var columnStatus = $('<div>')
-                                    .addClass('statusColumn ml-auto');
+                            var columnStatus = $('<div>')
+                                .addClass('statusColumn ml-auto');
 
-                                var status = ($('<div>')
-                                    .addClass('d-flex align-items-center columnStatus'));
-                                columnStatus.append(status);
+                            var status = ($('<div>')
+                                .addClass('d-flex align-items-center columnStatus'));
+                            columnStatus.append(status);
 
-                                getAxoItem(data).then(item => {
-                                    data.axoName = item.name;
-                                    data.axoId = item.id;
-                                    data.axoItemType = item.item_type;
-                                    let remainingDurationIsAvailable = (item.remaining_duration.time_unit.id !== 0)
+                            getAxoItem(data).then(item => {
+                                data.axoName = item.name;
+                                data.axoId = item.id;
+                                data.axoItemType = item.item_type;
+                                let remainingDurationIsAvailable = (item.remaining_duration.time_unit.id !== 0)
 
-                                    if (remainingDurationIsAvailable) {
-                                        data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
-                                        data.axoRemainingDuration = item.remaining_duration.duration;
-                                        data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
-                                    }
-                                    data.color = _this.axoItemColors[numberToIndex(data.axoId, 8)];
-                                    columnColorBar.css("background-color", data.color);
-
-
-                                    if (data.taskName) {
-                                        let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
-                                        data.axoWorklogTypeId = worklogTypeId;
-                                    }
-                                    else {
-                                        let partialWorkLogTypeName = getPartialWorkLogType(data);
-                                        let worklogTypeId = getWorklogTypeId(partialWorkLogTypeName, _this.worklogTypes, true);
-                                        data.axoWorklogTypeId = worklogTypeId;
-                                    }
-                                    let worklogTypeName = getWorklogTypeName(data.axoWorklogTypeId, _this.worklogTypes);
-                                    data.axoWorklogTypeName = worklogTypeName;
-
-                                    worklogTypeInfo.text(data.axoWorklogTypeName);
+                                if (remainingDurationIsAvailable) {
+                                    data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
+                                    data.axoRemainingDuration = item.remaining_duration.duration;
+                                    data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
+                                }
+                                data.color = _this.axoItemColors[numberToIndex(data.axoId, 8)];
+                                columnColorBar.css("background-color", data.color);
 
 
+                                if (data.taskName) {
+                                    let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
+                                    data.axoWorklogTypeId = worklogTypeId;
+                                }
+                                else {
+                                    let partialWorkLogTypeName = getPartialWorkLogType(data);
+                                    let worklogTypeId = getWorklogTypeId(partialWorkLogTypeName, _this.worklogTypes, true);
+                                    data.axoWorklogTypeId = worklogTypeId;
+                                }
+                                let worklogTypeName = getWorklogTypeName(data.axoWorklogTypeId, _this.worklogTypes);
+                                data.axoWorklogTypeName = worklogTypeName;
 
-                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
-                                    var truncatedAxoName = data.axoName; //truncateText(data.axoName, 50);
-                                    var success = $('<div>')
-                                        .addClass('axoItemName text-truncate')
-                                        .text('' + data.axoId + " -- " + truncatedAxoName)
-                                        //.css("background-color", data.color)
-                                        //.css("color", "white")
-                                        .click(function (event) {
-                                            if (data.projectId && event.ctrlKey) {
-                                                window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
-                                            }
-                                        });
+                                worklogTypeInfo.text(data.axoWorklogTypeName);
 
-                                    if (data.note) {
-                                        success.attr('title', data.note);
-                                    }
 
-                                    var itemComment = $('<div>')
-                                    .addClass('text-muted small worklogType')
-                                    .text('' + data.note);
 
-                                    {
-                                        var remainingHoursInfo = $('<span>').addClass('small');
-
-                                        if (remainingDurationIsAvailable) {
-                                            var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
-                                            remainingHoursInfo.text(reminingHrs + " hrs left");
-                                        } else {
-                                            remainingHoursInfo.addClass('badge-danger');
-                                            remainingHoursInfo.text("enter estimate to sync");
+                                var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
+                                var truncatedAxoName = data.axoName; //truncateText(data.axoName, 50);
+                                var success = $('<div>')
+                                    .addClass('axoItemName text-truncate')
+                                    .text('' + data.axoId + " -- " + truncatedAxoName)
+                                    //.css("background-color", data.color)
+                                    //.css("color", "white")
+                                    .click(function (event) {
+                                        if (data.projectId && event.ctrlKey) {
+                                            window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
                                         }
-                                        status.append(remainingHoursInfo);
-                                    }
-
-                                    
-                                    // if (data.axoId) {
-                                    //     var buttonCopyToAxo = $('<a title="copy to AXO woklog">')
-                                    //         .addClass('btn btn-light')
-                                    //         .click(function (event) {
-                                    //             event.preventDefault();
-                                    //             addAxoWorkLog(data);
-                                    //         });
-                                    //     buttonCopyToAxo.html('<i class="far fa-seedling" aria-hidden="true"></i>');
-                                    //     status.append(buttonCopyToAxo);
-                                    // }
-
-                                    status.append(getActionsDropDown(data));
-
-                                    // if (data.projectId) {
-                                    //     var button = $('<a title="open My Hours project details">')
-                                    //         .addClass('btn roundButton')
-                                    //         .click(function (event) {
-                                    //             event.preventDefault();
-                                    //             window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
-                                    //         });
-                                    //     button.html('<i class="fas fa-external-link-alt"></i>');
-                                    //     status.append(button);
-                                    // }
-
-                                    // if (data.axoId) {
-                                    //     var buttonOpenAxoItem = $('<a title="open AXO item">')
-                                    //         .addClass('btn roundButton')
-                                    //         .click(function (event) {
-                                    //             event.preventDefault();
-                                    //             window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
-                                    //         });
-                                    //     buttonOpenAxoItem.html('<i class="fas fa-external-link-alt"></i>');
-                                    //     status.append(buttonOpenAxoItem);
-                                    // }
-
-                                    logStatus.append(success);
-                                    logStatus.append(itemComment);
-                                    getTimes(data, timeline);
-                                },
-                                    function (err) {
-                                        var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                                        logStatus.empty();
-                                        var fail = $('<div>');
-                                        fail.append($("<i class='far fa-skull-crossbones'>"));
-                                        fail.append($("<span>").addClass("axoItemName ml-2").html("Work Item not found"));
-                                        //logStatus.append(fail);
-
-                                        data.color = 'whitesmoke';
-                                        getTimes(data, timeline);
-                                        // columnMain.append($("<i class='far fa-skull-crossbones'>"));
-                                        columnMain.append(fail);
                                     });
 
-                                log.append(columnColorBar);
-                                //log.append(columnAxoWorklogType);
-                                log.append(columnMain);
-                                log.append(columnTime);
-                                log.append(columnStatus);
-
-                                log.append(log);
-                                logsContainer.append(log);
-                            });
-                            _this.timeRatio.setMyHours(totalMins);
-                            $('#mhTotal').text(minutesToString(totalMins));
-
-                            // let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
-                            // let ahBottomRange = moment.duration(totalMins, 'minutes');
-                            // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
-
-                            $('#tasks').empty();
-                            $.each(_this.myHoursTaskSummary, function (index, summary) {
-                                let summaryHours = Math.round(summary / 60 / 60 * 100) / 100;
-
-                                let taskCssClass = "is-info";
-                                if (index == 'development' && summaryHours >= 4) {
-                                    taskCssClass = "is-success"
-                                } else if (index == 'development' && summaryHours < 1) {
-                                    taskCssClass = "is-danger"
+                                if (data.note) {
+                                    success.attr('title', data.note);
                                 }
 
-                                var taskControl = $('<div>').addClass('control');
-                                var taskGroup = $('<div>').addClass('tags has-addons');
-                                var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
-                                var taskTime = $('<span>').text(minutesToString(summary / 60)).addClass('tag').addClass(taskCssClass);
+                                var itemComment = $('<div>')
+                                .addClass('text-muted small worklogType')
+                                .text('' + data.note);
 
-                                taskGroup.append(taskName);
-                                taskGroup.append(taskTime);
+                                {
+                                    var remainingHoursInfo = $('<span>').addClass('small');
 
-                                taskControl.append(taskGroup);
+                                    if (remainingDurationIsAvailable) {
+                                        var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
+                                        remainingHoursInfo.text(reminingHrs + " hrs left");
+                                    } else {
+                                        remainingHoursInfo.addClass('badge-danger');
+                                        remainingHoursInfo.text("enter estimate to sync");
+                                    }
+                                    status.append(remainingHoursInfo);
+                                }
 
-                                $('#tasks').append(taskControl);
-                            });
-                        },
-                        function () {
-                            console.info('failed to get logs');
-                            showLoginPage();
-                        }
-                    );
-                });
+                                
+                                // if (data.axoId) {
+                                //     var buttonCopyToAxo = $('<a title="copy to AXO woklog">')
+                                //         .addClass('btn btn-light')
+                                //         .click(function (event) {
+                                //             event.preventDefault();
+                                //             addAxoWorkLog(data);
+                                //         });
+                                //     buttonCopyToAxo.html('<i class="far fa-seedling" aria-hidden="true"></i>');
+                                //     status.append(buttonCopyToAxo);
+                                // }
 
-            })
-            .catch(error => {
-                console.log(error);
-                showAlert('could not connect to Axo.');
+                                status.append(getActionsDropDown(data));
+
+                                // if (data.projectId) {
+                                //     var button = $('<a title="open My Hours project details">')
+                                //         .addClass('btn roundButton')
+                                //         .click(function (event) {
+                                //             event.preventDefault();
+                                //             window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
+                                //         });
+                                //     button.html('<i class="fas fa-external-link-alt"></i>');
+                                //     status.append(button);
+                                // }
+
+                                // if (data.axoId) {
+                                //     var buttonOpenAxoItem = $('<a title="open AXO item">')
+                                //         .addClass('btn roundButton')
+                                //         .click(function (event) {
+                                //             event.preventDefault();
+                                //             window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
+                                //         });
+                                //     buttonOpenAxoItem.html('<i class="fas fa-external-link-alt"></i>');
+                                //     status.append(buttonOpenAxoItem);
+                                // }
+
+                                logStatus.append(success);
+                                logStatus.append(itemComment);
+                                getTimes(data, timeline);
+                            },
+                                function (err) {
+                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
+                                    logStatus.empty();
+                                    var fail = $('<div>');
+                                    fail.append($("<i class='far fa-skull-crossbones'>"));
+                                    fail.append($("<span>").addClass("axoItemName ml-2").html("Work Item not found"));
+                                    //logStatus.append(fail);
+
+                                    data.color = 'whitesmoke';
+                                    getTimes(data, timeline);
+                                    // columnMain.append($("<i class='far fa-skull-crossbones'>"));
+                                    columnMain.append(fail);
+                                });
+
+                            log.append(columnColorBar);
+                            //log.append(columnAxoWorklogType);
+                            log.append(columnMain);
+                            log.append(columnTime);
+                            log.append(columnStatus);
+
+                            log.append(log);
+                            logsContainer.append(log);
+                        });
+                        _this.timeRatio.setMyHours(totalMins);
+                        $('#mhTotal').text(minutesToString(totalMins));
+
+                        // let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
+                        // let ahBottomRange = moment.duration(totalMins, 'minutes');
+                        // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
+
+                        $('#tasks').empty();
+                        $.each(_this.myHoursTaskSummary, function (index, summary) {
+                            let summaryHours = Math.round(summary / 60 / 60 * 100) / 100;
+
+                            let taskCssClass = "is-info";
+                            if (index == 'development' && summaryHours >= 4) {
+                                taskCssClass = "is-success"
+                            } else if (index == 'development' && summaryHours < 1) {
+                                taskCssClass = "is-danger"
+                            }
+
+                            var taskControl = $('<div>').addClass('control');
+                            var taskGroup = $('<div>').addClass('tags has-addons');
+                            var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
+                            var taskTime = $('<span>').text(minutesToString(summary / 60)).addClass('tag').addClass(taskCssClass);
+
+                            taskGroup.append(taskName);
+                            taskGroup.append(taskTime);
+
+                            taskControl.append(taskGroup);
+
+                            $('#tasks').append(taskControl);
+                        });
+                    },
+                    function () {
+                        console.info('failed to get logs');
+                        showLoginPage();
+                    }
+                );
             });
+
+        })
+        .catch(error => {
+            console.log(error);
+            showAlert('could not connect to Axo.');
+        });
+        
 
     }
 
@@ -795,7 +823,7 @@ function popup() {
     }
 
 
-    function getAllHoursData() {
+    function getAllHoursData(fetchLogsId) {
         let currentUserPromise = _this.allHoursApi.getCurrentUserId();
 
         if (currentUserPromise != undefined) {
@@ -804,6 +832,11 @@ function popup() {
                     getCurrentBalance();
 
                     if (data) {
+                        if (fetchLogsId !== _this.fetchLogsId){
+                            console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
+                            return;
+                        }
+
                         if (_this.currentDate.isSame(moment(), 'day')) {
                             console.log('it is today');
 
@@ -826,7 +859,10 @@ function popup() {
                                         _this.timeRatio.setAllHours(attendance);
                                         _this.timeRatioAllHourAxo.setAllHours(attendance);
                                         $('#ahAttendance').text(minutesToString(attendance));
+                                    } else {
+                                        $('#ahAttendance').text('0:00');
                                     }
+
                                 },
                                 function (error) {
                                     console.error('error while geting attendance.');
@@ -836,6 +872,11 @@ function popup() {
 
                         _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
+                                if (fetchLogsId !== _this.fetchLogsId){
+                                    console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
+                                    return;
+                                }
+
                                 if (data && data.DailyCalculations.length > 0) {
                                     let segments = data.DailyCalculations[0].CalculationResultSegments;
                                     var timeline = $('#timeline');
@@ -868,6 +909,8 @@ function popup() {
                                 console.error('error while getting calculation.');
                             }
                         );
+                    } else {
+                        $('#ahAttendance').text('0:00');
                     }
                 })
                 .catch(error => {
@@ -1280,6 +1323,9 @@ function popup() {
         );
     }
 
+    function getSpinner() {
+        return $('<i style="font-size:0.9em; font-weight:600;" class="fas fa-spinner fa-spin"></i>');
+    }
 
 
 
