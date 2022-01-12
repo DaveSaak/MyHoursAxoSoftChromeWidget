@@ -108,13 +108,14 @@ function MyHoursApi(currentUser) {
                     data: {
                         startIndex: 0,
                         step: 200,
-                        maxDate: moment(date).format("YYYY-MM-DD")
+                        // maxDate: moment(date).format("YYYY-MM-DD")
+                        date: moment(date).format("YYYY-MM-DD")
                     },
                     success: function (data) {
                         //can contain other dates. filter them out
-                        data = data.filter(function (x) {
-                            return moment(x.date).isSame(moment(date));
-                        })
+                        // data = data.filter(function (x) {
+                        //     return moment(x.date).isSame(moment(date));
+                        // })
                         resolve(data);
                     },
                     error: function (data) {
