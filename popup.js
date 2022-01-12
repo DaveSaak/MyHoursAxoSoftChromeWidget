@@ -1864,8 +1864,8 @@ function popup() {
             let ratioValid = (timeRatio.ratio >= 0.9 && timeRatio.ratio <= 1);
             //elementInfo.text((ratio * 100).toFixed(0) + '%');
             
+            let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
             if (!ratioValid) {
-                let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
                 let diffMinutes = timeRatio.mhTotalTime - timeRatio.ahAttendance;
                 if (diffMinutes > 0){
                   cardText += ' Too much: ' + minutesToString(Math.abs(timeRatio.ahAttendance - timeRatio.ahAttendance * timeRatio.ratio));
@@ -1874,10 +1874,10 @@ function popup() {
                 {
                   cardText += ' Missing: ' + minutesToString(timeRatio.ahAttendance * 0.9 - timeRatio.ahAttendance * timeRatio.ratio);      
                 }                                  
-                cardText += 
-                parent.attr('title',  cardText);
+                //cardText += 
                 elementInfo.show();
             }            
+            parent.attr('title',  cardText);
             
             // elementInfo.toggleClass('blink', !ratioValid);
         }
