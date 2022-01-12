@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "2.9.0",
+    "version": "3.1.0",
     "author": "Dave",
     "browser_action": {
         "default_popup": "popup.html",
@@ -22,7 +22,8 @@
         {
             "matches": [
                 "http://despacito.spica.si/*",
-                "https://ontime.spica.com:442/OnTime/*"
+                "https://ontime.spica.com:442/OnTime/*",
+                "https://dev.azure.com/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
             "css": ["axo.css"]
@@ -57,6 +58,7 @@
         "https://ontime.spica.com:442/OnTime/api/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
-        "https://kit.fontawesome.com/*"
+        "https://kit.fontawesome.com/*",
+        "https://dev.azure.com/*"
     ]
 }
