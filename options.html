@@ -130,6 +130,16 @@
             <div class="settings-section">
                 <h3 class="settings-header text-primary">My Hours</h3>
                 <div class="settings-data">
+
+                    <div class="form-group">
+                        <label class="label">Default tag</label>
+                        <select class="form-control" style="width: 50%" id='mhDefaultTagId'></select>
+                    </div>     
+                    <div class="d-flex">
+                        <button id="saveMhButton" class="btn btn-primary mb-4">Save</button>
+                    </div>
+
+
                     <div class="form-group">
                         <label>Username</label>
                         <input class="form-control" id='mhUserName' />
@@ -144,9 +154,34 @@
                         <button id='loginToMyHours' class="btn btn-primary">Login</button>
                         <div class='ml-2' id='loginToMyHoursInfo'></div>
                     </div>
+
+               
                 </div>
             </div>
 
+            <div class="settings-section">
+                <h3 class="settings-header text-primary">DevOps</h3>
+                <div class="settings-data">
+                    <div class="form-group">
+                        <label>Instance (url with account name)</label>
+                        <input class="form-control" id='devOpsInstanceUrl' />
+                    </div>
+                    <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
+                    <div class="form-group">
+                        <label>Personal access token (PAT)</label>
+                        <input class="form-control" id='devOpsPersonalAccessToken' />
+                    </div>
+                    <div class="form-group">
+                        <label>Default Worklog type</label>
+                        <input class="form-control" id='devOpsDefaultWorklogType' />
+                    </div>
+
+                    <div class="d-flex">
+                        <button id="saveDevOpsButton" class="btn btn-primary">Save</button>
+                    </div>
+
+                </div>
+            </div>
             <div class="settings-section">
                 <h3 class="settings-header text-primary">Advanced</h3>
                 <div class="settings-data">

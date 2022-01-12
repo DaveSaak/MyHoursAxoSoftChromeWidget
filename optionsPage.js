@@ -17,6 +17,11 @@ $(function () {
             $('#ahUrl').val(_this.options.allHoursUrl);
             $('#ahUserName').val(_this.options.allHoursUserName);
             $('#isSecret').val(_this.options.isSecret);
+            $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
+            $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
+            $('#devOpsDefaultWorklogType').val(_this.options.devOpsDefaultWorklogType);
+
+            $('#mhDefaultTagId').val(_this.options.mhDefaultTagId);
 
             _this.currentUser = new CurrentUser();
             _this.axoSoftApi = new AxoSoftApi(_this.options);
@@ -56,7 +61,21 @@ $(function () {
 
             _this.currentUser.load(x => {
                 $('#mhUserName').val(_this.currentUser.email);
+
+                _this.myHoursApi.getTags().then(function (tags) {
+                    var $select = $("#mhDefaultTagId");
+                    $(tags).each(function (i, tag) {
+                        $select.append($("<option>", {
+                            value: tag.id,
+                            html: tag.name
+                        }));
+                    });
+                    $select.val(_this.options.mhDefaultTagId);                
+                });
             });
+
+
+
 
             console.group('all hours token');
             console.log(_this.options.allHoursAccessTokenValidTill)
@@ -126,6 +145,23 @@ $(function () {
         _this.chromeNotifications.showNotification('Save Axo settings', 'Axo settings saved', 'SaveAxoSettings');
 
     });    
+
+    $('#saveMhButton').click(function () {
+        _this.options.mhDefaultTagId = $('#mhDefaultTagId').val();
+        saveOptions();
+        _this.chromeNotifications.showNotification('Save My Hours settings', 'My Hours settings saved', 'SaveMyHoursSettings');
+
+    });     
+
+    $('#saveDevOpsButton').click(function () {
+        _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
+        _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
+        _this.options.devOpsDefaultWorklogType = $('#devOpsDefaultWorklogType').val();
+        saveOptions();
+        _this.chromeNotifications.showNotification('Save DevOps settings', 'DevOps settings saved', 'SaveDevOpsSettings');
+
+    });    
+
 
     $('#clearUserButton').click(x => {
         let currentUser = new CurrentUser();

@@ -19,6 +19,7 @@ function popup() {
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser);
     _this.axoSoftApi = new AxoSoftApi(_this.options);
+    _this.devOpsApi = new DevOpsApi(_this.options);
 
     _this.timeRatio = new TimeRatio(showRatio);
     _this.timeRatioAllHourAxo = new TimeRatio(showRatioAllHoursAxo);
@@ -161,6 +162,10 @@ function popup() {
 
         $('#refreshRecentAxoItems').click(function () {
             getRecentAxoItems();
+        });
+
+        $('#refreshDevOpsItems').click(function () {
+            getMyDevOpsItems();
         });
 
         $('#pills-axo-tab').click(function () {
@@ -503,7 +508,7 @@ function popup() {
                                         status.append(remainingHoursInfo);
                                     }
 
-                                    
+
                                     // if (data.axoId) {
                                     //     var buttonCopyToAxo = $('<a title="copy to AXO woklog">')
                                     //         .addClass('btn btn-light')
@@ -684,7 +689,7 @@ function popup() {
 
 
         let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1");
-        startTrackingTimeShortcut.append($('<i class="far fa-play">').attr("title","Start tracking time"))
+        startTrackingTimeShortcut.append($('<i class="far fa-play">').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -702,7 +707,7 @@ function popup() {
 
         let buttons = $("<div>").addClass("d-flex ml-auto");
         buttons.append(startTrackingTimeShortcut);
-        buttons.append(buttonGroup);            
+        buttons.append(buttonGroup);
 
         return buttons;
     }
@@ -710,7 +715,7 @@ function popup() {
     function getRecentAxoItemsActionsDropDown(data) {
 
         return $('<button class="btn btn-transparent">')
-            .append($('<i class="far fa-play"></i>').attr("title","Start tracking time"))
+            .append($('<i class="far fa-play"></i>').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 let note = data.itemId + "/" + data.workLogTypeName;
@@ -961,6 +966,95 @@ function popup() {
             $('#currentBalanceMinutes').text('error logging in');
         }
     }
+    
+    function getDevOpsItemsActionsDropDown(item) {
+
+        return $('<button class="btn btn-transparent">')
+            .append($('<i class="far fa-play"></i>').attr("title", "Start tracking time"))
+            .click(function (event) {
+                event.preventDefault();
+                let note = item.id;
+                _this.myHoursApi.startLog(note, _this.options.mhDefaultTagId).then(
+                    function () {
+                        console.info('worklog started');
+
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: './images/ts-badge.png',
+                            title: 'MyHours',
+                            message: 'Log started.'
+                        };
+                        chrome.notifications.create('notifyDevOpsItemStarted', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });
+                        $('#pills-home-tab').tab('show');
+                    }
+                )
+                    .catch(
+                        function () {
+                            console.info('worklog add failed');
+                        }
+                    )
+            })
+    }
+
+    function getMyDevOpsItems() {
+
+        _this.devOpsApi.getMyItemsIds().then(
+            function (queryResult) {
+                console.log(queryResult);
+
+                let myItemsContainer = $('#myDevOpsItems');
+                myItemsContainer.empty();
+
+                let ids = queryResult.workItems.map(x => x.id).join();
+                _this.devOpsApi.getItems(ids).then(
+                    function (items) {
+                        console.log(items);
+
+                        $.each(items.value, function (index, item) {
+                            var log = $('<div>')
+                                .attr("data-logId", item.id)
+                                // .attr("data-workLogTypeId", recentAxoItem.workLogTypeId)
+                                .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
+                            myItemsContainer.append(log);
+                    
+                            //color bar
+                            var columnColorBar = $('<div>')
+                                .addClass('columnColorBar rounded mr-2')
+                                .css("background-color", _this.axoItemColors[numberToIndex(item.id, 8)]);
+                            log.append(columnColorBar);
+                    
+
+                            //item name and worklog type
+                            var columnMain = $('<div>')
+                                .addClass('mainColumn columnMain d-flex flex-row')
+                            log.append(columnMain);
+                    
+                            var columnItemTypeIcon = $('<div>');
+                            if (item.fields['System.WorkItemType'] == 'Task'){
+                                columnItemTypeIcon.append('<i class="fas fa-clipboard-check"></i>').css('color', '#a4880a')
+                            } else if (item.fields['System.WorkItemType'] == 'Bug'){
+                                columnItemTypeIcon.append('<i class="fas fa-bug"></i>').css('color', '#cc293d')
+                            }
+                            columnMain.append(columnItemTypeIcon);
+
+                            var axoItemName = $('<div>')
+                                .addClass('axoItemName text-truncate ml-2')
+                                .text(item.id + " -- " + item.fields['System.Title']);
+                            columnMain.append(axoItemName);
+
+
+                            //actions
+                            var actions = $('<div>')
+                                .addClass('ml-auto');
+                            actions.append(getDevOpsItemsActionsDropDown(item));
+                            log.append(actions);                            
+
+                        });
+                    }
+                );
+            }
+        );
+    };
 
     function getRecentAxoItems() {
         _this.axoSoftApi.getWorkLogsWithinLastTenDays().then(
@@ -1433,68 +1527,68 @@ function popup() {
                     }
                 });
 
-/*
-                var runningCtx = document.getElementById('runningBalanceChart').getContext('2d');
-                var runningChart = new Chart(runningCtx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: runningDifferences,
-                            backgroundColor: "rgba(150, 150, 150, 0.2)",
-                            borderColor: "rgba(150, 150, 150, 1)",
-                            pointBackgroundColor: "rgba(150, 150, 150, 1)",
-                            pointBorderColor: "#fff",
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: "#fff",
-                            pointHoverBorderColor: "rgba(150, 150, 150, 1)",
-                        },
-                        ]
-                    },
-                    options: {
-                        legend: {
-                            display: false
-                        },
-                        scales: {
-                            xAxes: [{
-                                gridLines: {
-                                    drawBorder: false,
-                                    display: false
-                                },
-                                ticks: {
-                                    // maxTicksLimit: 7,
-                                    display: false, //this removed the labels on the x-axis
-                                },
-                            }],
-                            yAxes: [{
-                                gridLines: {
-                                    drawBorder: false,
-                                    // display: false,
-                                },
-                                ticks: {
-                                    beginAtZero: true,
-                                    // maxTicksLimit: 7,
-                                    //display: false, //this removed the labels on the x-axis
-                                    stepSize: 60
-                                },
-                            }]
-                        },
-                        tooltips: {
-                            displayColors: false,
-                            callbacks: {
-                                title: function (tooltipItem, data) {
-                                    return tooltipItem[0].xLabel.format('dddd, d.MMMM');
-                                    //return value.format('dddd');
-                                },
-                                label: function (tooltipItem, data) {
-                                    let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                                    return minutesToString(value, true);
-                                }
-                            }
-                        }
-                    }
-                });
-*/
+                /*
+                                var runningCtx = document.getElementById('runningBalanceChart').getContext('2d');
+                                var runningChart = new Chart(runningCtx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            data: runningDifferences,
+                                            backgroundColor: "rgba(150, 150, 150, 0.2)",
+                                            borderColor: "rgba(150, 150, 150, 1)",
+                                            pointBackgroundColor: "rgba(150, 150, 150, 1)",
+                                            pointBorderColor: "#fff",
+                                            pointHoverRadius: 5,
+                                            pointHoverBackgroundColor: "#fff",
+                                            pointHoverBorderColor: "rgba(150, 150, 150, 1)",
+                                        },
+                                        ]
+                                    },
+                                    options: {
+                                        legend: {
+                                            display: false
+                                        },
+                                        scales: {
+                                            xAxes: [{
+                                                gridLines: {
+                                                    drawBorder: false,
+                                                    display: false
+                                                },
+                                                ticks: {
+                                                    // maxTicksLimit: 7,
+                                                    display: false, //this removed the labels on the x-axis
+                                                },
+                                            }],
+                                            yAxes: [{
+                                                gridLines: {
+                                                    drawBorder: false,
+                                                    // display: false,
+                                                },
+                                                ticks: {
+                                                    beginAtZero: true,
+                                                    // maxTicksLimit: 7,
+                                                    //display: false, //this removed the labels on the x-axis
+                                                    stepSize: 60
+                                                },
+                                            }]
+                                        },
+                                        tooltips: {
+                                            displayColors: false,
+                                            callbacks: {
+                                                title: function (tooltipItem, data) {
+                                                    return tooltipItem[0].xLabel.format('dddd, d.MMMM');
+                                                    //return value.format('dddd');
+                                                },
+                                                label: function (tooltipItem, data) {
+                                                    let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                                    return minutesToString(value, true);
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                */
 
                 /*
                 var runningDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.RunningBalanceValue);

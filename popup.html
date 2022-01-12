@@ -22,6 +22,8 @@
 
     <script src="axoSoftApi.js"></script>
 
+    <script src="devOpsApi.js"></script>
+
     <script src="worklog.js"></script>
 
     <script src="popup.js"></script>
@@ -82,6 +84,11 @@
                 aria-controls="pills-worklogtypes" aria-selected="false">Work types</a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" id="pills-devops-assignments-tab" data-toggle="pill" href="#pills-devops-assignments" role="tab"
+                aria-controls="pills-devops-assignments" aria-selected="false">DevOps</a>
+        </li>        
+
         <li class="nav-item ml-auto">
             <a id='optionsButton' class="nav-link" id="pills-settings-tab" data-toggle="pill" href="#pills-settings" role="tab"
                 aria-controls="pills-settings" aria-selected="false">
@@ -89,6 +96,7 @@
                     Settings
                 </a>
         </li>
+        
     </ul>
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
@@ -399,6 +407,47 @@
             </div>
 
         </div>        
+
+        <div class="tab-pane fade" id="pills-devops-assignments" role="tabpanel" aria-labelledby="pills-devops-assignments-tab">
+            <div id="devOpsAssignmentsContainer" class="mx-3 mb-3" style="displayX: none;">
+
+                <div class="headerBar">
+                    <!-- <div class="statistics-sm">
+                        <div class="recentItemsTotal">-</div>
+                        <div>work hrs</div>
+                    </div>  
+
+                    <div class="statistics-sm">
+                        <div id="recentItemsCount">-</div>
+                        <div>engagements</div>
+                    </div>   
+                    
+                    <div class="statistics-sm">
+                        <div id="recentItemsWorkLogsCount">-</div>
+                        <div>context switches</div>
+                    </div>    
+  
+                    <div class="statistics-sm ml-auto">
+                        <div>10</div>
+                        <div>days period</div>
+                    </div>  -->
+
+                    <div class="ml-autoX">
+                        <button id='refreshDevOpsItems' class="btn btn-light" type="button" title='back'>
+                            <i class="far fa-sync"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div id="myDevOpsItems" class="customScroller mt-3" style="overflow: auto; max-height: 400px;">
+
+                </div> 
+            </div>
+
+        </div>        
+
+
     </div>
 
 

@@ -218,7 +218,7 @@ function MyHoursApi(currentUser) {
         )
     }
 
-    _this.startLog = function (comment) {
+    _this.startLog = function (comment, tagId) {
         return new Promise(
             function (resolve, reject) {
                 console.info("api: staring log");
@@ -231,7 +231,10 @@ function MyHoursApi(currentUser) {
                     end: null
                 };
 
-                
+                if (tagId) {
+                    newLogData.tagIds = [];
+                    newLogData.tagIds.push(tagId);
+                }
 
                 console.info(newLogData);
 
@@ -464,5 +467,30 @@ function MyHoursApi(currentUser) {
             }
         )
     }
+
+    _this.getTags = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: get tags");
+
+                $.ajax({
+                    url: baseUrl + "tags",
+                    type: "GET",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    // data: JSON.stringify(runningData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }    
 
 };

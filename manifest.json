@@ -26,7 +26,13 @@
             ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
             "css": ["axo.css"]
-        }
+        },
+        {
+            "matches": [
+                "https://dev.azure.com/Spica-International/*"
+            ],
+            "js": ["jquery-3.3.1.min.js","content-script-devops.js"]
+        }        
     ],
     "icons": {
         "16": "./images/TS-badge16.png",
@@ -56,6 +62,7 @@
         "https://ontime.spica.com:442/OnTime/api/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
-        "https://kit.fontawesome.com/*"
+        "https://kit.fontawesome.com/*",
+        "https://dev.azure.com/*"        
     ]
 }
