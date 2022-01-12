@@ -684,6 +684,17 @@ function popup() {
                 }));
         }
 
+        if (true) {
+            dropdownMenu.append('<div class="dropdown-divider">');
+            dropdownMenu.append($('<a class="dropdown-item" href="#">')
+                .append('<i class="far fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
+                .click(function (event) {
+                    event.preventDefault();
+                    copyCommitMessage(data);
+                }));
+        }
+
+
         buttonGroup.append(dropdownMenu);
 
 
@@ -744,6 +755,7 @@ function popup() {
     function getTimes(data, timeline) {
         _this.myHoursApi.getTimes(data.id).then(
             function (times) {
+                data.times = times;
                 $.each(times, function (index, time) {
                     var left = timeToPixel(time.startTime, _this.timeLineWidth);
                     var right = timeToPixel(time.endTime, _this.timeLineWidth);
@@ -1735,6 +1747,42 @@ function popup() {
                 }
             )
 
+    }
+
+    function copyCommitMessage(myHoursLog){
+        myHoursLog?.times.forEach(element => {
+            _this.devOpsApi.getMyCommits(moment(element.startTime), moment(element.endTime)).then(
+                function (data) {
+                    // let commitMessages = "";
+                    // data.value?.forEach(commit => {
+                    //     console.log(commit.message);
+                    //     commitMessages = commitMessages + 
+                    // });
+                    let comment = data.value?.map(x => x.comment).join(', ');
+
+                    console.log(comment)
+                    if (comment) {
+                        _this.myHoursApi.updateLogDescription(myHoursLog, comment).then(x => {
+                        
+                            var notificationOptions = {
+                                type: 'basic',
+                                iconUrl: './images/ts-badge.png',
+                                title: 'MyHours',
+                                message: 'Log comment updated.'
+                            };
+                            chrome.notifications.create('notifyMyHoursNoteUpdated', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                        
+                        });
+                    } else {
+                        var notificationOptions = {
+                            type: 'basic',
+                            iconUrl: './images/ts-badge.png',
+                            title: 'MyHours',
+                            message: 'No commit messages with comments found within the time frame of the log.'
+                        };
+                        chrome.notifications.create('notifyNoCommitMessagesFound', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                           
+                    }
+                });
+        });
     }
 
     function getAxoItem(myHoursLog) {

@@ -141,6 +141,27 @@ function DevOpsApi(options) {
     }
 
 
+    _this.getMyCommits = function(from, to){
+        return new Promise(function (resolve, reject) {
+            console.info('getting my commits within time frame from devops');
+            $.ajax({
+                url: _this.options.devOpsInstanceUrl + `/_apis/git/repositories/414ad502-0e31-4ffa-8fd6-9a0260246b19/commits?api-version=6.0&searchCriteria.author=Dave&searchCriteria.fromDate=${from.toISOString()}&searchCriteria.toDate=${to.toISOString()}`,
+                headers: {
+                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+                },
+                type: "GET",
+
+                success: function (response) {
+                    // console.info(response);
+                    resolve(response);
+                },
+                error: function () {
+                    reject();
+                }
+            });
+        })
+    }    
+
 
     
     
