@@ -182,7 +182,7 @@ function refreshBadge(){
 
                                                 chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` }); 
                                                 if (ratio < 0.9 || ratio > 1 ) {
-                                                    chrome.browserAction.setBadgeBackgroundColor({ color: '#e3255a' });
+                                                    chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
                                                     //chrome.browserAction.setBadgeText({ text: `$` }); 
                                                 }
                                                 else {
