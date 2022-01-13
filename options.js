@@ -16,10 +16,8 @@ function Options() {
     _this.allHoursUrl = '';
     _this.allHoursUserName = '';
     _this.isSecret = '';
-    _this.devOpsInstanceUrl = '';
-    _this.devOpsPersonalAccessToken = '';
-    _this.devOpsDefaultWorklogType = '';
-    _this.mhDefaultTagId = '';
+    _this.myHoursDefaultTagId = '';
+    _this.myHoursRootClientId = '';
 
 
     _this.save = function () {
@@ -83,6 +81,8 @@ function Options() {
                             _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
 
                             _this.mhDefaultTagId = items.options.mhDefaultTagId;
+                            _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
+                            _this.myHoursRootClientId = items.options.myHoursRootClientId;
                         }
 
                         resolve();

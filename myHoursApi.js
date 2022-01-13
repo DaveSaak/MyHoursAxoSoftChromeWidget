@@ -108,13 +108,14 @@ function MyHoursApi(currentUser) {
                     data: {
                         startIndex: 0,
                         step: 200,
-                        maxDate: moment(date).format("YYYY-MM-DD")
+                        // maxDate: moment(date).format("YYYY-MM-DD")
+                        date: moment(date).format("YYYY-MM-DD")
                     },
                     success: function (data) {
                         //can contain other dates. filter them out
-                        data = data.filter(function (x) {
-                            return moment(x.date).isSame(moment(date));
-                        })
+                        // data = data.filter(function (x) {
+                        //     return moment(x.date).isSame(moment(date));
+                        // })
                         resolve(data);
                     },
                     error: function (data) {
@@ -218,7 +219,7 @@ function MyHoursApi(currentUser) {
         )
     }
 
-    _this.startLog = function (comment, tagId) {
+    _this.startLog = function (comment, projectId = undefined, taskId = undefined, tagId = undefined) {
         return new Promise(
             function (resolve, reject) {
                 console.info("api: staring log");
@@ -233,10 +234,21 @@ function MyHoursApi(currentUser) {
 
                 if (tagId) {
                     newLogData.tagIds = [];
+                }
+                
+                if (projectId && taskId) {
+                    newLogData.projectId = projectId;
+                    newLogData.taskId = taskId;
+                }
+
+                if (tagId){
+                    newLogData.tagIds = [];
+                    // newLogData.tagIds.push({id: parseInt(tagId)});
                     newLogData.tagIds.push(tagId);
                 }
 
                 console.info(newLogData);
+                console.info(JSON.stringify(newLogData));
 
                 $.ajax({
                     url: baseUrl + "logs/startNewLog",
@@ -508,26 +520,112 @@ function MyHoursApi(currentUser) {
     _this.getTags = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: get tags");
+                console.info("api: getting tags");
 
                 $.ajax({
                     url: baseUrl + "tags",
-                    type: "GET",
-                    contentType: "application/json",
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
-                    // data: JSON.stringify(runningData),
+                    type: "GET",
                     success: function (data) {
-                        return resolve(data);
+                        resolve(data);
                     },
                     error: function (data) {
                         console.error(data);
-                        return reject(data);
+                        reject(data);
                     }
                 });
             }
         )
     }    
 
+    _this.getTasks = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: getting tasks");
+                $.ajax({
+                    url: baseUrl + "tasks",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        reject(data);
+                    }
+                });
+            }
+        )
+    }  
+    
+    _this.getProjects = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: getting projects");
+                $.ajax({
+                    url: baseUrl + "projects",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        reject(data);
+                    }
+                });
+            }
+        )
+    }    
+    
+    _this.getProjectTaskList = function (projectId) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: getting project tasklist");
+                $.ajax({
+                    url: baseUrl + "projects/" + projectId + "/tasklist",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        data.projectId = projectId;
+                        resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        reject(data);
+                    }
+                });
+            }
+        )
+    }      
+    
+    _this.getClients = function () {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: getting clients");
+                $.ajax({
+                    url: baseUrl + "clients",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        reject(data);
+                    }
+                });
+            }
+        )
+    }       
 };

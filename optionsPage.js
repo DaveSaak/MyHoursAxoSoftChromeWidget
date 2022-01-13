@@ -45,6 +45,7 @@ $(function () {
                 $select.val(_this.options.axoSoftUserId);
             });
 
+            // AXO Worklogs
             _this.axoSoftApi.getWorkLogTypes().then(function (workLogTypes) {
                 workLogTypes = _.sortBy(workLogTypes, function (o) {
                     return o.name;
@@ -59,6 +60,7 @@ $(function () {
                 $select.val(_this.options.axoSoftDefaultWorklogTypeId);
             });
 
+            // MH 
             _this.currentUser.load(x => {
                 $('#mhUserName').val(_this.currentUser.email);
 
@@ -72,6 +74,38 @@ $(function () {
                     });
                     $select.val(_this.options.mhDefaultTagId);                
                 });
+                _this.myHoursApi.getClients().then(function (clients) {
+                    clients = _.sortBy(clients, function (o) {
+                        return o.name;
+                    });
+                    var $select = $("#mhRootClientId");
+                    $(clients).each(function (i, client) {
+                        if (!client.archived) {
+                            $select.append($("<option>", {
+                                value: client.id,
+                                html: client.name
+                            }));
+                        }
+                    });
+                    $select.val(_this.options.myHoursRootClientId);
+                });   
+
+                _this.myHoursApi.getTags().then(function (tags) {
+                    tags = _.sortBy(tags, function (o) {
+                        return o.name;
+                    });
+                    var $select = $("#mhDefaultTagId");
+                    $(tags).each(function (i, tag) {
+                        if (!tag.archived) {
+                            $select.append($("<option>", {
+                                value: tag.id,
+                                html: tag.name
+                            }));
+                        }
+                    });
+                    $select.val(_this.options.myHoursDefaultTagId);
+                });                   
+
             });
 
 
@@ -143,8 +177,14 @@ $(function () {
         _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
         saveOptions();
         _this.chromeNotifications.showNotification('Save Axo settings', 'Axo settings saved', 'SaveAxoSettings');
-
-    });    
+    });   
+    
+    $('#saveMhButton').click(function () {
+        _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
+        _this.options.myHoursRootClientId = $('#mhRootClientId').val();
+        saveOptions();
+        _this.chromeNotifications.showNotification('Save MH settings', 'MyHours settings saved', 'SaveMyHoursSettings');
+    });      
 
     $('#saveMhButton').click(function () {
         _this.options.mhDefaultTagId = $('#mhDefaultTagId').val();
