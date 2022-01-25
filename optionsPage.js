@@ -27,7 +27,16 @@ $(function () {
             _this.axoSoftApi = new AxoSoftApi(_this.options);
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser);
+            _this.devOpsApi = new DevOpsApi(_this.options);
             _this.chromeNotifications = new ChromeNotifications();
+
+            _this.devOpsApi.getMyRepositories().then(repos => {
+                repos.value.forEach(repo => {
+                    $('#devops-repos')
+                        .append(`<input type="checkbox" id="devops-repo-${repo.id}" name="devops-repo-${repo.id}" value="${repo.id}">`)
+                        .append(`<span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span><br>`);
+                })
+            });
 
             _this.axoSoftApi.getUsers().then(function (users) {
                 users = _.sortBy(users, function (u) {

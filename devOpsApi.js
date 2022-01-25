@@ -163,6 +163,28 @@ function DevOpsApi(options) {
     }    
 
 
+    _this.getMyRepositories = function(){
+        return new Promise(function (resolve, reject) {
+            console.info('getting my repositories from devops');
+            $.ajax({
+                url: _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`,
+                headers: {
+                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+                },
+                type: "GET",
+
+                success: function (response) {
+                    // console.info(response);
+                    resolve(response);
+                },
+                error: function () {
+                    reject();
+                }
+            });
+        })
+    }     
+
+
     
     
 }

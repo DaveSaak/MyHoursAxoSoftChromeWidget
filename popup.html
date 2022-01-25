@@ -29,7 +29,13 @@
     <script src="popup.js"></script>
     <script src="timeRatio.js"></script>
 
+    <script src="toastr.min.js"></script>
+    <link href="toastr.min.css" rel="stylesheet"></link> 
 
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha512-6S2HWzVFxruDlZxI3sXOZZ4/eJ8AcxkQH1+JjSe/ONCEqR9L4Ysq5JdT5ipqtzU7WHalNwzwBv+iE51gNHJNqQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+
+    
     <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
 
@@ -66,30 +72,30 @@
         <!-- <li class="mr-auto">
             <img src="images/mono.svg" alt="">
         </li> -->
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab"
                 aria-controls="pills-home" aria-selected="true">Time logs</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link" id="pills-balance-tab" data-toggle="pill" href="#pills-balance" role="tab"
                 aria-controls="pills-balance" aria-selected="false">Balance</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link" id="pills-axo-tab" data-toggle="pill" href="#pills-axo" role="tab"
                 aria-controls="pills-axo" aria-selected="false">Recent items</a>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link" id="pills-worklogtypes-tab" data-toggle="pill" href="#pills-worklogtypes" role="tab"
                 aria-controls="pills-worklogtypes" aria-selected="false">Work types</a>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link" id="pills-devops-assignments-tab" data-toggle="pill" href="#pills-devops-assignments" role="tab"
                 aria-controls="pills-devops-assignments" aria-selected="false">DevOps</a>
         </li>        
 
-        <li class="nav-item ml-auto">
+        <li class="nav-item d-flex align-items-center ml-auto">
             <a id='optionsButton' class="nav-link" id="pills-settings-tab" data-toggle="pill" href="#pills-settings" role="tab"
                 aria-controls="pills-settings" aria-selected="false">
                     <!-- <i class="far fa-cog"></i> -->
@@ -175,7 +181,7 @@
                 </div>
 
                 <div id="alertContainer" class="" style="display: none">
-                    <div class="alert alert-primary" role="alert">
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
                         <span id='alertText'></span>
                     </div>
                 </div>
@@ -296,13 +302,13 @@
                 <!-- <h5>Daily Diffs</h5> -->
                 <div class="m-3">
                     <h6>Day diffs</h6>
-                    <canvas id="dayBalanceChart" width="380" height="120"></canvas>
+                    <canvas id="dayBalanceChart" width="380" height="80"></canvas>
                 </div>
                 
-                <!-- <div class="m-3 mt-4">
+                <div class="m-3 mt-4">
                     <h6>Running balance</h6>
                     <canvas id="runningBalanceChart" width="380" height="80"></canvas>
-                </div>                    -->
+                </div>                   
             </div>
 
         </div>

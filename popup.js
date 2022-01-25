@@ -9,6 +9,11 @@ function popup() {
     console.info('init');
     var _this = this;
 
+    toastr.options = {
+        "closeButton": true,
+        "timeOut": "4000",
+      }    
+
     _this.myHoursLogs = undefined;
     _this.worklogTypes = undefined;
     _this.timeUnits = undefined;
@@ -1558,7 +1563,7 @@ function popup() {
             function (data) {
                 //var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.PaidPresenceValue);
                 var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.DailyBalanceValue);
-                dayDifferences.push(currentAttendance);
+                //dayDifferences.push(currentAttendance);
 
                 let periodDiff = dayDifferences.reduce((a, b) => a + b, 0);
                 $("#currentBalancePeriodDiff").text(minutesToString(periodDiff));
@@ -1646,7 +1651,7 @@ function popup() {
                     }
                 });
 
-                /*
+                
                                 var runningCtx = document.getElementById('runningBalanceChart').getContext('2d');
                                 var runningChart = new Chart(runningCtx, {
                                     type: 'line',
@@ -1654,13 +1659,13 @@ function popup() {
                                         labels: labels,
                                         datasets: [{
                                             data: runningDifferences,
-                                            backgroundColor: "rgba(150, 150, 150, 0.2)",
-                                            borderColor: "rgba(150, 150, 150, 1)",
-                                            pointBackgroundColor: "rgba(150, 150, 150, 1)",
+                                            backgroundColor: "#76679233",
+                                            borderColor: "#766792",
+                                            pointBackgroundColor: "#766792",
                                             pointBorderColor: "#fff",
                                             pointHoverRadius: 5,
                                             pointHoverBackgroundColor: "#fff",
-                                            pointHoverBorderColor: "rgba(150, 150, 150, 1)",
+                                            pointHoverBorderColor: "#766792",
                                         },
                                         ]
                                     },
@@ -1685,10 +1690,13 @@ function popup() {
                                                     // display: false,
                                                 },
                                                 ticks: {
-                                                    beginAtZero: true,
-                                                    // maxTicksLimit: 7,
+                                                    // beginAtZero: true,
+                                                    maxTicksLimit: 4,
                                                     //display: false, //this removed the labels on the x-axis
-                                                    stepSize: 60
+                                                    stepSize: 60,
+                                                    callback: function (value, index, values) {
+                                                        return minutesToString(value);
+                                                    }                                                    
                                                 },
                                             }]
                                         },
@@ -1707,7 +1715,7 @@ function popup() {
                                         }
                                     }
                                 });
-                */
+                
 
                 /*
                 var runningDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.RunningBalanceValue);
@@ -1874,23 +1882,27 @@ function popup() {
                     console.log(comment)
                     if (comment) {
                         _this.myHoursApi.updateLogDescription(myHoursLog, comment).then(x => {
+                            toastr.success('Log comment updated.');
+                            //showAlert('Log comment updated.');
                         
-                            var notificationOptions = {
-                                type: 'basic',
-                                iconUrl: './images/ts-badge.png',
-                                title: 'MyHours',
-                                message: 'Log comment updated.'
-                            };
-                            chrome.notifications.create('notifyMyHoursNoteUpdated', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                        
+                            // var notificationOptions = {
+                            //     type: 'basic',
+                            //     iconUrl: './images/ts-badge.png',
+                            //     title: 'MyHours',
+                            //     message: 'Log comment updated.'
+                            // };
+                            // chrome.notifications.create('notifyMyHoursNoteUpdated', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                        
                         });
                     } else {
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'No commit messages with comments found within the time frame of the log.'
-                        };
-                        chrome.notifications.create('notifyNoCommitMessagesFound', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                           
+                        toastr.warning('No commit messages with comments found within the time frame of the log.');
+                        // showAlert('No commit messages with comments found within the time frame of the log.');
+                        // var notificationOptions = {
+                        //     type: 'basic',
+                        //     iconUrl: './images/ts-badge.png',
+                        //     title: 'MyHours',
+                        //     message: 'No commit messages with comments found within the time frame of the log.'
+                        // };
+                        // chrome.notifications.create('notifyNoCommitMessagesFound', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                           
                     }
                 });
         });

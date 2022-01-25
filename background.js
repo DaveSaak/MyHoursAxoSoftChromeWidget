@@ -280,6 +280,7 @@ function startTrackingTimeAxo(info, tab) {
                                             };
                                             //chrome.notifications.create('', 'Log started');
                                             chrome.notifications.create('', notificationOptions, function () { });
+                                            refreshMyHoursPage();
                                         },
                                         function (error) {
                                             console.log(error);
@@ -378,8 +379,8 @@ function startTrackingTimeDevOps(info, tab) {
                                                     title: 'My Hours',
                                                     message: 'Log started. DevOps item #' + info.selectionText + tagName
                                                 };
-                                                //chrome.notifications.create('', 'Log started');
                                                 chrome.notifications.create('', notificationOptions, function () { });
+                                                refreshMyHoursPage();
                                             },
                                             function (error) {
                                                 console.log(error);
@@ -458,6 +459,7 @@ function startTrackingTime(info, tab) {
                         };
                         //chrome.notifications.create('', 'Log started');
                         chrome.notifications.create('', notificationOptions, function () { });
+                        refreshMyHoursPage();
                     },
                     function (error) {
                         console.log(error);
@@ -507,9 +509,8 @@ function stopTimer(info, tab) {
                                     else {
                                         notificationOptions.message = "There are no running logs."
                                     }
-
-                                    //chrome.notifications.create('', 'Log started');
                                     chrome.notifications.create('', notificationOptions, function () { });
+                                    refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
@@ -607,6 +608,7 @@ function updateRunningLogDescription(info, tab) {
 
                                     //chrome.notifications.create('', 'Log started');
                                     chrome.notifications.create('', notificationOptions, function () { });
+                                    refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
@@ -640,6 +642,19 @@ function getBranchName(info, tab) {
         console.error('Async: Could not copy text: ', err);
     });
 
+
+}
+
+function refreshMyHoursPage(){
+
+    chrome.tabs.query({url: 'https://app.myhours.com/*'}, function(foundTabs) {
+        foundTabs.forEach(myHoursTab => {
+            console.info('refreshing myhours tabs');
+            chrome.tabs.reload(
+                myHoursTab.id
+              );
+        });
+    });
 
 }
 
