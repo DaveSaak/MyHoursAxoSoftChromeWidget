@@ -1589,11 +1589,13 @@ function popup() {
                             // borderColor: "rgba(102, 153, 204, 0.2)",
                             backgroundColor: "rgba(102, 153, 204, 0.2)",
                             borderColor: "rgba(102, 153, 204, 1)",
+                            // backgroundColor: "rgba(102, 153, 204, 1)",
                             pointBackgroundColor: "rgba(102, 153, 204, 1)",
                             pointBorderColor: "#fff",
                             pointHoverRadius: 5,
                             pointHoverBackgroundColor: "#fff",
                             pointHoverBorderColor: "rgba(102, 153, 204, 1)",
+                            tension: 0.5,
                             // barThickness: 10,
                         },
                             // {
@@ -1607,6 +1609,7 @@ function popup() {
                         },
                         scales: {
                             xAxes: [{
+                                barThickness: 16, 
                                 position: 'middle',
                                 gridLines: {
                                     drawBorder: false,
@@ -1690,7 +1693,7 @@ function popup() {
                                                     // display: false,
                                                 },
                                                 ticks: {
-                                                    // beginAtZero: true,
+                                                    beginAtZero: true,
                                                     maxTicksLimit: 4,
                                                     //display: false, //this removed the labels on the x-axis
                                                     stepSize: 60,
