@@ -18,6 +18,11 @@ function Options() {
     _this.isSecret = '';
     _this.myHoursDefaultTagId = '';
     _this.myHoursRootClientId = '';
+    _this.myHoursCommonDescriptions = '';
+    _this.notificationsBadRatio = true;
+    _this.devOpsAuthorName = '';
+
+
 
 
     _this.save = function () {
@@ -79,10 +84,14 @@ function Options() {
                             _this.devOpsInstanceUrl = items.options.devOpsInstanceUrl;
                             _this.devOpsPersonalAccessToken = items.options.devOpsPersonalAccessToken;
                             _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
+                            _this.devOpsAuthorName = items.options.devOpsAuthorName;
 
                             _this.mhDefaultTagId = items.options.mhDefaultTagId;
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
                             _this.myHoursRootClientId = items.options.myHoursRootClientId;
+                            _this.myHoursCommonDescriptions = items.options.myHoursCommonDescriptions;
+
+                            _this.notificationsBadRatio = items.options.notificationsBadRatio;
                         }
 
                         resolve();

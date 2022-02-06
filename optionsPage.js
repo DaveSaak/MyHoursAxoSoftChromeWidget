@@ -1,6 +1,12 @@
 $(function () {
     'use strict';
     console.info('init options page');
+
+    toastr.options = {
+        "closeButton": true,
+        "timeOut": "4000",
+      } 
+
     var _this = this;
     _this.options = new Options();
 
@@ -20,8 +26,11 @@ $(function () {
             $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
             $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
             $('#devOpsDefaultWorklogType').val(_this.options.devOpsDefaultWorklogType);
-
+            $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
+            
             $('#mhDefaultTagId').val(_this.options.mhDefaultTagId);
+            $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
+            $('#notificationsBadRatio').prop( "checked", _this.options.notificationsBadRatio);
 
             _this.currentUser = new CurrentUser();
             _this.axoSoftApi = new AxoSoftApi(_this.options);
@@ -33,8 +42,8 @@ $(function () {
             _this.devOpsApi.getMyRepositories().then(repos => {
                 repos.value.forEach(repo => {
                     $('#devops-repos')
-                        .append(`<input type="checkbox" id="devops-repo-${repo.id}" name="devops-repo-${repo.id}" value="${repo.id}">`)
-                        .append(`<span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span><br>`);
+                        //.append(`<input type="checkbox" id="devops-repo-${repo.id}" name="devops-repo-${repo.id}" value="${repo.id}">`)
+                        .append(`<li><span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span></li>`);
                 })
             });
 
@@ -185,20 +194,21 @@ $(function () {
         _this.options.axoSoftUserId = $('#axoSoftUserId').val();
         _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
         saveOptions();
-        _this.chromeNotifications.showNotification('Save Axo settings', 'Axo settings saved', 'SaveAxoSettings');
+        toastr.success('Axo settings saved');
     });   
     
     $('#saveMhButton').click(function () {
         _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
         _this.options.myHoursRootClientId = $('#mhRootClientId').val();
         saveOptions();
-        _this.chromeNotifications.showNotification('Save MH settings', 'MyHours settings saved', 'SaveMyHoursSettings');
+        toastr.success('MyHours settings saved');
     });      
 
     $('#saveMhButton').click(function () {
         _this.options.mhDefaultTagId = $('#mhDefaultTagId').val();
+        _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         saveOptions();
-        _this.chromeNotifications.showNotification('Save My Hours settings', 'My Hours settings saved', 'SaveMyHoursSettings');
+        toastr.success('My Hours settings saved');
 
     });     
 
@@ -206,16 +216,22 @@ $(function () {
         _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
         _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
         _this.options.devOpsDefaultWorklogType = $('#devOpsDefaultWorklogType').val();
+        _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
         saveOptions();
-        _this.chromeNotifications.showNotification('Save DevOps settings', 'DevOps settings saved', 'SaveDevOpsSettings');
+        toastr.success('DevOps settings saved');
 
     });    
 
+    $('#saveNotificationsButton').click(function () {
+        _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
+        saveOptions();
+        toastr.success('Notifications settings saved');
+    });      
 
     $('#clearUserButton').click(x => {
         let currentUser = new CurrentUser();
         currentUser.clear();
-        _this.chromeNotifications.showNotification('Clear user data', 'User data was cleared. You will need to login.', 'ClearUserData');
+        toastr.success('User data was cleared. You will need to login.');
     });
 
     $('#loginToAllHours').click(function () {
@@ -239,10 +255,10 @@ $(function () {
                 _this.myHoursApi.getUser().then(function (user) {
                     _this.currentUser.setUserData(user.id, user.name);
                     _this.currentUser.save();
-                    _this.chromeNotifications.showNotification('My Hours Login', 'You are now logged into your My Hours account.', 'MyHoursLoginSuccess');
+                    toastr.success('You are now logged into your My Hours account.');
                 }, function (err) {
                     console.info('error while geeting the user data');
-                    _this.chromeNotifications.showNotification('My Hours Login', 'Error while getting the user data.', 'MyHoursGetUserDataFailed');
+                    toastr.error('Error while getting the user data.');
                 });
 
                 loginToMyHoursInfo.text('success');
@@ -250,7 +266,7 @@ $(function () {
             },
             function (error) {
                 console.info('error while geeting the access token');
-                _this.chromeNotifications.showNotification('My Hours Login', 'Error logging in.', 'MyHoursLoginFailed');
+                toastr.error('Error logging in.');
                 loginToMyHoursInfo.text('fail');
             }
         )
