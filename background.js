@@ -78,9 +78,26 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         chrome.contextMenus.create({
             // title: "Start timer for Axo Item",
             title: "Axo: start timer for Item #%s",
+            id: "axoParent",
             parentId: "mhParent",
             contexts: ["selection"],
             onclick: startTrackingTimeAxo
+        });
+
+        let options = new Options();
+        options.load().then(_ => {
+            if (options.myHoursCommonDescriptions) {
+                let descriptions = options.myHoursCommonDescriptions.split(';');
+                descriptions.forEach(function (value, i) {
+                    chrome.contextMenus.create({
+                        title: "Axo: start timer for Item #%s -- " + value,
+                        id:`mhDescription_${i}`,
+                        parentId: "mhParent",
+                        contexts: ["selection"],
+                        onclick: startTrackingTimeAxo
+                    });    
+                })
+            }
         });
     
         chrome.contextMenus.create({
@@ -194,6 +211,18 @@ function refreshBadge(){
                                                 if (ratio < 0.9 || ratio > 1 ) {
                                                     chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
                                                     //chrome.browserAction.setBadgeText({ text: `$` }); 
+                                                    
+                                                    //inform user that sync must be done every hour or so
+                                                    if (options.notificationsBadRatio && moment().minute() <= 10) {
+                                                        var notificationOptions = {
+                                                            type: 'basic',
+                                                            silent: true,
+                                                            iconUrl: './images/ts-badge.png',
+                                                            title: 'Spica chrome widget',
+                                                            message: `Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`
+                                                        };
+                                                        chrome.notifications.create('', notificationOptions, function () { }); 
+                                                    }
                                                 }
                                                 else {
                                                     chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
@@ -258,8 +287,17 @@ function startTrackingTimeAxo(info, tab) {
                         let myHoursNote = info.selectionText;
                         if (defaultWorkLogType !== "") {
                             myHoursNote = myHoursNote + '/' + defaultWorkLogType.toLowerCase();
+                            
+                            if (info.menuItemId) {
+                                let descriptionIndex = info.menuItemId.split('_')[1];
+                                let description = options.myHoursCommonDescriptions.split(';')[descriptionIndex];
+                                if (description){
+                                    myHoursNote = `${myHoursNote} ${description}`;
+                                }
+                            }
+                            
+                            
                         }
-
 
                         myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                             function (token) {
@@ -280,6 +318,7 @@ function startTrackingTimeAxo(info, tab) {
                                             };
                                             //chrome.notifications.create('', 'Log started');
                                             chrome.notifications.create('', notificationOptions, function () { });
+                                            refreshMyHoursPage();
                                         },
                                         function (error) {
                                             console.log(error);
@@ -378,8 +417,8 @@ function startTrackingTimeDevOps(info, tab) {
                                                     title: 'My Hours',
                                                     message: 'Log started. DevOps item #' + info.selectionText + tagName
                                                 };
-                                                //chrome.notifications.create('', 'Log started');
                                                 chrome.notifications.create('', notificationOptions, function () { });
+                                                refreshMyHoursPage();
                                             },
                                             function (error) {
                                                 console.log(error);
@@ -458,6 +497,7 @@ function startTrackingTime(info, tab) {
                         };
                         //chrome.notifications.create('', 'Log started');
                         chrome.notifications.create('', notificationOptions, function () { });
+                        refreshMyHoursPage();
                     },
                     function (error) {
                         console.log(error);
@@ -507,9 +547,8 @@ function stopTimer(info, tab) {
                                     else {
                                         notificationOptions.message = "There are no running logs."
                                     }
-
-                                    //chrome.notifications.create('', 'Log started');
                                     chrome.notifications.create('', notificationOptions, function () { });
+                                    refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
@@ -607,6 +646,7 @@ function updateRunningLogDescription(info, tab) {
 
                                     //chrome.notifications.create('', 'Log started');
                                     chrome.notifications.create('', notificationOptions, function () { });
+                                    refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
@@ -640,6 +680,19 @@ function getBranchName(info, tab) {
         console.error('Async: Could not copy text: ', err);
     });
 
+
+}
+
+function refreshMyHoursPage(){
+
+    chrome.tabs.query({url: 'https://app.myhours.com/*'}, function(foundTabs) {
+        foundTabs.forEach(myHoursTab => {
+            console.info('refreshing myhours tabs');
+            chrome.tabs.reload(
+                myHoursTab.id
+              );
+        });
+    });
 
 }
 

@@ -18,6 +18,11 @@ function Options() {
     _this.isSecret = '';
     _this.myHoursDefaultTagId = '';
     _this.myHoursRootClientId = '';
+    _this.myHoursCommonDescriptions = '';
+    _this.notificationsBadRatio = true;
+    _this.devOpsAuthorName = '';
+
+
 
 
     _this.save = function () {
@@ -63,17 +68,30 @@ function Options() {
                             _this.axoSoftToken = items.options.axoSoftToken;
                             _this.axoSoftUserId = items.options.axoSoftUserId;
                             _this.axoSoftDefaultWorklogTypeId = items.options.axoSoftDefaultWorklogTypeId;
+
                             _this.contentSwitchProjectId = items.options.contentSwitchProjectId;
                             _this.developmentTaskName = items.options.developmentTaskName;
                             _this.contentSwitchZoneReEnterTime = items.options.contentSwitchZoneReEnterTime;
+
                             _this.allHoursAccessToken = items.options.allHoursAccessToken;
                             _this.allHoursRefreshToken = items.options.allHoursRefreshToken;
                             _this.allHoursAccessTokenValidTill = items.options.allHoursAccessTokenValidTill;
                             _this.allHoursUrl = items.options.allHoursUrl;
                             _this.allHoursUserName = items.options.allHoursUserName;
+
                             _this.isSecret = items.options.isSecret;
+
+                            _this.devOpsInstanceUrl = items.options.devOpsInstanceUrl;
+                            _this.devOpsPersonalAccessToken = items.options.devOpsPersonalAccessToken;
+                            _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
+                            _this.devOpsAuthorName = items.options.devOpsAuthorName;
+
+                            _this.mhDefaultTagId = items.options.mhDefaultTagId;
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
                             _this.myHoursRootClientId = items.options.myHoursRootClientId;
+                            _this.myHoursCommonDescriptions = items.options.myHoursCommonDescriptions;
+
+                            _this.notificationsBadRatio = items.options.notificationsBadRatio;
                         }
 
                         resolve();

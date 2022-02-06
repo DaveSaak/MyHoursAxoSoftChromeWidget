@@ -232,6 +232,10 @@ function MyHoursApi(currentUser) {
                     end: null
                 };
 
+                if (tagId) {
+                    newLogData.tagIds = [];
+                }
+                
                 if (projectId && taskId) {
                     newLogData.projectId = projectId;
                     newLogData.taskId = taskId;
@@ -400,6 +404,43 @@ function MyHoursApi(currentUser) {
             }
         )
     }
+
+    _this.updateLogDescription = function (log, comment) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: update log description");
+
+                _this.getLog(log)
+                    .then(existingLog => {
+                        var updatedLogData = {
+                            id: existingLog.id,
+                            note: existingLog.note + ' ' + comment
+                        };
+
+                        $.ajax({
+                            url: baseUrl + "logs/updatedescription?id=" + updatedLogData.id,
+                            type: "PUT",
+                            contentType: "application/json",
+                            headers: {
+                                "Authorization": "Bearer " + _this.currentUser.accessToken
+                            },
+                            data: JSON.stringify(updatedLogData),
+                            success: function (data) {
+                                return resolve(data);
+                            },
+                            error: function (data) {
+                                console.error(data);
+                                return reject(data);
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('error: ' + error);
+                        return reject(error);
+                    });
+            }
+        )
+    }    
 
     _this.getRunning = function () {
         return new Promise(
