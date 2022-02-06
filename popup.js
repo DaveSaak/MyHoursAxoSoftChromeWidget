@@ -165,6 +165,10 @@ function popup() {
             getLogs();
         });
 
+        $('#reloadDay').click(function () {
+            getLogs();
+        });
+
         $('#refreshHome').click(function () {
             getCurrentBalance();
         });
