@@ -1430,8 +1430,8 @@ function popup() {
                 // var worklogTypeTodayCtx = document.getElementById('worklogTypeTodayChart').getContext('2d');
                 // drawWorkLogTypeChart(worklogTypeTodayCtx, worklogTypeTodayData);
 
-                // var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
-                // drawRecentItemsChart(recentItemsCtx, recentAxoItems);
+                var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
+                drawRecentItemsChart(recentItemsCtx, recentAxoItems);
 
 
 
@@ -1503,28 +1503,37 @@ function popup() {
             _this.recentItemsChart.destroy();
         }
 
-
+        let now = moment();
         var chartData = {
-            datasets: [{
-                label: 'First Dataset',
-                data: rawData.map(recentItem => {
-                    return{
-                        x: recentItem.count,
-                        r: recentItem.workDone,
-                        y: 1//recentItem.lastSeen.fromNow()
-                    }
-                 }),
-                backgroundColor: 'rgb(255, 99, 132)'
-            }]
+            datasets: rawData.map(recentItem => {
+                return {
+                    label: recentItem.itemName,
+                    backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)],
+                    data: [
+                        {
+                            y: recentItem.count,
+                            r: recentItem.workDone/30,
+                            x: now.diff(recentItem.lastSeen, 'days')
+                        }
+                    ]
+                }
+            })
         };
+
+        
 
         console.log('chartData');
         console.log(chartData);
         
 
-        _this.worklogTypeChart = new Chart(context, {
+        _this.recentItemsChart = new Chart(context, {
             type: 'bubble',
-            data: chartData
+            data: chartData,
+            options: {
+                legend: {
+                    display: false,
+                }
+            }
         });
 
     }
