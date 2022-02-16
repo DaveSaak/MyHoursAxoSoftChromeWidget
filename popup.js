@@ -1507,7 +1507,6 @@ function popup() {
             _this.recentItemsChart.destroy();
         }
 
-
         // var chartData = {
         //     datasets: [{
         //         label: 'First Dataset',
@@ -1539,6 +1538,8 @@ function popup() {
                 }
             })
         };
+
+        
 
         console.log('chartData');
         console.log(chartData);
