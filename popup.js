@@ -1434,8 +1434,8 @@ function popup() {
                 // var worklogTypeTodayCtx = document.getElementById('worklogTypeTodayChart').getContext('2d');
                 // drawWorkLogTypeChart(worklogTypeTodayCtx, worklogTypeTodayData);
 
-                // var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
-                // drawRecentItemsChart(recentItemsCtx, recentAxoItems);
+                var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
+                drawRecentItemsChart(recentItemsCtx, recentAxoItems);
 
 
 
@@ -1508,27 +1508,121 @@ function popup() {
         }
 
 
+        // var chartData = {
+        //     datasets: [{
+        //         label: 'First Dataset',
+        //         data: rawData.map(recentItem => {
+        //             return{
+        //                 x: recentItem.count,
+        //                 r: recentItem.workDone/60,
+        //                 y: 1//recentItem.lastSeen.fromNow()
+        //             }
+        //          }),
+        //         backgroundColor: 'rgb(255, 99, 132)'
+        //     }]
+        // };
+
+        let now = moment().startOf('day');
+
         var chartData = {
-            datasets: [{
-                label: 'First Dataset',
-                data: rawData.map(recentItem => {
-                    return{
-                        x: recentItem.count,
-                        r: recentItem.workDone,
-                        y: 1//recentItem.lastSeen.fromNow()
-                    }
-                 }),
-                backgroundColor: 'rgb(255, 99, 132)'
-            }]
+            datasets: 
+            rawData.map(recentItem => {
+                return {
+                    label: recentItem.itemName,
+                    data: [{ 
+                        y: recentItem.count,
+                        r: Math.max(recentItem.workDone/30, 5),
+                        x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
+                        data: recentItem
+                    }],
+                    backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)]
+                }
+            })
         };
 
         console.log('chartData');
         console.log(chartData);
         
+        let maxCounts = Math.max(...rawData.map(o => o.count), 0);
 
-        _this.worklogTypeChart = new Chart(context, {
+        _this.recentItemsChart = new Chart(context, {
             type: 'bubble',
-            data: chartData
+            data: chartData,
+            options: {
+                clip: {
+                    left: 10, 
+                    top: 100, 
+                    right: 0, 
+                    bottom: 0
+                },
+                legend: {
+                    display: false,
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            drawBorder: true,
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            //beginAtZero: true,
+                            // maxTicksLimit: 7,
+                            //display: false, //this removed the labels on the x-axis
+                            stepSize: 1,
+                            callback: function (value, index, values) {
+                                switch(value){
+                                    case -1:
+                                        return ""
+                                    case 0:
+                                        return "today"
+                                    case 1:
+                                        return "yesterday"
+                                    default:
+                                        return `${value} days ago`;
+                                }
+                                 
+                            },
+                            min: -1
+                            
+                        },
+                        // scaleLabel: {
+                        //      display: true,
+                        //      labelString: 'last seen days ago'
+                        //    }
+                    }],
+                    yAxes: [{
+                        gridLines: {
+                            drawBorder: true,
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            maxTicksLimit: 4,
+                            //max: maxCounts + 2
+                        },
+                        // scaleLabel: {
+                        //     display: true,
+                        //     labelString: 'number of engagements'
+                        //   }
+                    }],                    
+
+                },
+                tooltips: {
+                    callbacks: {
+                        title: function (tooltipItem, data) {
+                            return data.datasets[tooltipItem[0].datasetIndex].label;
+                        },
+
+                        label: function(tooltipItem, data) {
+                            let recentItemWorkDone = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r * 30/60);
+                            let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
+                            let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
+                            //let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';
+                            return `${recentItemWorkDone.toFixed(2)} hrs logged, last log added ${recentItemLastSeen} days ago. Num of switches: ${recentItemCount}.`;
+                        }
+                    }
+                }
+            }
         });
 
     }
@@ -2101,16 +2195,17 @@ function popup() {
     }
 
     function showRatioAllHoursAxo(ratio) {
-        showRatioOnCard(ratio, $('#axoAhRatioText'));
+        showRatioOnCard(ratio, $('#axoAhRatioText'), $('#axoAhRatioOk'));
         //drawAxoAhRatioChart(ratio);
     }
 
-    function showRatioOnCard(timeRatio, element) {
+    function showRatioOnCard(timeRatio, element, elementOk) {
         let elementInfo = $(element);
         let parent = elementInfo.parent();
         // elementInfo.removeClass('blink');
         if (timeRatio?.ratio !== undefined) {
             elementInfo.hide();
+            elementOk?.show();
             let ratioValid = (timeRatio.ratio >= 0.9 && timeRatio.ratio <= 1);
             //elementInfo.text((ratio * 100).toFixed(0) + '%');
 
@@ -2124,6 +2219,7 @@ function popup() {
                     cardText += ' Missing: ' + minutesToString(timeRatio.ahAttendance * 0.9 - timeRatio.ahAttendance * timeRatio.ratio);
                 }
                 //cardText += 
+                elementOk?.hide();
                 elementInfo.show();
             }
             parent.attr('title', cardText);
