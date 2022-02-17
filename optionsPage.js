@@ -17,6 +17,7 @@ $(function () {
             $('#axoSoftToken').val(_this.options.axoSoftToken);
             $('#axoSoftUserId').val(_this.options.axoSoftUserId);
             $('#axoSoftDefaultWorklogTypeId').val(_this.options.axoSoftDefaultWorklogTypeId);
+            $('#axoSoftRecentItemsBubbleChartHiddenItemsIds').val(_this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds);
             $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
             $('#developmentTaskName').val(_this.options.developmentTaskName);
             $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
@@ -193,6 +194,7 @@ $(function () {
         _this.options.axoSoftToken = $('#axoSoftToken').val();
         _this.options.axoSoftUserId = $('#axoSoftUserId').val();
         _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
+        _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds = $('#axoSoftRecentItemsBubbleChartHiddenItemsIds').val();
         saveOptions();
         toastr.success('Axo settings saved');
     });   

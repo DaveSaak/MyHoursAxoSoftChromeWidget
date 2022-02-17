@@ -1523,14 +1523,17 @@ function popup() {
 
         let now = moment().startOf('day');
 
+        let excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds.split(';');
         var chartData = {
             datasets: 
-            rawData.map(recentItem => {
+            rawData
+            .filter(recentItem => !excludedItemIds.includes(recentItem.itemId.toString()))
+            .map(recentItem => {
                 return {
                     label: recentItem.itemName,
                     data: [{ 
                         y: recentItem.count,
-                        r: Math.max(recentItem.workDone/30, 5),
+                        r: Math.max(recentItem.workDone/30, 3),
                         x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
                         data: recentItem
                     }],
