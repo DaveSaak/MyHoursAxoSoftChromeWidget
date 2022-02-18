@@ -1533,9 +1533,9 @@ function popup() {
                     label: recentItem.itemName,
                     data: [{ 
                         y: recentItem.count,
-                        r: Math.max(recentItem.workDone/30, 3),
+                        r: Math.max(recentItem.workDone/20, 2),
                         x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
-                        data: recentItem
+                        recentItem: recentItem
                     }],
                     backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)]
                 }
@@ -1613,16 +1613,21 @@ function popup() {
                 },
                 tooltips: {
                     callbacks: {
-                        title: function (tooltipItem, data) {
-                            return data.datasets[tooltipItem[0].datasetIndex].label;
-                        },
+                        // title: function (tooltipItem, data) {
+                        //     return data.datasets[tooltipItem[0].datasetIndex].label;
+                        // },
 
                         label: function(tooltipItem, data) {
-                            let recentItemWorkDone = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r * 30/60);
+                            // let recentItemWorkDone = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r * 30/60);
+                            // let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
+                            // let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
+                            // let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';
+                            let recentItemWorkDone = minutesToString(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].recentItem.workDone);
                             let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
                             let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
-                            //let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';
-                            return `${recentItemWorkDone.toFixed(2)} hrs logged, last log added ${recentItemLastSeen} days ago. Num of switches: ${recentItemCount}.`;
+                            let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';                            
+                            // return `${recentItemName} - ${recentItemWorkDone.toFixed(2)} hrs logged, last log ${recentItemLastSeen} days ago (switches: ${recentItemCount}).`;
+                            return `${recentItemName} (${recentItemWorkDone}hrs, ${recentItemCount}x)`;
                         }
                     }
                 }
@@ -2022,6 +2027,8 @@ function popup() {
                     if (comment) {
                         _this.myHoursApi.updateLogDescription(myHoursLog, comment).then(x => {
                             toastr.success('Log comment updated.');
+                            getLogs();
+
                             //showAlert('Log comment updated.');
 
                             // var notificationOptions = {
