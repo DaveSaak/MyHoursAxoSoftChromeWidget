@@ -38,6 +38,7 @@ function popup() {
 
     _this.worklogTypeChart = undefined;
     _this.recentItemsChart = undefined;
+    _this.calendarChart = undefined;
 
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
@@ -181,10 +182,18 @@ function popup() {
             getMyDevOpsItems();
         });
 
+        $('#refreshCalendar').click(function () {
+            refreshCalendar();
+        });
+
         $('#pills-axo-tab').click(function () {
             getRecentAxoItems();
         });
 
+
+        $('#pills-calendar-tab').click(function () {
+            refreshCalendar();
+        });
 
 
         $('.showLogsSwitch').click(function () {
@@ -1525,28 +1534,28 @@ function popup() {
 
         let excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds.split(';');
         var chartData = {
-            datasets: 
-            rawData
-            .filter(recentItem => !excludedItemIds.includes(recentItem.itemId.toString()))
-            .map(recentItem => {
-                return {
-                    label: recentItem.itemName,
-                    data: [{ 
-                        y: recentItem.count,
-                        r: Math.max(recentItem.workDone/20, 2),
-                        x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
-                        recentItem: recentItem
-                    }],
-                    backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)]
-                }
-            })
+            datasets:
+                rawData
+                    .filter(recentItem => !excludedItemIds.includes(recentItem.itemId.toString()))
+                    .map(recentItem => {
+                        return {
+                            label: recentItem.itemName,
+                            data: [{
+                                y: recentItem.count,
+                                r: Math.max(recentItem.workDone / 20, 2),
+                                x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
+                                recentItem: recentItem
+                            }],
+                            backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)]
+                        }
+                    })
         };
 
-        
+
 
         console.log('chartData');
         console.log(chartData);
-        
+
         let maxCounts = Math.max(...rawData.map(o => o.count), 0);
 
         _this.recentItemsChart = new Chart(context, {
@@ -1554,9 +1563,9 @@ function popup() {
             data: chartData,
             options: {
                 clip: {
-                    left: 10, 
-                    top: 100, 
-                    right: 0, 
+                    left: 10,
+                    top: 100,
+                    right: 0,
                     bottom: 0
                 },
                 legend: {
@@ -1574,7 +1583,7 @@ function popup() {
                             //display: false, //this removed the labels on the x-axis
                             stepSize: 1,
                             callback: function (value, index, values) {
-                                switch(value){
+                                switch (value) {
                                     case -1:
                                         return ""
                                     case 0:
@@ -1584,10 +1593,10 @@ function popup() {
                                     default:
                                         return `${value} days ago`;
                                 }
-                                 
+
                             },
                             min: -1
-                            
+
                         },
                         // scaleLabel: {
                         //      display: true,
@@ -1608,7 +1617,7 @@ function popup() {
                         //     display: true,
                         //     labelString: 'number of engagements'
                         //   }
-                    }],                    
+                    }],
 
                 },
                 tooltips: {
@@ -1617,7 +1626,7 @@ function popup() {
                         //     return data.datasets[tooltipItem[0].datasetIndex].label;
                         // },
 
-                        label: function(tooltipItem, data) {
+                        label: function (tooltipItem, data) {
                             // let recentItemWorkDone = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r * 30/60);
                             // let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
                             // let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
@@ -1625,7 +1634,7 @@ function popup() {
                             let recentItemWorkDone = minutesToString(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].recentItem.workDone);
                             let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
                             let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
-                            let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';                            
+                            let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';
                             // return `${recentItemName} - ${recentItemWorkDone.toFixed(2)} hrs logged, last log ${recentItemLastSeen} days ago (switches: ${recentItemCount}).`;
                             return `${recentItemName} (${recentItemWorkDone}hrs, ${recentItemCount}x)`;
                         }
@@ -2277,6 +2286,181 @@ function popup() {
         });
     }
 
+
+    function refreshCalendar() {
+        //get data from axo
+
+        let today = moment().startOf('day');
+        let startOfCalendar = today.clone().startOf('isoWeek').add(-3, 'week');
+        let endOfCalendar = today.clone().endOf('isoWeek');
+
+        let minutes = []
+
+        _this.myHoursApi.getActivity(startOfCalendar, endOfCalendar).then(logs => {
+
+            let minutesPerDayData = logs.reduce((accumulator, log) => {
+                let key = log.date;
+                if (key in accumulator) {
+                    accumulator[key].duration = accumulator[key].duration + log.logDuration;
+                }
+                else {
+                    accumulator[key] = {
+                        duration: log.logDuration,
+                        date: moment(key).startOf('day')
+                    }
+                }
+                return accumulator;
+            }, {});
+            let minutesPerDay = Object.entries(minutesPerDayData).map(x => x[1]);
+    
+            let totalMinutes = minutesPerDay.reduce((a, log) => a + log.duration, 0);
+            $('.calendarItemsTotal').text(minutesToString(totalMinutes / 60));
+
+            let maxMinutesInDay = Math.max(...minutesPerDay.map(x => x.duration), 0) / 60;
+            $('.calendarMaxMinutesInDay').text(minutesToString(maxMinutesInDay));
+            
+
+            let zeroDates = [];
+            for (let currDay = startOfCalendar.clone(); currDay < endOfCalendar; currDay.add(1, 'day')) {
+                if (!minutesPerDay.find(x => x.date == currDay)) {
+                    zeroDates.push({
+                        date: currDay.clone(),
+                        duration:0
+                    })
+                }
+            }
+            minutesPerDay = minutesPerDay.concat(zeroDates);
+
+            var chartData = {
+                datasets: [{
+                    data: minutesPerDay.map(dayMins => {
+                        let mins = dayMins.duration / 60;
+
+                        // if (mins > 0) {
+                        //     let diff = (mins - (8 * 60));
+
+                        // }
+                        // let weightedDiff = Math.sign(diff) * diff^2;
+                        return {
+                            x: dayMins.date.isoWeekday(),
+                            // y: dayMins.date.startOf('isoWeek').unix(),
+                            y: dayMins.date.isoWeek(),
+                            // r: Math.max((mins + weightedDiff) / 30, 10),
+                            r: mins /30,
+                            mins: mins,
+                            date: dayMins.date,
+                            
+                        }
+                    }),
+                    backgroundColor: '#555679'
+                }]
+            };
+
+    
+            var calendarChartCtx = document.getElementById('calendarChart').getContext('2d');
+    
+            _this.calendarChart = new Chart(calendarChartCtx, {
+                type: 'bubble',
+                data: chartData,
+                options: {
+                    clip: {
+                        left: 10,
+                        top: 100,
+                        right: 0,
+                        bottom: 0
+                    },
+                    legend: {
+                        display: false,
+                    },
+                    scales: {
+                        xAxes: [{
+                            position: 'top',
+                            gridLines: {
+                                display: false,
+                                drawBorder: false,
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                //beginAtZero: true,
+                                // maxTicksLimit: 7,
+                                //display: false, //this removed the labels on the x-axis
+                                stepSize: 1,
+                                callback: function (value, index, values) {
+                                    switch (value) {
+                                        case 1:
+                                            return "mon"
+                                        case 2:
+                                            return "tue"
+                                        case 3:
+                                            return "wed"
+                                        case 4:
+                                            return "thu"
+                                        case 5:
+                                            return "fri"
+                                        case 6:
+                                            return "sat"
+                                        case 7:
+                                            return "sun"
+                                    }
+    
+                                },
+                                min: 0,
+                                max: 7
+                            },
+                            // scaleLabel: {
+                            //      display: true,
+                            //      labelString: 'last seen days ago'
+                            //    }
+                        }],
+                        yAxes: [{
+                            // display: false,
+                            gridLines: {
+                                display: false,
+                                drawBorder: true,
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                min: startOfCalendar.isoWeek()-1,
+                                max: endOfCalendar.isoWeek()+1,
+                                stepSize: 1,
+                                reverse: true,
+                                callback: function (value, index, values) {
+                                    return (index > 0 && index < 5) ? `week ${value}` : '';
+                                }
+                                
+                            },
+                            // scaleLabel: {
+                            //     display: true,
+                            //     labelString: 'number of engagements'
+                            //   }
+                        }],
+    
+                    },
+                    tooltips: {
+                        callbacks: {
+                            // title: function (tooltipItem, data) {
+                            //     return data.datasets[tooltipItem[0].datasetIndex].label;
+                            // },
+    
+                            label: function (tooltipItem, data) {
+                                let mins = minutesToString(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].mins);
+                                let date = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].date.format('lll');
+                                return `${date}: ${mins}`;
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+
+        })
+
+
+
+
+    }
 
 
 

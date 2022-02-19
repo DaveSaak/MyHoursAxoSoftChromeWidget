@@ -227,6 +227,37 @@ function AxoSoftApi(options) {
         })
     }  
 
+    _this.getWorkLogs = function (dateFrom, dateTo) {
+        return new Promise(function (resolve, reject) {
+
+            var periodStartUtc = moment(dateFrom).startOf('day').utc().format("YYYY-MM-DDTHH:mm:ss.000") + "Z";
+            var periodEndUtc = moment(dateTo).endOf('day').utc().format("YYYY-MM-DDThh:mm:ssZ");
+
+            console.info(periodStartUtc + " - " + periodEndUtc);
+            
+            console.info('getting worklogs from axosoft');
+            $.ajax({
+                url: _this.options.axoSoftUrl + "/v5/work_logs?user_Id="+_this.options.axoSoftUserId+"&date_range=" + "[" + periodStartUtc + "=" + periodStartUtc + "]",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.axoSoftToken,
+                },
+                type: "GET",
+                contentType:"application/json; charset=utf-8",
+
+                success: function (response) {
+                    //console.info(response);
+                    resolve(response);
+                },
+                error: function () {
+                    reject();
+                }
+            });
+
+            
+        })
+    }
+
+
     _this.deleteWorkLog = function(worklogId) {
         // https://ontime.spica.com:442/OnTime/api/v6/work_logs?require_build=11358&ids=72529
         return new Promise(function (resolve, reject) {
