@@ -1556,7 +1556,7 @@ function popup() {
         console.log('chartData');
         console.log(chartData);
 
-        let maxCounts = Math.max(...rawData.map(o => o.count), 0);
+        // let maxCounts = Math.max(...rawData.map(o => o.count), 0);
 
         _this.recentItemsChart = new Chart(context, {
             type: 'bubble',
@@ -1613,10 +1613,10 @@ function popup() {
                             maxTicksLimit: 4,
                             //max: maxCounts + 2
                         },
-                        // scaleLabel: {
-                        //     display: true,
-                        //     labelString: 'number of engagements'
-                        //   }
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'number of switches'
+                          }
                     }],
 
                 },
@@ -2301,11 +2301,11 @@ function popup() {
             let minutesPerDayData = logs.reduce((accumulator, log) => {
                 let key = log.date;
                 if (key in accumulator) {
-                    accumulator[key].duration = accumulator[key].duration + log.logDuration;
+                    accumulator[key].duration = accumulator[key].duration + (log.logDuration / 60);
                 }
                 else {
                     accumulator[key] = {
-                        duration: log.logDuration,
+                        duration: log.logDuration / 60,
                         date: moment(key).startOf('day')
                     }
                 }
@@ -2314,11 +2314,14 @@ function popup() {
             let minutesPerDay = Object.entries(minutesPerDayData).map(x => x[1]);
     
             let totalMinutes = minutesPerDay.reduce((a, log) => a + log.duration, 0);
-            $('.calendarItemsTotal').text(minutesToString(totalMinutes / 60));
+            $('.calendarItemsTotal').text(minutesToString(totalMinutes));
 
-            let maxMinutesInDay = Math.max(...minutesPerDay.map(x => x.duration), 0) / 60;
+            let maxMinutesInDay = Math.max(...minutesPerDay.map(x => x.duration), 0);
             $('.calendarMaxMinutesInDay').text(minutesToString(maxMinutesInDay));
             
+            let workDaysInRange = minutesPerDay.filter(x => x.date.isoWeekday() < 6).length;
+            $('.calendarWorkDays').text(workDaysInRange);
+            $('.calendarAverageMinutesInWorkDay').text(minutesToString(totalMinutes / workDaysInRange));
 
             let zeroDates = [];
             for (let currDay = startOfCalendar.clone(); currDay < endOfCalendar; currDay.add(1, 'day')) {
@@ -2334,7 +2337,7 @@ function popup() {
             var chartData = {
                 datasets: [{
                     data: minutesPerDay.map(dayMins => {
-                        let mins = dayMins.duration / 60;
+                        let mins = dayMins.duration;
 
                         // if (mins > 0) {
                         //     let diff = (mins - (8 * 60));
@@ -2352,8 +2355,24 @@ function popup() {
                             
                         }
                     }),
-                    backgroundColor: '#555679'
-                }]
+                    backgroundColor: '#555679',
+                },
+                // {
+                //     data: minutesPerDay
+                //     .filter(x => x.date.isoWeekday() < 6)
+                //     .map(dayMins => {
+                //         return {
+                //             x: dayMins.date.isoWeekday(),
+                //             y: dayMins.date.isoWeek(),
+                //             r: 480 /30,
+                //             mins: 480,
+                //             date: dayMins.date,
+                //         }
+                //     }),
+                //     backgroundColor: 'white',
+                //     borderColor: 'grey'
+                // }
+            ]
             };
 
     
