@@ -353,6 +353,7 @@ function popup() {
         var timeline = $('#timeline');
         timeline.empty();
         drawTimeLineTimes(timeline);
+        topContainer.toggleClass('d-none', false);
 
         // var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
@@ -432,7 +433,7 @@ function popup() {
                             var totalMins = 0;
 
                             logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
-                            topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
+                            // topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
 
                             $.each(_this.myHoursLogs, function (index, data) {
                                 totalMins = totalMins + (data.duration / 60);
@@ -762,7 +763,17 @@ function popup() {
                     )
             });
         dropdownMenu.append(startTrackingTime);
-        dropdownMenu.append('<div class="dropdown-divider">');
+        // dropdownMenu.append('<div class="dropdown-divider">');
+
+        if (true) {
+            // dropdownMenu.append('<div class="dropdown-divider">');
+            dropdownMenu.append($('<a class="dropdown-item" href="#">')
+                .append('<i class="far fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
+                .click(function (event) {
+                    event.preventDefault();
+                    copyCommitMessage(data);
+                }));
+        }
 
         if (data.projectId) {
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
@@ -773,17 +784,17 @@ function popup() {
                 }));
         }
 
+
+
         if (data.axoId) {
+            dropdownMenu.append('<div class="dropdown-divider">');
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
                 .append('<i class="far fa-external-link-alt"></i> <span class="ml-1">Open AXO item</span>')
                 .click(function (event) {
                     event.preventDefault();
                     window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
                 }));
-        }
 
-        if (data.axoId) {
-            dropdownMenu.append('<div class="dropdown-divider">');
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
                 .append('<i class="far fa-seedling"></i><span class="ml-1">Copy time to AXO worklog</span>')
                 .click(function (event) {
@@ -791,20 +802,7 @@ function popup() {
                     _this.addAxoWorkLog(data, data.duration).then(x => console.log('added axo work log'));
                 }));
         }
-
-        if (true) {
-            dropdownMenu.append('<div class="dropdown-divider">');
-            dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="far fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
-                .click(function (event) {
-                    event.preventDefault();
-                    copyCommitMessage(data);
-                }));
-        }
-
-
         buttonGroup.append(dropdownMenu);
-
 
 
         let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1");
@@ -1588,20 +1586,20 @@ function popup() {
                                         return ""
                                     case 0:
                                         return "today"
-                                    case 1:
-                                        return "yesterday"
+                                    // case 1:
+                                    //     return "yesterday"
                                     default:
-                                        return `${value} days ago`;
+                                        return `${value}`;
                                 }
 
                             },
                             min: -1
 
                         },
-                        // scaleLabel: {
-                        //      display: true,
-                        //      labelString: 'last seen days ago'
-                        //    }
+                        scaleLabel: {
+                             display: true,
+                             labelString: 'last worked on days ago'
+                           }
                     }],
                     yAxes: [{
                         gridLines: {
@@ -2334,6 +2332,7 @@ function popup() {
             }
             minutesPerDay = minutesPerDay.concat(zeroDates);
 
+            let today = moment().startOf('day');
             var chartData = {
                 datasets: [{
                     data: minutesPerDay.map(dayMins => {
@@ -2355,8 +2354,20 @@ function popup() {
                             
                         }
                     }),
-                    backgroundColor: '#555679',
+                    backgroundColor: '#3c5081',
                 },
+          
+                {
+                    data: [ {
+                            x: today.isoWeekday(),
+                            y: today.isoWeek(),
+                            r: 520 /30,
+                        }
+                    ],
+                    backgroundColor: 'white',
+                    borderColor: '#b82f4e'
+                }
+
                 // {
                 //     data: minutesPerDay
                 //     .filter(x => x.date.isoWeekday() < 6)
@@ -2426,10 +2437,6 @@ function popup() {
                                 min: 0,
                                 max: 7
                             },
-                            // scaleLabel: {
-                            //      display: true,
-                            //      labelString: 'last seen days ago'
-                            //    }
                         }],
                         yAxes: [{
                             // display: false,
