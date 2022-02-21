@@ -180,6 +180,36 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    _this.getActivity = function (dateFrom, dateTo) {
+        return new Promise(
+            function (resolve, reject) {
+                console.info("api: getting times");
+
+                $.ajax({
+                    url: baseUrl + "/reports/activity",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    type: "GET",
+                    data: {
+                        // startIndex: 0,
+                        // step: 200,
+                        // maxDate: moment(date).format("YYYY-MM-DD")
+                        dateFrom: moment(dateFrom).format("YYYY-MM-DD"),
+                        dateTo: moment(dateTo).format("YYYY-MM-DD")
+                    },                    
+                    success: function (data) {
+                        resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        reject(data);
+                    }
+                });
+            }
+        )
+    }    
+
     _this.addLog = function (projectId, comment, duration) {
         return new Promise(
             function (resolve, reject) {

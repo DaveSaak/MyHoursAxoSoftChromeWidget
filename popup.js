@@ -38,6 +38,7 @@ function popup() {
 
     _this.worklogTypeChart = undefined;
     _this.recentItemsChart = undefined;
+    _this.calendarChart = undefined;
 
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
@@ -181,10 +182,18 @@ function popup() {
             getMyDevOpsItems();
         });
 
+        $('#refreshCalendar').click(function () {
+            refreshCalendar();
+        });
+
         $('#pills-axo-tab').click(function () {
             getRecentAxoItems();
         });
 
+
+        $('#pills-calendar-tab').click(function () {
+            refreshCalendar();
+        });
 
 
         $('.showLogsSwitch').click(function () {
@@ -344,6 +353,7 @@ function popup() {
         var timeline = $('#timeline');
         timeline.empty();
         drawTimeLineTimes(timeline);
+        topContainer.toggleClass('d-none', false);
 
         // var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
@@ -423,7 +433,7 @@ function popup() {
                             var totalMins = 0;
 
                             logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
-                            topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
+                            // topContainer.toggleClass('d-none', _this.myHoursLogs.length === 0);
 
                             $.each(_this.myHoursLogs, function (index, data) {
                                 totalMins = totalMins + (data.duration / 60);
@@ -753,7 +763,17 @@ function popup() {
                     )
             });
         dropdownMenu.append(startTrackingTime);
-        dropdownMenu.append('<div class="dropdown-divider">');
+        // dropdownMenu.append('<div class="dropdown-divider">');
+
+        if (true) {
+            // dropdownMenu.append('<div class="dropdown-divider">');
+            dropdownMenu.append($('<a class="dropdown-item" href="#">')
+                .append('<i class="far fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
+                .click(function (event) {
+                    event.preventDefault();
+                    copyCommitMessage(data);
+                }));
+        }
 
         if (data.projectId) {
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
@@ -764,17 +784,17 @@ function popup() {
                 }));
         }
 
+
+
         if (data.axoId) {
+            dropdownMenu.append('<div class="dropdown-divider">');
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
                 .append('<i class="far fa-external-link-alt"></i> <span class="ml-1">Open AXO item</span>')
                 .click(function (event) {
                     event.preventDefault();
                     window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
                 }));
-        }
 
-        if (data.axoId) {
-            dropdownMenu.append('<div class="dropdown-divider">');
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
                 .append('<i class="far fa-seedling"></i><span class="ml-1">Copy time to AXO worklog</span>')
                 .click(function (event) {
@@ -782,20 +802,7 @@ function popup() {
                     _this.addAxoWorkLog(data, data.duration).then(x => console.log('added axo work log'));
                 }));
         }
-
-        if (true) {
-            dropdownMenu.append('<div class="dropdown-divider">');
-            dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="far fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
-                .click(function (event) {
-                    event.preventDefault();
-                    copyCommitMessage(data);
-                }));
-        }
-
-
         buttonGroup.append(dropdownMenu);
-
 
 
         let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1");
@@ -1525,38 +1532,38 @@ function popup() {
 
         let excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds.split(';');
         var chartData = {
-            datasets: 
-            rawData
-            .filter(recentItem => !excludedItemIds.includes(recentItem.itemId.toString()))
-            .map(recentItem => {
-                return {
-                    label: recentItem.itemName,
-                    data: [{ 
-                        y: recentItem.count,
-                        r: Math.max(recentItem.workDone/20, 2),
-                        x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
-                        recentItem: recentItem
-                    }],
-                    backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)]
-                }
-            })
+            datasets:
+                rawData
+                    .filter(recentItem => !excludedItemIds.includes(recentItem.itemId.toString()))
+                    .map(recentItem => {
+                        return {
+                            label: recentItem.itemName,
+                            data: [{
+                                y: recentItem.count,
+                                r: Math.max(recentItem.workDone / 20, 2),
+                                x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
+                                recentItem: recentItem
+                            }],
+                            backgroundColor: _this.axoItemColors[numberToIndex(recentItem.itemId, 8)]
+                        }
+                    })
         };
 
-        
+
 
         console.log('chartData');
         console.log(chartData);
-        
-        let maxCounts = Math.max(...rawData.map(o => o.count), 0);
+
+        // let maxCounts = Math.max(...rawData.map(o => o.count), 0);
 
         _this.recentItemsChart = new Chart(context, {
             type: 'bubble',
             data: chartData,
             options: {
                 clip: {
-                    left: 10, 
-                    top: 100, 
-                    right: 0, 
+                    left: 10,
+                    top: 100,
+                    right: 0,
                     bottom: 0
                 },
                 legend: {
@@ -1574,25 +1581,25 @@ function popup() {
                             //display: false, //this removed the labels on the x-axis
                             stepSize: 1,
                             callback: function (value, index, values) {
-                                switch(value){
+                                switch (value) {
                                     case -1:
                                         return ""
                                     case 0:
                                         return "today"
-                                    case 1:
-                                        return "yesterday"
+                                    // case 1:
+                                    //     return "yesterday"
                                     default:
-                                        return `${value} days ago`;
+                                        return `${value}`;
                                 }
-                                 
+
                             },
                             min: -1
-                            
+
                         },
-                        // scaleLabel: {
-                        //      display: true,
-                        //      labelString: 'last seen days ago'
-                        //    }
+                        scaleLabel: {
+                             display: true,
+                             labelString: 'last worked on days ago'
+                           }
                     }],
                     yAxes: [{
                         gridLines: {
@@ -1604,11 +1611,11 @@ function popup() {
                             maxTicksLimit: 4,
                             //max: maxCounts + 2
                         },
-                        // scaleLabel: {
-                        //     display: true,
-                        //     labelString: 'number of engagements'
-                        //   }
-                    }],                    
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'number of switches'
+                          }
+                    }],
 
                 },
                 tooltips: {
@@ -1617,7 +1624,7 @@ function popup() {
                         //     return data.datasets[tooltipItem[0].datasetIndex].label;
                         // },
 
-                        label: function(tooltipItem, data) {
+                        label: function (tooltipItem, data) {
                             // let recentItemWorkDone = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].r * 30/60);
                             // let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
                             // let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
@@ -1625,7 +1632,7 @@ function popup() {
                             let recentItemWorkDone = minutesToString(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].recentItem.workDone);
                             let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
                             let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
-                            let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';                            
+                            let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';
                             // return `${recentItemName} - ${recentItemWorkDone.toFixed(2)} hrs logged, last log ${recentItemLastSeen} days ago (switches: ${recentItemCount}).`;
                             return `${recentItemName} (${recentItemWorkDone}hrs, ${recentItemCount}x)`;
                         }
@@ -2277,6 +2284,209 @@ function popup() {
         });
     }
 
+
+    function refreshCalendar() {
+        //get data from axo
+
+        let today = moment().startOf('day');
+        let startOfCalendar = today.clone().startOf('isoWeek').add(-3, 'week');
+        let endOfCalendar = today.clone().endOf('isoWeek');
+
+        let minutes = []
+
+        _this.myHoursApi.getActivity(startOfCalendar, endOfCalendar).then(logs => {
+
+            let minutesPerDayData = logs.reduce((accumulator, log) => {
+                let key = log.date;
+                if (key in accumulator) {
+                    accumulator[key].duration = accumulator[key].duration + (log.logDuration / 60);
+                }
+                else {
+                    accumulator[key] = {
+                        duration: log.logDuration / 60,
+                        date: moment(key).startOf('day')
+                    }
+                }
+                return accumulator;
+            }, {});
+            let minutesPerDay = Object.entries(minutesPerDayData).map(x => x[1]);
+    
+            let totalMinutes = minutesPerDay.reduce((a, log) => a + log.duration, 0);
+            $('.calendarItemsTotal').text(minutesToString(totalMinutes));
+
+            let maxMinutesInDay = Math.max(...minutesPerDay.map(x => x.duration), 0);
+            $('.calendarMaxMinutesInDay').text(minutesToString(maxMinutesInDay));
+            
+            let workDaysInRange = minutesPerDay.filter(x => x.date.isoWeekday() < 6).length;
+            $('.calendarWorkDays').text(workDaysInRange);
+            $('.calendarAverageMinutesInWorkDay').text(minutesToString(totalMinutes / workDaysInRange));
+
+            let zeroDates = [];
+            for (let currDay = startOfCalendar.clone(); currDay < endOfCalendar; currDay.add(1, 'day')) {
+                if (!minutesPerDay.find(x => x.date == currDay)) {
+                    zeroDates.push({
+                        date: currDay.clone(),
+                        duration:0
+                    })
+                }
+            }
+            minutesPerDay = minutesPerDay.concat(zeroDates);
+
+            let today = moment().startOf('day');
+            var chartData = {
+                datasets: [{
+                    data: minutesPerDay.map(dayMins => {
+                        let mins = dayMins.duration;
+
+                        // if (mins > 0) {
+                        //     let diff = (mins - (8 * 60));
+
+                        // }
+                        // let weightedDiff = Math.sign(diff) * diff^2;
+                        return {
+                            x: dayMins.date.isoWeekday(),
+                            // y: dayMins.date.startOf('isoWeek').unix(),
+                            y: dayMins.date.isoWeek(),
+                            // r: Math.max((mins + weightedDiff) / 30, 10),
+                            r: mins /30,
+                            mins: mins,
+                            date: dayMins.date,
+                            
+                        }
+                    }),
+                    backgroundColor: '#3c5081',
+                },
+          
+                {
+                    data: [ {
+                            x: today.isoWeekday(),
+                            y: today.isoWeek(),
+                            r: 520 /30,
+                        }
+                    ],
+                    backgroundColor: 'white',
+                    borderColor: '#b82f4e'
+                }
+
+                // {
+                //     data: minutesPerDay
+                //     .filter(x => x.date.isoWeekday() < 6)
+                //     .map(dayMins => {
+                //         return {
+                //             x: dayMins.date.isoWeekday(),
+                //             y: dayMins.date.isoWeek(),
+                //             r: 480 /30,
+                //             mins: 480,
+                //             date: dayMins.date,
+                //         }
+                //     }),
+                //     backgroundColor: 'white',
+                //     borderColor: 'grey'
+                // }
+            ]
+            };
+
+    
+            var calendarChartCtx = document.getElementById('calendarChart').getContext('2d');
+    
+            _this.calendarChart = new Chart(calendarChartCtx, {
+                type: 'bubble',
+                data: chartData,
+                options: {
+                    clip: {
+                        left: 10,
+                        top: 100,
+                        right: 0,
+                        bottom: 0
+                    },
+                    legend: {
+                        display: false,
+                    },
+                    scales: {
+                        xAxes: [{
+                            position: 'top',
+                            gridLines: {
+                                display: false,
+                                drawBorder: false,
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                //beginAtZero: true,
+                                // maxTicksLimit: 7,
+                                //display: false, //this removed the labels on the x-axis
+                                stepSize: 1,
+                                callback: function (value, index, values) {
+                                    switch (value) {
+                                        case 1:
+                                            return "mon"
+                                        case 2:
+                                            return "tue"
+                                        case 3:
+                                            return "wed"
+                                        case 4:
+                                            return "thu"
+                                        case 5:
+                                            return "fri"
+                                        case 6:
+                                            return "sat"
+                                        case 7:
+                                            return "sun"
+                                    }
+    
+                                },
+                                min: 0,
+                                max: 7
+                            },
+                        }],
+                        yAxes: [{
+                            // display: false,
+                            gridLines: {
+                                display: false,
+                                drawBorder: true,
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                min: startOfCalendar.isoWeek()-1,
+                                max: endOfCalendar.isoWeek()+1,
+                                stepSize: 1,
+                                reverse: true,
+                                callback: function (value, index, values) {
+                                    return (index > 0 && index < 5) ? `week ${value}` : '';
+                                }
+                                
+                            },
+                            // scaleLabel: {
+                            //     display: true,
+                            //     labelString: 'number of engagements'
+                            //   }
+                        }],
+    
+                    },
+                    tooltips: {
+                        callbacks: {
+                            // title: function (tooltipItem, data) {
+                            //     return data.datasets[tooltipItem[0].datasetIndex].label;
+                            // },
+    
+                            label: function (tooltipItem, data) {
+                                let mins = minutesToString(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].mins);
+                                let date = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].date.format('lll');
+                                return `${date}: ${mins}`;
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+
+        })
+
+
+
+
+    }
 
 
 

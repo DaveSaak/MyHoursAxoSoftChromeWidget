@@ -91,6 +91,11 @@
         </li>
 
         <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" id="pills-calendar-tab" data-toggle="pill" href="#pills-calendar" role="tab"
+                aria-controls="pills-calendar" aria-selected="false">Calendar</a>
+        </li>        
+
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link" id="pills-devops-assignments-tab" data-toggle="pill" href="#pills-devops-assignments" role="tab"
                 aria-controls="pills-devops-assignments" aria-selected="false">DevOps</a>
         </li>        
@@ -425,6 +430,53 @@
             </div>
 
         </div>        
+
+        <div class="tab-pane fade" id="pills-calendar" role="tabpanel" aria-labelledby="pills-calendar-tab">
+            <div id="calendarContainer" class="mx-3 mb-3" style="displayX: none;">
+
+                <div class="headerBar mb-4">
+                    
+                    <div class="statistics-sm">
+                        <div class="calendarItemsTotal">-</div>
+                        <div>work hrs</div>
+                    </div>  
+
+                    <div class="statistics-sm">
+                        <div class="calendarWorkDays">-</div>
+                        <div>work days</div>
+                    </div>
+
+                    <div class="statistics-sm">
+                        <div class="calendarMaxMinutesInDay">-</div>
+                        <div>max hrs / day</div>
+                    </div>
+                    
+                    <div class="statistics-sm">
+                        <div class="calendarAverageMinutesInWorkDay">-</div>
+                        <div>avg / work day</div>
+                    </div>
+                    
+
+                    <div class="statistics-sm ml-auto">
+                        <div>4</div>
+                        <div>weeks period</div>
+                    </div> 
+
+                    <div class="ml-autox">
+                        <button id='refreshCalendar' class="btn btn-light" type="button" title='back'>
+                            <i class="far fa-sync"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="mx-5" style="margin-right: 5rem !important">
+                    <canvas id="calendarChart"  width="450" height="200"></canvas>
+                </div>
+
+            </div>
+
+        </div>  
 
         <div class="tab-pane fade" id="pills-devops-assignments" role="tabpanel" aria-labelledby="pills-devops-assignments-tab">
             <div id="devOpsAssignmentsContainer" class="mx-3 mb-3" style="displayX: none;">
