@@ -55,6 +55,7 @@ function CalendarView(myHoursApi, viewContainer){
             let today = moment().startOf('day');
             var chartData = {
                 datasets: [{
+                    label: 'tracked',
                     data: minutesPerDay.map(dayMins => {
                         let mins = dayMins.duration;
 
@@ -78,6 +79,7 @@ function CalendarView(myHoursApi, viewContainer){
                 },
           
                 {
+                    label: 'today',
                     data: [ {
                             x: today.isoWeekday(),
                             y: today.isoWeek(),
@@ -87,23 +89,24 @@ function CalendarView(myHoursApi, viewContainer){
                     backgroundColor: 'white',
                     borderColor: 'grey'
                     // borderColor: '#b82f4e'
-                }
+                },
 
-                // {
-                //     data: minutesPerDay
-                //     .filter(x => x.date.isoWeekday() < 6)
-                //     .map(dayMins => {
-                //         return {
-                //             x: dayMins.date.isoWeekday(),
-                //             y: dayMins.date.isoWeek(),
-                //             r: 480 /30,
-                //             mins: 480,
-                //             date: dayMins.date,
-                //         }
-                //     }),
-                //     backgroundColor: 'white',
-                //     borderColor: 'grey'
-                // }
+                {
+                    label: 'plan',
+                    data: minutesPerDay
+                    .filter(x => x.date.isoWeekday() < 6)
+                    .map(dayMins => {
+                        return {
+                            x: dayMins.date.isoWeekday(),
+                            y: dayMins.date.isoWeek(),
+                            r: 450 /30,
+                            mins: 450,
+                            date: dayMins.date,
+                        }
+                    }),
+                    backgroundColor: 'lightgrey',
+                    //borderColor: 'lightgrey'
+                }
             ]
             };
 
@@ -185,14 +188,21 @@ function CalendarView(myHoursApi, viewContainer){
                     },
                     tooltips: {
                         callbacks: {
-                            // title: function (tooltipItem, data) {
-                            //     return data.datasets[tooltipItem[0].datasetIndex].label;
-                            // },
+                            
+                            title: function (tooltipItem, data) {
+                                let selectedDate = moment();
+                                selectedDate.isoWeek(tooltipItem.yLabel);
+                                selectedDate.isoWeekday(tooltipItem.xLabel);
+                                return selectedDate.format('ll');
+                            },
+                            
     
                             label: function (tooltipItem, data) {
+                                let label = data.datasets[tooltipItem.datasetIndex].label;
                                 let mins = minutesToString(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].mins);
-                                let date = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].date.format('lll');
-                                return `${date}: ${mins}`;
+                                //let date = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].date.format('ll');
+                                // return `${date}, ${label}: ${mins}`;
+                                return `${label}: ${mins}`;
                             }
                         }
                     }
