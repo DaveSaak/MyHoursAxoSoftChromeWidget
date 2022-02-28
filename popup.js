@@ -40,6 +40,8 @@ function popup() {
     _this.recentItemsChart = undefined;
     _this.calendarChart = undefined;
 
+    _this.calendarView = new CalendarView(_this.myHoursApi, $('#calendarContainer'));
+    
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
@@ -49,8 +51,11 @@ function popup() {
 
     _this.options.load().then(
         function () {
-            _this.allHoursApi = new AllHoursApi(
-                _this.options);
+            _this.allHoursApi = new AllHoursApi(_this.options);
+            _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
+            _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.options, _this.axoItemColors);
+
+
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 
@@ -174,7 +179,7 @@ function popup() {
             getCurrentBalance();
         });
 
-        $('#refreshRecentAxoItems').click(function () {
+        $('#refreshRecentItems').click(function () {
             getRecentAxoItems();
         });
 
@@ -192,7 +197,8 @@ function popup() {
 
 
         $('#pills-calendar-tab').click(function () {
-            refreshCalendar();
+            _this.calendarView.show();
+            // refreshCalendar();
         });
 
 
@@ -829,6 +835,7 @@ function popup() {
         return buttons;
     }
 
+    /*
     function getRecentAxoItemsActionsDropDown(data) {
 
         return $('<button class="btn btn-transparent">')
@@ -857,6 +864,7 @@ function popup() {
                     )
             })
     }
+    */
 
     function getTimes(data, timeline) {
         _this.myHoursApi.getTimes(data.id).then(
@@ -1012,7 +1020,12 @@ function popup() {
         }
     }
 
+    
     function getCurrentBalance() {
+
+        _this.balanceView.show();
+
+        /*
         $('#currentBalancePlan').text('-');
         $('#currentBalanceAttendance').text('-');
         $('#currentBalanceRunning').text('-');
@@ -1098,7 +1111,9 @@ function popup() {
         else {
             $('#currentBalanceMinutes').text('error logging in');
         }
+        */
     }
+    
 
     function getDevOpsItemsActionsDropDown(item) {
 
@@ -1190,6 +1205,9 @@ function popup() {
     };
 
     function getRecentAxoItems() {
+        _this.recentItemsView.show();
+
+        /*
         _this.axoSoftApi.getWorkLogsWithinLastTenDays().then(
             function (recentWorkLogsWithinTenDaysResponse) {
                 $('#recentItemsWorkLogsCount').text(recentWorkLogsWithinTenDaysResponse.data.length);
@@ -1503,12 +1521,14 @@ function popup() {
 
             }
         );
+        */
     }
 
     function getSpinner() {
         return $('<i style="font-size:0.9em; font-weight:600;" class="fas fa-spinner fa-spin"></i>');
     }
 
+/*
     function drawRecentItemsChart(context, rawData) {
         if (_this.recentItemsChart != undefined) {
             _this.recentItemsChart.destroy();
@@ -1642,7 +1662,9 @@ function popup() {
         });
 
     }
+    */
 
+/*
     function drawWorkLogTypeChart(context, data) {
 
         if (_this.worklogTypeChart != undefined) {
@@ -1703,7 +1725,9 @@ function popup() {
 
 
     }
+    */
 
+    /*
     function drawDayBalanceChart(userId, today, currentAttendance) {
         var tenDaysAgo = today.clone().add(-14, 'day');
 
@@ -1910,11 +1934,12 @@ function popup() {
                         }
                     }
                 });                
-*/
+
 
             }
         );
     }
+    */
 
     function login(email, password) {
         _this.myHoursApi.getAccessToken(email, password).then(
@@ -2172,6 +2197,7 @@ function popup() {
 
     }
 
+    /*
     function minutesToString(minutes, showSign) {
         let sign = Math.sign(minutes);
 
@@ -2192,6 +2218,7 @@ function popup() {
 
         //return (Math.round(minutes / 60 * 100) / 100) + "h";
     }
+    */
 
     function nameToIndex(s, length) {
         if (!s) {
@@ -2201,12 +2228,14 @@ function popup() {
         return sumOfChars % length;
     }
 
+    /*
     function numberToIndex(num, length) {
         if (!num) {
             return 0;
         }
         return num % length;
     }
+    */
 
     function showRatio(timeRatio) {
         showRatioOnCard(timeRatio, $('#mhAhRatioText'));
@@ -2284,7 +2313,7 @@ function popup() {
         });
     }
 
-
+/*
     function refreshCalendar() {
         //get data from axo
 
@@ -2477,17 +2506,9 @@ function popup() {
                     }
                 }
             });
-
-
-
-
         })
-
-
-
-
     }
-
+*/
 
 
     initInterface();
