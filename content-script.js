@@ -55,7 +55,6 @@ chrome.runtime.onMessage.addListener(function (request) {
             if (colorIndex > -1) {
                 logColor = colors[colorIndex];
                 textColor = textColors[colorIndex];
-                // textColor = 'white';
             }
 
             let logStyle = 'solid 6px ' + logColor;
