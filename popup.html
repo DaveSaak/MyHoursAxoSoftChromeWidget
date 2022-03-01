@@ -25,7 +25,12 @@
     <script src="devOpsApi.js"></script>
 
     <script src="worklog.js"></script>
+    <script src="time-logs-view.js"></script>
+    <script src="balance-view.js"></script>
+    <script src="recent-items-view.js"></script>
+    <script src="calendar-view.js"></script>
 
+    <script src="utils.js"></script>
     <script src="popup.js"></script>
     <script src="timeRatio.js"></script>
 
@@ -249,7 +254,7 @@
         </div>
 
         <div class="tab-pane fade" id="pills-balance" role="tabpanel" aria-labelledby="pills-balance-tab">
-            <div id="homeContainer" class="mx-3 mb-3" style="displayX: none;">
+            <div id="balanceContainer" class="mx-3 mb-3" style="displayX: none;">
                 <div class="headerBar">
                     <!-- <div> -->
                     <!-- <button id='closeHome' class="btn btn-light hiddenButton" type="button" title='back'>
@@ -326,7 +331,7 @@
         </div>
 
         <div class="tab-pane fade" id="pills-axo" role="tabpanel" aria-labelledby="pills-axo-tab">
-            <div id="axoViewContainer" class="mx-3 mb-3" style="displayX: none;">
+            <div id="recentItemsContainer" class="mx-3 mb-3" style="displayX: none;">
 
                 <div class="headerBar">
                     <div class="statistics-sm">
@@ -350,7 +355,7 @@
                     </div> 
 
                     <div class="ml-autoX">
-                        <button id='refreshRecentAxoItems' class="btn btn-light" type="button" title='back'>
+                        <button id='refreshRecentItems' class="btn btn-light" type="button" title='back'>
                             <i class="far fa-sync"></i>
                         </button>
                     </div>
@@ -379,7 +384,7 @@
         </div>
 
         <div class="tab-pane fade" id="pills-worklogtypes" role="tabpanel" aria-labelledby="pills-worklogtypes-tab">
-            <div id="axoViewContainer" class="mx-3 mb-3" style="displayX: none;">
+            <div id="worklogTypesContainer" class="mx-3 mb-3" style="displayX: none;">
 
                 <div class="headerBar">
                     <div class="statistics-sm">
