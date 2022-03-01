@@ -1,6 +1,7 @@
 console.log('hello from content script');
 
 var colors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
+var textColors = ['#ffffff', '#ffffff', "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"];
 
 chrome.runtime.onMessage.addListener(function (request) {
     console.log('content script - got request: ' + request.type);
@@ -50,8 +51,10 @@ chrome.runtime.onMessage.addListener(function (request) {
 
             let colorIndex = numberToIndex(itemId, 8);
             let logColor = 'whitesmoke';
+            let textColor = 'black';
             if (colorIndex > -1) {
                 logColor = colors[colorIndex];
+                textColor = textColors[colorIndex];
             }
 
             let logStyle = 'solid 6px ' + logColor;
@@ -64,7 +67,7 @@ chrome.runtime.onMessage.addListener(function (request) {
                     console.log(timelineContentItem);
                     let timelineItem = $(timelineContentItem).closest('.vis-item');
                     // timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:white !important; border-color:' + logColor + ' !important;');
-                    timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:' + logColor + ' !important; border-color:' + logColor + ' !important; border-radius: 0 !important;');
+                    timelineItem.attr('style', `background-color: ${logColor} !important; opacity:0.85; line-height: 1.5rem; font-size: 0.88em; color: ${textColor} !important; border-color: ${logColor} !important; border-radius: 0 !important;`);
                     
                     //timelineItem.css('background-color', logColor);
                     // timelineItem.css('color', 'white');
