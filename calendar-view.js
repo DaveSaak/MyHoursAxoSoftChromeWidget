@@ -51,7 +51,16 @@ function CalendarView(myHoursApi, viewContainer){
                 }
             }
             minutesPerDay = minutesPerDay.concat(zeroDates);
+            minutesPerDay.sort((a,b) => a.date > b.date);
 
+            let calendarContainer = $('#calendarChart');
+
+            minutesPerDay.forEach(element => {
+                calendarContainer.append($('<div class="calendar-day">'));
+                
+            });
+
+            /*
             let today = moment().startOf('day');
             var chartData = {
                 datasets: [{
@@ -109,6 +118,7 @@ function CalendarView(myHoursApi, viewContainer){
                 }
             ]
             };
+            */
 
     
             var calendarChartCtx = document.getElementById('calendarChart').getContext('2d');
