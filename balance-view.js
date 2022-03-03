@@ -100,7 +100,7 @@ function BalanceView(allHoursApi, viewContainer){
             function (data) {
                 //var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.PaidPresenceValue);
                 var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.DailyBalanceValue);
-                //dayDifferences.push(currentAttendance);
+                dayDifferences.push(currentAttendance);
 
                 let periodDiff = dayDifferences.reduce((a, b) => a + b, 0);
                 $("#currentBalancePeriodDiff").text(minutesToString(periodDiff));
@@ -108,8 +108,8 @@ function BalanceView(allHoursApi, viewContainer){
 
                 var runningDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.RunningBalanceValue);
 
-                // var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
-                // labels.push(today.format('ddd'));
+                var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+                labels.push(today.format('ddd'));
 
                 var labels = data.DailyCalculations.map(x => moment(x.DateTime));
                 labels.push(today);
