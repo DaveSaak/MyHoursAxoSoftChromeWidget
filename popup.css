@@ -575,3 +575,15 @@ div.logContainer:hover {
 .btn-group button.btn-transparent:first-child{
     border-color: transparent;
 }
+
+#calendarChart {
+    display: grid;
+    grid-template-columns: repeat(7, 4rem);
+    grid-template-rows: 3rem repeat(4, 4rem);
+    grid-auto-flow: column;
+}
+
+.calendar-day {
+    background-color: #EDEDED;
+    border: 1px solid white;
+}
