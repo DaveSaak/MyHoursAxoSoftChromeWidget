@@ -355,7 +355,7 @@ function RecentItemsView(axoSoftApi, options, axoItemColors, viewContainer){
                             label: recentItem.itemName,
                             data: [{
                                 y: recentItem.count,
-                                r: Math.max(recentItem.workDone / 10, 2),
+                                r: Math.max(recentItem.workDone / 15, 2),
                                 x: now.diff(recentItem.lastSeen.startOf('day'), 'days'),
                                 recentItem: recentItem
                             }],
