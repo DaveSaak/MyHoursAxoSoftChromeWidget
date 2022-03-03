@@ -578,12 +578,19 @@ div.logContainer:hover {
 
 #calendarChart {
     display: grid;
-    grid-template-columns: repeat(7, 4rem);
-    grid-template-rows: 3rem repeat(4, 4rem);
+    grid-template-columns: 2.5rem repeat(40, 1rem);
+    grid-template-rows: 1rem repeat(7, 1rem);
     grid-auto-flow: column;
+    gap: 2px;
 }
 
 .calendar-day {
     background-color: #EDEDED;
-    border: 1px solid white;
+    /* border: 2px solid white; */
 }
+
+.calendar-day-name {
+    font-size: 0.7em;
+}
+
+
