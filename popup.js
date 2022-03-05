@@ -191,7 +191,12 @@ function popup() {
         
         $('#pills-ratio-tab').click(function () {
             _this.ratioView.show();
+        });  
+        
+        $('#refreshRatio').click(function () {
+            _this.ratioView.show();
         });        
+        
 
         $('.showLogsSwitch').click(function () {
             let show = $('#showLogsSwitch').prop("checked");

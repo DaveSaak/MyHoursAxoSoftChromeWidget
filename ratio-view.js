@@ -23,6 +23,7 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
                         let ratios = [];
                         let invalidRatios = [];
                         let labels = [];
+                        let invalidRatioCount = 0;
                         for (let currDay = twoWeeksAgo.clone(); currDay < today; currDay.add(1, 'day')) {
                             labels.push(currDay.clone());
 
@@ -38,12 +39,15 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
                                 } else {
                                     ratios.push(undefined);
                                     invalidRatios.push(ratio * 100);
+                                    invalidRatioCount = invalidRatioCount + 1
                                 }
                             } else {
                                 ratios.push(undefined);
                                 invalidRatios.push(undefined);
                             }
                         }
+
+                        $('#invalidRatioCount').text(invalidRatioCount);
 
 
                         var thresholdLowArray = new Array(ratios.length).fill(90);
