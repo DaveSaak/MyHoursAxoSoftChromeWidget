@@ -260,8 +260,31 @@ function RecentItemsView(axoSoftApi, options, axoItemColors, viewContainer){
                 // var worklogTypeTodayCtx = document.getElementById('worklogTypeTodayChart').getContext('2d');
                 // drawWorkLogTypeChart(worklogTypeTodayCtx, worklogTypeTodayData);
 
+
+                // chart shows data per item id, work type is ignored
+                let recentAxoItems2 = recentWorkLogsWithinTenDaysResponse.data.reduce((accumulator, workLog) => {
+                    let key = workLog.item.id;
+                    if (key in accumulator) {
+                        accumulator[key].lastSeen = moment.max(accumulator[key].lastSeen, moment(workLog.date_time));
+                        accumulator[key].count = accumulator[key].count + 1;
+                        accumulator[key].workDone = accumulator[key].workDone + workLog.work_done.duration_minutes;
+                    }
+                    else {
+                        accumulator[key] = {
+                            itemId: workLog.item.id,
+                            itemName: workLog.item.name,
+                            workLogTypeId: workLog.work_log_type.id,
+                            workLogTypeName: workLog.work_log_type.name,
+                            lastSeen: moment(workLog.date_time),
+                            count: 1,
+                            workDone: workLog.work_done.duration_minutes,
+                        }
+                    }
+                    return accumulator;
+                }, {});
+                recentAxoItems2 = Object.entries(recentAxoItems2).map(x => x[1]);
                 var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
-                drawRecentItemsChart(recentItemsCtx, recentAxoItems);
+                drawRecentItemsChart(recentItemsCtx, recentAxoItems2);
 
 
 
@@ -449,8 +472,9 @@ function RecentItemsView(axoSoftApi, options, axoItemColors, viewContainer){
                             let recentItemCount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
                             let recentItemLastSeen = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].x;
                             let recentItemName = data.datasets[tooltipItem.datasetIndex].label || '';
+                            let recentItemId = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].recentItem.itemId;
                             // return `${recentItemName} - ${recentItemWorkDone.toFixed(2)} hrs logged, last log ${recentItemLastSeen} days ago (switches: ${recentItemCount}).`;
-                            return `${recentItemName} (${recentItemWorkDone}hrs, ${recentItemCount}x)`;
+                            return `${recentItemId} ${recentItemName} (${recentItemWorkDone}hrs, ${recentItemCount}x)`;
                         }
                     }
                 }
