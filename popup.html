@@ -36,15 +36,10 @@
 
     <script src="toastr.min.js"></script>
     <link href="toastr.min.css" rel="stylesheet"></link> 
-
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha512-6S2HWzVFxruDlZxI3sXOZZ4/eJ8AcxkQH1+JjSe/ONCEqR9L4Ysq5JdT5ipqtzU7WHalNwzwBv+iE51gNHJNqQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-
     
     <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
 
-    <!-- <script src="popper.min.js"></script> -->
     <link rel="stylesheet" type="text/css" href="css/inter.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="css/sds.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="css/fontawesome.min.css" media="screen" />
@@ -74,9 +69,6 @@
 
 
     <ul class="nav nav-pills py-2 px-3 mb-3" id="pills-tab" role="tablist">
-        <!-- <li class="mr-auto">
-            <img src="images/mono.svg" alt="">
-        </li> -->
         <li class="nav-item d-flex align-items-center">
             <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab"
                 aria-controls="pills-home" aria-selected="true">Time logs</a>
@@ -164,37 +156,6 @@
                             <i class="far fa-sync"></i>
                         </button>
                     </div>                    
-                    
-                    <!-- <div class="stats-card-deck ml-auto" id="stats">
-                        <div class="card text-left shadow-sm border-0 allHoursStats">
-                            <div class="d-flex align-items-center" style="padding: 0.42rem 0.75rem 0.42rem 0.75rem">
-                                <div id="ahAttendanceTitle" class="mr-1 stats-label">AH</div>
-                                <div id="ahAttendance" class="ml-auto stats-data"></div>
-                            </div>
-                        </div>
-
-                        <div class="card text-left shadow-sm border-0 myHoursStats">
-                            <div class="d-flex align-items-center" style="padding: 0.42rem 0.75rem 0.42rem 0.75rem">
-                                <div class="mr-1 stats-label mr-auto">MH</div>
-                                <div id="mhAhRatioText" class="stats-sub-data blink92">
-                                    <i class="fal fa-exclamation-circle"></i>
-                                </div>
-                                <div id="mhTotal" class="stats-data ml-2"></div>
-                            </div>
-                        </div>
-
-                        <div class="card text-left shadow-sm border-0 axoStats">
-                            <div class="d-flex align-items-center" style="padding: 0.42rem 0.75rem 0.42rem 0.75rem">
-                                <div id="axoTitle" class="mr-1 stats-label mr-auto">Axo</div>
-                                <div id="axoAhRatioText" class="stats-sub-data blink92">
-                                    <i class="fal fa-piggy-bank"></i>
-                                </div>
-                                <div id="axoTotal" class="stats-data ml-2"></div>
-                            </div>
-                        </div>
-                    </div> -->
-
-
                 </div>
 
                 <div id="alertContainer" class="" style="display: none">
@@ -254,23 +215,11 @@
         </div>
 
         <div class="tab-pane fade" id="pills-balance" role="tabpanel" aria-labelledby="pills-balance-tab">
-            <div id="balanceContainer" class="mx-3 mb-3" style="displayX: none;">
+            <div id="balanceContainer" class="mx-3 mb-3">
                 <div class="headerBar">
-                    <!-- <div> -->
-                    <!-- <button id='closeHome' class="btn btn-light hiddenButton" type="button" title='back'>
-                        <i class="far fa-angle-left"></i>
-                    </button> -->
-                    <!-- </div> -->
-
-                    <!-- <div id="homeGreeting" class="ml-2 align-self-center mr-auto">
-                        <h5></h5>
-                    </div> -->
-
                     <div class="statistics-sm">
                         <div id="currentBalanceRunning">-</div>
                         <div>balance</div>
-
-                        <!-- <small id="currentBalanceDiff" class="small">-</small> -->
                     </div>
 
                     <div class="statistics-sm">
@@ -282,18 +231,6 @@
                         <div id="currentBalancePeriodDiff">-</div>
                         <div>period diff</div>
                     </div>                    
-
-                    <!-- <div class="statistics-sm">
-                        <div id="currentBalanceAttendance">-</div>
-                        <div>Attendance</div>
-                    </div> -->
-
-                    <!-- <div class="statistics-sm">
-                            <div>Vacation</div>
-                            <div id="currentVacationDays">-</div>
-                        </div>  -->
-
-                    <!-- </div> -->
 
                     <div class="statistics-sm ml-auto">
                         <div>14</div>
@@ -308,15 +245,6 @@
 
                 </div>
 
-                <!-- <div class="m-3 d-flex justify-content-center">
-                    <button class="btn btn-outline-primary mx-1 px-4 py-2">Arrival</button>
-                    <button class="btn btn-outline-primary mx-1 px-4 py-2">Departure</button>
-                    <button class="btn btn-outline-primary mx-1 px-4 py-2">Lunch</button>
-                    <button class="btn btn-outline-primary mx-1 px-4 py-2">Work from home</button>
-                    <button class="btn btn-outline-primary mx-1 px-4 py-2">Business departure</button>
-                </div> -->
-
-                <!-- <h5>Daily Diffs</h5> -->
                 <div class="m-3">
                     <h6>Day diffs</h6>
                     <canvas id="dayBalanceChart" width="380" height="80"></canvas>
@@ -362,17 +290,8 @@
 
                 </div>
 
-                <!-- <div class="m-3">
-                    <canvas id="worklogTypeChart" width="380" height="100"></canvas>
-                </div> -->
-
-
-                <!-- <div class="m-3">
-                    <canvas id="worklogTypeTodayChart" width="380" height="100"></canvas>
-                </div> -->
 
                 <div class="m-3 mt-4">
-                    <!-- <h6>Running balance</h6> -->
                     <canvas id="recentItemsChart" width="380" height="120"></canvas>
                 </div> 
 
@@ -424,14 +343,6 @@
                     <canvas id="worklogTypeChart"  width="500" height="300"></canvas>
                 </div>
 
-
-                <!-- <div class="m-3">
-                    <canvas id="worklogTypeTodayChart" width="380" height="100"></canvas>
-                </div> -->
-<!-- 
-                <div id="recentAxoItems" class="customScroller mt-3" style="overflow: auto; max-height: 240px;">
-
-                </div> -->
             </div>
 
         </div>        
@@ -531,205 +442,11 @@
             </div>
 
         </div>        
-
-
     </div>
-
-
-    <!-- <div id='mainContainer' class="mx-3 mb-3" style="display: none;">
-
-        <div class="headerBar">
-            <button class="btn btn-light">
-                <i class="fal fa-stopwatch"></i>
-                Home
-            </button>
-            <button class="btn btn-light">
-                <i class="fal fa-stopwatch"></i>
-            </button>
-
-        </div>
-
-        <div class="headerBar">
-            <div class="">
-                <button id="previousDay" class="btn btn-light">
-                    <i class="far fa-angle-left"></i>
-                </button>
-
-                <button id="today" class="btn btn-light" style='width:150px'>
-                    <span id='current-date' class='date'>date goes here</span>
-                </button>
-
-                <button id="nextDay" class="btn btn-light">
-                    <i class="far fa-angle-right"></i>
-                </button>
-            </div>
-
-            <div class="stats-card-deck ml-auto" id="stats">
-                <div class="card text-left shadow-sm border-0 allHoursStats">
-                    <div class="d-flex align-items-center" style="padding: 0.42rem 0.75rem 0.42rem 0.75rem">
-                        <div id="ahAttendanceTitle" class="mr-1 stats-label">AH</div>
-                        <div id="ahAttendance" class="ml-auto stats-data"></div>
-                    </div>
-                </div>
-
-                <div class="card text-left shadow-sm border-0 myHoursStats">
-                    <div class="d-flex align-items-center" style="padding: 0.42rem 0.75rem 0.42rem 0.75rem">
-                        <div class="mr-1 stats-label mr-auto">MH</div>
-                        <div id="mhAhRatioText" class="stats-sub-data blink92">
-                            <i class="fal fa-exclamation-circle"></i>
-                        </div>
-                        <div id="mhTotal" class="stats-data ml-2"></div>
-                    </div>
-                </div>
-
-                <div class="card text-left shadow-sm border-0 axoStats">
-                    <div class="d-flex align-items-center" style="padding: 0.42rem 0.75rem 0.42rem 0.75rem">
-                        <div id="axoTitle" class="mr-1 stats-label mr-auto">Axo</div>
-                        <div id="axoAhRatioText" class="stats-sub-data blink92">
-                            <i class="fal fa-piggy-bank"></i>
-                        </div>
-                        <div id="axoTotal" class="stats-data ml-2"></div>
-                    </div>
-                </div>
-            </div>
-
-            <button id='optionsButton' class="btn mr-1 btn-light ml-1" type="button" title='settings'>
-                <i class="far fa-cog"></i>
-            </button>
-        </div>
-
-        <div id="alertContainer" class="" style="display: none">
-            <div class="alert alert-primary" role="alert">
-                <span id='alertText'></span>
-            </div>
-        </div>
-
-        <div class="" style="margin: 20pxX; display: none;">
-            <div class="containerQ is-fluidQ">
-                <div id='mainContainer3'>
-                    <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-3">
-            <div class="hero-footQ my-2">
-                <div id="topContainer" class="container is-fluid customScroller p-0"
-                    style="margin-left:0px;margin-right:0px; max-width: 780px;">
-                    <div id='timelineContainer'>
-                        <div id='timeline'>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="headerBar">
-            <button id='copyToAxoSoftButton' class="mr-2 btn btn-primary" type="button"
-                title='copy My Hours logs to Axo worklog'>
-                <i class="far fa-seedling"></i>
-                copy logs to Axo
-            </button>
-
-            <button id='deleteWorklogsFromAxoSoftButton' class="mr-2 btn btn-secondary" type="button"
-                title='delete Axo worklogs'>
-                <i class="far fa-trash"></i>
-                delete worklogs from Axo
-            </button>
-
-            <div class="custom-control custom-switch d-flex align-self-center ml-auto">
-                <input type="checkbox" class="custom-control-input showLogsSwitch" id="showLogsSwitch" checked>
-                <label class="custom-control-label noselect" for="showLogsSwitch">Show logs</label>
-            </div>
-        </div>
-
-        <section class="customScroller mt-3" style="overflow: auto; max-height: 330px;">
-            <div class="" id="logsContainer">
-                <div id='logs'>
-                </div>
-            </div>
-        </section>
-    </div> -->
-
-    <!-- <div id="homeContainer" class="mx-3 mb-3" style="display: none;">
-        <div class="headerBar">
-            <button id='closeHome' class="btn btn-light hiddenButton" type="button" title='back'>
-                <i class="far fa-angle-left"></i>
-            </button>
-
-            <div id="homeGreeting" class="ml-2 align-self-center mr-auto">
-                <h5></h5>
-            </div>
-
-            <div class="statistics-sm">
-                <div id="currentBalanceRunning">-</div>
-                <div>Balance</div>
-
-            </div>
-
-            <div class="statistics-sm">
-                <div id="currentBalanceDiff">-</div>
-                <div>Diff</div>
-
-            </div>
-
-            <div class="statistics-sm">
-                <div id="currentBalanceAttendance">-</div>
-                <div>Attendance</div>
-            </div>
-
-            <div class="">
-                <button id='refreshHome' class="btn btn-light hiddenButton" type="button" title='back'>
-                    <i class="far fa-sync"></i>
-                </button>
-            </div>
-
-        </div>
-
-        <div class="m-3">
-            <canvas id="runningBalanceChart" width="380" height="80"></canvas>
-        </div>        
-    </div> -->
-
-    <!-- <div id="axoViewContainer" class="mx-3 mb-3" style="display: none;">
-
-        <div class="headerBar">
-            <div>
-                <button id='closeAxoView' class="btn btn-light" type="button" title='back'>
-                    <i class="far fa-angle-left"></i>
-                </button>
-            </div>
-            <div class="ml-2">
-                
-                Recent Axo items and Work Log Type distribution
-                
-            </div>
-            <div class="ml-auto">
-                <button id='refreshRecentAxoItems' class="btn btn-light" type="button" title='back'>
-                    <i class="far fa-sync"></i>
-                </button>
-            </div>
-
-        </div>
-
-        <div class="m-3">
-            <canvas id="worklogTypeChart" width="380" height="100"></canvas>
-        </div>
-
-
-        <div class="m-3">
-            <canvas id="worklogTypeTodayChart" width="380" height="100"></canvas>
-        </div>
-
-        <div id="recentAxoItems" class="customScroller mt-3" style="overflow: auto; max-height: 300px;">
-
-        </div>
-    </div> -->
 
     <div id='loadingContainer' style="display: none;">
         <div class="d-flex justify-content-center m-4">
-            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+            <div class="spinner-border" style="width: 2rem; height: 2rem;" role="status">
                 <span class="sr-only">connecting to myhours...</span>
             </div>
         </div>
