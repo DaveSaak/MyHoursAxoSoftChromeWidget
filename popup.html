@@ -29,6 +29,7 @@
     <script src="balance-view.js"></script>
     <script src="recent-items-view.js"></script>
     <script src="calendar-view.js"></script>
+    <script src="ratio-view.js"></script>
 
     <script src="utils.js"></script>
     <script src="popup.js"></script>
@@ -74,6 +75,10 @@
                 aria-controls="pills-home" aria-selected="true">Time logs</a>
         </li>
         <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" id="pills-ratio-tab" data-toggle="pill" href="#pills-ratio" role="tab"
+                aria-controls="pills-ratio" aria-selected="true">Ratio</a>
+        </li>        
+        <li class="nav-item d-flex align-items-center">
             <a class="nav-link" id="pills-balance-tab" data-toggle="pill" href="#pills-balance" role="tab"
                 aria-controls="pills-balance" aria-selected="false">Balance</a>
         </li>
@@ -109,8 +114,6 @@
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
             <div id='mainContainer' class="mx-3 mb-3" style="displayX: none;">
-
-
                 <div class="headerBar">
                     <div class="statistics-sm">
                         <div id="ahAttendance">-</div>
@@ -212,6 +215,29 @@
                 </section>
             </div>
 
+        </div>
+
+        <div class="tab-pane fade" id="pills-ratio" role="tabpanel" aria-labelledby="pills-ratio-tab">
+            <div id="ratioContainer" class="mx-3 mb-3">
+                <div class="headerBar">
+                    <div class="statistics-sm">
+                        <div id="invalidRatioCount">-</div>
+                        <div>invalid ratio</div>
+                    </div>
+
+                    <div class="ml-autoX">
+                        <button id='refreshRatio' class="btn btn-light hiddenButton" type="button" title='back'>
+                            <i class="far fa-sync"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="m-3">
+                    <!-- <h6>Day diffs</h6> -->
+                    <canvas id="ratioChart" width="380" height="200"></canvas>
+                </div>
+            </div>
         </div>
 
         <div class="tab-pane fade" id="pills-balance" role="tabpanel" aria-labelledby="pills-balance-tab">

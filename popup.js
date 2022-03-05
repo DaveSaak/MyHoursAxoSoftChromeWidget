@@ -55,6 +55,7 @@ function popup() {
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
             _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.options, _this.axoItemColors);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
+            _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi);
 
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
@@ -184,11 +185,13 @@ function popup() {
             getRecentAxoItems();
         });
 
-
         $('#pills-calendar-tab').click(function () {
             _this.calendarView.show();
         });
-
+        
+        $('#pills-ratio-tab').click(function () {
+            _this.ratioView.show();
+        });        
 
         $('.showLogsSwitch').click(function () {
             let show = $('#showLogsSwitch').prop("checked");
