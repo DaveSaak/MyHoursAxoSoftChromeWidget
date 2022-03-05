@@ -40,7 +40,7 @@ function popup() {
     _this.recentItemsChart = undefined;
     _this.calendarChart = undefined;
 
-    _this.calendarView = new CalendarView(_this.myHoursApi, $('#calendarContainer'));
+    
     
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
@@ -54,7 +54,7 @@ function popup() {
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
             _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.options, _this.axoItemColors);
-
+            _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
 
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
@@ -177,7 +177,7 @@ function popup() {
         });
 
         $('#refreshCalendar').click(function () {
-            refreshCalendar();
+            _this.calendarView.show();
         });
 
         $('#pills-axo-tab').click(function () {
