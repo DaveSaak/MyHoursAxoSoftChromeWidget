@@ -227,7 +227,7 @@ function AxoSoftApi(options) {
         })
     }  
 
-    _this.getWorkLogs = function (dateFrom, dateTo) {
+    _this.getWorkLogsWithinPeriod = function (dateFrom, dateTo) {
         return new Promise(function (resolve, reject) {
 
             var periodStartUtc = moment(dateFrom).startOf('day').utc().format("YYYY-MM-DDTHH:mm:ss.000") + "Z";
@@ -237,7 +237,7 @@ function AxoSoftApi(options) {
             
             console.info('getting worklogs from axosoft');
             $.ajax({
-                url: _this.options.axoSoftUrl + "/v5/work_logs?user_Id="+_this.options.axoSoftUserId+"&date_range=" + "[" + periodStartUtc + "=" + periodStartUtc + "]",
+                url: _this.options.axoSoftUrl + "/v5/work_logs?user_Id="+_this.options.axoSoftUserId+"&date_range=" + "[" + periodStartUtc + "=" + periodEndUtc + "]",
                 headers: {
                     "Authorization": "Bearer " + _this.options.axoSoftToken,
                 },

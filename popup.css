@@ -576,7 +576,8 @@ div.logContainer:hover {
     border-color: transparent;
 }
 
-#calendarChart {
+#calendarChart,
+#calendarRatioChart {
     display: grid;
     grid-template-columns: 2.5rem repeat(40, 1rem);
     grid-template-rows: 1rem repeat(7, 1rem);
