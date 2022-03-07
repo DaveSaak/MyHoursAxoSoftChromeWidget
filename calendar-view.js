@@ -58,7 +58,7 @@ function CalendarView(myHoursApi, allHoursApi, axoSoftApi, viewContainer) {
             calendarContainer.append($('<div>'));
             calendarContainer.append($('<div>'));
 
-            for (let currDay = startOfCalendar.clone(); currDay < endOfCalendar; currDay.add(1, 'day')) {
+            for (let currDay = startOfCalendar.clone(); currDay <= endOfCalendar; currDay.add(1, 'day')) {
                 if (currDay.isoWeekday() == 1) {
                     let text = '';
                     for (let currWeekDay = currDay.clone(); currWeekDay < currDay.clone().endOf('isoWeek'); currWeekDay.add(1, 'day')) {
