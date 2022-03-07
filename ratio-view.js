@@ -21,10 +21,9 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
                     _this.allHoursApi.getUserCalculations(userId, twoWeeksAgo, today).then(calculations => {
 
                         let ratios = [];
-                        let invalidRatios = [];
                         let labels = [];
                         let invalidRatioCount = 0;
-                        for (let currDay = twoWeeksAgo.clone(); currDay < today; currDay.add(1, 'day')) {
+                        for (let currDay = twoWeeksAgo.clone(); currDay <= today; currDay.add(1, 'day')) {
                             labels.push(currDay.clone());
 
                             let axoWorklogs = worklogs.filter(x => moment(x.date_time).isSame(currDay, 'day'));
@@ -33,30 +32,24 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
 
                             if (ahAttendance > 0) {
                                 let ratio = Math.floor(axoMinutesWorked * 100 / ahAttendance) / 100;
-                                if (ratio >= 0.9 && ratio <= 1) {
-                                    ratios.push(ratio * 100);
-                                    invalidRatios.push(undefined);
-                                } else {
-                                    ratios.push(undefined);
-                                    invalidRatios.push(ratio * 100);
+                                ratios.push(ratio * 100);
+                                if (ratio < 0.9 || ratio > 1) {
                                     invalidRatioCount = invalidRatioCount + 1
                                 }
-                            } else {
+                            }  else {
                                 ratios.push(undefined);
-                                invalidRatios.push(undefined);
                             }
                         }
 
                         $('#invalidRatioCount').text(invalidRatioCount);
 
-
                         var thresholdLowArray = new Array(ratios.length).fill(90);
                         var thresholdHighArray = new Array(ratios.length).fill(100);
 
-
                         var ratioChartCtx = document.getElementById('ratioChart').getContext('2d');
                         var ratioChart = new Chart(ratioChartCtx, {
-                            type: 'bar',
+                            type: 'line',
+                            steppedLine: true,
                             data: {
                                 labels: labels,
                                 datasets: [
@@ -65,28 +58,36 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
                                         type: 'line',
                                         data: thresholdLowArray,
                                         fill: false,
-                                        borderColor: 'rgb(54, 162, 235)',
-                                        pointRadius: 0
+                                        borderColor: '#3c5081',
+                                        borderWidth: 1,
+                                        pointRadius: 0,
+                                        showTooltips: false
                                     },
                                     {
                                         order: 3,
                                         type: 'line',
                                         data: thresholdHighArray,
+                                        borderWidth: 1,
                                         fill: false,
-                                        borderColor: 'rgb(54, 162, 235)',
-                                        pointRadius: 0
+                                        borderColor: '#3c5081',
+                                        pointRadius: 0,
+                                        showTooltips: false
                                     },
                                     {
                                         order: 2,
                                         data: ratios,
-                                        backgroundColor: "#3c5081",
-                                    },
-                                    {
-                                        order: 1,
-                                        data: invalidRatios,
-                                        backgroundColor: "#b82f4e",
-                                    },                                    
+                                        showLine: false,
 
+                                        pointRadius: 5,
+                                        pointBorderColor: "white",
+
+                                        pointBackgroundColor: function(context) {
+                                            var index = context.dataIndex;
+                                            var value = context.dataset.data[index];
+                                            return (value < 90 || value >= 100) ? '#b82f4e' :  '#3c5081';
+                                        }                                        
+            
+                                    },
                                 ]
                             },
                             options: {
@@ -98,8 +99,9 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
                                         // barThickness: 16,
                                         position: 'middle',
                                         gridLines: {
-                                            drawBorder: false,
-                                            display: false
+                                            // drawBorder: false,
+                                            display: false,
+                                            suggestedMin: 80,
                                         },
                                         ticks: {
                                             // maxTicksLimit: 7,
@@ -111,17 +113,17 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
                                     }],
                                     yAxes: [{
                                         gridLines: {
-                                            drawBorder: false,
-                                            //display: false,
+                                            // drawBorder: false,
+                                            // display: false,
                                         },
                                         ticks: {
                                             // beginAtZero: true,
                                             // maxTicksLimit: 7,
                                             // display: false, //this removed the labels on the x-axis
-                                            // stepSize: 20,
-                                            // callback: function (value, index, values) {
-                                            //     return minutesToString(value);
-                                            // }
+                                            stepSize: 10,
+                                            callback: function (value, index, values) {
+                                                return value + '%';
+                                            }
                                         },
                                     }]
                                 },
