@@ -196,7 +196,8 @@ function MyHoursApi(currentUser) {
                         // step: 200,
                         // maxDate: moment(date).format("YYYY-MM-DD")
                         dateFrom: moment(dateFrom).format("YYYY-MM-DD"),
-                        dateTo: moment(dateTo).format("YYYY-MM-DD")
+                        dateTo: moment(dateTo).format("YYYY-MM-DD"),
+                        UserIds: _this.currentUser.id
                     },                    
                     success: function (data) {
                         resolve(data);
