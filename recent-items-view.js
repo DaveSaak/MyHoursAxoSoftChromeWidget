@@ -368,7 +368,7 @@ function RecentItemsView(axoSoftApi, options, axoItemColors, viewContainer){
 
         let now = moment().startOf('day');
 
-        let excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds.split(';');
+        let excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds?.split(';');
         var chartData = {
             datasets:
                 rawData
