@@ -1,11 +1,12 @@
 'use strict'
 
-function RecentItemsView(axoSoftApi, options, axoItemColors, viewContainer){
+function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewContainer){
     var _this = this;
     _this.axoSoftApi = axoSoftApi;
     _this.options = options;
     _this.axoItemColors = axoItemColors;
     _this.viewContainer = viewContainer;
+    _this.myHoursApi = myHoursApi;
 
     _this.show = function() {
 

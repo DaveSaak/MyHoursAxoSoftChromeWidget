@@ -53,7 +53,7 @@ function popup() {
         function () {
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
-            _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.options, _this.axoItemColors);
+            _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.myHoursApi, _this.options, _this.axoItemColors);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
             _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi);
 
