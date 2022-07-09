@@ -4,22 +4,22 @@ function DevOpsApi(options) {
     var _this = this;
     _this.options = options;
     _this.ajaxHeaders = {
-        "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+        "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
     };
 
 
-    _this.getMyItemsIds = function(){
+    _this.getMyItemsIds = function () {
         return new Promise(function (resolve, reject) {
             console.info('getting my items from devops');
 
-            var queryData = 
-                {
-                    query:  
-                        "Select [System.Id], [System.Title], [System.State], [System.AssignedTo] " +
-                        "From WorkItems " + 
-                        "Where ([System.WorkItemType] = 'Task' OR [System.WorkItemType] = 'Bug')  AND [State] <> 'Closed' AND [State] <> 'Removed' AND [System.AssignedTo] = @Me " + 
-                        "order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
-                }
+            var queryData =
+            {
+                query:
+                    "Select [System.Id], [System.Title], [System.State], [System.AssignedTo] " +
+                    "From WorkItems " +
+                    "Where ([System.WorkItemType] = 'Task' OR [System.WorkItemType] = 'Bug')  AND [State] <> 'Closed' AND [State] <> 'Removed' AND [System.AssignedTo] = @Me " +
+                    "order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+            }
 
             $.ajax({
                 url: _this.options.devOpsInstanceUrl + "/_apis/wit/wiql?api-version=4.1",
@@ -38,13 +38,13 @@ function DevOpsApi(options) {
         })
     }
 
-    _this.getItems = function(ids) {
+    _this.getItems = function (ids) {
         return new Promise(function (resolve, reject) {
             console.info('getting items from devops');
             $.ajax({
                 url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
                 headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
                 },
                 type: "GET",
 
@@ -60,13 +60,13 @@ function DevOpsApi(options) {
     }
 
 
-    _this.getItem = function(){
+    _this.getItem = function () {
         return new Promise(function (resolve, reject) {
             console.info('getting my items from devops');
             $.ajax({
                 url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems/26?api-version=6.0",
                 headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
                 },
                 type: "GET",
 
@@ -80,28 +80,28 @@ function DevOpsApi(options) {
         })
     }
 
-    _this.updateItemRemainingAndCompletedWork = function(){
+    _this.updateItemRemainingAndCompletedWork = function () {
         return new Promise(function (resolve, reject) {
             console.info('getting my items from devops');
 
             var updateData = [
                 {
-                  "op": "add",
-                  "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
-                  "value": "101"
+                    "op": "add",
+                    "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
+                    "value": "101"
                 },
                 {
                     "op": "add",
                     "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
                     "value": "17"
-                  },
-              ]
+                },
+            ]
 
 
             $.ajax({
                 url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems/26?api-version=6.0",
                 headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
                 },
                 type: "PATCH",
                 contentType: "application/json-patch+json",
@@ -119,13 +119,13 @@ function DevOpsApi(options) {
     }
 
 
-    _this.getMyItemsX = function(){
+    _this.getMyItemsX = function () {
         return new Promise(function (resolve, reject) {
             console.info('getting my items from devops');
             $.ajax({
                 url: _this.options.devOpsInstanceUrl + "/_apis/work/accountMyWork?%24queryOption=3",
                 headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
+                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
                 },
                 type: "GET",
 
@@ -141,146 +141,116 @@ function DevOpsApi(options) {
     }
 
 
-    _this.getMyCommitsOld = function(from, to){
-        return new Promise(function (resolve, reject) {
-            console.info('getting my commits within time frame from devops');
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + 
-                `/_apis/git/repositories/414ad502-0e31-4ffa-8fd6-9a0260246b19/commits?api-version=6.0` +
-                `&searchCriteria.author=${_this.options.devOpsAuthorName}` + 
-                `&searchCriteria.fromDate=${from.toISOString()}` + 
-                `&searchCriteria.toDate=${to.toISOString()}`,
-                headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
-                },
-                type: "GET",
+    // _this.getMyCommitsOld = function (from, to) {
+    //     return new Promise(function (resolve, reject) {
+    //         console.info('getting my commits within time frame from devops');
+    //         $.ajax({
+    //             url: _this.options.devOpsInstanceUrl +
+    //                 `/_apis/git/repositories/414ad502-0e31-4ffa-8fd6-9a0260246b19/commits?api-version=6.0` +
+    //                 `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
+    //                 `&searchCriteria.fromDate=${from.toISOString()}` +
+    //                 `&searchCriteria.toDate=${to.toISOString()}`,
+    //             headers: {
+    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+    //             },
+    //             type: "GET",
 
-                success: function (response) {
-                    // console.info(response);
-                    resolve(response);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
-    }    
-
-    _this.getMyCommitsFromRepo = function(from, to, repo){
-        return new Promise(function (resolve, reject) {
-            console.info('getting my commits within time frame from devops');
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + 
-                `/_apis/git/repositories/${repo}/commits?api-version=6.0` +
-                `&searchCriteria.author=${_this.options.devOpsAuthorName}` + 
-                `&searchCriteria.fromDate=${from.toISOString()}` + 
-                `&searchCriteria.toDate=${to.toISOString()}`,
-                headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
-                },
-                type: "GET",
-
-                success: function (response) {
-                    // console.info(response);
-                    resolve(response);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
-    }     
-
-    // _this.getMyCommits = function(from, to){
-    //     let comments = [];
-    //     _this.getMyRepositories().then(repos => {
-    //         let requests = [];
-    //         repos.value?.forEach( repo => {
-    //             let url = _this.options.devOpsInstanceUrl + 
-    //             `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
-    //             `&searchCriteria.author=${_this.options.devOpsAuthorName}` + 
-    //             `&searchCriteria.fromDate=${from.toISOString()}` + 
-    //             `&searchCriteria.toDate=${to.toISOString()}`;
-
-    //             let ajaxCall = $.ajax({
-    //                 url:url,
-    //                 headers: {
-    //                     "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
-    //                 },
-    //                 type: "GET",
-    //             }).done(x => 
-    //                 comments.push(...x.value)
-    //             );
-    //             requests.push(ajaxCall);
+    //             success: function (response) {
+    //                 // console.info(response);
+    //                 resolve(response);
+    //             },
+    //             error: function () {
+    //                 reject();
+    //             }
     //         });
-
-    //         $.when(requests).then(_ => {
-    //             return comments;
-    //         });
-    //     });
-
-
-    
+    //     })
     // }
 
-    
-    _this.getMyCommits = function(from, to){
-        return new Promise(function (resolve, reject){
-            _this.getMyRepositories().then(repos => {
-                let requests = [];
-                repos.value?.forEach( repo => {
-                    let url = _this.options.devOpsInstanceUrl + 
+    // _this.getMyCommitsFromRepo = function (from, to, repo) {
+    //     return new Promise(function (resolve, reject) {
+    //         console.info('getting my commits within time frame from devops');
+    //         $.ajax({
+    //             url: _this.options.devOpsInstanceUrl +
+    //                 `/_apis/git/repositories/${repo}/commits?api-version=6.0` +
+    //                 `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
+    //                 `&searchCriteria.fromDate=${from.toISOString()}` +
+    //                 `&searchCriteria.toDate=${to.toISOString()}`,
+    //             headers: {
+    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+    //             },
+    //             type: "GET",
+
+    //             success: function (response) {
+    //                 // console.info(response);
+    //                 resolve(response);
+    //             },
+    //             error: function () {
+    //                 reject();
+    //             }
+    //         });
+    //     })
+    // }
+
+    // _this.getMyRepositories = function () {
+    //     return new Promise(function (resolve, reject) {
+    //         console.info('getting my repositories from devops');
+    //         $.ajax({
+    //             url: _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`,
+    //             headers: {
+    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+    //             },
+    //             type: "GET",
+
+    //             success: function (response) {
+    //                 // console.info(response);
+    //                 resolve(response);
+    //             },
+    //             error: function () {
+    //                 reject();
+    //             }
+    //         });
+    //     })
+    // }
+
+    _this.getMyRepositoriesAsync = async function () {
+        console.info('getting my repositories from devops');
+
+        const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;
+        const response = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+            },
+        });
+        return response.json();
+    }
+
+    _this.getMyCommitsAsync = async function (from, to) {
+        let commitPromises = [];
+        const repos = await this.getMyRepositoriesAsync();
+            repos.value.forEach(repo => {
+                const url = _this.options.devOpsInstanceUrl +
                     `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
-                    `&searchCriteria.author=${_this.options.devOpsAuthorName}` + 
-                    `&searchCriteria.fromDate=${from.toISOString()}` + 
+                    `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
+                    `&searchCriteria.fromDate=${from.toISOString()}` +
                     `&searchCriteria.toDate=${to.toISOString()}`;
 
-                    let ajaxCall = $.ajax({
-                        url:url,
-                        headers: {
-                            "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
-                        },
-                        type: "GET",
-                    });
-                    requests.push(ajaxCall);
-                    requests.push(ajaxCall);
-                });
-                
-                $.when.apply($, requests).then(x => 
-                    resolve(x[0])
-                    );
-                // $.when(...requests).done((responses) => {
-                //     resolve(responses[0].value);
-                // })
-            })
-        })
+                commitPromises.push(fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+                    },
+                }).then(res => res.json()));
+        });
+
+        let commits = [];
+        const responses = await Promise.all(commitPromises);
+        responses.forEach(response => {
+            if (response.count > 0) {
+                commits.push(...response.value);
+            }
+        });
+        return commits;
     }
-    
-    // _this.devOpsApi.getMyRepositories().then(repos => {
 
-
-    _this.getMyRepositories = function(){
-        return new Promise(function (resolve, reject) {
-            console.info('getting my repositories from devops');
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`,
-                headers: {
-                    "Authorization": "Basic " +  btoa(":" + _this.options.devOpsPersonalAccessToken) 
-                },
-                type: "GET",
-
-                success: function (response) {
-                    // console.info(response);
-                    resolve(response);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
-    }     
-
-
-    
-    
 }

@@ -1079,49 +1079,26 @@ function popup() {
                         return reject(error);
                     });
             })
-
-
     }
 
     function copyCommitMessage(myHoursLog) {
         myHoursLog?.times.forEach(element => {
-            _this.devOpsApi.getMyCommits(moment(element.startTime), moment(element.endTime)).then(
+
+            _this.devOpsApi.getMyCommitsAsync(moment(element.startTime), moment(element.endTime)).then(
                 function (data) {
-                    // let commitMessages = "";
-                    // data.value?.forEach(commit => {
-                    //     console.log(commit.message);
-                    //     commitMessages = commitMessages + 
-                    // });
-                    let comment = data.value?.map(x => x.comment).join(', ');
+                    let comment = data.map(x => x.comment).join(', ');
 
                     console.log(comment)
                     if (comment) {
                         _this.myHoursApi.updateLogDescription(myHoursLog, comment).then(x => {
                             toastr.success('Log comment updated.');
                             getLogs();
-
-                            //showAlert('Log comment updated.');
-
-                            // var notificationOptions = {
-                            //     type: 'basic',
-                            //     iconUrl: './images/ts-badge.png',
-                            //     title: 'MyHours',
-                            //     message: 'Log comment updated.'
-                            // };
-                            // chrome.notifications.create('notifyMyHoursNoteUpdated', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                        
                         });
                     } else {
                         toastr.warning('No commit messages with comments found within the time frame of the log.');
-                        // showAlert('No commit messages with comments found within the time frame of the log.');
-                        // var notificationOptions = {
-                        //     type: 'basic',
-                        //     iconUrl: './images/ts-badge.png',
-                        //     title: 'MyHours',
-                        //     message: 'No commit messages with comments found within the time frame of the log.'
-                        // };
-                        // chrome.notifications.create('notifyNoCommitMessagesFound', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });                           
                     }
                 });
+            
         });
     }
 

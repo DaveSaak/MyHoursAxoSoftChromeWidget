@@ -40,11 +40,21 @@ $(function () {
             _this.devOpsApi = new DevOpsApi(_this.options);
             _this.chromeNotifications = new ChromeNotifications();
 
-            _this.devOpsApi.getMyRepositories().then(repos => {
+            _this.devOpsApi.getMyRepositoriesAsync().then(repos => {
                 repos.value.forEach(repo => {
                     $('#devops-repos')
-                        //.append(`<input type="checkbox" id="devops-repo-${repo.id}" name="devops-repo-${repo.id}" value="${repo.id}">`)
-                        .append(`<li><span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span></li>`);
+                        .append(`<li class='d-flex'>
+                            <div for="devops-repo-${repo.id}"> 
+                                ${repo.name}
+                            </div>
+                            <div class='ml-auto'>
+                                <small class='text-muted'>
+                                    ${repo.id}
+                                </small>
+                            </div>
+                        </li>`);
+                        // .append(`<li><span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span> <small class='text-muted show-on-hover'>${repo.id}</small></li>`);
+                        // .append(`<li><span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span></li>`);
                 })
             });
 
