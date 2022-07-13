@@ -40,8 +40,8 @@ function popup() {
     _this.recentItemsChart = undefined;
     _this.calendarChart = undefined;
 
-    
-    
+
+
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
@@ -188,15 +188,15 @@ function popup() {
         $('#pills-calendar-tab').click(function () {
             _this.calendarView.show();
         });
-        
+
         $('#pills-ratio-tab').click(function () {
             _this.ratioView.show();
-        });  
-        
+        });
+
         $('#refreshRatio').click(function () {
             _this.ratioView.show();
-        });        
-        
+        });
+
 
         $('.showLogsSwitch').click(function () {
             let show = $('#showLogsSwitch').prop("checked");
@@ -878,14 +878,18 @@ function popup() {
         }
     }
 
-    
+
     function getCurrentBalance() {
         _this.balanceView.show();
     }
 
     function getDevOpsItemsActionsDropDown(item) {
 
-        return $('<button class="btn btn-transparent">')
+        let actionsContainer =  $('<div>')
+            .addClass('d-flex');
+
+
+        let startWorklogButton = $('<button class="btn btn-transparent">')
             .append($('<i class="far fa-play"></i>').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
@@ -909,21 +913,42 @@ function popup() {
                             console.info('worklog add failed');
                         }
                     )
-            })
+            });
+
+        let openItemButton = $('<button class="btn btn-transparent">')
+            .append($('<i class="far fa-rocket"></i>').attr("title", "Open time"))
+            .click(function (event) {
+                event.preventDefault();
+                console.log(item);
+
+                _this.devOpsApi.getItemAsync(item.id).then(devOpsItem => {
+                    console.log(devOpsItem);
+                    const editUrl = encodeURI(`${_this.options.devOpsInstanceUrl}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${item.id}`);
+
+                    window.open(editUrl, '_devops');
+
+                    // https://dev.azure.com/Spica-International/All%20Hours/_workitems/edit/740/
+                });
+
+            });
+
+        actionsContainer.append(startWorklogButton);
+        actionsContainer.append(openItemButton);
+
+        return actionsContainer;
     }
 
     function getMyDevOpsItems() {
-
-        _this.devOpsApi.getMyItemsIds().then(
-            function (queryResult) {
+        _this.devOpsApi.getMyItemsIdsAsync()
+            .then(queryResult => {
                 console.log(queryResult);
 
                 let myItemsContainer = $('#myDevOpsItems');
                 myItemsContainer.empty();
 
                 let ids = queryResult.workItems.map(x => x.id).join();
-                _this.devOpsApi.getItems(ids).then(
-                    function (items) {
+                _this.devOpsApi.getItemsAsync(ids)
+                    .then(items => {
                         console.log(items);
 
                         $.each(items.value, function (index, item) {
@@ -966,10 +991,14 @@ function popup() {
                             log.append(actions);
 
                         });
-                    }
-                );
-            }
-        );
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });                    
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
     function getRecentAxoItems() {
@@ -1098,7 +1127,7 @@ function popup() {
                         toastr.warning('No commit messages with comments found within the time frame of the log.');
                     }
                 });
-            
+
         });
     }
 
