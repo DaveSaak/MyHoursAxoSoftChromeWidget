@@ -4,10 +4,11 @@ function DevOpsApi(options) {
     var _this = this;
     _this.options = options;
     _this.ajaxHeaders = {
-        "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(":" + _this.options.devOpsPersonalAccessToken)
     };
 
-
+/*
     _this.getMyItemsIds = function () {
         return new Promise(function (resolve, reject) {
             console.info('getting my items from devops');
@@ -37,15 +38,42 @@ function DevOpsApi(options) {
             });
         })
     }
+  */  
 
+    _this.getMyItemsIdsAsync = async function () {
+
+        console.info('getting my items from devops');
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/wiql?api-version=4.1";
+        const queryData =
+        {
+            query:
+                "Select [System.Id], [System.Title], [System.State], [System.AssignedTo] " +
+                "From WorkItems " +
+                "Where ([System.WorkItemType] = 'Task' OR [System.WorkItemType] = 'Bug')  AND [State] <> 'Closed' AND [State] <> 'Removed' AND [System.AssignedTo] = @Me " +
+                "order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+        };
+
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders,
+            method: 'POST',
+            body: JSON.stringify(queryData)
+        });
+
+        return response.json();     
+    }    
+
+    /*
     _this.getItems = function (ids) {
         return new Promise(function (resolve, reject) {
             console.info('getting items from devops');
             $.ajax({
-                url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
+                url: _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
+                // url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
+                // url: devOpsUri + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
                 headers: {
                     "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
                 },
+                // headers:  {"Authorization": "Basic " + btoa(":" + pat)},
                 type: "GET",
 
                 success: function (response) {
@@ -56,10 +84,28 @@ function DevOpsApi(options) {
                 }
             });
         })
+    }
+    */
 
+    _this.getItemsAsync = async function (ids) {
+        console.info('getting items from devops');
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0";
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders
+        });
+        return response.json();        
     }
 
+    _this.getItemAsync = async function (id) {
+        console.info('getting item from devops');
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + id;
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders,
+        });
+        return response.json();  
+    }    
 
+/*
     _this.getItem = function () {
         return new Promise(function (resolve, reject) {
             console.info('getting my items from devops');
@@ -79,6 +125,7 @@ function DevOpsApi(options) {
             });
         })
     }
+    */
 
     _this.updateItemRemainingAndCompletedWork = function () {
         return new Promise(function (resolve, reject) {
@@ -119,26 +166,26 @@ function DevOpsApi(options) {
     }
 
 
-    _this.getMyItemsX = function () {
-        return new Promise(function (resolve, reject) {
-            console.info('getting my items from devops');
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + "/_apis/work/accountMyWork?%24queryOption=3",
-                headers: {
-                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-                },
-                type: "GET",
+    // _this.getMyItemsX = function () {
+    //     return new Promise(function (resolve, reject) {
+    //         console.info('getting my items from devops');
+    //         $.ajax({
+    //             url: _this.options.devOpsInstanceUrl + "/_apis/work/accountMyWork?%24queryOption=3",
+    //             headers: {
+    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+    //             },
+    //             type: "GET",
 
-                success: function (response) {
-                    //console.info(response);
-                    resolve(response.data);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
-    }
+    //             success: function (response) {
+    //                 //console.info(response);
+    //                 resolve(response.data);
+    //             },
+    //             error: function () {
+    //                 reject();
+    //             }
+    //         });
+    //     })
+    // }
 
 
     // _this.getMyCommitsOld = function (from, to) {
@@ -217,10 +264,11 @@ function DevOpsApi(options) {
 
         const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;
         const response = await fetch(url, {
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-            },
+            headers: _this.ajaxHeaders
+            // headers: {
+            //     'Content-Type': 'application/json',
+            //     "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+            // },
         });
         return response.json();
     }
@@ -236,10 +284,11 @@ function DevOpsApi(options) {
                     `&searchCriteria.toDate=${to.toISOString()}`;
 
                 commitPromises.push(fetch(url, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-                    },
+                    headers: _this.ajaxHeaders,
+                    // headers: {
+                    //     'Content-Type': 'application/json',
+                    //     "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
+                    // },
                 }).then(res => res.json()));
         });
 
