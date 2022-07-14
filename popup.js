@@ -57,6 +57,19 @@ function popup() {
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
             _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi);
 
+
+            // PLATFORM UI MODS
+            if (_this.options.useDevOps) {
+                $('#copyToAxoSoftButton').hide();
+                $('#copyDevOpsButton').show();
+                $('.statistics-sm.axo').hide();
+            } else {
+                $('#copyToAxoSoftButton').show();
+                $('#copyDevOpsButton').hide();
+            }
+
+
+
             _this.currentUser.load(function () {
                 console.info(_this.currentUser);
 
@@ -98,7 +111,6 @@ function popup() {
     );
 
     function initInterface() {
-
         $('#loginButton').click(function () {
             login($('#email').val(), $('#password').val());
         });
@@ -109,11 +121,13 @@ function popup() {
             }
         });
 
-
         $('#copyToAxoSoftButton').click(function () {
             copyTimelogs();
         });
 
+        $('#copyDevOpsButton').click(function () {
+            copyTimelogsToDevOps();
+        });
 
         $('#deleteWorklogsFromAxoSoftButton').click(function () {
             deleteLogs();

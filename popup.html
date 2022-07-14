@@ -115,12 +115,12 @@
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
             <div id='mainContainer' class="mx-3 mb-3" style="displayX: none;">
                 <div class="headerBar">
-                    <div class="statistics-sm">
+                    <div class="statistics-sm all-hours">
                         <div id="ahAttendance">-</div>
                         <div>All Hours</div>
                     </div>   
                     
-                    <div class="statistics-sm">
+                    <div class="statistics-sm my-hours">
                         <div id="mhTotal">-</div>
                         <div>My Hours
                             <span id="mhAhRatioText">
@@ -129,7 +129,7 @@
                         </div>
                     </div>     
                     
-                    <div class="statistics-sm">
+                    <div class="statistics-sm axo">
                         <div id="axoTotal">-</div>
                         <div>Axo
                             <span id="axoAhRatioText">
@@ -194,6 +194,12 @@
                         <i class="far fa-seedling"></i>
                         copy logs to Axo
                     </button>
+
+                    <button id='copyDevOpsButton' class="mr-2 btn btn-primary" type="button"
+                        title='copy My Hours logs to Axo worklog'>
+                        <i class="far fa-paper-plane"></i>
+                        update remaining time in DevOps
+                    </button>                    
 
                     <button id='deleteWorklogsFromAxoSoftButton' class="mr-2 btn btn-secondary d-none" type="button"
                         title='delete Axo worklogs'>
