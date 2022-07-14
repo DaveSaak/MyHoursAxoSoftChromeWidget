@@ -202,7 +202,7 @@ $(function () {
         _this.options.useDevOps = $('#useDevOps').prop('checked');
         _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
         saveOptions();
-        _this.chromeNotifications.showNotification('Save All Hours settings', 'All Hours settings saved', 'SaveAllHoursSettings');
+        toastr.success('General settings saved');
     });      
 
     $('#saveAllHoursButton').click(function () {
@@ -210,7 +210,7 @@ $(function () {
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
         saveOptions();
-        _this.chromeNotifications.showNotification('Save All Hours settings', 'All Hours settings saved', 'SaveAllHoursSettings');
+        toastr.success('All Hours settings saved');
     });    
 
     $('#saveAxoButton').click(function () {
