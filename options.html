@@ -45,6 +45,46 @@
         <div class="d-flex flex-column justify-content-center">
 
             <div class="settings-section">
+                <h3 class="settings-header text-primary">General</h3>
+
+                <div class="settings-data">
+                    <label>Platforms</label>
+                    
+                    <p>
+                        Item numbers will be matched with entities on the selected project management platform.
+                    </p>
+
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="useDevOps">
+                        <label class="custom-control-label" for="useDevOps">Use DevOps as project management platform</label>
+                    </div>
+                    
+
+                    <div class="settings-sub-section">
+                        <label>Notifications</label>
+
+                        <p>
+                            We'll check yesterday's ratio and notify you if the ratio is not between 90-100%. The checking will be active till noon.
+                        </p>
+
+                        <div class="form-group">
+                            <!-- <label>Bad ratio</label> -->
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="notificationsBadRatio">
+                                <label class="custom-control-label" for="notificationsBadRatio">Show bad ratio notification</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="d-flex mt-3">
+                        <button id="saveGeneral" class="btn btn-primary">Save</button>
+                    </div>                    
+
+                </div>
+            </div>
+
+            <div class="settings-section">
                 <h3 class="settings-header text-primary">Axo</h3>
 
                 <div class="settings-data">
@@ -228,7 +268,7 @@
                 </div>
             </div>
 
-            <div class="settings-section">
+            <!-- <div class="settings-section">
                 <h3 class="settings-header text-primary">Notifications</h3>
                 <div class="settings-data">
                     <div class="form-group">
@@ -243,7 +283,7 @@
                         <button id="saveNotificationsButton" class="btn btn-primary">Save</button>
                     </div>                    
                 </div>
-            </div>            
+            </div>             -->
 
             <div class="settings-section">
                 <h3 class="settings-header text-primary">Advanced</h3>

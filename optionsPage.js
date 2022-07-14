@@ -13,17 +13,23 @@ $(function () {
     _this.options
         .load()
         .then(function () {
+            $('#useDevOps').prop( "checked", _this.options.useDevOps);
+
             $('#axoSoftUrl').val(_this.options.axoSoftUrl);
             $('#axoSoftToken').val(_this.options.axoSoftToken);
             $('#axoSoftUserId').val(_this.options.axoSoftUserId);
             $('#axoSoftDefaultWorklogTypeId').val(_this.options.axoSoftDefaultWorklogTypeId);
             $('#axoSoftRecentItemsBubbleChartHiddenItemsIds').val(_this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds);
+            
             $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
             $('#developmentTaskName').val(_this.options.developmentTaskName);
             $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
+            
             $('#ahUrl').val(_this.options.allHoursUrl);
             $('#ahUserName').val(_this.options.allHoursUserName);
+            
             $('#isSecret').val(_this.options.isSecret);
+            
             $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
             $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
             $('#devOpsDefaultWorklogType').val(_this.options.devOpsDefaultWorklogType);
@@ -31,6 +37,7 @@ $(function () {
             
             $('#mhDefaultTagId').val(_this.options.mhDefaultTagId);
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
+            
             $('#notificationsBadRatio').prop( "checked", _this.options.notificationsBadRatio);
 
             _this.currentUser = new CurrentUser();
@@ -191,6 +198,13 @@ $(function () {
         // });
     });
 
+    $('#saveGeneral').click(function () {
+        _this.options.useDevOps = $('#useDevOps').prop('checked');
+        _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
+        saveOptions();
+        _this.chromeNotifications.showNotification('Save All Hours settings', 'All Hours settings saved', 'SaveAllHoursSettings');
+    });      
+
     $('#saveAllHoursButton').click(function () {
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
@@ -234,11 +248,11 @@ $(function () {
 
     });    
 
-    $('#saveNotificationsButton').click(function () {
-        _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
-        saveOptions();
-        toastr.success('Notifications settings saved');
-    });      
+    // $('#saveNotificationsButton').click(function () {
+    //     _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
+    //     saveOptions();
+    //     toastr.success('Notifications settings saved');
+    // });      
 
     $('#clearUserButton').click(x => {
         let currentUser = new CurrentUser();

@@ -3,6 +3,8 @@ function Options() {
 
     var _this = this;
 
+    _this.useDevOps = false;
+
     _this.axoSoftUrl = "";
     _this.axoSoftToken = "";
     _this.axoSoftUserId = 0;
@@ -69,6 +71,9 @@ function Options() {
                         if (items.options) {
                             console.info("found saved options");
                             //console.info(items.options);
+
+                            _this.useDevOps = items.options.useDevOps;
+
 
                             _this.axoSoftUrl = items.options.axoSoftUrl;
                             _this.axoSoftToken = items.options.axoSoftToken;

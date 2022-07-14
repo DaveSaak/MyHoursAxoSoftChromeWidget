@@ -8,6 +8,10 @@
     width: 800px;
 } 
 
+.settings-sub-section {
+    margin-top: 2rem;
+}
+
 .settings-header {
     width: 250px;
 }
