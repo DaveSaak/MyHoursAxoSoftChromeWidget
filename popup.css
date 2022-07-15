@@ -310,6 +310,7 @@ div#logs div:hover .tag.tag-button {
 
 div.logContainer {
     border-radius: 0.25rem;
+    position: relative;
 }
 
 div.logContainer.active,
@@ -416,10 +417,13 @@ div.logContainer:hover {
 .columnColorBar {
     width: 0.25rem;
     height: 3.3rem;
+    position: absolute;
+    height: 85%;
 }
 
 .columnMain {
     width: 480px;
+    margin-left: 0.75rem;
 }
 
 .columnTime {
