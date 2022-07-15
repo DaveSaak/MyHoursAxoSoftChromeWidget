@@ -163,13 +163,12 @@ function popup() {
         });
 
         $('#today').click(function () {
-            _this.currentDate = _this.currentDate = moment().startOf('day');
-            getLogs();
-        });
-
-        $('#current-date').click(function () {
             getLogsForToday();
         });
+
+        // $('#current-date').click(function () {
+        //     getLogsForToday();
+        // });
 
         $('#refresh').click(function () {
             getLogs();
@@ -269,7 +268,8 @@ function popup() {
 
     function getLogsForToday() {
         _this.currentDate = _this.currentDate = moment().startOf('day');
-        getLogs();
+        // getLogs();
+        _this.getProjectTracks();
     }
 
     function showLoginPage() {
@@ -344,6 +344,190 @@ function popup() {
             time.text(i);
             timelineContainer.append(time);
         }
+    }
+
+    _this.getProjectTracks = async function(){
+
+        // just get the promises, we'll run them all at once at the end so we can await them.
+        let promises = [];
+        await _this.myHoursApi.getLogs(_this.currentDate).then( logs => {
+            _this.myHoursLogs = logs;
+
+            _this.myHoursLogs.forEach(log => {
+
+                // RESOLVE DEVOPS ITEM
+                log.devOpsItemId = '';
+                let itemNumberRegEx = new RegExp('^[0-9]*');
+                if (log.taskName) {
+                    let regExResults = itemNumberRegEx.exec(log.taskName);
+                    if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
+                        log.devOpsItemId = regExResults[0];
+
+                        
+                        promises.push(new Promise(function (resolve, reject) {
+                            _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
+                                log.devOpsItem = devOpsItem;
+                                resolve();
+                            })
+                            .catch((error) => {
+                                console.error('Error fetching DEVOPS item:', error);
+                                reject();
+                            });  
+                        }));
+                    }
+                }                
+
+                // GET TIMES
+                promises.push(new Promise(function (resolve, reject) {
+                    _this.myHoursApi.getTimes(log.id).then( times => {
+                        log.times = times;
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching MY HOURS times:', error);
+                        reject();
+                    });  
+                }));
+            });
+
+        })
+        .catch((error) => {
+            console.error('Error fetching MY HOURS logs:', error);
+        });
+
+        await Promise.all(promises);
+        // console.log(_this.myHoursLogs);
+
+
+
+        // now we can show the data on the screen
+        // ...
+
+        var logsContainer = $('#logs');
+        logsContainer.empty();
+
+
+        _this.myHoursLogs.forEach(log => {
+            // totalMins = totalMins + (data.duration / 60);
+
+            var logContainer = $('<div>')
+                .attr("data-logId", log.id)
+                .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
+
+            // COLOR COLUMN
+            var columnColorBar = $('<div>').addClass('columnColorBar rounded mr-2');
+            logContainer.append(columnColorBar);  
+                      
+
+            // MAIN COLUMN
+            var columnMain = $('<div>').addClass('mainColumn columnMain d-flex flex-column');
+            logContainer.append(columnMain);
+                
+            var logTitle = $('<div>').addClass('axoItemName text-truncate');
+            columnMain.append(logTitle);
+            
+            if (log.note) {
+                columnMain.append(
+                    $('<div>')
+                    .addClass('text-muted small worklogType')
+                    .text(log.note));
+            }
+           
+            // TIME COLUMN
+            var columnTime = $('<div>').addClass('columnTime text-right');
+            logContainer.append(columnTime);
+
+            if (log.duration != null) {
+                var durationInfo = $('<i class="far fa-spinner-third fa-spin"></i>');
+                if (!log.running) {
+                    var duration = minutesToString(log.duration / 60);
+                    durationInfo = $('<span>').text(duration);
+                }
+                columnTime.append(durationInfo);
+            };
+
+            // INFO COLUMN
+            var columnInfo = $('<div>').addClass('columnInfo ml-4');
+            logContainer.append(columnInfo);
+            
+            // ACTIONS COLUMN
+            var columnActions = $('<div>').addClass('columnActions ml-auto');
+            logContainer.append(columnActions);            
+
+
+            let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1")
+                .append($('<i class="far fa-play">').attr("title", "Start tracking time"))
+                .click(function (event) {
+                    event.preventDefault();
+                    _this.myHoursApi.startFromExisting(log.id).then(
+                        function () {
+                            console.info('worklog started');
+                            getLogsForToday();
+                        }
+                    )
+                        .catch(
+                            function () {
+                                console.info('worklog add failed');
+                            }
+                        )
+                });
+
+            let copyCommitMessagesButton = $('<button>').addClass("btn btn-transparent mr-1")
+                .append('<i class="far fa-code-merge">').attr("title", "Copy commit message to description")
+                .click(function (event) {
+                    event.preventDefault();
+                    copyCommitMessage(log);
+                });
+
+            let openDevOpsItemButton = $('<button>').addClass("btn btn-transparent mr-1")
+                .append($('<i class="far fa-external-link-alt"></i>').attr("title", "Open item in DevOps portal"))
+                .click(function (event) {
+                    event.preventDefault();
+                    _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
+                        const editUrl = encodeURI(`${_this.options.devOpsInstanceUrl}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${log.devOpsItemId}`);
+                        window.open(editUrl, '_devops');
+                    });
+                }); 
+                
+            let copyWorklogButton = $('<button>').addClass("btn btn-transparent mr-1")
+                .append($('<i class="far fa-paper-plane"></i>').attr("title", "Copy to DevOps"))
+                .click(function (event) {
+                    event.preventDefault();
+
+                });                 
+    
+            let buttons = $("<div>").addClass("d-flex ml-auto");
+            buttons.append(startTrackingTimeShortcut);
+            buttons.append(copyCommitMessagesButton);
+            buttons.append(openDevOpsItemButton);
+            buttons.append(copyWorklogButton);
+
+            columnActions.append(buttons);
+
+
+            if (log.devOpsItem) {
+                logTitle.text(`${log.devOpsItemId} ${log.devOpsItem?.fields['System.Title']}`);
+                columnColorBar.css("background-color", _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)]);
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`est. ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate']} h`));
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork']} h`));
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`left ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork']} h`));
+    
+            } else {
+                logTitle.text('DevOps item not found');
+                // openDevOpsItemButton.prop('disabled', true);
+                openDevOpsItemButton.hide();
+                copyWorklogButton.hide();
+            }
+
+
+            logsContainer.append(logContainer);
+
+        })  
+            
+
+
+
+
     }
 
     function getLogs() {
@@ -777,6 +961,7 @@ function popup() {
                     }
 
                     barGraph.mouseenter(function () {
+                        $('.logContainer[data-logId="' + data.id + '"]')[0].scrollIntoViewIfNeeded();
                         $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
                         hiLiteMyHoursLog(data.id);
                     });
@@ -807,7 +992,7 @@ function popup() {
                         }
 
                         if (_this.currentDate.isSame(moment(), 'day')) {
-                            console.log('it is today');
+                            // console.log('it is today');
 
                             _this.allHoursApi.getCurrentBalance(data).then(
                                 function (data) {
@@ -820,7 +1005,7 @@ function popup() {
                                 });
                         }
                         else {
-                            console.log('it is NOT today');
+                            // console.log('it is NOT today');
                             _this.allHoursApi.getAttendance(data, _this.currentDate).then(
                                 function (data) {
                                     if (data && data.CalculationResultValues.length > 0) {
@@ -933,17 +1118,10 @@ function popup() {
             .append($('<i class="far fa-rocket"></i>').attr("title", "Open time"))
             .click(function (event) {
                 event.preventDefault();
-                console.log(item);
-
                 _this.devOpsApi.getItemAsync(item.id).then(devOpsItem => {
-                    console.log(devOpsItem);
                     const editUrl = encodeURI(`${_this.options.devOpsInstanceUrl}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${item.id}`);
-
                     window.open(editUrl, '_devops');
-
-                    // https://dev.azure.com/Spica-International/All%20Hours/_workitems/edit/740/
                 });
-
             });
 
         actionsContainer.append(startWorklogButton);
@@ -955,7 +1133,7 @@ function popup() {
     function getMyDevOpsItems() {
         _this.devOpsApi.getMyItemsIdsAsync()
             .then(queryResult => {
-                console.log(queryResult);
+                // console.log(queryResult);
 
                 let myItemsContainer = $('#myDevOpsItems');
                 myItemsContainer.empty();
@@ -963,7 +1141,7 @@ function popup() {
                 let ids = queryResult.workItems.map(x => x.id).join();
                 _this.devOpsApi.getItemsAsync(ids)
                     .then(items => {
-                        console.log(items);
+                        // console.log(items);
 
                         $.each(items.value, function (index, item) {
                             var log = $('<div>')
@@ -1059,7 +1237,7 @@ function popup() {
     _this.addAxoWorkLog = function (myHoursLog, myHoursTotalMinsDoneForAxoId) {
         return new Promise(
             function (resolve, reject) {
-                console.log(myHoursLog);
+                // console.log(myHoursLog);
 
                 var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .d-flex');
                 logStatus.empty();
@@ -1087,18 +1265,18 @@ function popup() {
                 worklog.date_time = moment(myHoursLog.date).add(8, 'hours').toDate();
 
                 let remainingTimeMins = getRemainingMinutes(myHoursLog.axoRemainingDurationTimeUnitId, myHoursLog.axoRemainingDuration);
-                console.log(`remaining item mins: itemId: ${worklog.item.id}`);
-                console.log(`remaining item mins: remaining time mins: ${remainingTimeMins}`);
-                console.log(`remaining item mins: worklog done mins: ${worklog.work_done.duration}`);
+                // console.log(`remaining item mins: itemId: ${worklog.item.id}`);
+                // console.log(`remaining item mins: remaining time mins: ${remainingTimeMins}`);
+                // console.log(`remaining item mins: worklog done mins: ${worklog.work_done.duration}`);
 
                 //worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
                 worklog.remaining_time.duration = Math.max(remainingTimeMins - myHoursTotalMinsDoneForAxoId, 0);
-                console.log(`remaining item mins: new remaining time mins: ${worklog.remaining_time.duration}`);
+                // console.log(`remaining item mins: new remaining time mins: ${worklog.remaining_time.duration}`);
 
                 _this.axoSoftApi.addWorkLog(worklog)
                     .then(
                         function () {
-                            console.info('worklog added');
+                            // console.info('worklog added');
                             var success = $('<span>').addClass('tag');
                             var reminingHrs = Math.round(worklog.remaining_time.duration / 60);
                             if (reminingHrs > 0) {
@@ -1131,7 +1309,7 @@ function popup() {
                 function (data) {
                     let comment = data.map(x => x.comment).join(', ');
 
-                    console.log(comment)
+                    // console.log(comment)
                     if (comment) {
                         _this.myHoursApi.updateLogDescription(myHoursLog, comment).then(x => {
                             toastr.success('Log comment updated.');

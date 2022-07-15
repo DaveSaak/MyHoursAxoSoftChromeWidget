@@ -430,6 +430,28 @@ div.logContainer:hover {
     width: 170px;
 }
 
+
+
+.columnInfo{
+    display: flex;
+
+}
+.logContainer:hover .columnInfo {
+    display: none;
+}
+
+.columnInfoSection {
+    font-size: 0.75em;
+}
+
+.columnActions {
+    display: none;
+}
+.logContainer:hover .columnActions {
+    display: block;
+}
+
+
 /* #home .statistics .sublabel{
     font-size: 0.8rem;
 } */
