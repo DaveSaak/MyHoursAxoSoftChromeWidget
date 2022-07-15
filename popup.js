@@ -422,6 +422,16 @@ function popup() {
             // MAIN COLUMN
             var columnMain = $('<div>').addClass('mainColumn columnMain d-flex flex-column');
             logContainer.append(columnMain);
+
+            if (log.tags?.length > 0) {
+                var columnAxoWorklogType = $('<div>').addClass('axoWorklogTypeColumn');
+                var worklogTypeInfo = $('<div>')
+                    .addClass('text-muted text-lowercase worklogType')
+                    .css('font-size', '0.7rem')
+                    .text(log.tags.map(x => x.name).join(', '));
+                columnAxoWorklogType.append(worklogTypeInfo);
+                columnMain.append(columnAxoWorklogType); 
+            }
                 
             var logTitle = $('<div>').addClass('axoItemName text-truncate');
             columnMain.append(logTitle);
@@ -508,9 +518,9 @@ function popup() {
             if (log.devOpsItem) {
                 logTitle.text(`${log.devOpsItemId} ${log.devOpsItem?.fields['System.Title']}`);
                 columnColorBar.css("background-color", _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)]);
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`est. ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate']} h`));
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork']} h`));
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`left ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork']} h`));
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`est. ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`left ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
     
             } else {
                 logTitle.text('DevOps item not found');
@@ -1475,6 +1485,8 @@ function popup() {
                 elementInfo.show();
             }
             parent.attr('title', cardText);
+
+            
 
             // elementInfo.toggleClass('blink', !ratioValid);
         }
