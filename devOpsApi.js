@@ -71,39 +71,59 @@ function DevOpsApi(options) {
 
         return response.json();
     };
-}
 
 
-_this.getMyRepositoriesAsync = async function () {
-    const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;
-    const response = await fetch(url, {
-        headers: _this.ajaxHeaders
-    });
-    return response.json();
-}
+    _this.updateItemAsync = async function (id, hoursDone) {
 
-_this.getMyCommitsAsync = async function (from, to) {
-    let commitPromises = [];
-    const repos = await this.getMyRepositoriesAsync();
-    repos.value.forEach(repo => {
-        const url = _this.options.devOpsInstanceUrl +
-            `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
-            `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
-            `&searchCriteria.fromDate=${from.toISOString()}` +
-            `&searchCriteria.toDate=${to.toISOString()}`;
+        await _this.getItemAsync(id).then(devOpsItem => {
+            let completedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'];
+            let remainingValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'];
 
-        commitPromises.push(fetch(url, {
-            headers: _this.ajaxHeaders,
-        }).then(res => res.json()));
-    });
+            let completed = (completedValue == undefined || Number.isNaN(completedValue)) ? 0 : Number(completedValue);
+            let remaining = (remainingValue == undefined || Number.isNaN(remainingValue)) ? 0 : Number(remainingValue);
 
-    let commits = [];
-    const responses = await Promise.all(commitPromises);
-    responses.forEach(response => {
-        if (response.count > 0) {
-            commits.push(...response.value);
-        }
-    });
+            let logDurationInHours = hoursDone;
 
-    return commits;
+            completed = Math.round((completed + logDurationInHours) * 100) / 100;
+            remaining = Math.round(Math.max(remaining - logDurationInHours, 0) * 100) / 100;
+
+            return _this.updateRemainingAndCompletedWorkAsync(id, completed, remaining)
+        });
+
+    }
+
+
+    _this.getMyRepositoriesAsync = async function () {
+        const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders
+        });
+        return response.json();
+    }
+
+    _this.getMyCommitsAsync = async function (from, to) {
+        let commitPromises = [];
+        const repos = await this.getMyRepositoriesAsync();
+        repos.value.forEach(repo => {
+            const url = _this.options.devOpsInstanceUrl +
+                `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
+                `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
+                `&searchCriteria.fromDate=${from.toISOString()}` +
+                `&searchCriteria.toDate=${to.toISOString()}`;
+
+            commitPromises.push(fetch(url, {
+                headers: _this.ajaxHeaders,
+            }).then(res => res.json()));
+        });
+
+        let commits = [];
+        const responses = await Promise.all(commitPromises);
+        responses.forEach(response => {
+            if (response.count > 0) {
+                commits.push(...response.value);
+            }
+        });
+
+        return commits;
+    }
 }
