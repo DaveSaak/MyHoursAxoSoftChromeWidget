@@ -466,7 +466,7 @@ function popup() {
 
 
             let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1")
-                .append($('<i class="fa-solid fa-play">').attr("title", "Start tracking time"))
+                .append($('<i class="fa-regular fa-circle-play">').attr("title", "Start tracking time"))
                 .click(function (event) {
                     event.preventDefault();
                     _this.myHoursApi.startFromExisting(log.id).then(
@@ -500,7 +500,7 @@ function popup() {
                 }); 
                 
             let copyWorklogButton = $('<button>').addClass("btn btn-transparent mr-1")
-                .append($('<i class="far fa-paper-plane"></i>').attr("title", "Update remaining and done on DevOps"))
+                .append($('<i class="fa-solid fa-upload"></i>').attr("title", "Update remaining and done on DevOps"))
                 .click(function (event) {
                     event.preventDefault();
 
@@ -917,7 +917,7 @@ function popup() {
 
 
         let startTrackingTime = $('<a class="dropdown-item" href="#">');
-        startTrackingTime.append('<i class="fa-solid fa-play"></i> <span class="ml-1">Start tracing time</span>')
+        startTrackingTime.append('<i class="fa-regular fa-circle-play"></i> <span class="ml-1">Start tracing time</span>')
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -974,7 +974,7 @@ function popup() {
 
 
         let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1");
-        startTrackingTimeShortcut.append($('<i class="fa-solid fa-play">').attr("title", "Start tracking time"))
+        startTrackingTimeShortcut.append($('<i class="fa-regular fa-circle-play">').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -1161,7 +1161,7 @@ function popup() {
 
 
         let startWorklogButton = $('<button class="btn btn-transparent">')
-            .append($('<i class="fa-solid fa-play"></i>').attr("title", "Start tracking time"))
+            .append($('<i class="fa-regular fa-circle-play"></i>').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 let note = item.id;
