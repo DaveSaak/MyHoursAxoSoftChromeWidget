@@ -548,7 +548,7 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
     function getRecentAxoItemsActionsDropDown(data) {
 
         return $('<button class="btn btn-transparent">')
-            .append($('<i class="far fa-play"></i>').attr("title", "Start tracking time"))
+            .append($('<i class="fa-solid fa-play"></i>').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 let note = data.itemId + "/" + data.workLogTypeName;

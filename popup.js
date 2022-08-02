@@ -466,7 +466,7 @@ function popup() {
 
 
             let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1")
-                .append($('<i class="far fa-play">').attr("title", "Start tracking time"))
+                .append($('<i class="fa-solid fa-play">').attr("title", "Start tracking time"))
                 .click(function (event) {
                     event.preventDefault();
                     _this.myHoursApi.startFromExisting(log.id).then(
@@ -483,14 +483,14 @@ function popup() {
                 });
 
             let copyCommitMessagesButton = $('<button>').addClass("btn btn-transparent mr-1")
-                .append('<i class="far fa-code-merge">').attr("title", "Copy commit message to description")
+                .append('<i class="fa-solid fa-code-merge"></i>').attr("title", "Copy commit message to description")
                 .click(function (event) {
                     event.preventDefault();
                     copyCommitMessage(log);
                 });
 
             let openDevOpsItemButton = $('<button>').addClass("btn btn-transparent mr-1")
-                .append($('<i class="far fa-external-link-alt"></i>').attr("title", "Open item in DevOps portal"))
+                .append($('<i class="fa-solid fa-arrow-up-right-from-square"></i>').attr("title", "Open item in DevOps portal"))
                 .click(function (event) {
                     event.preventDefault();
                     _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
@@ -500,9 +500,47 @@ function popup() {
                 }); 
                 
             let copyWorklogButton = $('<button>').addClass("btn btn-transparent mr-1")
-                .append($('<i class="far fa-paper-plane"></i>').attr("title", "Copy to DevOps"))
+                .append($('<i class="far fa-paper-plane"></i>').attr("title", "Update remaining and done on DevOps"))
                 .click(function (event) {
                     event.preventDefault();
+
+                    _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
+                        let completedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'];
+                        let remainingValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork']; 
+            
+                        let completed = Number.isNaN(completedValue) ? 0 : Number(completedValue);
+                        let remaining = Number.isNaN(remainingValue) ? 0 : Number(remainingValue);
+            
+                        let logDurationInHours = log.duration / 60 / 60; 
+
+                        completed = Math.round((completed + logDurationInHours) * 100) / 100;
+                        remaining = Math.round(Math.max(remaining - logDurationInHours, 0) * 100) /100;
+
+                        _this.devOpsApi.updateRemainingAndCompletedWorkAsync(log.devOpsItemId, completed, remaining)
+                            .then(devOpsItem => { 
+                                toastr.success(`DevOps Item updated. Remaining time: ${remaining}`);
+                            })
+                            .catch(x => { toastr.error('DevOps item not updated. Error.')});                        
+                    });
+                  
+
+
+                    // _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
+                    //     let completedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'];
+                    //     let remainingValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork']; 
+
+                    //     let completed = Number.isNaN(completedValue) ? 0 : Number(completedValue);
+                    //     let remaining = Number.isNaN(remainingValue) ? 0 : Number(remainingValue);
+
+                    //     let logDurationInHours = log.duration / 60 / 60; 
+
+                    //     completed = completed + logDurationInHours;
+                    //     remaining = Math.max(remaining - logDurationInHours, 0);
+                    //     //update on devops...
+                    //     // this.devOpsApi.
+                    // });
+
+
 
                 });                 
     
@@ -518,9 +556,21 @@ function popup() {
             if (log.devOpsItem) {
                 logTitle.text(`${log.devOpsItemId} ${log.devOpsItem?.fields['System.Title']}`);
                 columnColorBar.css("background-color", _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)]);
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`est. ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`left ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
+                // columnInfo.append(getWorkItemStatPill(log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'], 'estimated', 'fa-ruler-vertical'));
+                // columnInfo.append(getWorkItemStatPill(log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'], 'completed', 'fa-stopwatch'));
+                // columnInfo.append(getWorkItemStatPill(log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'], 'remaining', 'fa-hammer'));
+
+                // columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`est. ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+                // columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
+                // columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`left ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
+
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">')
+                    .text(`todo ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'}` )); 
+                // columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`remaining ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`)); 
+                // columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`est. ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} / ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+                
+
     
             } else {
                 logTitle.text('DevOps item not found');
@@ -533,12 +583,25 @@ function popup() {
             logsContainer.append(logContainer);
 
         })  
-            
-
-
-
-
     }
+
+    // function getWorkItemStatPill(value, text, icon){
+    //     let valueString = 'n/a';
+    //     let numberValue = Number(value);
+    //     if (!Number.isNaN(numberValue)) {
+    //         valueString = Math.round(numberValue * 10) / 10;
+    //     }
+
+    //     let pillElement = $('<div class="mr-3 text-muted columnInfoSection">');
+    //     let iconElement = $('<i class="fa-solid"></i>').addClass(icon);
+    //     let valueElement = $('<span class="ml-1"></span>').text(valueString);
+
+    //     pillElement.append(iconElement);
+    //     pillElement.append(valueElement);
+
+    //     return pillElement;
+
+    // }
 
     function getLogs() {
         let fetchLogsId = moment().valueOf();
@@ -767,13 +830,12 @@ function popup() {
                                         var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
                                         logStatus.empty();
                                         var fail = $('<div>');
-                                        fail.append($("<i class='far fa-skull-crossbones'>"));
+                                        fail.append($('<i class="fa-solid fa-skull-crossbones"></i>'));
                                         fail.append($("<span>").addClass("axoItemName ml-2").html("Work Item not found"));
                                         //logStatus.append(fail);
 
                                         data.color = 'whitesmoke';
                                         getTimes(data, timeline);
-                                        // columnMain.append($("<i class='far fa-skull-crossbones'>"));
                                         columnMain.append(fail);
                                     });
 
@@ -847,7 +909,7 @@ function popup() {
     function getActionsDropDown(data) {
         let buttonGroup = $('<div>').addClass('btn-group ml-auto');
         buttonGroup.append($('<button type="button" class="btn btn-transparent dropdown-toggleX" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">')
-            .append($('<i class="far fa-ellipsis-v">'))
+            .append($('<i class="fa-solid fa-ellipsis-vertical"></i>'))
             //.text('Actions')
         );
 
@@ -855,7 +917,7 @@ function popup() {
 
 
         let startTrackingTime = $('<a class="dropdown-item" href="#">');
-        startTrackingTime.append('<i class="far fa-play"></i> <span class="ml-1">Start tracing time</span>')
+        startTrackingTime.append('<i class="fa-solid fa-play"></i> <span class="ml-1">Start tracing time</span>')
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -874,7 +936,7 @@ function popup() {
 
         if (true) {
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="far fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
+                .append('<i class="fa-solid fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
                 .click(function (event) {
                     event.preventDefault();
                     copyCommitMessage(data);
@@ -883,7 +945,7 @@ function popup() {
 
         if (data.projectId) {
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="far fa-external-link-alt"></i><span class="ml-1">Open My Hours project</span>')
+                .append('<i class="fa-solid fa-arrow-up-right-from-square"></i><span class="ml-1">Open My Hours project</span>')
                 .click(function (event) {
                     event.preventDefault();
                     window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
@@ -895,14 +957,14 @@ function popup() {
         if (data.axoId) {
             dropdownMenu.append('<div class="dropdown-divider">');
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="far fa-external-link-alt"></i> <span class="ml-1">Open AXO item</span>')
+                .append('<i class="fa-solid fa-arrow-up-right-from-square"></i> <span class="ml-1">Open AXO item</span>')
                 .click(function (event) {
                     event.preventDefault();
                     window.open(`https://ontime.spica.com:442/OnTime/ViewItem.aspx?type=features&id=${data.axoId}`, '_blank');
                 }));
 
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="far fa-seedling"></i><span class="ml-1">Copy time to AXO worklog</span>')
+                .append('<i class="fa-solid fa-seedling"></i><span class="ml-1">Copy time to AXO worklog</span>')
                 .click(function (event) {
                     event.preventDefault();
                     _this.addAxoWorkLog(data, data.duration).then(x => console.log('added axo work log'));
@@ -912,7 +974,7 @@ function popup() {
 
 
         let startTrackingTimeShortcut = $('<button>').addClass("btn btn-transparent mr-1");
-        startTrackingTimeShortcut.append($('<i class="far fa-play">').attr("title", "Start tracking time"))
+        startTrackingTimeShortcut.append($('<i class="fa-solid fa-play">').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -1099,7 +1161,7 @@ function popup() {
 
 
         let startWorklogButton = $('<button class="btn btn-transparent">')
-            .append($('<i class="far fa-play"></i>').attr("title", "Start tracking time"))
+            .append($('<i class="fa-solid fa-play"></i>').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
                 let note = item.id;

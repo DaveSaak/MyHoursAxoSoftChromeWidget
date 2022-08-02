@@ -41,11 +41,12 @@
     <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
 
-    <link rel="stylesheet" type="text/css" href="css/inter.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/sds.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/fontawesome.min.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/regular.min.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/light.min.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="css/inter.css"/>
+    <link rel="stylesheet" type="text/css" href="css/sds.css"/>
+    <link rel="stylesheet" type="text/css" href="css/fontawesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/regular.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/solid.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/light.min.css"/>
 
 </head>
 
@@ -105,7 +106,6 @@
         <li class="nav-item d-flex align-items-center ml-auto">
             <a id='optionsButton' class="nav-link" id="pills-settings-tab" data-toggle="pill" href="#pills-settings" role="tab"
                 aria-controls="pills-settings" aria-selected="false">
-                    <!-- <i class="far fa-cog"></i> -->
                     Settings
                 </a>
         </li>
@@ -124,7 +124,7 @@
                         <div id="mhTotal">-</div>
                         <div>My Hours
                             <span id="mhAhRatioText">
-                                <i class="fal fa-exclamation-circle"></i>
+                                <i class="fa-solid fa-piggy-bank"></i>
                             </span>                             
                         </div>
                     </div>     
@@ -133,10 +133,10 @@
                         <div id="axoTotal">-</div>
                         <div>Axo
                             <span id="axoAhRatioText">
-                                <i class="far fa-piggy-bank"></i>
+                                <i class="fa-solid fa-piggy-bank"></i>
                             </span>  
                             <span id="axoAhRatioOk">
-                                <i class="far fa-check"></i>
+                                <i class="fa-solid fa-check"></i>
                             </span>                                                         
                         </div>
                     </div>  
@@ -148,15 +148,15 @@
 
                         
                         <button id="previousDay" class="btn btn-light">
-                            <i class="far fa-angle-left"></i>
+                            <i class="fa-solid fa-angle-left"></i>
                         </button>
                         
                         <button id="nextDay" class="btn btn-light">
-                            <i class="far fa-angle-right"></i>
+                            <i class="fa-solid fa-angle-right"></i>
                         </button>
                         
                         <button id="reloadDay" class="btn btn-light">
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>                    
                 </div>
@@ -191,19 +191,19 @@
                 <div class="headerBar">
                     <button id='copyToAxoSoftButton' class="mr-2 btn btn-primary" type="button"
                         title='copy My Hours logs to Axo worklog'>
-                        <i class="far fa-seedling"></i>
+                        <i class="fa-solid fa-seedling"></i>
                         copy logs to Axo
                     </button>
 
                     <button id='copyDevOpsButton' class="mr-2 btn btn-primary" type="button"
                         title='copy My Hours logs to Axo worklog'>
-                        <i class="far fa-paper-plane"></i>
+                        <i class="fa-solid fa-paper-plane"></i>
                         update remaining time in DevOps
                     </button>                    
 
                     <button id='deleteWorklogsFromAxoSoftButton' class="mr-2 btn btn-secondary d-none" type="button"
                         title='delete Axo worklogs'>
-                        <i class="far fa-trash"></i>
+                        <i class="fa-solid fa-trash"></i>
                         delete worklogs from Axo
                     </button>
 
@@ -238,7 +238,7 @@
 
                     <div class="">
                         <button id='refreshRatio' class="btn btn-light hiddenButton" type="button" title='back'>
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
@@ -276,7 +276,7 @@
 
                     <div class="ml-autoX">
                         <button id='refreshHome' class="btn btn-light hiddenButton" type="button" title='back'>
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
@@ -321,7 +321,7 @@
 
                     <div class="ml-autoX">
                         <button id='refreshRecentItems' class="btn btn-light" type="button" title='back'>
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
@@ -370,7 +370,7 @@
 
                     <div class="ml-autoX">
                         <button id='refreshRecentAxoItems' class="btn btn-light" type="button" title='back'>
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
@@ -417,26 +417,15 @@
 
                     <div class="ml-autox">
                         <button id='refreshCalendar' class="btn btn-light" type="button" title='back'>
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
                 </div>
 
                 <div class="mx-4 px-3 mb-3" style="margin-right: 5rem !important">
-                    <!-- <h6>Attendance 
-                        <i id="calendarChartLoader" class="fas fa-spinner fa-spin"></i>
-                    </h6> -->
                     <div id="calendarChart" ></div>
                 </div>
-
-                <!-- <div class="mx-4 px-3 mb-3 mt-2" style="margin-right: 5rem !important">
-                    <h6>Ratio 
-                        <i id="calendarRatioChartLoader" class="fas fa-spinner fa-spin"></i>
-                    </h6>
-                    <div id="calendarRatioChart" ></div>
-                </div>                 -->
-
             </div>
 
         </div>  
@@ -467,7 +456,7 @@
 
                     <div class="ml-autoX">
                         <button id='refreshDevOpsItems' class="btn btn-light" type="button" title='back'>
-                            <i class="far fa-sync"></i>
+                            <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
