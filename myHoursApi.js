@@ -301,8 +301,8 @@ function MyHoursApi(currentUser) {
         )
     }
 
-    _this,startLogFromId = function(text){
-        
+    _this.startLogFromId = function(text){
+
 
     }
 
