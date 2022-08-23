@@ -24,7 +24,8 @@ html {
 }
 
 .wide {
-    width: 800px;
+    /* width: 800px; */
+    width: 760px;
     background: transparent;
 
     /* background: linear-gradient(-30deg, #cf215bE5, #cf215bE5 45%, #cf215b 45%) #fff; */
@@ -438,6 +439,8 @@ div.logContainer:hover {
 
 .columnInfo{
     display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
 
 }
 .logContainer:hover .columnInfo {
@@ -620,4 +623,70 @@ div.logContainer:hover {
     font-size: 0.7em;
 }
 
+.logContainer.logContainerGrid {
+    display: grid;
+    grid-template-columns: 0.75rem auto auto 5rem;
+    grid-template-rows: auto;
+    grid-template-areas: 
+      "log-color-bar log-tags log-tags log-tags"
+      "log-color-bar log-title log-effort log-effort"
+      "log-color-bar log-comment log-comment log-time";    
+}
 
+.logContainer.logContainerGrid:hover {
+    /* grid-template-columns: 0.5rem auto 12rem; */
+    grid-template-areas: 
+      "log-color-bar log-tags log-actions log-actions"
+      "log-color-bar log-title log-actions log-actions"
+      "log-color-bar log-comment log-comment log-time";    
+}
+
+.logContainer.logContainerGrid .log-color-bar{
+    grid-area: log-color-bar;
+
+    width: 0.25rem;
+    height: 3.3rem;
+    position: absolute;
+    height: 95%;    
+}
+
+.logContainer.logContainerGrid .log-tags{
+    grid-area: log-tags;
+}
+
+.logContainer.logContainerGrid .log-title{
+    grid-area: log-title;
+    font-weight: 600;
+}
+
+.logContainer.logContainerGrid .log-comment{
+    grid-area: log-comment;
+}
+
+.logContainer.logContainerGrid .log-time{
+    grid-area: log-time;
+    text-align: end;
+    margin-right: 1rem;
+}
+
+
+.logContainer.logContainerGrid .log-actions{
+    grid-area: log-actions;
+    display: none;
+}
+
+.logContainer.logContainerGrid:hover .log-actions{
+    display: block;
+}
+
+.logContainer.logContainerGrid .log-effort{
+    grid-area: log-effort;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: end;
+    margin-right: 0.75rem;
+}
+
+.logContainer.logContainerGrid:hover .log-effort{
+    display: none;
+}

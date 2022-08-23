@@ -86,27 +86,33 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
 
         let options = new Options();
         options.load().then(_ => {
+
+
             if (options.myHoursCommonDescriptions) {
                 let descriptions = options.myHoursCommonDescriptions.split(';');
                 descriptions.forEach(function (value, i) {
-                    chrome.contextMenus.create({
-                        title: "Axo: start timer for Item #%s -- " + value,
-                        id:`mhDescription_${i}`,
-                        parentId: "mhParent",
-                        contexts: ["selection"],
-                        onclick: startTrackingTimeAxo
-                    });    
+                    if (!options.useDevOps) {
+                        chrome.contextMenus.create({
+                            title: "Axo: start timer for Item #%s -- " + value,
+                            id:`mhDescription_${i}`,
+                            parentId: "mhParent",
+                            contexts: ["selection"],
+                            onclick: startTrackingTimeAxo
+                        });  
+                }  
                 })
             }
         });
     
-        chrome.contextMenus.create({
-            // title: "Start timer for Axo Item",
-            title: "DevOps: start timer for Item #%s",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTimeDevOps
-        });
+        if (options.useDevOps) {
+            chrome.contextMenus.create({
+                // title: "Start timer for Axo Item",
+                title: "DevOps: start timer for Item #%s",
+                parentId: "mhParent",
+                contexts: ["selection"],
+                onclick: startTrackingTimeDevOps
+            });
+        }
 
         chrome.contextMenus.create({
             // title: "Start timer with description",
@@ -136,12 +142,23 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             contexts: ["all"],
             onclick: stopTimer
         });
-           
+
         chrome.contextMenus.create({
             type: 'separator',
             parentId: "mhParent",
             contexts: ["all"],
-        });          
+        });    
+
+        // chrome.contextMenus.create({
+        //     title: "Insert Time Stamp",
+        //     parentId: "mhParent",
+        //     contexts: ["all"],
+        //     onclick: insertTimeStamp
+        // });         
+        
+       
+        
+
 
         // chrome.contextMenus.create({
         //     title: "Add new project: '%s'",
@@ -570,6 +587,25 @@ function stopTimer(info, tab) {
             });
         });
 }
+
+// function insertTimeStamp(info, tab){
+
+//         chrome.tabs.sendMessage(tab.id, "getClickedElement", {frameId: info.frameId}, data => {
+//             if (data?.element) {
+//                 const timeStamp = new Date().toDateString() + ': ';
+
+//                 element.focus();
+//                 [...timeStamp].map((x) => {
+//                     document.dispatchEvent(new KeyboardEvent("keydown", { key: x }));
+//                 });
+//             }
+
+//         });
+    
+
+
+
+// }
 
 function createProject(info, tab) {
 

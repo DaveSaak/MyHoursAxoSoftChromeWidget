@@ -63,9 +63,16 @@ function popup() {
                 $('#copyToAxoSoftButton').hide();
                 $('#copyDevOpsButton').show();
                 $('.statistics-sm.axo').hide();
+
+                $('#nav-ratio').remove();
+                $('#nav-recent-items').remove();
+                $('#nav-calendar').remove();
+
             } else {
                 $('#copyToAxoSoftButton').show();
                 $('#copyDevOpsButton').hide();
+
+                $('#nav-devops').remove();
             }
 
 
@@ -378,16 +385,16 @@ function popup() {
                 }
 
                 // GET TIMES
-                promises.push(new Promise(function (resolve, reject) {
-                    _this.myHoursApi.getTimes(log.id).then(times => {
-                        log.times = times;
-                        resolve();
-                    })
-                        .catch((error) => {
-                            console.error('Error fetching MY HOURS times:', error);
-                            reject();
-                        });
-                }));
+                // promises.push(new Promise(function (resolve, reject) {
+                //     _this.myHoursApi.getTimes(log.id).then(times => {
+                //         log.times = times;
+                //         resolve();
+                //     })
+                //         .catch((error) => {
+                //             console.error('Error fetching MY HOURS times:', error);
+                //             reject();
+                //         });
+                // }));
             });
 
         })
@@ -399,56 +406,63 @@ function popup() {
         // console.log(_this.myHoursLogs);
 
 
-
         // now we can show the data on the screen
         // ...
 
         var logsContainer = $('#logs');
         logsContainer.empty();
 
-
+        var totalMins = 0;
         _this.myHoursLogs.forEach(log => {
-            // totalMins = totalMins + (data.duration / 60);
+            totalMins = totalMins + (log.duration / 60);
 
             var logContainer = $('<div>')
                 .attr("data-logId", log.id)
-                .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
+                .addClass("logContainer my-1 p-1 mr-1 align-items-center logContainerGrid");
+
+            logContainer.mouseenter(function () {
+                $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", true);
+                $('#timeline .timeline-log').not('[data-logId="' + log.id + '"]').toggleClass("deactivate", true);
+                hiLiteMyHoursLog(log.id);
+            });
+            logContainer.mouseleave(function () {
+                $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", false);
+                $('#timeline .timeline-log').not('[data-logId="' + log.id + '"]').toggleClass("deactivate", false);
+                hiLiteMyHoursLog();
+            });                
 
             // COLOR COLUMN
-            var columnColorBar = $('<div>').addClass('columnColorBar rounded mr-2');
-            logContainer.append(columnColorBar);
+            var colorBarCell = $('<div>').addClass('rounded log-color-bar');
+            logContainer.append(colorBarCell);
+
+            //TAGS 
+            var tagsCell = $('<div>').addClass('log-tags');
+            logContainer.append(tagsCell);
+            var worklogTypeInfo = $('<div>')
+                .addClass('text-muted text-lowercase')
+                .css('font-size', '0.7rem')
+                .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-worklog type not set-');
+            tagsCell.append(worklogTypeInfo);
 
 
-            // MAIN COLUMN
-            var columnMain = $('<div>').addClass('mainColumn columnMain d-flex flex-column');
-            logContainer.append(columnMain);
+            // TITLE
+            var logTitle = $('<div>').addClass('text-truncate log-title');
+            logContainer.append(logTitle);
 
-            if (log.tags?.length > 0) {
-                var columnAxoWorklogType = $('<div>').addClass('axoWorklogTypeColumn');
-                var worklogTypeInfo = $('<div>')
-                    .addClass('text-muted text-lowercase worklogType')
-                    .css('font-size', '0.7rem')
-                    .text(log.tags.map(x => x.name).join(', '));
-                columnAxoWorklogType.append(worklogTypeInfo);
-                columnMain.append(columnAxoWorklogType);
-            }
 
-            var logTitle = $('<div>').addClass('axoItemName text-truncate');
-            columnMain.append(logTitle);
-
+            // COMMENT
+            var logComment = $('<div>').addClass('text-muted small log-comment');
             if (log.note) {
-                columnMain.append(
-                    $('<div>')
-                        .addClass('text-muted small worklogType')
-                        .text(log.note));
+                logComment.text(log.note);
             }
+            logContainer.append(logComment);
 
-            // TIME COLUMN
-            var columnTime = $('<div>').addClass('columnTime text-right');
+            // TIME 
+            var columnTime = $('<div>').addClass('log-time');
             logContainer.append(columnTime);
 
             if (log.duration != null) {
-                var durationInfo = $('<i class="far fa-spinner-third fa-spin"></i>');
+                var durationInfo = $('<i class="fas fa-circle-notch fa-spin"></i>');
                 if (!log.running) {
                     var duration = minutesToString(log.duration / 60);
                     durationInfo = $('<span>').text(duration);
@@ -456,12 +470,12 @@ function popup() {
                 columnTime.append(durationInfo);
             };
 
-            // INFO COLUMN
-            var columnInfo = $('<div>').addClass('columnInfo ml-4');
-            logContainer.append(columnInfo);
+            // EFFORT
+            var effortCell = $('<div>').addClass('log-effort');
+            logContainer.append(effortCell);            
 
             // ACTIONS COLUMN
-            var columnActions = $('<div>').addClass('columnActions ml-auto');
+            var columnActions = $('<div>').addClass('log-actions');
             logContainer.append(columnActions);
 
 
@@ -523,7 +537,7 @@ function popup() {
                         });
                 });
 
-            let buttons = $("<div>").addClass("d-flex ml-auto");
+            let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
             buttons.append(startTrackingTimeShortcut);
             buttons.append(copyCommitMessagesButton);
             buttons.append(openDevOpsItemButton);
@@ -534,19 +548,76 @@ function popup() {
 
             if (log.devOpsItem) {
                 logTitle.text(`${log.devOpsItemId} ${log.devOpsItem?.fields['System.Title']}`);
-                columnColorBar.css("background-color", _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)]);
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`todo ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
-                columnInfo.append($('<div class="mr-3 text-muted columnInfoSection">').text(`done ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} / ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+
+                log.color = _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)];
+
+                colorBarCell.css("background-color", log.color);
+
+                effortCell.append($('<div class="badge badge-light">').text(`Remaining ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
+                effortCell.append($('<div class="badge badge-light">').text(`Completed ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
+                effortCell.append($('<div class="badge badge-light">').text(`Estimate ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
             } else {
                 logTitle.text('DevOps item not found');
                 openDevOpsItemButton.hide();
                 copyWorklogButton.hide();
             }
-
-
             logsContainer.append(logContainer);
 
-        })
+
+
+            //timeline
+
+            var timeline = $('#timeline');
+            log.times.forEach(time => {
+                var left = timeToPixel(time.startTime, _this.timeLineWidth);
+                var right = timeToPixel(time.endTime, _this.timeLineWidth);
+                var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + log.note;
+
+                var barGraph = $('<div>');
+                barGraph.addClass('timelineItem timeline-log');
+                barGraph.attr("data-logId", log.id);
+                barGraph.prop('title', title);
+
+                if (!log.devOpsItemId) {
+                    barGraph.append('<i class="fas fa-skull-crossbones ml-2" aria-hidden="true"></i>');
+                }
+
+                if (log.running) {
+                    barGraph.css({
+                        left: left + 'px',
+                        width: '20px',
+                        "background-image": '-webkit-gradient(linear, left top, right top, from(' + log.color + '), to(rgba(0, 0, 0, 0)))'
+                    });
+                }
+                else {
+                    barGraph.css({
+                        left: left + 'px',
+                        width: right - left + 'px',
+                        "background-color": log.color,
+                    });
+                }
+
+                barGraph.mouseenter(function () {
+                    $('.logContainer[data-logId="' + log.id + '"]')[0].scrollIntoViewIfNeeded();
+                    $('.logContainer[data-logId="' + log.id + '"]').toggleClass("active", true);
+                    hiLiteMyHoursLog(log.id);
+                });
+                barGraph.mouseleave(function () {
+                    $('.logContainer[data-logId="' + log.id + '"]').toggleClass("active", false);
+                    hiLiteMyHoursLog();
+                });
+
+                timeline.append(barGraph);
+                //barGraph.tooltip();
+            });    
+        });
+
+        _this.timeRatio.setMyHours(totalMins);
+        $('#mhTotal').text(minutesToString(totalMins));        
+
+
+
+
     }
 
     function getLogs() {
@@ -589,6 +660,15 @@ function popup() {
 
         var logsContainer = $('#logs');
         logsContainer.empty();
+
+
+        if (_this.options.useDevOps) {
+            _this.getProjectTracks();
+            getAllHoursData(fetchLogsId);
+            return;
+        }
+
+
 
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
             console.info(minutesWorked);
@@ -684,7 +764,7 @@ function popup() {
                                 //.css('font-weight', '600');
 
                                 if (data.duration != null) {
-                                    var durationInfo = $('<i class="far fa-spinner-third fa-spin"></i>');
+                                    var durationInfo = $('<i class="fas fa-spinner fa-spin"></i>');
                                     if (!data.running) {
                                         var duration = minutesToString(data.duration / 60);
                                         durationInfo = $('<span>').text(duration);
@@ -840,6 +920,8 @@ function popup() {
 
 
     }
+
+    
 
     function deleteLogs() {
         _this.axoSoftApi.getWorkLogs(_this.currentDate).then(
@@ -1133,7 +1215,7 @@ function popup() {
             });
 
         let openItemButton = $('<button class="btn btn-transparent">')
-            .append($('<i class="far fa-rocket"></i>').attr("title", "Open time"))
+            .append($('<i class="fa-solid fa-arrow-up-right-from-square"></i>').attr("title", "Open item in DevOps"))
             .click(function (event) {
                 event.preventDefault();
                 _this.devOpsApi.getItemAsync(item.id).then(devOpsItem => {
@@ -1503,7 +1585,8 @@ function popup() {
             let ratioValid = (timeRatio.ratio >= 0.9 && timeRatio.ratio <= 1);
             //elementInfo.text((ratio * 100).toFixed(0) + '%');
 
-            let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
+            // let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
+            let cardText = '' + (timeRatio.ratio * 100).toFixed(0) + '%';
             if (!ratioValid) {
                 let diffMinutes = timeRatio.mhTotalTime - timeRatio.ahAttendance;
                 if (diffMinutes > 0) {
@@ -1517,6 +1600,9 @@ function popup() {
                 elementInfo.show();
             }
             parent.attr('title', cardText);
+
+            element.empty();
+            element.append($('<span class="badge badge-secondary" style="font-size: 0.85rem">').text(cardText));
 
 
 
