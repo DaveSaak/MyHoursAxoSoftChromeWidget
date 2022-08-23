@@ -75,79 +75,86 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             contexts: ["all"]
         });
 
-        chrome.contextMenus.create({
-            // title: "Start timer for Axo Item",
-            title: "Axo: start timer for Item #%s",
-            id: "axoParent",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTimeAxo
-        });
+
 
         let options = new Options();
         options.load().then(_ => {
 
-
-            if (options.myHoursCommonDescriptions) {
-                let descriptions = options.myHoursCommonDescriptions.split(';');
-                descriptions.forEach(function (value, i) {
-                    if (!options.useDevOps) {
-                        chrome.contextMenus.create({
-                            title: "Axo: start timer for Item #%s -- " + value,
-                            id:`mhDescription_${i}`,
-                            parentId: "mhParent",
-                            contexts: ["selection"],
-                            onclick: startTrackingTimeAxo
-                        });  
-                }  
-                })
+            if (!options.useDevOps) {
+                chrome.contextMenus.create({
+                    // title: "Start timer for Axo Item",
+                    title: "Axo: start timer for Item #%s",
+                    id: "axoParent",
+                    parentId: "mhParent",
+                    contexts: ["selection"],
+                    onclick: startTrackingTimeAxo
+                });  
+                
+                if (options.myHoursCommonDescriptions) {
+                    let descriptions = options.myHoursCommonDescriptions.split(';');
+                    descriptions.forEach(function (value, i) {
+                        if (!options.useDevOps) {
+                            chrome.contextMenus.create({
+                                title: "Axo: start timer for Item #%s -- " + value,
+                                id:`mhDescription_${i}`,
+                                parentId: "mhParent",
+                                contexts: ["selection"],
+                                onclick: startTrackingTimeAxo
+                            });  
+                    }  
+                    })
+                }
             }
-        });
-    
-        if (options.useDevOps) {
+            
+            if (options.useDevOps) {
+                chrome.contextMenus.create({
+                    // title: "Start timer for Axo Item",
+                    title: "DevOps: start timer for Item #%s",
+                    parentId: "mhParent",
+                    contexts: ["selection"],
+                    onclick: startTrackingTimeDevOps
+                });
+            }             
+            
             chrome.contextMenus.create({
-                // title: "Start timer for Axo Item",
-                title: "DevOps: start timer for Item #%s",
+                // title: "Start timer with description",
+                title: "Start timer with description: '%s'",
                 parentId: "mhParent",
                 contexts: ["selection"],
-                onclick: startTrackingTimeDevOps
+                onclick: startTrackingTime
             });
-        }
-
-        chrome.contextMenus.create({
-            // title: "Start timer with description",
-            title: "Start timer with description: '%s'",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTime
+    
+            chrome.contextMenus.create({
+                type: 'separator',
+                parentId: "mhParent",
+                contexts: ["all"],
+            });     
+            
+            chrome.contextMenus.create({
+                // title: "Add to running log description",
+                title: "Add to running log description",
+                parentId: "mhParent",
+                contexts: ["selection"],
+                onclick: updateRunningLogDescription
+            });          
+    
+            chrome.contextMenus.create({
+                title: "Stop running log",
+                parentId: "mhParent",
+                contexts: ["all"],
+                onclick: stopTimer
+            });
+    
+            chrome.contextMenus.create({
+                type: 'separator',
+                parentId: "mhParent",
+                contexts: ["all"],
+            });             
         });
+    
 
-        chrome.contextMenus.create({
-            type: 'separator',
-            parentId: "mhParent",
-            contexts: ["all"],
-        });     
-        
-        chrome.contextMenus.create({
-            // title: "Add to running log description",
-            title: "Add to running log description",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: updateRunningLogDescription
-        });          
 
-        chrome.contextMenus.create({
-            title: "Stop running log",
-            parentId: "mhParent",
-            contexts: ["all"],
-            onclick: stopTimer
-        });
-
-        chrome.contextMenus.create({
-            type: 'separator',
-            parentId: "mhParent",
-            contexts: ["all"],
-        });    
+   
 
         // chrome.contextMenus.create({
         //     title: "Insert Time Stamp",
@@ -200,7 +207,17 @@ function refreshBadge(){
     console.info(`refresh badge: checking ratio`);    
     options.load().then(
         function () {
+            if (!chrome.browserAction?.setBadgeText) {
+                return;
+            }
+
+
             currentUser.load(function () {
+                if (options.useDevOps) {
+                    return;
+                }
+
+
                 let axoSoftApi = new AxoSoftApi(options);
                 let allHoursApi = new AllHoursApi(options);
 

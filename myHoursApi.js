@@ -301,6 +301,11 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    _this,startLogFromId = function(text){
+        
+
+    }
+
     _this.startFromExisting = function(logId){
         return new Promise(
             function (resolve, reject) {

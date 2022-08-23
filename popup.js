@@ -213,6 +213,10 @@ function popup() {
             _this.ratioView.show();
         });
 
+        $('#pills-devops-assignments-tab').click(function () {
+            getMyDevOpsItems();
+        });        
+
         $('#refreshRatio').click(function () {
             _this.ratioView.show();
         });
@@ -447,6 +451,7 @@ function popup() {
 
             // TITLE
             var logTitle = $('<div>').addClass('text-truncate log-title');
+            logTitle.text(`${log.taskName}`);
             logContainer.append(logTitle);
 
 
@@ -545,19 +550,16 @@ function popup() {
 
             columnActions.append(buttons);
 
-
             if (log.devOpsItem) {
-                logTitle.text(`${log.devOpsItemId} ${log.devOpsItem?.fields['System.Title']}`);
-
                 log.color = _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)];
-
                 colorBarCell.css("background-color", log.color);
 
                 effortCell.append($('<div class="badge badge-light">').text(`Remaining ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
                 effortCell.append($('<div class="badge badge-light">').text(`Completed ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
                 effortCell.append($('<div class="badge badge-light">').text(`Estimate ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
             } else {
-                logTitle.text('DevOps item not found');
+                log.color = 'lightgray';
+                // logTitle.text('DevOps item not found');
                 openDevOpsItemButton.hide();
                 copyWorklogButton.hide();
             }
@@ -1272,7 +1274,7 @@ function popup() {
 
                             var axoItemName = $('<div>')
                                 .addClass('axoItemName text-truncate ml-2')
-                                .text(item.id + " -- " + item.fields['System.Title']);
+                                .text(item.id + " - " + item.fields['System.Title']);
                             columnMain.append(axoItemName);
 
 
