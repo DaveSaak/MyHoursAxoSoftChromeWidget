@@ -32,10 +32,9 @@ $(function () {
             
             $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
             $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
-            $('#devOpsDefaultWorklogType').val(_this.options.devOpsDefaultWorklogType);
             $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
             
-            $('#mhDefaultTagId').val(_this.options.mhDefaultTagId);
+            $('#mhDefaultTagId').val(_this.options.myHoursDefaultTagId);
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             
             $('#notificationsBadRatio').prop( "checked", _this.options.notificationsBadRatio);
@@ -45,7 +44,6 @@ $(function () {
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser);
             _this.devOpsApi = new DevOpsApi(_this.options);
-            _this.chromeNotifications = new ChromeNotifications();
 
             _this.devOpsApi.getMyRepositoriesAsync().then(repos => {
                 repos.value.forEach(repo => {
@@ -60,8 +58,6 @@ $(function () {
                                 </small>
                             </div>
                         </li>`);
-                        // .append(`<li><span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span> <small class='text-muted show-on-hover'>${repo.id}</small></li>`);
-                        // .append(`<li><span class="ml-2" for="devops-repo-${repo.id}"> ${repo.name}</span></li>`);
                 })
             });
 
@@ -108,44 +104,9 @@ $(function () {
                             html: tag.name
                         }));
                     });
-                    $select.val(_this.options.mhDefaultTagId);                
+                    $select.val(_this.options.myHoursDefaultTagId);                
                 });
-                _this.myHoursApi.getClients().then(function (clients) {
-                    clients = _.sortBy(clients, function (o) {
-                        return o.name;
-                    });
-                    var $select = $("#mhRootClientId");
-                    $(clients).each(function (i, client) {
-                        if (!client.archived) {
-                            $select.append($("<option>", {
-                                value: client.id,
-                                html: client.name
-                            }));
-                        }
-                    });
-                    $select.val(_this.options.myHoursRootClientId);
-                });   
-
-                _this.myHoursApi.getTags().then(function (tags) {
-                    tags = _.sortBy(tags, function (o) {
-                        return o.name;
-                    });
-                    var $select = $("#mhDefaultTagId");
-                    $(tags).each(function (i, tag) {
-                        if (!tag.archived) {
-                            $select.append($("<option>", {
-                                value: tag.id,
-                                html: tag.name
-                            }));
-                        }
-                    });
-                    $select.val(_this.options.myHoursDefaultTagId);
-                });                   
-
             });
-
-
-
 
             console.group('all hours token');
             console.log(_this.options.allHoursAccessTokenValidTill)
@@ -172,30 +133,10 @@ $(function () {
     });
 
     $('.saveButton').click(function () {
-        // _this.options.axoSoftUrl = $('#axoSoftUrl').val();
-        // _this.options.axoSoftToken = $('#axoSoftToken').val();
-        // _this.options.axoSoftUserId = $('#axoSoftUserId').val();
-        // _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
-        // _this.options.contentSwitchProjectId = $('#contentSwitchProjectId').val();
-        // _this.options.developmentTaskName = $('#developmentTaskName').val();
-        // _this.options.contentSwitchZoneReEnterTime = $('#contentSwitchZoneReEnterTime').val();
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
-
-
         saveOptions();
-
-        // _this.options.save().then(function () {
-        //     var notificationOptions = {
-        //         type: 'basic',
-        //         iconUrl: 'logo.png',
-        //         title: 'Options saved',
-        //         message: 'Options have been saved.'
-        //     };
-        //     //chrome.notifications.create('optionsSaved', notificationOptions);
-        //     chrome.notifications.create('optionsSaved', notificationOptions, function () { });
-        // });
     });
 
     $('#saveGeneral').click(function () {
@@ -225,13 +166,6 @@ $(function () {
     
     $('#saveMhButton').click(function () {
         _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
-        _this.options.myHoursRootClientId = $('#mhRootClientId').val();
-        saveOptions();
-        toastr.success('MyHours settings saved');
-    });      
-
-    $('#saveMhButton').click(function () {
-        _this.options.mhDefaultTagId = $('#mhDefaultTagId').val();
         _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         saveOptions();
         toastr.success('My Hours settings saved');
@@ -241,18 +175,11 @@ $(function () {
     $('#saveDevOpsButton').click(function () {
         _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
         _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
-        _this.options.devOpsDefaultWorklogType = $('#devOpsDefaultWorklogType').val();
         _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
         saveOptions();
         toastr.success('DevOps settings saved');
 
     });    
-
-    // $('#saveNotificationsButton').click(function () {
-    //     _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
-    //     saveOptions();
-    //     toastr.success('Notifications settings saved');
-    // });      
 
     $('#clearUserButton').click(x => {
         let currentUser = new CurrentUser();
@@ -272,12 +199,10 @@ $(function () {
         let password = $('#mhPassword').val();
         _this.myHoursApi.getAccessToken(email, password).then(
             function (token) {
-                //var currentUser = new CurrentUserRepo.getInstance();
                 _this.currentUser.email = email;
                 _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
                 _this.currentUser.save();
 
-                //myHoursApi.accessToken = token.accessToken;
                 _this.myHoursApi.getUser().then(function (user) {
                     _this.currentUser.setUserData(user.id, user.name);
                     _this.currentUser.save();
@@ -334,14 +259,7 @@ $(function () {
 
     function saveOptions() {
         _this.options.save().then(function () {
-            // var notificationOptions = {
-            //     type: 'basic',
-            //     iconUrl: './images/TS-badge.png',
-            //     title: 'Time & Space Suite Extension',
-            //     message: 'Options have been saved.'
-            // };
-            // //chrome.notifications.create('optionsSaved', notificationOptions);
-            // chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+
         });
     }
 

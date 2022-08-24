@@ -3,9 +3,17 @@ function MyHoursApi(currentUser) {
 
     var baseUrl = 'https://api2.myhours.com/api/';
     var _this = this;
+  
 
     _this.currentUser = currentUser;
     //_this.accessToken = undefined;
+
+    _this.getAjaxHeaders = function() {
+        return {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + _this.currentUser.accessToken
+        }
+    }; 
 
 
     _this.getUser = function () {
@@ -301,9 +309,35 @@ function MyHoursApi(currentUser) {
         )
     }
 
-    _this.startLogFromId = function(text){
+    _this.startLogFromId = function(text, myHoursDefaultTagId){
 
+        return new Promise(
+            function (resolve, reject) {        
 
+                _this.getTaskLists().then(taskLists => {
+                    let projectTaskFound = false;
+                    let logStarted = false;
+                    for (const taskList of taskLists) {
+                        const projectTask = taskList.incompletedTasks.find(x => x.name.startsWith(text + ' '));
+                        if (projectTask) {
+                            projectTaskFound = true;
+                            _this.startLog('', taskList.projectId, projectTask.id, myHoursDefaultTagId).then(
+                                function (data) {
+                                    logStarted = true;
+                                    resolve({ logStarted, projectTask});
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    reject({ logStarted, projectTask});
+                                }
+                            )
+                        }
+                    }
+                    if (!projectTaskFound){
+                        resolve({ logStarted });
+                    }
+                })
+            })
     }
 
     _this.startFromExisting = function(logId){
@@ -618,8 +652,50 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }    
+    }   
     
+    _this.getProjectsAsync = async function() {
+        const url = baseUrl + "projects";
+        const response = await fetch(url, {
+            headers: _this.getAjaxHeaders()
+        });
+        return response.json();        
+    }
+
+    _this.getProjectTaskList = async function(projectId) {
+        const url = `${baseUrl}projects/${projectId}/tasklist?localDate=${(new Date()).toISOString}`;
+        const response = await fetch(url, {
+            headers: _this.getAjaxHeaders()
+        });
+        return response.json(); 
+    }
+
+    
+    _this.getTaskLists = async function() {
+        let projectTaskListPromises = [];
+
+        const now = (new Date()).toISOString();
+        const projects = await this.getProjectsAsync();
+        projects.forEach(project => {
+            const url = `${baseUrl}projects/${project.id}/tasklist?localDate=${now}`;
+
+            projectTaskListPromises.push(fetch(url, {
+                headers: _this.getAjaxHeaders(),
+            }).then(res => res.json()));
+        });
+
+        let projectsTaskLists = [];
+        const responses = await Promise.all(projectTaskListPromises);
+        responses.forEach((response, index) => {
+            projectsTaskLists.push(
+                {...(response[0]), projectId: projects[index].id}
+            );
+        });
+
+        return projectsTaskLists;        
+
+    }
+        
     _this.getProjectTaskList = function (projectId) {
         return new Promise(
             function (resolve, reject) {
@@ -641,7 +717,13 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }      
+    }  
+    
+    
+
+
+
+
     
     _this.getClients = function () {
         return new Promise(

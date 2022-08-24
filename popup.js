@@ -237,22 +237,22 @@ function popup() {
 
         });
 
-        $('#switchContentButton').click(function () {
-            _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
-                .then(
-                    function (data) {
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/TS-badge.png',
-                            title: 'Content Switch',
-                            message: 'Content Switch was recorded.'
-                        };
-                        chrome.notifications.create('optionsSaved', notificationOptions, function () { });
-                    },
-                    function (error) {
-                        console.log(error);
-                    });
-        });
+        // $('#switchContentButton').click(function () {
+        //     _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
+        //         .then(
+        //             function (data) {
+        //                 var notificationOptions = {
+        //                     type: 'basic',
+        //                     iconUrl: './images/TS-badge.png',
+        //                     title: 'Content Switch',
+        //                     message: 'Content Switch was recorded.'
+        //                 };
+        //                 chrome.notifications.create('optionsSaved', notificationOptions, function () { });
+        //             },
+        //             function (error) {
+        //                 console.log(error);
+        //             });
+        // });
 
         document.onkeyup = function (event) {
             if (event.keyCode === 37) {
@@ -445,13 +445,13 @@ function popup() {
             var worklogTypeInfo = $('<div>')
                 .addClass('text-muted text-lowercase')
                 .css('font-size', '0.7rem')
-                .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-worklog type not set-');
+                .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
             tagsCell.append(worklogTypeInfo);
 
 
             // TITLE
             var logTitle = $('<div>').addClass('text-truncate log-title');
-            logTitle.text(`${log.taskName}`);
+            logTitle.text(`${log.taskName ?? '-not set: task-'}`);
             logContainer.append(logTitle);
 
 
@@ -1194,26 +1194,43 @@ function popup() {
             .append($('<i class="fa-regular fa-circle-play"></i>').attr("title", "Start tracking time"))
             .click(function (event) {
                 event.preventDefault();
-                let note = item.id;
-                _this.myHoursApi.startLog(note, _this.options.mhDefaultTagId).then(
-                    function () {
-                        console.info('worklog started');
+                let itemId = item.id.toString();
 
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'Log started.'
-                        };
-                        chrome.notifications.create('notifyDevOpsItemStarted', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });
-                        $('#pills-home-tab').tab('show');
-                    }
-                )
-                    .catch(
-                        function () {
-                            console.info('worklog add failed');
+                _this.myHoursApi.startLogFromId(itemId, _this.options.myHoursDefaultTagId)
+                    .then(
+                        (data) => {
+                            if (data.logStarted) {
+                                toastr.success(`Log started: ${data.projectTask.name}`);
+                            } else {
+                                toastr.warning(`There is no incompleted no task with id ${itemId}`);
+                            }
                         }
                     )
+                    .catch(() => {
+                        toastr.error(`There was an error. See console.`)
+                    })
+
+
+
+                // _this.myHoursApi.startLog(note, _this.options.myHoursDefaultTagId).then(
+                //     function () {
+                //         console.info('worklog started');
+
+                //         var notificationOptions = {
+                //             type: 'basic',
+                //             iconUrl: './images/ts-badge.png',
+                //             title: 'MyHours',
+                //             message: 'Log started.'
+                //         };
+                //         chrome.notifications.create('notifyDevOpsItemStarted', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });
+                //         $('#pills-home-tab').tab('show');
+                //     }
+                // )
+                //     .catch(
+                //         function () {
+                //             console.info('worklog add failed');
+                //         }
+                //     )
             });
 
         let openItemButton = $('<button class="btn btn-transparent">')

@@ -569,14 +569,7 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
                 _this.myHoursApi.startLog(note).then(
                     function () {
                         console.info('worklog started');
-
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'Log started.'
-                        };
-                        chrome.notifications.create('notifyAxoItemStarted', notificationOptions, function () { console.log("Last error:", chrome.runtime.lastError); });
+                        toastr.success('Log started');
                         $('#pills-home-tab').tab('show');
                     }
                 )

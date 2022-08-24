@@ -64,25 +64,23 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
     if (request.action == 'createContextMenuItemStartLog') {
-        console.log(chrome.contextMenus);
-
-        chrome.contextMenus.remove("mhParent");
-
-        console.log('create mh tools');
-        chrome.contextMenus.create({
-            title: "My Hours tools",
-            id: "mhParent",
-            contexts: ["all"]
-        });
-
-
+        // console.log(chrome.contextMenus);
 
         let options = new Options();
         options.load().then(_ => {
 
+            chrome.contextMenus.remove("mhParent");
+
+            // console.log('create mh tools');
+            chrome.contextMenus.create({
+                title: "My Hours tools",
+                id: "mhParent",
+                contexts: ["all"]
+            });
+    
+
             if (!options.useDevOps) {
                 chrome.contextMenus.create({
-                    // title: "Start timer for Axo Item",
                     title: "Axo: start timer for Item #%s",
                     id: "axoParent",
                     parentId: "mhParent",
@@ -108,7 +106,6 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             
             if (options.useDevOps) {
                 chrome.contextMenus.create({
-                    // title: "Start timer for Axo Item",
                     title: "DevOps: start timer for Item #%s",
                     parentId: "mhParent",
                     contexts: ["selection"],
@@ -117,7 +114,6 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             }             
             
             chrome.contextMenus.create({
-                // title: "Start timer with description",
                 title: "Start timer with description: '%s'",
                 parentId: "mhParent",
                 contexts: ["selection"],
@@ -131,49 +127,21 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             });     
             
             chrome.contextMenus.create({
-                // title: "Add to running log description",
                 title: "Add to running log description",
                 parentId: "mhParent",
                 contexts: ["selection"],
                 onclick: updateRunningLogDescription
             });          
     
-            chrome.contextMenus.create({
-                title: "Stop running log",
-                parentId: "mhParent",
-                contexts: ["all"],
-                onclick: stopTimer
-            });
-    
-            chrome.contextMenus.create({
-                type: 'separator',
-                parentId: "mhParent",
-                contexts: ["all"],
-            });             
+            // chrome.contextMenus.create({
+            //     title: "Stop running log",
+            //     parentId: "mhParent",
+            //     contexts: ["all"],
+            //     onclick: stopTimer
+            // });
+          
         });
-    
-
-
-   
-
-        // chrome.contextMenus.create({
-        //     title: "Insert Time Stamp",
-        //     parentId: "mhParent",
-        //     contexts: ["all"],
-        //     onclick: insertTimeStamp
-        // });         
-        
-       
-        
-
-
-        // chrome.contextMenus.create({
-        //     title: "Add new project: '%s'",
-        //     parentId: "mhParent",
-        //     contexts: ["selection"],
-        //     onclick: createProject
-        // });  
-            
+           
 
     }
 }
@@ -249,14 +217,7 @@ function refreshBadge(){
                                                     
                                                     //inform user that sync must be done every hour or so
                                                     if (options.notificationsBadRatio && moment().minute() <= 10) {
-                                                        var notificationOptions = {
-                                                            type: 'basic',
-                                                            silent: true,
-                                                            iconUrl: './images/ts-badge.png',
-                                                            title: 'Spica chrome widget',
-                                                            message: `Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`
-                                                        };
-                                                        chrome.notifications.create('', notificationOptions, function () { }); 
+                                                        chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { }); 
                                                     }
                                                 }
                                                 else {
@@ -346,26 +307,12 @@ function startTrackingTimeAxo(info, tab) {
                                 myHoursApi.startLog(myHoursNote + ' ')
                                     .then(
                                         function (data) {
-                                            var notificationOptions = {
-                                                type: 'basic',
-                                                iconUrl: './images/ts-badge.png',
-                                                title: 'My Hours',
-                                                message: 'Log started. Axo item #' + info.selectionText
-                                            };
-                                            //chrome.notifications.create('', 'Log started');
-                                            chrome.notifications.create('', notificationOptions, function () { });
+                                            chrome.notifications.create('', getNotificationOptions('Log started. Axo item #' + info.selectionText), function () { });
                                             refreshMyHoursPage();
                                         },
                                         function (error) {
                                             console.log(error);
-                                            var notificationOptions = {
-                                                type: 'basic',
-                                                iconUrl: './images/ts-badge.png',
-                                                title: 'My Hours',
-                                                message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                            };
-                                            //chrome.notifications.create('', 'Bummer something went wrong.');
-                                            chrome.notifications.create('', notificationOptions, function () { });
+                                            chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                                         }
                                     );
                             }
@@ -384,7 +331,6 @@ function startTrackingTimeDevOps(info, tab) {
     options.load().then(
         function () {
             currentUser.load(function () {
-                let defaultTagId = currentUser.myHoursDefaultTagId;
 
                 myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                     function (token) {
@@ -394,116 +340,21 @@ function startTrackingTimeDevOps(info, tab) {
                         currentUser.setTokenData(token.accessToken, token.refreshToken);
                         currentUser.save();
 
-                        myHoursApi.getProjects().then(projects => {
-                            var rootProjects = _.filter(projects,
-                                function (p) {
-                                    return p.clientId == options.myHoursRootClientId;
-                                });                            
-
-                            //get tasklists for projects
-                            
-                            
-
-                            let projectTaskListPromises = [];
-                            rootProjects.forEach(project => {
-                                projectTaskListPromises.push(myHoursApi.getProjectTaskList(project.id));
-                            });
-
-                            Promise.allSettled(projectTaskListPromises).then(results => {
-                                console.log(results);
-
-                                let projectTasks = [];
-                                results.forEach(result => {
-                                    if (result.status == 'fulfilled') {
-                                        result.value.forEach(v => {
-                                            v.incompletedTasks.map(t => {
-                                                projectTasks.push(
-                                                {
-                                                    projectId: result.value.projectId,
-                                                    taskId: t.id,
-                                                    taskName: t.name
-                                                });
-                                            });
-                                            // console.log(v);
-                                        });
+                        myHoursApi.startLogFromId(info.selectionText.trim(), options.myHoursDefaultTagId)
+                            .then(
+                                (data) => {
+                                    if (data.logStarted) {
+                                        refreshMyHoursPage();
+                                        chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
+                                    } else {
+                                        chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
                                     }
-                                })
-                                console.log(projectTasks);
-
-                                var matchingTask = _.find(projectTasks,
-                                    function (t) {
-                                        return t.taskName.startsWith(info.selectionText + ' ');
-                                    }); 
-                                    
-                                if (matchingTask) {
-                                    console.log(matchingTask);
-
-                                    myHoursApi.startLog('', matchingTask.projectId, matchingTask.taskId, options.myHoursDefaultTagId)
-                                        .then(
-                                            function (data) {
-                                                let tagName = '';
-                                                if (data.tags?.length > 0) {
-                                                    tagName = ', work type: ' + data.tags[0].name;
-                                                }
-
-
-                                                var notificationOptions = {
-                                                    type: 'basic',
-                                                    iconUrl: './images/ts-badge.png',
-                                                    title: 'My Hours',
-                                                    message: 'Log started. DevOps item #' + info.selectionText + tagName
-                                                };
-                                                chrome.notifications.create('', notificationOptions, function () { });
-                                                refreshMyHoursPage();
-                                            },
-                                            function (error) {
-                                                console.log(error);
-                                                var notificationOptions = {
-                                                    type: 'basic',
-                                                    iconUrl: './images/ts-badge.png',
-                                                    title: 'My Hours',
-                                                    message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                                };
-                                                //chrome.notifications.create('', 'Bummer something went wrong.');
-                                                chrome.notifications.create('', notificationOptions, function () { });
-                                            }
-                                        );
-
-
-
                                 }
-
-
-                            });
-                            //reach here regardless
-                            // {status: "fulfilled", value: 33}
-                         });
-
-
-                        // myHoursApi.getTasks().then(tasks => {
-                        //     //find task that starts with selected input
-                        //     var matchingTasks = _.find(tasks,
-                        //         function (t) {
-                        //             return t.name.startsWith(info.selectionText + ' ');
-                        //         });
-
-                        //     var task = matchingTasks ? matchingTasks[0]: undefined;
-
-
-                        //     console.log(tasks);
-
-
-
-
-
-                        // });
-
-
-
-
-                    }
-                        
-                    );
+                            )
+                            .catch(() => {
+                                chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
+                            })
+                    });
             });
         });
 }
@@ -525,26 +376,12 @@ function startTrackingTime(info, tab) {
             myHoursApi.startLog(info.selectionText)
                 .then(
                     function (data) {
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'Log started. Description: ' + info.selectionText
-                        };
-                        //chrome.notifications.create('', 'Log started');
-                        chrome.notifications.create('', notificationOptions, function () { });
+                        chrome.notifications.create('', getNotificationOptions('Log started. Description: ' + info.selectionText), function () { });
                         refreshMyHoursPage();
                     },
                     function (error) {
                         console.log(error);
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                        };
-                        //chrome.notifications.create('', 'Bummer something went wrong.');
-                        chrome.notifications.create('', notificationOptions, function () { });
+                        chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                     }
                 );
         }
@@ -572,30 +409,19 @@ function stopTimer(info, tab) {
                         myHoursApi.stopTimer()
                             .then(
                                 function (data) {
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'My Hours',
-                                    };
+                                    let message = '';
                                     if (data) {
-                                        notificationOptions.message = "Timer stopped: " + data.note
+                                        message = "Timer stopped: " + data.note
                                     }
                                     else {
-                                        notificationOptions.message = "There are no running logs."
+                                        message = "There are no running logs."
                                     }
-                                    chrome.notifications.create('', notificationOptions, function () { });
+                                    chrome.notifications.create('', getNotificationOptions(message), function () { });
                                     refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'My Hours',
-                                        message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                    };
-                                    //chrome.notifications.create('', 'Bummer something went wrong.');
-                                    chrome.notifications.create('', notificationOptions, function () { });
+                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                                 }
                             );
                     }
@@ -640,25 +466,11 @@ function createProject(info, tab) {
             myHoursApi.createProject(info.selectionText)
                 .then(
                     function (data) {
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'Project created.'
-                        };
-                        //chrome.notifications.create('', 'Log started');
-                        chrome.notifications.create('', notificationOptions, function () { });
+                        chrome.notifications.create('', getNotificationOptions('Project created.'), function () { });
                     },
                     function (error) {
                         console.log(error);
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                        };
-                        //chrome.notifications.create('', 'Bummer something went wrong.');
-                        chrome.notifications.create('', notificationOptions, function () { });
+                        chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                     }
                 );
         }
@@ -677,42 +489,24 @@ function updateRunningLogDescription(info, tab) {
             currentUser.load(function () {
                 myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                     function (token) {
-                        console.info('got refresh token. token: ');
-                        console.info(token);
-
                         currentUser.setTokenData(token.accessToken, token.refreshToken);
                         currentUser.save();
 
                         myHoursApi.updateRunningLogDescription(info.selectionText)
                             .then(
                                 function (updatedLog) {
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'MyHours',
-                                    };
-                                    if (updatedLog) {
-                                        console.log(updatedLog);
-                                        notificationOptions.message = "Description updated: " + updatedLog.note
+                                    
+                                     if (updatedLog) {
+                                        chrome.notifications.create('', getNotificationOptions("Description updated: " + updatedLog.note), function () { });
                                     }
                                     else {
-                                        notificationOptions.message = "There are no running logs."
+                                        chrome.notifications.create('', getNotificationOptions("There are no running logs"), function () { });
                                     }
-
-                                    //chrome.notifications.create('', 'Log started');
-                                    chrome.notifications.create('', notificationOptions, function () { });
                                     refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'MyHours',
-                                        message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                    };
-                                    //chrome.notifications.create('', 'Bummer something went wrong.');
-                                    chrome.notifications.create('', notificationOptions, function () { });
+                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                                 }
                             );
                     }
@@ -723,10 +517,10 @@ function updateRunningLogDescription(info, tab) {
 }
 
 function getBranchName(info, tab) {
-    console.log("selection: " + info.selectionText);
+    // console.log("selection: " + info.selectionText);
     let branchName = info.selectionText.toLowerCase().trim().replace(/ /g, "-");
 
-    console.log('background script - copy-to-clipboard message sent.');
+    // console.log('background script - copy-to-clipboard message sent.');
     //chrome.tabs.sendMessage(tab.id, { type: 'copy-to-clipboard', text: branchName });
 
     navigator.clipboard.writeText(request.branchName).then(function () {
@@ -749,6 +543,15 @@ function refreshMyHoursPage(){
         });
     });
 
+}
+
+function getNotificationOptions(message){
+    return {
+        type: 'basic',
+        iconUrl: './images/ts-128.png',
+        title: 'Spica extension',
+        message
+    };
 }
 
 
