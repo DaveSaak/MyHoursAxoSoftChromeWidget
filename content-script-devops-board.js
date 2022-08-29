@@ -1,0 +1,1 @@
+console.log('hello from devops board content script');

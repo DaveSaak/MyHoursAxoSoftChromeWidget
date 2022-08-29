@@ -30,9 +30,9 @@
         },
         {
             "matches": [
-                "https://dev.azure.com/Spica-International/*"
+                "https://dev.azure.com/Spica-International/*/_boards/board/*"
             ],
-            "js": ["jquery-3.3.1.min.js","content-script-devops.js"]
+            "js": ["jquery-3.3.1.min.js","content-script-devops-board.js"]
         }        
     ],
     "icons": {
