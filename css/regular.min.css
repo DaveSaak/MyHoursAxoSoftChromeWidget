@@ -14,8 +14,11 @@
     font-display: block;
     /* src: url("chrome-extension://ejfeamnngdpogapmijokhbomdldkebcd/webfonts/fa-regular-400.woff2"); */
 
-    src: url("chrome-extension://ejfeamnngdpogapmijokhbomdldkebcd/webfonts/fa-regular-400.woff2") format("woff2"),
-        url("chrome-extension://ejfeamnngdpogapmijokhbomdldkebcd/webfonts/fa-regular-400.ttf") format("truetype");
+    /* src: url("../webfonts/fa-regular-400.woff2") format("woff2"),
+        url("../webfonts/fa-regular-400.ttf") format("truetype"); */
+        
+    src: url("../webfonts/fa-regular-400.woff2") format("woff2"),
+        url("../webfonts/fa-solid-900.woff2") format("woff2"),        
 
     }
 .fa-regular,

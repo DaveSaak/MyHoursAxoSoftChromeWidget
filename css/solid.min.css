@@ -15,10 +15,8 @@
     /* src: url(../webfonts/fa-solid-900.woff2) format("woff2"),
         url(../webfonts/fa-solid-900.ttf) format("truetype"); */
 
-    src: url("chrome-extension://ejfeamnngdpogapmijokhbomdldkebcd/webfonts/fa-solid-900.woff2")
-            format("woff2"),
-        url("chrome-extension://ejfeamnngdpogapmijokhbomdldkebcd/webfonts/fa-solid-900.ttf")
-            format("truetype");
+    src: url("../webfonts/fa-solid-900.woff2") format("woff2"),
+        url("../webfonts/fa-solid-900.ttf") format("truetype");
 }
 .fa-solid,
 .fas {
