@@ -548,7 +548,7 @@ function refreshMyHoursPage(){
 function getNotificationOptions(message){
     return {
         type: 'basic',
-        iconUrl: './images/ts-128.png',
+        iconUrl: './images/ts-badge128.png',
         title: 'Spica extension',
         message
     };
