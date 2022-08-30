@@ -10,6 +10,11 @@ $(function () {
     var _this = this;
     _this.options = new Options();
 
+
+    $('#useDevOps').click(_ => {
+        toggleAxoSection();
+    })
+
     _this.options
         .load()
         .then(function () {
@@ -76,6 +81,9 @@ $(function () {
                 });
                 $select.val(_this.options.axoSoftUserId);
             });
+
+            // AXO
+            toggleAxoSection();
 
             // AXO Worklogs
             _this.axoSoftApi.getWorkLogTypes().then(function (workLogTypes) {
@@ -267,4 +275,13 @@ $(function () {
         return $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
     }
 
+    function toggleAxoSection(){
+        if ($('#useDevOps').prop('checked')) {
+            $('#axo-section').hide();
+            $('#devops-section').show();
+        } else {
+            $('#axo-section').show();
+            $('#devops-section').hide();
+        }
+    }
 });

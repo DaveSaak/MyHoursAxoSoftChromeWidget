@@ -83,41 +83,82 @@
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3 class="settings-header text-primary">Axo</h3>
+            <div id="axo-section">
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">Axo</h3>
 
-                <div class="settings-data">
-                    <div class="form-group">
-                        <label>AxoSoft API Address</label>
-                        <input class="form-control" type="text" id='axoSoftUrl' />
-                    </div>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <label>AxoSoft API Address</label>
+                            <input class="form-control" type="text" id='axoSoftUrl' />
+                        </div>
 
-                    <div class="form-group">
-                        <label>AxoSoft API Token</label>
-                        <input class="form-control" type="text" id='axoSoftToken' />
-                    </div>
+                        <div class="form-group">
+                            <label>AxoSoft API Token</label>
+                            <input class="form-control" type="text" id='axoSoftToken' />
+                        </div>
 
-                    <div class="form-group">
-                        <label>AxoSoft User</label>
-                        <select class="form-control" style="width: 50%" id='axoSoftUserId'></select>
-                    </div>
+                        <div class="form-group">
+                            <label>AxoSoft User</label>
+                            <select class="form-control" style="width: 50%" id='axoSoftUserId'></select>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="label">AxoSoft Default Worklog type </label>
-                        <select class="form-control" style="width: 50%" id='axoSoftDefaultWorklogTypeId'></select>
-                    </div>
+                        <div class="form-group">
+                            <label class="label">AxoSoft Default Worklog type </label>
+                            <select class="form-control" style="width: 50%" id='axoSoftDefaultWorklogTypeId'></select>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Recent items</label>
-                        <p>Enter item ids that will not be shown on the bubble chart.</p>
-                        <input class="form-control" type="text" id='axoSoftRecentItemsBubbleChartHiddenItemsIds' />
-                    </div>
+                        <div class="form-group">
+                            <label>Recent items</label>
+                            <p>Enter item ids that will not be shown on the bubble chart.</p>
+                            <input class="form-control" type="text" id='axoSoftRecentItemsBubbleChartHiddenItemsIds' />
+                        </div>
 
-                    <div class="d-flex">
-                        <button id="saveAxoButton" class="btn btn-primary">Save</button>
+                        <div class="d-flex">
+                            <button id="saveAxoButton" class="btn btn-primary">Save</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div id="devops-section">
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">DevOps</h3>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <label>Instance (url with account name)</label>
+                            <input class="form-control" id='devOpsInstanceUrl' />
+                        </div>
+                        <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
+                        <div class="form-group">
+                            <label>Personal access token (PAT)</label>
+                            <input type="password" class="form-control" id='devOpsPersonalAccessToken' />
+                        </div>
+                        <!-- <div class="form-group">
+                            <label>Default Worklog type</label>
+                            <p>Default worklog type is used when you start new log from the context menu.</p>
+                            <input class="form-control" id='devOpsDefaultWorklogType' />
+                        </div> -->
+
+                        <div class="form-group">
+                            <label>Repositories</label>
+                            <p>You can copy commit messages from your repos to the my hours logs. Super nice since you don't have to type same description twice. This action must be triggered manually from the daily log list.</p>
+                            <p>Listed below are the repos that your personal access token has access to.</p>
+                            <div class="ml-3 devops-repos-container">
+                                <ol id='devops-repos'></ol> 
+                            </div>
+                            <label>Git author name</label>
+                            <input class="form-control" id='devOpsAuthorName' />
+
+                        </div>
+
+                        <div class="d-flex">
+                            <button id="saveDevOpsButton" class="btn btn-primary">Save</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>            
 
             <div class="settings-section d-none">
                 <h3 class="settings-header text-primary">Content switching</h3>
@@ -212,58 +253,6 @@
                         <button id='loginToMyHours' class="btn btn-primary">Login</button>
                         <div class='ml-2' id='loginToMyHoursInfo'></div>
                     </div>
-
-                    <!-- <div class="form-group">
-                        <label class="label">Root Client </label>
-                        <select class="form-control" style="width: 50%" id='mhRootClientId'></select>
-                    </div>   -->
-
-                    <!-- <div class="form-group">
-                        <label class="label">Default tag </label>
-                        <select class="form-control" style="width: 50%" id='mhDefaultTagId'></select>
-                    </div>                         -->
-
-                    <!-- <div class="d-flex">
-                        <button id="saveMhButton" class="btn btn-primary">Save</button>
-                    </div> -->
-
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3 class="settings-header text-primary">DevOps</h3>
-                <div class="settings-data">
-                    <div class="form-group">
-                        <label>Instance (url with account name)</label>
-                        <input class="form-control" id='devOpsInstanceUrl' />
-                    </div>
-                    <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
-                    <div class="form-group">
-                        <label>Personal access token (PAT)</label>
-                        <input class="form-control" id='devOpsPersonalAccessToken' />
-                    </div>
-                    <!-- <div class="form-group">
-                        <label>Default Worklog type</label>
-                        <p>Default worklog type is used when you start new log from the context menu.</p>
-                        <input class="form-control" id='devOpsDefaultWorklogType' />
-                    </div> -->
-
-                    <div class="form-group">
-                        <label>Repositories</label>
-                        <p>You can copy commit messages from your repos to the my hours logs. Super nice since you don't have to type same description twice. This action must be triggered manually from the daily log list.</p>
-                        <p>Listed below are the repos that your personal access token has access to.</p>
-                        <div class="ml-3 devops-repos-container">
-                            <ol id='devops-repos'></ol> 
-                        </div>
-                        <label>Git author name</label>
-                        <input class="form-control" id='devOpsAuthorName' />
-
-                    </div>
-
-                    <div class="d-flex">
-                        <button id="saveDevOpsButton" class="btn btn-primary">Save</button>
-                    </div>
-
                 </div>
             </div>
 
