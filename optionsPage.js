@@ -43,6 +43,7 @@ $(function () {
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             
             $('#notificationsBadRatio').prop( "checked", _this.options.notificationsBadRatio);
+            $('#recentItemsBubbleChartHiddenItemsIds').val(_this.options.recentItemsBubbleChartHiddenItemsIds);
 
             _this.currentUser = new CurrentUser();
             _this.axoSoftApi = new AxoSoftApi(_this.options);
@@ -150,6 +151,7 @@ $(function () {
     $('#saveGeneral').click(function () {
         _this.options.useDevOps = $('#useDevOps').prop('checked');
         _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
+        _this.options.recentItemsBubbleChartHiddenItemsIds = $('#recentItemsBubbleChartHiddenItemsIds').val();
         saveOptions();
         toastr.success('General settings saved');
     });      

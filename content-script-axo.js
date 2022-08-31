@@ -1,7 +1,7 @@
 var copyButtonText = "Copy Git branch name";
 
-var requestData = {"action": "createContextMenuItemStartLog", "client": "Axo"};
-chrome.extension.sendRequest(requestData);
+// var requestData = {"action": "createContextMenuItemStartLog", "client": "Axo"};
+// chrome.extension.sendRequest(requestData);
 
 
 chrome.runtime.onMessage.addListener(function (request) {

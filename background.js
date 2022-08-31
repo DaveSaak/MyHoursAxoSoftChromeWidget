@@ -69,12 +69,12 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
         let options = new Options();
         options.load().then(_ => {
 
-            chrome.contextMenus.remove("mhParent");
+            chrome.contextMenus.remove("spicaContextMenu");
 
             // console.log('create mh tools');
             chrome.contextMenus.create({
-                title: "My Hours tools",
-                id: "mhParent",
+                title: "Spica tools",
+                id: "spicaContextMenu",
                 contexts: ["all"]
             });
     
@@ -83,7 +83,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                 chrome.contextMenus.create({
                     title: "Axo: start timer for Item #%s",
                     id: "axoParent",
-                    parentId: "mhParent",
+                    parentId: "spicaContextMenu",
                     contexts: ["selection"],
                     onclick: startTrackingTimeAxo
                 });  
@@ -95,7 +95,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                             chrome.contextMenus.create({
                                 title: "Axo: start timer for Item #%s -- " + value,
                                 id:`mhDescription_${i}`,
-                                parentId: "mhParent",
+                                parentId: "spicaContextMenu",
                                 contexts: ["selection"],
                                 onclick: startTrackingTimeAxo
                             });  
@@ -106,8 +106,8 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             
             if (options.useDevOps) {
                 chrome.contextMenus.create({
-                    title: "DevOps: start timer for Item #%s",
-                    parentId: "mhParent",
+                    title: "Start timer for #%s",
+                    parentId: "spicaContextMenu",
                     contexts: ["selection"],
                     onclick: startTrackingTimeDevOps
                 });
@@ -115,27 +115,27 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
             
             chrome.contextMenus.create({
                 title: "Start timer with description: '%s'",
-                parentId: "mhParent",
+                parentId: "spicaContextMenu",
                 contexts: ["selection"],
                 onclick: startTrackingTime
             });
     
             chrome.contextMenus.create({
                 type: 'separator',
-                parentId: "mhParent",
+                parentId: "spicaContextMenu",
                 contexts: ["all"],
             });     
             
             chrome.contextMenus.create({
                 title: "Add to running log description",
-                parentId: "mhParent",
+                parentId: "spicaContextMenu",
                 contexts: ["selection"],
                 onclick: updateRunningLogDescription
             });          
     
             // chrome.contextMenus.create({
             //     title: "Stop running log",
-            //     parentId: "mhParent",
+            //     parentId: "spicaContextMenu",
             //     contexts: ["all"],
             //     onclick: stopTimer
             // });
@@ -179,82 +179,103 @@ function refreshBadge(){
                 return;
             }
 
-
             currentUser.load(function () {
-                if (options.useDevOps) {
-                    return;
-                }
-
-
-                let axoSoftApi = new AxoSoftApi(options);
                 let allHoursApi = new AllHoursApi(options);
-
                 let yesterday = today.add(-1, 'days');
-
                 console.info(`refresh badge: get minutes worked yesterday`);
-                axoSoftApi.getWorkLogMinutesWorked(yesterday).then(
-                    function (axoMinutes) {
-                        console.info(`refresh badge: axo minutes ${axoMinutes}`);
-                        allHoursApi.getCurrentUserId().then(
-                            function (currentUserId) {
-                                console.info(`refresh badge: get attendance`);                                        
-                                allHoursApi.getAttendance(currentUserId, yesterday).then(
-                                    function (data) {
-                                        if (data && data.CalculationResultValues.length > 0) {
-                                            let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                            console.info(`refresh badge: ah attendance ${attendance}`);
 
-                                            if (attendance > 0) {
+                if (options.useDevOps) {
+                    const myHoursApi = new MyHoursApi(currentUser);
 
-                                                let ratio = axoMinutes/attendance;
-                                                console.info(`refresh badge: ratio ${ratio}`);
+                    myHoursApi.getLogs(today).then(logs => {
+                        const sumDuration = logs.reduce((accumulator, log) => accumulator + log.duration / 60, 0);
+                        console.log(sumDuration);
 
-                                                chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` }); 
-                                                if (ratio < 0.9 || ratio > 1 ) {
-                                                    chrome.browserAction.setBadgeTextColor({color: '#111'});
-                                                    chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
-                                                    //chrome.browserAction.setBadgeText({ text: `$` }); 
-                                                    
-                                                    //inform user that sync must be done every hour or so
-                                                    if (options.notificationsBadRatio && moment().minute() <= 10) {
-                                                        chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { }); 
-                                                    }
-                                                }
-                                                else {
-                                                    chrome.browserAction.setBadgeTextColor({color: '#111'});
-                                                    chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
-                                                }
-                                            }
-                                            else {
-                                                console.error('refresh badge: attendance == 0');
-                                                chrome.browserAction.setBadgeText({ text: `` });                                                 
-                                            }
-                                        } else {
-                                            console.info('refresh badge: no attendance data.');
-                                            chrome.browserAction.setBadgeText({ text: `` }); 
-                                        }                                         
+                        allHoursApi.getCurrentUserId().then(currentUserId => {
+                            allHoursApi.getAttendance(currentUserId, yesterday).then(results => {
+                                if (results && results.CalculationResultValues.length > 0){
+                                    let attendance = parseInt(results.CalculationResultValues[0].Value, 10);
+                                    // console.info(`refresh badge: ah attendance ${attendance}`);
+                                    setBadge(sumDuration, attendance);                                
+                                } else {
+                                    console.info('refresh badge: no attendance data.');
+                                    chrome.browserAction.setBadgeText({ text: `` });                                 
+                                }
+                            });
+                        });
 
-                                    },
-                                    function (error) {
-                                        console.error('refresh badge: error while getting attendance.');
-                                        console.log(error);
-                                    }
-                                )
-                            }
-                        )
-                    }
-                )
-                .catch(error => {
-                    console.log('refresh badge: error:');
-                    console.log(error);
-                    chrome.browserAction.setBadgeText({ text: 'Err' }); 
-                    chrome.browserAction.setBadgeBackgroundColor({
-                        color: '#222222'
-                    });                                 
-                });
+                    });
+                } else {
+                    let axoSoftApi = new AxoSoftApi(options);
+                    axoSoftApi.getWorkLogMinutesWorked(yesterday).then(
+                        function (axoMinutes) {
+                            console.info(`refresh badge: axo minutes ${axoMinutes}`);
+                            allHoursApi.getCurrentUserId().then(
+                                function (currentUserId) {
+                                    console.info(`refresh badge: get attendance`);                                        
+                                    allHoursApi.getAttendance(currentUserId, yesterday).then(
+                                        function (data) {
+                                            if (data && data.CalculationResultValues.length > 0) {
+                                                let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                                                console.info(`refresh badge: ah attendance ${attendance}`);
+                                                setBadge(axoMinutes, attendance);
+                                            } else {
+                                                console.info('refresh badge: no attendance data.');
+                                                chrome.browserAction.setBadgeText({ text: `` }); 
+                                            }                                         
+
+                                        },
+                                        function (error) {
+                                            console.error('refresh badge: error while getting attendance.');
+                                            console.log(error);
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                    .catch(error => {
+                        console.log('refresh badge: error:');
+                        console.log(error);
+                        chrome.browserAction.setBadgeText({ text: 'Err' }); 
+                        chrome.browserAction.setBadgeBackgroundColor({
+                            color: '#222222'
+                        });                                 
+                    });
+                }
             })
         }
     )
+}
+
+function setBadge(value, reference){
+    // reference = ah
+    // value = axo, devops
+    if (reference > 0) {
+
+        let ratio = value/reference;
+        console.info(`refresh badge: ratio ${ratio}`);
+
+        chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` }); 
+        if (ratio < 0.9 || ratio > 1 ) {
+            chrome.browserAction.setBadgeTextColor({color: '#111'});
+            chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
+            //chrome.browserAction.setBadgeText({ text: `$` }); 
+            
+            //inform user that sync must be done every hour or so
+            if (options.notificationsBadRatio && moment().minute() <= 10) {
+                chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { }); 
+            }
+        }
+        else {
+            chrome.browserAction.setBadgeTextColor({color: '#111'});
+            chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
+        }
+    }
+    else {
+        console.error('refresh badge: reference == 0');
+        chrome.browserAction.setBadgeText({ text: `` });                                                 
+    }    
 }
 
 function startTrackingTimeAxo(info, tab) {
@@ -358,7 +379,6 @@ function startTrackingTimeDevOps(info, tab) {
             });
         });
 }
-
 
 function startTrackingTime(info, tab) {
 

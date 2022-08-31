@@ -2,7 +2,10 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
     <script src="jquery-3.3.1.min.js"></script>
 
     <script src="popper.min.js"></script>
@@ -36,141 +39,312 @@
     <script src="timeRatio.js"></script>
 
     <script src="toastr.min.js"></script>
-    <link href="toastr.min.css" rel="stylesheet"></link> 
-    
-    <link rel="stylesheet" type="text/css" href="popup.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" />
+    <link
+        href="toastr.min.css"
+        rel="stylesheet"
+    >
+    </link>
 
-    <link rel="stylesheet" type="text/css" href="css/inter.css"/>
-    <link rel="stylesheet" type="text/css" href="css/sds.css"/>
-    <link rel="stylesheet" type="text/css" href="css/fontawesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/regular.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/solid.min.css"/>
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="popup.css"
+        media="screen"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="bulma.css"
+        media="screen"
+    />
+
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="css/inter.css"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="css/sds.css"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="css/fontawesome.min.css"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="css/regular.min.css"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="css/solid.min.css"
+    />
     <!-- <link rel="stylesheet" type="text/css" href="css/light.min.css"/> -->
 
 </head>
 
-<body class="narrow" style="font-family: 'Inter script=latin rev=2', 'Nunito Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+<body
+    class="narrow"
+    style="font-family: 'Inter script=latin rev=2', 'Nunito Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"
+>
 
-    <div id='loginContainer' style="display: none">
+    <div
+        id='loginContainer'
+        style="display: none"
+    >
         <div class="m-5 d-flex flex-column align-self-center">
 
             <!-- <img src="images/myhourslogo.png" /> -->
             <h3 class="mb-4 text-uppercase text-center">Login to My Hours</h3>
             <div class="field">
                 <!-- <label class="text-uppercase text-sm" for="email">Email</label> -->
-                <input class="input " type="email" placeholder="email" id='email'>
+                <input
+                    class="input "
+                    type="email"
+                    placeholder="email"
+                    id='email'
+                >
             </div>
             <div class="field">
                 <!-- <label class="text-uppercase text-sm" for="password">password</label> -->
-                <input class="input " type="password" placeholder="Password" id='password'>
+                <input
+                    class="input "
+                    type="password"
+                    placeholder="Password"
+                    id='password'
+                >
             </div>
-            <button id='loginButton' class="btn btn-toggle btn-darkX shadowX my-2">Login</button>
+            <button
+                id='loginButton'
+                class="btn btn-toggle btn-darkX shadowX my-2"
+            >Login</button>
         </div>
     </div>
 
 
-    <ul class="nav nav-pills py-2 px-3 mb-3" id="pills-tab" role="tablist">
+    <ul
+        class="nav nav-pills py-2 px-3 mb-3"
+        id="pills-tab"
+        role="tablist"
+    >
         <li class="nav-item d-flex align-items-center">
-            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab"
-                aria-controls="pills-home" aria-selected="true">Time logs</a>
+            <a
+                class="nav-link active"
+                id="pills-home-tab"
+                data-toggle="pill"
+                href="#pills-home"
+                role="tab"
+                aria-controls="pills-home"
+                aria-selected="true"
+            >Time logs</a>
         </li>
-        <li id="nav-ratio" class="nav-item d-flex align-items-center">
-            <a class="nav-link" id="pills-ratio-tab" data-toggle="pill" href="#pills-ratio" role="tab"
-                aria-controls="pills-ratio" aria-selected="true">Ratio</a>
-        </li>        
-        <li id="nav-balance" class="nav-item d-flex align-items-center">
-            <a class="nav-link" id="pills-balance-tab" data-toggle="pill" href="#pills-balance" role="tab"
-                aria-controls="pills-balance" aria-selected="false">Balance</a>
+        <li
+            id="nav-ratio"
+            class="nav-item d-flex align-items-center"
+        >
+            <a
+                class="nav-link"
+                id="pills-ratio-tab"
+                data-toggle="pill"
+                href="#pills-ratio"
+                role="tab"
+                aria-controls="pills-ratio"
+                aria-selected="true"
+            >Ratio</a>
         </li>
-        <li id="nav-recent-items" class="nav-item d-flex align-items-center">
-            <a class="nav-link" id="pills-axo-tab" data-toggle="pill" href="#pills-axo" role="tab"
-                aria-controls="pills-axo" aria-selected="false">Recent items</a>
+        <li
+            id="nav-balance"
+            class="nav-item d-flex align-items-center"
+        >
+            <a
+                class="nav-link"
+                id="pills-balance-tab"
+                data-toggle="pill"
+                href="#pills-balance"
+                role="tab"
+                aria-controls="pills-balance"
+                aria-selected="false"
+            >Balance</a>
+        </li>
+        <li
+            id="nav-recent-items"
+            class="nav-item d-flex align-items-center"
+        >
+            <a
+                class="nav-link"
+                id="pills-axo-tab"
+                data-toggle="pill"
+                href="#pills-axo"
+                role="tab"
+                aria-controls="pills-axo"
+                aria-selected="false"
+            >Recent items</a>
         </li>
 
         <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" id="pills-worklogtypes-tab" data-toggle="pill" href="#pills-worklogtypes" role="tab"
-                aria-controls="pills-worklogtypes" aria-selected="false">Work types</a>
+            <a
+                class="nav-link"
+                id="pills-worklogtypes-tab"
+                data-toggle="pill"
+                href="#pills-worklogtypes"
+                role="tab"
+                aria-controls="pills-worklogtypes"
+                aria-selected="false"
+            >Work types</a>
         </li>
 
-        <li id="nav-calendar" class="nav-item d-flex align-items-center">
-            <a class="nav-link" id="pills-calendar-tab" data-toggle="pill" href="#pills-calendar" role="tab"
-                aria-controls="pills-calendar" aria-selected="false">Calendar</a>
-        </li>        
+        <li
+            id="nav-calendar"
+            class="nav-item d-flex align-items-center"
+        >
+            <a
+                class="nav-link"
+                id="pills-calendar-tab"
+                data-toggle="pill"
+                href="#pills-calendar"
+                role="tab"
+                aria-controls="pills-calendar"
+                aria-selected="false"
+            >Calendar</a>
+        </li>
 
-        <li id="nav-devops" class="nav-item d-flex align-items-center">
-            <a class="nav-link" id="pills-devops-assignments-tab" data-toggle="pill" href="#pills-devops-assignments" role="tab"
-                aria-controls="pills-devops-assignments" aria-selected="false">Assigned items</a>
-        </li>        
+        <li
+            id="nav-devops"
+            class="nav-item d-flex align-items-center"
+        >
+            <a
+                class="nav-link"
+                id="pills-devops-assignments-tab"
+                data-toggle="pill"
+                href="#pills-devops-assignments"
+                role="tab"
+                aria-controls="pills-devops-assignments"
+                aria-selected="false"
+            >Assigned items</a>
+        </li>
 
         <li class="nav-item d-flex align-items-center ml-auto">
-            <a id='optionsButton' class="nav-link" id="pills-settings-tab" data-toggle="pill" href="#pills-settings" role="tab"
-                aria-controls="pills-settings" aria-selected="false">
-                    Settings
-                </a>
+            <a
+                id='optionsButton'
+                class="nav-link"
+                id="pills-settings-tab"
+                data-toggle="pill"
+                href="#pills-settings"
+                role="tab"
+                aria-controls="pills-settings"
+                aria-selected="false"
+            >
+                Settings
+            </a>
         </li>
-        
+
     </ul>
-    <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-            <div id='mainContainer' class="mx-3 mb-3" style="displayX: none;">
+    <div
+        class="tab-content"
+        id="pills-tabContent"
+    >
+        <div
+            class="tab-pane fade show active"
+            id="pills-home"
+            role="tabpanel"
+            aria-labelledby="pills-home-tab"
+        >
+            <div
+                id='mainContainer'
+                class="mx-3 mb-3"
+                style="displayX: none;"
+            >
                 <div class="headerBar">
                     <div class="statistics-sm all-hours">
                         <div id="ahAttendance">-</div>
                         <div>All Hours</div>
-                    </div>   
-                    
+                    </div>
+
                     <div class="statistics-sm my-hours">
                         <div id="mhTotal">-</div>
                         <div>My Hours
                             <span id="mhAhRatioText">
                                 <i class="fa-solid fa-piggy-bank"></i>
-                            </span>                             
+                            </span>
                         </div>
-                    </div>     
-                    
+                    </div>
+
                     <div class="statistics-sm axo">
                         <div id="axoTotal">-</div>
                         <div>Axo
                             <span id="axoAhRatioText">
                                 <i class="fa-solid fa-piggy-bank"></i>
-                            </span>  
+                            </span>
                             <span id="axoAhRatioOk">
                                 <i class="fa-solid fa-check"></i>
-                            </span>                                                         
+                            </span>
                         </div>
-                    </div>  
-                    
+                    </div>
+
                     <div class="ml-auto">
-                        <button id="today" class="btn btn-light" style='width:150px'>
-                            <span id='current-date' class='date'>date goes here</span>
+                        <button
+                            id="today"
+                            class="btn btn-light"
+                            style='width:150px'
+                        >
+                            <span
+                                id='current-date'
+                                class='date'
+                            >date goes here</span>
                         </button>
 
-                        
-                        <button id="previousDay" class="btn btn-light">
+
+                        <button
+                            id="previousDay"
+                            class="btn btn-light"
+                        >
                             <i class="fa-solid fa-angle-left"></i>
                         </button>
-                        
-                        <button id="nextDay" class="btn btn-light">
+
+                        <button
+                            id="nextDay"
+                            class="btn btn-light"
+                        >
                             <i class="fa-solid fa-angle-right"></i>
                         </button>
-                        
-                        <button id="reloadDay" class="btn btn-light">
+
+                        <button
+                            id="reloadDay"
+                            class="btn btn-light"
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
-                    </div>                    
+                    </div>
                 </div>
 
-                <div id="alertContainer" class="" style="display: none">
-                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <div
+                    id="alertContainer"
+                    class=""
+                    style="display: none"
+                >
+                    <div
+                        class="alert alert-primary alert-dismissible fade show"
+                        role="alert"
+                    >
                         <span id='alertText'></span>
                     </div>
                 </div>
 
-                <div class="" style="margin: 20pxX; display: none;">
+                <div
+                    class=""
+                    style="margin: 20pxX; display: none;"
+                >
                     <div class="containerQ is-fluidQ">
                         <div id='mainContainer3'>
-                            <div id='tasks' class="field is-grouped is-grouped-multiline" style="margin-bottom: 20pxx;">
+                            <div
+                                id='tasks'
+                                class="field is-grouped is-grouped-multiline"
+                                style="margin-bottom: 20pxx;"
+                            >
                             </div>
                         </div>
                     </div>
@@ -178,8 +352,11 @@
 
                 <div class="mt-3">
                     <div class="hero-footQ my-2">
-                        <div id="topContainer" class="container is-fluid customScroller p-0"
-                            style="margin-left:0px;margin-right:0px; max-width: 780px;">
+                        <div
+                            id="topContainer"
+                            class="container is-fluid customScroller p-0"
+                            style="margin-left:0px;margin-right:0px; max-width: 780px;"
+                        >
                             <div id='timelineContainer'>
                                 <div id='timeline'>
                                 </div>
@@ -189,32 +366,58 @@
                 </div>
 
                 <div class="headerBar">
-                    <button id='copyToAxoSoftButton' class="mr-2 btn btn-primary" type="button"
-                        title='copy My Hours logs to Axo worklog'>
+                    <button
+                        id='copyToAxoSoftButton'
+                        class="mr-2 btn btn-primary"
+                        type="button"
+                        title='copy My Hours logs to Axo worklog'
+                    >
                         <i class="fa-solid fa-seedling"></i>
                         copy logs to Axo
                     </button>
 
-                    <button id='copyDevOpsButton' class="mr-2 btn btn-primary" type="button"
-                        title='copy My Hours logs to Axo worklog'>
+                    <button
+                        id='copyDevOpsButton'
+                        class="mr-2 btn btn-primary"
+                        type="button"
+                        title='copy My Hours logs to Axo worklog'
+                    >
                         <i class="fa-solid fa-upload"></i>
                         Update DevOps Effort for all items
-                    </button>                    
+                    </button>
 
-                    <button id='deleteWorklogsFromAxoSoftButton' class="mr-2 btn btn-secondary d-none" type="button"
-                        title='delete Axo worklogs'>
+                    <button
+                        id='deleteWorklogsFromAxoSoftButton'
+                        class="mr-2 btn btn-secondary d-none"
+                        type="button"
+                        title='delete Axo worklogs'
+                    >
                         <i class="fa-solid fa-trash"></i>
                         delete worklogs from Axo
                     </button>
 
                     <div class="custom-control custom-switch d-flex align-self-center ml-auto">
-                        <input type="checkbox" class="custom-control-input showLogsSwitch" id="showLogsSwitch" checked>
-                        <label class="custom-control-label noselect" for="showLogsSwitch">Show logs</label>
+                        <input
+                            type="checkbox"
+                            class="custom-control-input showLogsSwitch"
+                            id="showLogsSwitch"
+                            checked
+                        >
+                        <label
+                            class="custom-control-label noselect"
+                            for="showLogsSwitch"
+                        >Show logs</label>
                     </div>
                 </div>
 
-                <section class="customScroller mt-3" style="overflow: auto; max-height: 330px;">
-                    <div class="" id="logsContainer">
+                <section
+                    class="customScroller mt-3"
+                    style="overflow: auto; max-height: 330px;"
+                >
+                    <div
+                        class=""
+                        id="logsContainer"
+                    >
                         <div id='logs'>
                         </div>
                     </div>
@@ -223,8 +426,16 @@
 
         </div>
 
-        <div class="tab-pane fade" id="pills-ratio" role="tabpanel" aria-labelledby="pills-ratio-tab">
-            <div id="ratioContainer" class="mx-3 mb-3">
+        <div
+            class="tab-pane fade"
+            id="pills-ratio"
+            role="tabpanel"
+            aria-labelledby="pills-ratio-tab"
+        >
+            <div
+                id="ratioContainer"
+                class="mx-3 mb-3"
+            >
                 <div class="headerBar">
                     <div class="statistics-sm">
                         <div id="invalidRatioCount">-</div>
@@ -234,10 +445,15 @@
                     <div class="statistics-sm ml-auto">
                         <div>10</div>
                         <div>days period</div>
-                    </div>   
+                    </div>
 
                     <div class="">
-                        <button id='refreshRatio' class="btn btn-light hiddenButton" type="button" title='back'>
+                        <button
+                            id='refreshRatio'
+                            class="btn btn-light hiddenButton"
+                            type="button"
+                            title='back'
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
@@ -246,13 +462,25 @@
 
                 <div class="m-3">
                     <!-- <h6>Day diffs</h6> -->
-                    <canvas id="ratioChart" width="380" height="150"></canvas>
+                    <canvas
+                        id="ratioChart"
+                        width="380"
+                        height="150"
+                    ></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="tab-pane fade" id="pills-balance" role="tabpanel" aria-labelledby="pills-balance-tab">
-            <div id="balanceContainer" class="mx-3 mb-3">
+        <div
+            class="tab-pane fade"
+            id="pills-balance"
+            role="tabpanel"
+            aria-labelledby="pills-balance-tab"
+        >
+            <div
+                id="balanceContainer"
+                class="mx-3 mb-3"
+            >
                 <div class="headerBar">
                     <div class="statistics-sm">
                         <div id="currentBalanceRunning">-</div>
@@ -267,15 +495,20 @@
                     <div class="statistics-sm">
                         <div id="currentBalancePeriodDiff">-</div>
                         <div>period diff</div>
-                    </div>                    
+                    </div>
 
                     <div class="statistics-sm ml-auto">
                         <div>14</div>
                         <div>days period</div>
-                    </div>                     
+                    </div>
 
                     <div class="ml-autoX">
-                        <button id='refreshHome' class="btn btn-light hiddenButton" type="button" title='back'>
+                        <button
+                            id='refreshHome'
+                            class="btn btn-light hiddenButton"
+                            type="button"
+                            title='back'
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
@@ -284,43 +517,65 @@
 
                 <div class="m-3">
                     <h6>Day diffs</h6>
-                    <canvas id="dayBalanceChart" width="380" height="80"></canvas>
+                    <canvas
+                        id="dayBalanceChart"
+                        width="380"
+                        height="80"
+                    ></canvas>
                 </div>
-                
+
                 <div class="m-3 mt-4">
                     <h6>Running balance</h6>
-                    <canvas id="runningBalanceChart" width="380" height="80"></canvas>
-                </div>                   
+                    <canvas
+                        id="runningBalanceChart"
+                        width="380"
+                        height="80"
+                    ></canvas>
+                </div>
             </div>
 
         </div>
 
-        <div class="tab-pane fade" id="pills-axo" role="tabpanel" aria-labelledby="pills-axo-tab">
-            <div id="recentItemsContainer" class="mx-3 mb-3" style="displayX: none;">
+        <div
+            class="tab-pane fade"
+            id="pills-axo"
+            role="tabpanel"
+            aria-labelledby="pills-axo-tab"
+        >
+            <div
+                id="recentItemsContainer"
+                class="mx-3 mb-3"
+                style="displayX: none;"
+            >
 
                 <div class="headerBar">
                     <div class="statistics-sm">
                         <div class="recentItemsTotal">-</div>
                         <div>work hrs</div>
-                    </div>  
+                    </div>
 
                     <div class="statistics-sm">
                         <div id="recentItemsCount">-</div>
                         <div>engagements</div>
-                    </div>   
-                    
+                    </div>
+
                     <div class="statistics-sm">
                         <div id="recentItemsWorkLogsCount">-</div>
                         <div>context switches</div>
-                    </div>    
-  
+                    </div>
+
                     <div class="statistics-sm ml-auto">
                         <div>10</div>
                         <div>days period</div>
-                    </div> 
+                    </div>
 
                     <div class="ml-autoX">
-                        <button id='refreshRecentItems' class="btn btn-light" type="button" title='back'>
+                        <button
+                            id='refreshRecentItems'
+                            class="btn btn-light"
+                            type="button"
+                            title='refresh recent items'
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
@@ -329,70 +584,113 @@
 
 
                 <div class="m-3 mt-4">
-                    <canvas id="recentItemsChart" width="380" height="120"></canvas>
-                </div> 
+                    <canvas
+                        id="recentItemsChart"
+                        width="600"
+                        height="360"
+                    ></canvas>
+                </div>
 
-                <div id="recentAxoItems" class="customScroller mt-3" style="overflow: auto; max-height: 200px;">
+                <div
+                    id="recentAxoItems"
+                    class="customScroller mt-3"
+                    style="overflow: auto; max-height: 200px;"
+                >
 
                 </div>
             </div>
 
         </div>
 
-        <div class="tab-pane fade" id="pills-worklogtypes" role="tabpanel" aria-labelledby="pills-worklogtypes-tab">
-            <div id="worklogTypesContainer" class="mx-3 mb-3">
+        <div
+            class="tab-pane fade"
+            id="pills-worklogtypes"
+            role="tabpanel"
+            aria-labelledby="pills-worklogtypes-tab"
+        >
+            <div
+                id="worklogTypesContainer"
+                class="mx-3 mb-3"
+            >
 
                 <div class="headerBar">
                     <div class="statistics-sm">
                         <div class="recentItemsTotal">-</div>
                         <div>work hrs</div>
-                    </div>  
+                    </div>
 
                     <div class="statistics-sm">
-                        <div id="recentItemsDevelopmentPercentage">-</div>
-                        <div>development</div>
-                    </div>    
-                    
-                    <div class="statistics-sm">
-                        <div id="recentItemsResearchPercentage">-</div>
-                        <div>research</div>
-                    </div>  
-                    
-                    <div class="statistics-sm">
-                        <div id="recentItemsInternalWorkPercentage">-</div>
-                        <div>internal work</div>
-                    </div>  
+                        <div id="recentItemsUnassigned">-</div>
+                        <div>unassigned</div>
+                    </div>                    
 
                     <div class="statistics-sm ml-auto">
                         <div>10</div>
                         <div>days period</div>
-                    </div>                     
+                    </div>
 
                     <div class="ml-autoX">
-                        <button id='refreshRecentAxoItems' class="btn btn-light" type="button" title='back'>
+                        <button
+                            id='refreshRecentAxoItems'
+                            class="btn btn-light"
+                            type="button"
+                            title='back'
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
                 </div>
 
-                <div class="m-4">
-                    <canvas id="worklogTypeChart"  width="500" height="300"></canvas>
+                <div class="d-flex">
+                    <div class="d-flex flex-column mt-4" id="worklogTypesSubHeader" style="flex: auto">
+                        <div class="statistics-xs">
+                            <div id="recentItemsDevelopmentPercentage">-</div>
+                            <div>development</div>
+                        </div>
+
+                        <div class="statistics-xs">
+                            <div id="recentItemsResearchPercentage">-</div>
+                            <div>research</div>
+                        </div>
+
+                        <div class="statistics-xs">
+                            <div id="recentItemsInternalWorkPercentage">-</div>
+                            <div>internal work</div>
+                        </div>
+                    </div>                
+
+                    <div class="m-4">
+                        <canvas
+                            id="worklogTypeChart"
+                            width="600"
+                            height="400"
+                        ></canvas>
+                    </div>
                 </div>
 
             </div>
 
-        </div>        
+        </div>
 
-        <div class="tab-pane fade" id="pills-calendar" role="tabpanel" aria-labelledby="pills-calendar-tab">
-            <div id="calendarContainer" class="mx-3 mb-3" style="displayX: none;">
+        <div
+            class="tab-pane fade"
+            id="pills-calendar"
+            role="tabpanel"
+            aria-labelledby="pills-calendar-tab"
+        >
+            <div
+                id="calendarContainer"
+                class="mx-3 mb-3"
+                style="displayX: none;"
+            >
 
                 <div class="headerBar mb-4">
-                    
+
                     <div class="statistics-sm">
                         <div class="calendarItemsTotal">-</div>
                         <div>work hrs</div>
-                    </div>  
+                    </div>
 
                     <div class="statistics-sm">
                         <div class="calendarWorkDays">-</div>
@@ -403,57 +701,90 @@
                         <div class="calendarMaxMinutesInDay">-</div>
                         <div>max hrs / day</div>
                     </div>
-                    
+
                     <div class="statistics-sm">
                         <div class="calendarAverageMinutesInWorkDay">-</div>
                         <div>avg / work day</div>
                     </div>
-                    
+
 
                     <div class="statistics-sm ml-auto">
                         <div>40</div>
                         <div>weeks period</div>
-                    </div> 
+                    </div>
 
                     <div class="ml-autox">
-                        <button id='refreshCalendar' class="btn btn-light" type="button" title='back'>
+                        <button
+                            id='refreshCalendar'
+                            class="btn btn-light"
+                            type="button"
+                            title='back'
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
                 </div>
 
-                <div class="mx-4 px-3 mb-3" style="margin-right: 5rem !important">
-                    <div id="calendarChart" ></div>
+                <div
+                    class="mx-4 px-3 mb-3"
+                    style="margin-right: 5rem !important"
+                >
+                    <div id="calendarChart"></div>
                 </div>
             </div>
 
-        </div>  
+        </div>
 
-        <div class="tab-pane fade" id="pills-devops-assignments" role="tabpanel" aria-labelledby="pills-devops-assignments-tab">
-            <div id="devOpsAssignmentsContainer" class="mx-3 mb-3" style="displayX: none;">
+        <div
+            class="tab-pane fade"
+            id="pills-devops-assignments"
+            role="tabpanel"
+            aria-labelledby="pills-devops-assignments-tab"
+        >
+            <div
+                id="devOpsAssignmentsContainer"
+                class="mx-3 mb-3"
+                style="displayX: none;"
+            >
 
                 <div class="headerBar">
 
                     <div class="ml-autoX">
-                        <button id='refreshDevOpsItems' class="btn btn-light" type="button" title='back'>
+                        <button
+                            id='refreshDevOpsItems'
+                            class="btn btn-light"
+                            type="button"
+                            title='back'
+                        >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
                     </div>
 
                 </div>
 
-                <div id="myDevOpsItems" class="customScroller mt-3" style="overflow: auto; max-height: 400px;">
+                <div
+                    id="myDevOpsItems"
+                    class="customScroller mt-3"
+                    style="overflow: auto; max-height: 400px;"
+                >
 
-                </div> 
+                </div>
             </div>
 
-        </div>        
+        </div>
     </div>
 
-    <div id='loadingContainer' style="display: none;">
+    <div
+        id='loadingContainer'
+        style="display: none;"
+    >
         <div class="d-flex justify-content-center m-4">
-            <div class="spinner-border" style="width: 2rem; height: 2rem;" role="status">
+            <div
+                class="spinner-border"
+                style="width: 2rem; height: 2rem;"
+                role="status"
+            >
                 <span class="sr-only">connecting to myhours...</span>
             </div>
         </div>

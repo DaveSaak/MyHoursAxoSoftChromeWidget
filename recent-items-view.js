@@ -1,5 +1,7 @@
 'use strict'
 
+
+
 function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewContainer){
     var _this = this;
     _this.axoSoftApi = axoSoftApi;
@@ -8,34 +10,39 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
     _this.viewContainer = viewContainer;
     _this.myHoursApi = myHoursApi;
 
-    _this.show = function() {
+    _this.workLogTypeIds = [77055, 77593, 77594, 77595, 77596, 77597, 77598, 77599];
 
+    _this.show = function() {
         
         //get last logs for last 10 days.
         const today = new Date();
-        const tenDaysAgo = today - 10;
+        const tenDaysAgo = new Date(today.getDate() -10);
 
 
         if(options.useDevOps){
-            _this.myHoursApi.getActivity(tenDaysAgo, today).then(x => {
-                $('#recentItemsWorkLogsCount').text(x.length);
+            //DEVOPS
+            _this.myHoursApi.getActivity(tenDaysAgo, today).then(activityLogs => {
+                $('#recentItemsWorkLogsCount').text(activityLogs.length);
+
+                let totalWorked = activityLogs.reduce((accumulator, log) => accumulator + log.logDuration / 60, 0);
+                $('.recentItemsTotal').text(minutesToString(totalWorked));
                 
-                let recentWorkTypes = x.reduce(function (accumulator, log) {
+                let recentWorkTypes = activityLogs.reduce(function (accumulator, log) {
                     if (log.tagsData && log.tagsData.length > 0) {
                         log.tagsData.forEach(tag => {
-
-
                             let key = tag.id;
                             if (key in accumulator) {
                                 accumulator[key].count = accumulator[key].count + 1;
                                 accumulator[key].workDone = accumulator[key].workDone + log.logDuration / 60;
                             }
                             else {
-                                accumulator[key] = {
-                                    workLogTypeId: tag.id,
-                                    workLogTypeName: tag.name,
-                                    count: 1,
-                                    workDone: log.logDuration / 60,
+                                if (_this.workLogTypeIds.find(id => id == tag.id)) {
+                                    accumulator[key] = {
+                                        workLogTypeId: tag.id,
+                                        workLogTypeName: tag.name,
+                                        count: 1,
+                                        workDone: log.logDuration / 60,
+                                    }
                                 }
                             }
                             return accumulator;
@@ -49,47 +56,67 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
                 recentWorkTypes.map(x => x.workDone);
                 console.log(recentWorkTypes);
 
+                const totalWorkedWithWorkType = recentWorkTypes.reduce((accumulator, recentWorkLogType) => accumulator + recentWorkLogType.workDone, 0);
+                $('#recentItemsUnassigned').text(minutesToString(totalWorked - totalWorkedWithWorkType));
+
+
+
+                let workTypesPercentsBar = $('#worklogTypesSubHeader');
+                workTypesPercentsBar.empty();
+
+                if (totalWorked > 0) {
+                    recentWorkTypes.forEach(recentWorkType => {
+                        const percentage = Math.round(recentWorkType.workDone / totalWorked * 100);
+                        let statistics = $('<div>').addClass('statistics-xs');
+                        statistics.append($('<div>').text(percentage + '%'));
+                        statistics.append($('<div>').text(recentWorkType.workLogTypeName));
+                        workTypesPercentsBar.append(statistics);
+                    });
+                }
                 renderWorkLogTypeChart(recentWorkTypes);
 
 
-                let recentAxoItems = x.reduce(function (accumulator, log) {
-                    if (log.tagsData && log.tagsData.length > 0) {
-                        log.tagsData.forEach(tag => {
+                // BUBBLE CHART?
 
-
-                            let key = log.taskId + '-' + tag.id;
-                            if (key in accumulator) {
-                                accumulator[key].count = accumulator[key].count + 1;
-                                accumulator[key].workDone = accumulator[key].workDone + log.logDuration / 60;
-                                accumulator[key].lastSeen = moment.max(accumulator[key].lastSeen, moment(log.date));
+                let recentItems = activityLogs
+                    .filter(x => x.taskId != null)
+                    .reduce(function (accumulator, log) {
+                        let key = log.taskId;
+                        if (key in accumulator) {
+                            accumulator[key].count = accumulator[key].count + 1;
+                            accumulator[key].workDone = accumulator[key].workDone + log.logDuration / 60;
+                            accumulator[key].lastSeen = moment.max(accumulator[key].lastSeen, moment(log.date));
+                        }
+                        else {
+                            accumulator[key] = {
+                                itemId: log.taskId,
+                                itemName: log.taskName,
+                                count: 1,
+                                workDone: log.logDuration / 60,
+                                lastSeen: moment(log.date)
                             }
-                            else {
-                                accumulator[key] = {
-                                    itemId: log.taskId,
-                                    itemName: log.taskName,
-                                    workLogTypeId: tag.id,
-                                    workLogTypeName: tag.name,
-                                    count: 1,
-                                    workDone: log.logDuration / 60,
-                                    lastSeen: moment(log.date)
-                                }
-                            }
-                            return accumulator;
-                        });
-                    }
-                    return accumulator;
-                }, {});
+                        }
+                        return accumulator;
+                    }, {});
 
-                recentAxoItems = Object.entries(recentAxoItems).map(x => x[1]);
-                recentAxoItems.sort((a, b) => {
+                recentItems = Object.entries(recentItems).map(x => x[1]);
+                recentItems.sort((a, b) => {
                     let order = b.lastSeen.unix() - a.lastSeen.unix();
                     if (order != 0)
                         return order;
                     return b.count - a.count;
-                });                
+                });  
+                
+                var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
+                drawRecentItemsChart(recentItemsCtx, recentItems);                
+
+
+
+
 
             });
         } else {
+            // AXO
             _this.axoSoftApi.getWorkLogsWithinLastTenDays().then(
                 function (recentWorkLogsWithinTenDaysResponse) {
                     $('#recentItemsWorkLogsCount').text(recentWorkLogsWithinTenDaysResponse.data.length);
@@ -231,6 +258,7 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
                     $('#recentItemsDevelopmentPercentage').text(developmentPercentage + '%');
                     $('#recentItemsInternalWorkPercentage').text(internalWorkPercentage + '%');
                     $('#recentItemsResearchPercentage').text(researchWorkPercentage + '%');
+                    $('#recentItemsUnassignedPercentage').text(researchWorkPercentage + '%');
 
                     recentWorkTypes.sort((a, b) => b.workLogTypeId - a.workLogTypeId);
                 
@@ -305,7 +333,9 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
 
         let now = moment().startOf('day');
 
-        let excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds?.split(';');
+        let excludedItemIds = [
+            ..._this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds?.split(';'), 
+            ..._this.options.recentItemsBubbleChartHiddenItemsIds?.split(';')];
         var chartData = {
             datasets:
                 rawData
@@ -325,9 +355,8 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
         };
 
 
-
-        console.log('chartData');
-        console.log(chartData);
+        // console.log('chartData');
+        // console.log(chartData);
 
         // let maxCounts = Math.max(...rawData.map(o => o.count), 0);
 

@@ -30,11 +30,13 @@ function Options() {
 
     _this.devOpsAuthorName = '';
 
+    _this.recentItemsBubbleChartHiddenItemsIds = '';
+
 
 
 
     _this.save = function () {
-        console.info("saving options");
+        // console.info("saving options");
 
         return new Promise(
             function (resolve, reject) {
@@ -44,7 +46,7 @@ function Options() {
 
                     reject();
                 } else {
-                    console.info("saving options to the chrome store");
+                    // console.info("saving options to the chrome store");
                     chrome.storage.sync.set({
                         'options': _this
                     })
@@ -56,7 +58,7 @@ function Options() {
 
 
     _this.load = function () {
-        console.info("loading options");
+        // console.info("loading options");
 
         return new Promise(
             function (resolve, reject) {
@@ -65,11 +67,11 @@ function Options() {
 
                     reject();
                 } else {
-                    console.info("loading options from the chrome store");
+                    // console.info("loading options from the chrome store");
 
                     chrome.storage.sync.get('options', function (items) {
                         if (items.options) {
-                            console.info("found saved options");
+                            // console.info("found saved options");
                             //console.info(items.options);
 
                             _this.useDevOps = items.options.useDevOps;
@@ -102,6 +104,7 @@ function Options() {
                             _this.myHoursCommonDescriptions = items.options.myHoursCommonDescriptions;
 
                             _this.notificationsBadRatio = items.options.notificationsBadRatio;
+                            _this.recentItemsBubbleChartHiddenItemsIds = items.options.recentItemsBubbleChartHiddenItemsIds;
                         }
 
                         resolve();

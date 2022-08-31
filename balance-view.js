@@ -27,7 +27,7 @@ function BalanceView(allHoursApi, viewContainer){
                                 var currentBalance = parseInt(data.CurrentBalanceMinutes);
                                 drawDayBalanceChart(userId, today, currentBalance);
 
-                                console.log(data.CurrentBalanceMinutes);
+                                // console.log(data.CurrentBalanceMinutes);
                                 $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
                                 $('#homeGreeting').text(data.Greeting);
                                 $('#currentVacationDays').text(data.VacationBalance);

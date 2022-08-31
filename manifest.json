@@ -15,6 +15,10 @@
     },
     "content_scripts": [
         {
+            "matches": ["*://*/*"],
+            "js": ["content-script-context-menu.js"]
+        },
+        {
             "matches": ["https://app.myhours.com/*"],
             "js": ["jquery-3.3.1.min.js", "content-script.js"],
             "css": ["myhours.css"]

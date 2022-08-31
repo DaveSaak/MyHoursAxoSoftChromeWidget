@@ -493,12 +493,12 @@ div.logContainer:hover {
 }
 
 .statistics-sm {
-    margin-right: 0.25rem;
-    height: 2.3rem;
+    margin-right: 0.5rem;
+    /* height: 2.3rem; */
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1rem;
+    padding: 0.25rem;
     /* background-color: #c8e3ff; */
     /* border-radius: 0.25rem; */
     /* font-size: 0.85em; */
@@ -516,7 +516,28 @@ div.logContainer:hover {
 
 .statistics-sm div:nth-child(2){
     font-weight: normal;
-    font-size: 0.9em;
+    font-size: 0.9rem;
+}
+
+.statistics-xs {
+    margin-right: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.25rem;
+    font-weight: 500;
+    cursor: default;
+}
+
+.statistics-xs div:first-child{
+    margin-right: 0.25rem;
+    width: 3rem;
+    /* font-size: 1.1rem; */
+}
+
+.statistics-xs div:nth-child(2){
+    font-weight: normal;
+    font-size: 0.85rem;
 }
 
 

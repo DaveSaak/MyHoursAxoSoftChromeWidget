@@ -65,7 +65,7 @@ function popup() {
                 $('.statistics-sm.axo').hide();
 
                 $('#nav-ratio').remove();
-                $('#nav-recent-items').remove();
+                // $('#nav-recent-items').remove();
                 $('#nav-calendar').remove();
 
             } else {
@@ -78,10 +78,10 @@ function popup() {
 
 
             _this.currentUser.load(function () {
-                console.info(_this.currentUser);
+                // console.info(_this.currentUser);
 
                 if (_this.currentUser.accessToken == undefined) {
-                    console.info('access token is undefined');
+                    // console.info('access token is undefined');
 
                     if (_this.currentUser.email != undefined) {
                         $('#email').val(_this.currentUser.email);
@@ -89,14 +89,14 @@ function popup() {
 
                     showLoginPage();
                 } else {
-                    console.info('got current user.');
+                    // console.info('got current user.');
                     if (_this.currentUser.refreshToken != undefined) {
-                        console.info('refresh token found. lets use it.');
+                        // console.info('refresh token found. lets use it.');
                         showLoadingPage();
                         _this.myHoursApi.getRefreshToken(_this.currentUser.refreshToken).then(
                             function (token) {
-                                console.info('got refresh token. token: ');
-                                console.info(token);
+                                // console.info('got refresh token. token: ');
+                                // console.info(token);
 
                                 _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
                                 _this.currentUser.save();
@@ -199,6 +199,10 @@ function popup() {
 
         $('#refreshCalendar').click(function () {
             _this.calendarView.show();
+        });
+
+        $('#pills-worklogtypes-tab').click(function () {
+            getRecentAxoItems();
         });
 
         $('#pills-axo-tab').click(function () {
@@ -311,7 +315,7 @@ function popup() {
         $('#usersName').text(_this.currentUser.name);
 
         getLogs();
-        getRecentAxoItems();
+        // getRecentAxoItems();
 
     }
 
@@ -456,7 +460,7 @@ function popup() {
 
 
             // COMMENT
-            var logComment = $('<div>').addClass('text-muted small log-comment');
+            var logComment = $('<div>').addClass('small log-comment');
             if (log.note) {
                 logComment.text(log.note);
             }
@@ -492,13 +496,13 @@ function popup() {
                     event.preventDefault();
                     _this.myHoursApi.startFromExisting(log.id).then(
                         function () {
-                            console.info('worklog started');
+                            // console.info('worklog started');
                             getLogsForToday();
                         }
                     )
                         .catch(
                             function () {
-                                console.info('worklog add failed');
+                                console.erro('worklog add failed');
                             }
                         )
                 });
@@ -626,7 +630,7 @@ function popup() {
         let fetchLogsId = moment().valueOf();
         _this.fetchLogsId = fetchLogsId;
 
-        console.log(`getting logs. fetch id: ${fetchLogsId}`);
+        // console.log(`getting logs. fetch id: ${fetchLogsId}`);
         _this.timeRatio.reset();
         _this.timeRatioAllHourAxo.reset();
         clearRatio();
@@ -673,7 +677,7 @@ function popup() {
 
 
         _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
-            console.info(minutesWorked);
+            // console.info(minutesWorked);
 
             if (fetchLogsId !== _this.fetchLogsId) {
                 console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
@@ -952,7 +956,7 @@ function popup() {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
                     function () {
-                        console.info('worklog started');
+                        // console.info('worklog started');
                         getLogsForToday();
                     }
                 )
@@ -1009,7 +1013,7 @@ function popup() {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
                     function () {
-                        console.info('worklog started');
+                        // console.info('worklog started');
                         getLogsForToday();
                     }
                 )
@@ -1137,9 +1141,9 @@ function popup() {
                                     let segments = data.DailyCalculations[0].CalculationResultSegments;
                                     var timeline = $('#timeline');
 
-                                    console.group('all hours segments');
-                                    console.table(segments);
-                                    console.groupEnd();
+                                    // console.group('all hours segments');
+                                    // console.table(segments);
+                                    // console.groupEnd();
 
                                     $.each(segments, function (index, segment) {
                                         if (segment.Type === 4 && segment.StartTime && segment.StartTime.trim() !== "") {
@@ -1334,13 +1338,13 @@ function popup() {
                     _this.currentUser.save();
                     showMainPage();
                 }, function (err) {
-                    console.info('error while geeting the user data');
+                    console.error('error while geeting the user data');
                     showLoginPage();
                 });
 
             },
             function (error) {
-                console.info('error while geeting the access token');
+                console.error('error while geeting the access token');
                 showLoginPage();
             }
         )
@@ -1371,8 +1375,8 @@ function popup() {
                     return;
                 }
 
-                console.info('copy to axo: item Id' + myHoursLog.axoId);
-                console.info(myHoursLog);
+                // console.info('copy to axo: item Id' + myHoursLog.axoId);
+                // console.info(myHoursLog);
 
                 var worklog = new Worklog;
                 worklog.user.id = parseInt(_this.options.axoSoftUserId);
@@ -1504,7 +1508,7 @@ function popup() {
 
 
     function copyTimelogs() {
-        console.info(_this.myHoursLogs);
+        // console.info(_this.myHoursLogs);
 
         if (_this.options.axoSoftUserId == undefined) {
             $('#alertContainer').show();
