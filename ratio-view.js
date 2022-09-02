@@ -1,9 +1,10 @@
 'use strict'
 
-function RatioView(allHoursApi, axoSoftApi, viewContainer) {
+function RatioView(allHoursApi, axoSoftApi, options, viewContainer) {
 
     var _this = this;
     _this.allHoursApi = allHoursApi;
+    _this.options = options;
     _this.axoSoftApi = axoSoftApi;
     _this.viewContainer = viewContainer;
 
