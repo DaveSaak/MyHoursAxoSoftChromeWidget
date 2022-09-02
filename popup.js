@@ -55,7 +55,7 @@ function popup() {
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
             _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.myHoursApi, _this.options, _this.axoItemColors);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
-            _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi);
+            _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi, _this.options);
 
 
             // PLATFORM UI MODS
@@ -447,8 +447,8 @@ function popup() {
             var tagsCell = $('<div>').addClass('log-tags');
             logContainer.append(tagsCell);
             var worklogTypeInfo = $('<div>')
-                .addClass('text-muted text-lowercase')
-                .css('font-size', '0.7rem')
+                // .addClass('text-muted text-lowercase')
+                // .css('font-size', '0.7rem')
                 .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
             tagsCell.append(worklogTypeInfo);
 
@@ -460,7 +460,7 @@ function popup() {
 
 
             // COMMENT
-            var logComment = $('<div>').addClass('small log-comment');
+            var logComment = $('<div>').addClass('log-comment');
             if (log.note) {
                 logComment.text(log.note);
             }
@@ -1188,10 +1188,10 @@ function popup() {
         _this.balanceView.show();
     }
 
-    function getDevOpsItemsActionsDropDown(item) {
+    function getDevOpsItemsActions(item) {
 
         let actionsContainer = $('<div>')
-            .addClass('d-flex');
+            .addClass('d-flex justify-content-end');
 
 
         let startWorklogButton = $('<button class="btn btn-transparent">')
@@ -1266,44 +1266,87 @@ function popup() {
                     .then(items => {
                         // console.log(items);
 
-                        $.each(items.value, function (index, item) {
-                            var log = $('<div>')
-                                .attr("data-logId", item.id)
-                                // .attr("data-workLogTypeId", recentAxoItem.workLogTypeId)
-                                .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
-                            myItemsContainer.append(log);
+                        $('#devops-items-count').text(items.count);
+
+                        $.each(items.value, function (index, devOpsItem) {
+
+                            var myItemContainer = $('<div>')
+                                .attr("data-logId", devOpsItem.id)
+                                .addClass('logContainer logContainerGrid')
+                            myItemsContainer.append(myItemContainer);
+                           
+                            // var log = $('<div>')
+                            //     .attr("data-logId", item.id)
+                            //     .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
+                            // myItemContainer.append(log);
 
                             //color bar
-                            var columnColorBar = $('<div>')
-                                .addClass('columnColorBar rounded mr-2')
-                                .css("background-color", _this.axoItemColors[numberToIndex(item.id, 8)]);
-                            log.append(columnColorBar);
+                            var columnColorBarCell = $('<div>')
+                                .addClass('log-color-bar')
+                                .css("background-color", _this.axoItemColors[numberToIndex(devOpsItem.id, 8)]);
+                            myItemContainer.append(columnColorBarCell);
 
 
                             //item name and worklog type
-                            var columnMain = $('<div>')
-                                .addClass('mainColumn columnMain d-flex flex-row')
-                            log.append(columnMain);
+                            var titleCell = $('<div style="gap: 0.5rem">')
+                                .addClass('log-title d-flex')
+                            myItemContainer.append(titleCell);
 
-                            var columnItemTypeIcon = $('<div>');
-                            if (item.fields['System.WorkItemType'] == 'Task') {
-                                columnItemTypeIcon.append('<i class="fas fa-clipboard-check"></i>').css('color', '#a4880a')
-                            } else if (item.fields['System.WorkItemType'] == 'Bug') {
-                                columnItemTypeIcon.append('<i class="fas fa-bug"></i>').css('color', '#cc293d')
+                            var itemId = $('<div style="width: 4rem">')
+                                .text(devOpsItem.id);
+                            titleCell.append(itemId);
+
+                            var itemTypeIcon = $('<div>');
+                            if (devOpsItem.fields['System.WorkItemType'] == 'Task') {
+                                itemTypeIcon.append('<i class="fas fa-clipboard-check"></i>').css('color', '#a4880a')
+                            } else if (devOpsItem.fields['System.WorkItemType'] == 'Ticket') {
+                                itemTypeIcon.append('<i class="fas fa-medal"></i>').css('color', '#cc293d')
                             }
-                            columnMain.append(columnItemTypeIcon);
+                            titleCell.append(itemTypeIcon);
 
-                            var axoItemName = $('<div>')
-                                .addClass('axoItemName text-truncate ml-2')
-                                .text(item.id + " - " + item.fields['System.Title']);
-                            columnMain.append(axoItemName);
+                            var itemName = $('<div>')
+                                .addClass('axoItemName text-truncate')
+                                .text(devOpsItem.fields['System.Title']);
+                            titleCell.append(itemName);                            
 
+                            var commentCell = $('<div>')
+                                .addClass('log-comment');
+                            // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
+                            // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
+                            // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+                            myItemContainer.append(commentCell);  
 
+                            let state = devOpsItem.fields['System.State'];
+                            var effortCell = $('<div>')
+                                .addClass('log-effort');
+                            var badge = $('<div class="badge" style="line-height: 1rem">')
+                                .text(state);
+
+                            if (state == 'Active') {
+                                badge.addClass('badge-primary')
+                            } else if (state == 'Resolved') {
+                                badge.addClass('badge-warning')
+                            } else {
+                                badge.addClass('badge-light')                                
+                            }
+
+                            effortCell.append(badge);
+                            myItemContainer.append(effortCell);                             
+                            
+                            var tagsCell = $('<div>')
+                                .addClass('log-tags')
+                                .text(devOpsItem.fields['System.TeamProject'])
+                            myItemContainer.append(tagsCell);     
+                            
                             //actions
-                            var actions = $('<div>')
-                                .addClass('ml-auto');
-                            actions.append(getDevOpsItemsActionsDropDown(item));
-                            log.append(actions);
+                            var actionsCell = $('<div>')
+                                .addClass('log-actions');
+                            actionsCell.append(getDevOpsItemsActions(devOpsItem));
+                            myItemContainer.append(actionsCell);
+
+
+
+                            // myItemContainer.append(log);
 
                         });
                     })

@@ -596,7 +596,8 @@ div.logContainer:hover {
 #pills-tab {
     /* background-image: -webkit-gradient(linear, left top, right bottom, from(#3b8fc2), to(#DD203E)); */
 
-    background-image: linear-gradient(90deg, #3c5081, #b82f4e);
+    /* background-image: linear-gradient(90deg, #3c5081, #b82f4e); */
+    background-image: linear-gradient(80deg, #384674, #2b3864);
 }
 
 #pills-tab a.nav-link:not(.active),
@@ -651,7 +652,14 @@ div.logContainer:hover {
     grid-template-areas: 
       "log-color-bar log-tags log-tags log-tags"
       "log-color-bar log-title log-effort log-effort"
-      "log-color-bar log-comment log-comment log-time";    
+      "log-color-bar log-comment log-comment log-time";  
+      
+    padding: 0.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    margin-right: 0.25rem;
+
+    border-radius: 0.25rem;
 }
 
 .logContainer.logContainerGrid:hover {
@@ -673,6 +681,9 @@ div.logContainer:hover {
 
 .logContainer.logContainerGrid .log-tags{
     grid-area: log-tags;
+    color: #6c757d;
+    font-size: 0.7rem;
+    /* text-transform: lowercase; */
 }
 
 .logContainer.logContainerGrid .log-title{
@@ -682,6 +693,8 @@ div.logContainer:hover {
 
 .logContainer.logContainerGrid .log-comment{
     grid-area: log-comment;
+    font-size: 80%;
+    font-weight: 400;
 }
 
 .logContainer.logContainerGrid .log-time{
