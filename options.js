@@ -23,6 +23,7 @@ function Options() {
     _this.isSecret = '';
 
     _this.myHoursDefaultTagId = '';
+    _this.myHoursCommonProjectId = '';
     // _this.myHoursRootClientId = '';
     _this.myHoursCommonDescriptions = '';
 
@@ -101,6 +102,7 @@ function Options() {
                             _this.devOpsAuthorName = items.options.devOpsAuthorName;
 
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
+                            _this.myHoursCommonProjectId = items.options.myHoursCommonProjectId;
                             _this.myHoursCommonDescriptions = items.options.myHoursCommonDescriptions;
 
                             _this.notificationsBadRatio = items.options.notificationsBadRatio;

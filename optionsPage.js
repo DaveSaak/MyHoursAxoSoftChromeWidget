@@ -40,6 +40,7 @@ $(function () {
             $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
             
             $('#mhDefaultTagId').val(_this.options.myHoursDefaultTagId);
+            $('#mhCommonProjectId').val(_this.options.myHoursCommonProjectId);
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             
             $('#notificationsBadRatio').prop( "checked", _this.options.notificationsBadRatio);
@@ -115,6 +116,18 @@ $(function () {
                     });
                     $select.val(_this.options.myHoursDefaultTagId);                
                 });
+
+                _this.myHoursApi.getProjectsAsync().then(projects => {
+                    var $select = $("#mhCommonProjectId");
+                    projects.forEach(project => {
+                        $select.append($("<option>", {
+                            value: project.id,
+                            html: project.name
+                        }));
+                    });
+                    $select.val(_this.options.myHoursCommonProjectId); 
+                });
+
             });
 
             console.group('all hours token');
@@ -176,6 +189,7 @@ $(function () {
     
     $('#saveMhButton').click(function () {
         _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
+        _this.options.myHoursCommonProjectId = $('#mhCommonProjectId').val();
         _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         saveOptions();
         toastr.success('My Hours settings saved');

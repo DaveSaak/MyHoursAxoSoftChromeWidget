@@ -18,8 +18,8 @@ function TimeRatio(callback) {
           },
 
     _this.reset = function(){
-        _this.ahAttendance = undefined;
-        _this.mhTotalTime = undefined;
+        _this.ahAttendance = 0; //undefined;
+        _this.mhTotalTime = 0; //undefined;
     },
 
     _this.calcRatio = function(){
