@@ -52,6 +52,7 @@ function getBranchName() {
     let fullBranchName = itemId + "-" + branchName;
     console.log(fullBranchName);
 
+
     chrome.runtime.sendMessage({
         type: 'copy',
         text: fullBranchName

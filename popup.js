@@ -426,7 +426,7 @@ function popup() {
 
             var logContainer = $('<div>')
                 .attr("data-logId", log.id)
-                .addClass("logContainer my-1 p-1 mr-1 align-items-center logContainerGrid");
+                .addClass("logContainer  align-items-center logContainerGrid");
 
             logContainer.mouseenter(function () {
                 $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", true);
@@ -455,6 +455,9 @@ function popup() {
 
             // TITLE
             var logTitle = $('<div>').addClass('text-truncate log-title');
+            // logTitle.append('<i class="fas fa-skull" aria-hidden="true"></i>');
+            // logTitle.append('<span>').text(`${log.taskName ?? '-not set: task-'}`);
+
             logTitle.text(`${log.taskName ?? '-not set: task-'}`);
             logContainer.append(logTitle);
 
@@ -475,6 +478,7 @@ function popup() {
                 if (!log.running) {
                     var duration = minutesToString(log.duration / 60);
                     durationInfo = $('<span>').text(duration);
+                    durationInfo.append($('<span class="small"> h</span>'));
                 }
                 columnTime.append(durationInfo);
             };
@@ -556,8 +560,6 @@ function popup() {
 
             if (log.devOpsItem) {
                 log.color = _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)];
-                colorBarCell.css("background-color", log.color);
-
                 effortCell.append($('<div class="badge badge-light">').text(`Remaining ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
                 effortCell.append($('<div class="badge badge-light">').text(`Completed ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
                 effortCell.append($('<div class="badge badge-light">').text(`Estimate ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
@@ -571,6 +573,7 @@ function popup() {
                     log.color = '#bbc9f3';
                 } 
             }
+            colorBarCell.css("background-color", log.color);
             logsContainer.append(logContainer);
 
 
@@ -1669,7 +1672,12 @@ function popup() {
                 }
                 else if (diffMinutes < 0) {
                     const minMissingMinutes = timeRatio.ahAttendance * 0.9 - timeRatio.ahAttendance * timeRatio.ratio;
-                    cardText += ' Missing: ' + minutesToString(minMissingMinutes);
+                    if (!ratioValid) {
+                        // cardText += ' Missing: ' + minutesToString(Math.abs(minMissingMinutes)) 
+                        cardText += ' Missing: ' + minutesToString(Math.abs(diffMinutes)) + ' (' +  minutesToString(Math.abs(minMissingMinutes)) + ')';
+                    } else {
+                        cardText += ' Missing: ' + minutesToString(Math.abs(diffMinutes));
+                    }
                 }
 
                 if (!ratioValid) {

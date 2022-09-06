@@ -39,8 +39,8 @@ $(function () {
             $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
             $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
             
-            $('#mhDefaultTagId').val(_this.options.myHoursDefaultTagId);
-            $('#mhCommonProjectId').val(_this.options.myHoursCommonProjectId);
+            // $('#mhDefaultTagId').val(_this.options.myHoursDefaultTagId);
+            // $('#myHoursCommonProjectId').val(_this.options.myHoursCommonProjectId);
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             
             $('#notificationsBadRatio').prop( "checked", _this.options.notificationsBadRatio);
@@ -107,25 +107,25 @@ $(function () {
                 $('#mhUserName').val(_this.currentUser.email);
 
                 _this.myHoursApi.getTags().then(function (tags) {
-                    var $select = $("#mhDefaultTagId");
+                    var select = $("#mhDefaultTagId");
                     $(tags).each(function (i, tag) {
-                        $select.append($("<option>", {
+                        select.append($("<option>", {
                             value: tag.id,
                             html: tag.name
                         }));
                     });
-                    $select.val(_this.options.myHoursDefaultTagId);                
+                    select.val(_this.options.myHoursDefaultTagId);                
                 });
 
                 _this.myHoursApi.getProjectsAsync().then(projects => {
-                    var $select = $("#mhCommonProjectId");
+                    var select = $("#myHoursCommonProjectId");
                     projects.forEach(project => {
-                        $select.append($("<option>", {
+                        select.append($("<option>", {
                             value: project.id,
                             html: project.name
                         }));
                     });
-                    $select.val(_this.options.myHoursCommonProjectId); 
+                    select.val(_this.options.myHoursCommonProjectId); 
                 });
 
             });
@@ -189,7 +189,7 @@ $(function () {
     
     $('#saveMhButton').click(function () {
         _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
-        _this.options.myHoursCommonProjectId = $('#mhCommonProjectId').val();
+        _this.options.myHoursCommonProjectId = $('#myHoursCommonProjectId').val();
         _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         saveOptions();
         toastr.success('My Hours settings saved');

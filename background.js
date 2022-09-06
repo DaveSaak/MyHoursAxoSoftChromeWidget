@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener(function (message) {
 
     if (message && message.type == 'refreshBadge') {
         refreshBadge();
-    }    
+    }
 
 });
 
@@ -77,7 +77,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                 id: "spicaContextMenu",
                 contexts: ["all"]
             });
-    
+
 
             if (!options.useDevOps) {
                 chrome.contextMenus.create({
@@ -86,24 +86,24 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                     parentId: "spicaContextMenu",
                     contexts: ["selection"],
                     onclick: startTrackingTimeAxo
-                });  
-                
+                });
+
                 if (options.myHoursCommonDescriptions) {
                     let descriptions = options.myHoursCommonDescriptions.split(';');
                     descriptions.forEach(function (value, i) {
                         if (!options.useDevOps) {
                             chrome.contextMenus.create({
                                 title: "Axo: start timer for Item #%s -- " + value,
-                                id:`mhDescription_${i}`,
+                                id: `mhDescription_${i}`,
                                 parentId: "spicaContextMenu",
                                 contexts: ["selection"],
                                 onclick: startTrackingTimeAxo
-                            });  
-                    }  
+                            });
+                        }
                     })
                 }
             }
-            
+
             if (options.useDevOps) {
                 chrome.contextMenus.create({
                     title: "Start timer for #%s",
@@ -111,36 +111,69 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                     contexts: ["selection"],
                     onclick: startTrackingTimeDevOps
                 });
-            }             
-            
+            }
+
             chrome.contextMenus.create({
                 title: "Start timer with description: '%s'",
                 parentId: "spicaContextMenu",
                 contexts: ["selection"],
                 onclick: startTrackingTime
             });
-    
+
             chrome.contextMenus.create({
                 type: 'separator',
                 parentId: "spicaContextMenu",
                 contexts: ["all"],
-            });     
-            
+            });
+
             chrome.contextMenus.create({
                 title: "Add to running log description",
                 parentId: "spicaContextMenu",
                 contexts: ["selection"],
                 onclick: updateRunningLogDescription
-            });          
-    
-            // chrome.contextMenus.create({
-            //     title: "Stop running log",
-            //     parentId: "spicaContextMenu",
-            //     contexts: ["all"],
-            //     onclick: stopTimer
-            // });
-          
-        });
+            });
+
+
+            if (sender?.url?.startsWith('https://dev.azure.com/')) {
+                chrome.contextMenus.create({
+                    type: 'separator',
+                    parentId: "spicaContextMenu",
+                    contexts: ["all"],
+                });
+
+                chrome.contextMenus.create({
+                    title: "Copy branch name to clipboard",
+                    parentId: "spicaContextMenu",
+                    contexts: ["selection"],
+                    onclick: getBranchName
+                });
+            }
+        // });
+
+
+        // chrome.contextMenus.create({
+        //     type: 'separator',
+        //     parentId: "spicaContextMenu",
+        //     contexts: ["all"],
+        // });
+
+        // chrome.contextMenus.create({
+        //     title: "Copy branch name to clipboard",
+        //     parentId: "spicaContextMenu",
+        //     contexts: ["selection"],
+        //     onclick: getBranchName
+        // });
+
+
+
+        // chrome.contextMenus.create({
+        //     title: "Stop running log",
+        //     parentId: "spicaContextMenu",
+        //     contexts: ["all"],
+        //     onclick: stopTimer
+        // });
+
+    });
            
 
     }
@@ -154,17 +187,17 @@ chrome.alarms.create("checkAxoWorklogForYesterday", {
     periodInMinutes: checkInterval
 });
 
-chrome.alarms.onAlarm.addListener(function(alarm) {
+chrome.alarms.onAlarm.addListener(function (alarm) {
     if (alarm.name === "checkAxoWorklogForYesterday") {
         console.log('alarm - checkAxoWorklogForYesterday');
         refreshBadge();
     }
 });
 
-function refreshBadge(){
+function refreshBadge() {
     let currentUser = new CurrentUser();
-    let options = new Options();  
-    
+    let options = new Options();
+
     //check only fro m 6.00 till 12.00
 
     let today = moment().startOf('day');
@@ -172,7 +205,7 @@ function refreshBadge(){
     //     return;
     // }
 
-    console.info(`refresh badge: checking ratio`);    
+    console.info(`refresh badge: checking ratio`);
     options.load().then(
         function () {
             if (!chrome.browserAction?.setBadgeText) {
@@ -193,13 +226,13 @@ function refreshBadge(){
 
                         allHoursApi.getCurrentUserId().then(currentUserId => {
                             allHoursApi.getAttendance(currentUserId, yesterday).then(results => {
-                                if (results && results.CalculationResultValues.length > 0){
+                                if (results && results.CalculationResultValues.length > 0) {
                                     let attendance = parseInt(results.CalculationResultValues[0].Value, 10);
                                     // console.info(`refresh badge: ah attendance ${attendance}`);
-                                    setBadge(sumDuration, attendance);                                
+                                    setBadge(sumDuration, attendance);
                                 } else {
                                     console.info('refresh badge: no attendance data.');
-                                    chrome.browserAction.setBadgeText({ text: `` });                                 
+                                    chrome.browserAction.setBadgeText({ text: `` });
                                 }
                             });
                         });
@@ -212,7 +245,7 @@ function refreshBadge(){
                             console.info(`refresh badge: axo minutes ${axoMinutes}`);
                             allHoursApi.getCurrentUserId().then(
                                 function (currentUserId) {
-                                    console.info(`refresh badge: get attendance`);                                        
+                                    console.info(`refresh badge: get attendance`);
                                     allHoursApi.getAttendance(currentUserId, yesterday).then(
                                         function (data) {
                                             if (data && data.CalculationResultValues.length > 0) {
@@ -221,8 +254,8 @@ function refreshBadge(){
                                                 setBadge(axoMinutes, attendance);
                                             } else {
                                                 console.info('refresh badge: no attendance data.');
-                                                chrome.browserAction.setBadgeText({ text: `` }); 
-                                            }                                         
+                                                chrome.browserAction.setBadgeText({ text: `` });
+                                            }
 
                                         },
                                         function (error) {
@@ -234,48 +267,48 @@ function refreshBadge(){
                             )
                         }
                     )
-                    .catch(error => {
-                        console.log('refresh badge: error:');
-                        console.log(error);
-                        chrome.browserAction.setBadgeText({ text: 'Err' }); 
-                        chrome.browserAction.setBadgeBackgroundColor({
-                            color: '#222222'
-                        });                                 
-                    });
+                        .catch(error => {
+                            console.log('refresh badge: error:');
+                            console.log(error);
+                            chrome.browserAction.setBadgeText({ text: 'Err' });
+                            chrome.browserAction.setBadgeBackgroundColor({
+                                color: '#222222'
+                            });
+                        });
                 }
             })
         }
     )
 }
 
-function setBadge(value, reference){
+function setBadge(value, reference) {
     // reference = ah
     // value = axo, devops
     if (reference > 0) {
 
-        let ratio = value/reference;
+        let ratio = value / reference;
         console.info(`refresh badge: ratio ${ratio}`);
 
-        chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` }); 
-        if (ratio < 0.9 || ratio > 1 ) {
-            chrome.browserAction.setBadgeTextColor({color: '#111'});
+        chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` });
+        if (ratio < 0.9 || ratio > 1) {
+            chrome.browserAction.setBadgeTextColor({ color: '#111' });
             chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
             //chrome.browserAction.setBadgeText({ text: `$` }); 
-            
+
             //inform user that sync must be done every hour or so
             if (options.notificationsBadRatio && moment().minute() <= 10) {
-                chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { }); 
+                chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { });
             }
         }
         else {
-            chrome.browserAction.setBadgeTextColor({color: '#111'});
+            chrome.browserAction.setBadgeTextColor({ color: '#111' });
             chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
         }
     }
     else {
         console.error('refresh badge: reference == 0');
-        chrome.browserAction.setBadgeText({ text: `` });                                                 
-    }    
+        chrome.browserAction.setBadgeText({ text: `` });
+    }
 }
 
 function startTrackingTimeAxo(info, tab) {
@@ -305,16 +338,16 @@ function startTrackingTimeAxo(info, tab) {
                         let myHoursNote = info.selectionText;
                         if (defaultWorkLogType !== "") {
                             myHoursNote = myHoursNote + '/' + defaultWorkLogType.toLowerCase();
-                            
+
                             if (info.menuItemId) {
                                 let descriptionIndex = info.menuItemId.split('_')[1];
                                 let description = options.myHoursCommonDescriptions.split(';')[descriptionIndex];
-                                if (description){
+                                if (description) {
                                     myHoursNote = `${myHoursNote} ${description}`;
                                 }
                             }
-                            
-                            
+
+
                         }
 
                         myHoursApi.getRefreshToken(currentUser.refreshToken).then(
@@ -405,7 +438,7 @@ function startTrackingTime(info, tab) {
                     }
                 );
         }
-    )    
+    )
 
 }
 
@@ -464,7 +497,7 @@ function stopTimer(info, tab) {
 //             }
 
 //         });
-    
+
 
 
 
@@ -494,7 +527,7 @@ function createProject(info, tab) {
                     }
                 );
         }
-    )    
+    )
 
 }
 
@@ -515,8 +548,8 @@ function updateRunningLogDescription(info, tab) {
                         myHoursApi.updateRunningLogDescription(info.selectionText)
                             .then(
                                 function (updatedLog) {
-                                    
-                                     if (updatedLog) {
+
+                                    if (updatedLog) {
                                         chrome.notifications.create('', getNotificationOptions("Description updated: " + updatedLog.note), function () { });
                                     }
                                     else {
@@ -531,12 +564,14 @@ function updateRunningLogDescription(info, tab) {
                             );
                     }
                 )
-                  
+
             });
         });
 }
 
 function getBranchName(info, tab) {
+
+    /*
     // console.log("selection: " + info.selectionText);
     let branchName = info.selectionText.toLowerCase().trim().replace(/ /g, "-");
 
@@ -548,24 +583,49 @@ function getBranchName(info, tab) {
     }, function (err) {
         console.error('Async: Could not copy text: ', err);
     });
+    */
 
+
+    let branchName = info.selectionText
+        .toLowerCase()
+        .trim()
+        .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+        .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+        .replace(/ /g, "-");     //replace spaces with dashes
+
+    // let fullBranchName = itemId + "-" + branchName;
+
+    // chrome.runtime.sendMessage({
+    //     type: 'copy',
+    //     text: branchName
+    // });
+
+    var input = document.createElement('textarea');
+    document.body.appendChild(input);
+    input.value = branchName;
+    input.focus();
+    input.select();
+    document.execCommand('Copy');
+    input.remove();
+
+    chrome.notifications.create('', getNotificationOptions("Copied to clipboard: " + branchName), function () { });
 
 }
 
-function refreshMyHoursPage(){
+function refreshMyHoursPage() {
 
-    chrome.tabs.query({url: 'https://app.myhours.com/*'}, function(foundTabs) {
+    chrome.tabs.query({ url: 'https://app.myhours.com/*' }, function (foundTabs) {
         foundTabs.forEach(myHoursTab => {
             console.info('refreshing myhours tabs');
             chrome.tabs.reload(
                 myHoursTab.id
-              );
+            );
         });
     });
 
 }
 
-function getNotificationOptions(message){
+function getNotificationOptions(message) {
     return {
         type: 'basic',
         iconUrl: './images/ts-badge128.png',
@@ -573,5 +633,3 @@ function getNotificationOptions(message){
         message
     };
 }
-
-

@@ -656,7 +656,7 @@ div.logContainer:hover {
       
     padding: 0.25rem;
     margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.75rem;
     margin-right: 0.25rem;
 
     border-radius: 0.25rem;
@@ -682,18 +682,22 @@ div.logContainer:hover {
 .logContainer.logContainerGrid .log-tags{
     grid-area: log-tags;
     color: #6c757d;
-    font-size: 0.7rem;
+    /* font-size: 0.7rem; */
+    font-size: 0.8rem;
     /* text-transform: lowercase; */
+    /* text-transform: uppercase; */
 }
 
 .logContainer.logContainerGrid .log-title{
     grid-area: log-title;
     font-weight: 600;
+    font-size: 1.1rem;
 }
 
 .logContainer.logContainerGrid .log-comment{
     grid-area: log-comment;
-    font-size: 80%;
+    /* font-size: 80%; */
+    font-size: 90%;
     font-weight: 400;
 }
 
@@ -701,6 +705,7 @@ div.logContainer:hover {
     grid-area: log-time;
     text-align: end;
     margin-right: 1rem;
+    font-weight: 500;
 }
 
 
