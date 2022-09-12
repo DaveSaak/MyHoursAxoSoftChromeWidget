@@ -123,7 +123,10 @@ function BalanceView(allHoursApi, viewContainer){
                         labels: labels,
                         datasets: [{
                             data: dayDifferences,
-                            backgroundColor: "rgba(102, 153, 204, 1)",
+                            backgroundColor: "#a340d3",
+                            // borderRadius: 30,
+                            
+                            // "rgba(102, 153, 204, 1)",
                             // borderColor: "rgba(102, 153, 204, 0.2)",
 
                             // backgroundColor: "rgba(102, 153, 204, 0.2)",
