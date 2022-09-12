@@ -575,7 +575,9 @@ function popup() {
 
                 let remainingInfo = $('<div class="d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem">');
                 logTitle.append(remainingInfo);
-                remainingInfo.append($('<div>').text(`Remaining ${minutesToString(remainingMins)}`));
+                remainingInfo.append($('<div>').text(`Remaining`));
+                remainingInfo.append($('<div class="ml-1" style="font-weight:700">').text(`${minutesToString(remainingMins)}`));
+                remainingInfo.append($('<div>').text(`h`));
 
                 if (log.devOpsItemUpdates?.count > 0) {
                     const effortUpdates = log.devOpsItemUpdates.value
@@ -585,7 +587,7 @@ function popup() {
                     if (effortUpdates.length > 0) {
                         const lastEffortUpdate = effortUpdates[0];
 
-                        remainingInfo.append($('<div>').addClass("ml-1").text('Last update by'));
+                        remainingInfo.append($('<div>').addClass("ml-1").text('last update by'));
 
                         if (lastEffortUpdate.revisedBy._links?.avatar?.href){
                             remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-1">'));
