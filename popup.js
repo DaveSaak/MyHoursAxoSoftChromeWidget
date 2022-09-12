@@ -219,7 +219,7 @@ function popup() {
 
         $('#pills-devops-assignments-tab').click(function () {
             getMyDevOpsItems();
-        });        
+        });
 
         $('#refreshRatio').click(function () {
             _this.ratioView.show();
@@ -389,6 +389,18 @@ function popup() {
                                     reject();
                                 });
                         }));
+
+                        promises.push(new Promise(function (resolve, reject) {
+                            _this.devOpsApi.getItemUpdatesAsync(log.devOpsItemId).then(devOpsItemUpdates => {
+                                log.devOpsItemUpdates = devOpsItemUpdates;
+                                resolve();
+                            })
+                                .catch((error) => {
+                                    console.error('Error fetching DEVOPS updates', error);
+                                    reject();
+                                });
+                        }));
+
                     }
                 }
 
@@ -406,9 +418,9 @@ function popup() {
             });
 
         })
-        .catch((error) => {
-            console.error('Error fetching MY HOURS logs:', error);
-        });
+            .catch((error) => {
+                console.error('Error fetching MY HOURS logs:', error);
+            });
 
         await Promise.all(promises);
         // console.log(_this.myHoursLogs);
@@ -437,7 +449,7 @@ function popup() {
                 $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", false);
                 $('#timeline .timeline-log').not('[data-logId="' + log.id + '"]').toggleClass("deactivate", false);
                 hiLiteMyHoursLog();
-            });                
+            });
 
             // COLOR COLUMN
             var colorBarCell = $('<div>').addClass('rounded log-color-bar');
@@ -458,14 +470,15 @@ function popup() {
             // logTitle.append('<i class="fas fa-skull" aria-hidden="true"></i>');
             // logTitle.append('<span>').text(`${log.taskName ?? '-not set: task-'}`);
 
-            logTitle.text(`${log.taskName ?? '-not set: task-'}`);
+            logTitle.append($('<div>').text(`${log.taskName ?? '-not set: task-'}`));
             logContainer.append(logTitle);
 
 
             // COMMENT
             var logComment = $('<div>').addClass('log-comment');
             if (log.note) {
-                logComment.text(log.note);
+                // logComment.append($('<div>').text('Log comment'));
+                logComment.append($('<div>').text(log.note));
             }
             logContainer.append(logComment);
 
@@ -485,7 +498,7 @@ function popup() {
 
             // EFFORT
             var effortCell = $('<div>').addClass('log-effort');
-            logContainer.append(effortCell);            
+            logContainer.append(effortCell);
 
             // ACTIONS COLUMN
             var columnActions = $('<div>').addClass('log-actions');
@@ -538,31 +551,52 @@ function popup() {
                 .append($('<i class="fa-solid fa-upload"></i>'))
                 .click(function (event) {
                     event.preventDefault();
-
                     let logDurationInHours = log.duration / 60 / 60;
-                    _this.devOpsApi.updateItemAsync(log.devOpsItemId, logDurationInHours)
-                        .then(_ => {
-                            toastr.success(`DevOps Item updated.`);
-                        })
-                        .catch(x => {
-                            console.log(x);
-                            toastr.error('DevOps item not updated. Error.');
-                        });
-                });
+                    updateDevOpsWorkItemEffort(log.devOpsItemId, logDurationInHours);
+                 });
 
             let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
-            buttons.append(startTrackingTimeShortcut);
-            buttons.append(copyCommitMessagesButton);
             buttons.append(openDevOpsItemButton);
             buttons.append(copyWorklogButton);
+            buttons.append(copyCommitMessagesButton);
+            buttons.append(startTrackingTimeShortcut);
 
             columnActions.append(buttons);
 
             if (log.devOpsItem) {
                 log.color = _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)];
-                effortCell.append($('<div class="badge badge-light">').text(`Remaining ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
-                effortCell.append($('<div class="badge badge-light">').text(`Completed ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
-                effortCell.append($('<div class="badge badge-light">').text(`Estimate ${log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+
+
+                var remainingMins = (log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60;
+                // logTitle.append($('<div style="font-size:0.85rem; font-weight:500">')
+                //     .append($('<span>').text(`Remaining ${minutesToString(remainingMins)}`))
+                // );
+
+
+                let remainingInfo = $('<div class="d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem">');
+                logTitle.append(remainingInfo);
+                remainingInfo.append($('<div>').text(`Remaining ${minutesToString(remainingMins)}`));
+
+                if (log.devOpsItemUpdates?.count > 0) {
+                    const effortUpdates = log.devOpsItemUpdates.value
+                        .filter(x => x.fields && x.fields['Microsoft.VSTS.Scheduling.RemainingWork'])
+                        .sort((a,b) => b.rev - a.rev);
+
+                    if (effortUpdates.length > 0) {
+                        const lastEffortUpdate = effortUpdates[0];
+
+                        remainingInfo.append($('<div>').addClass("ml-1").text('Last update by'));
+
+                        if (lastEffortUpdate.revisedBy._links?.avatar?.href){
+                            remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-1">'));
+                        }
+                        remainingInfo.append($('<div class="ml-1">').text(`${lastEffortUpdate.revisedBy.displayName}`));
+                        remainingInfo.append($('<div class="ml-1">').text(`on ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).format('llll')}`)); 
+                            // lastEffortUpdateText = ` Last update: ${lastEffortUpdate.revisedBy.displayName} on ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).format('llll')}`;
+                    }
+                }                
+
+
             } else {
                 log.color = 'lightgray';
                 // logTitle.text('DevOps item not found');
@@ -571,7 +605,7 @@ function popup() {
 
                 if (log.projectId == _this.options.myHoursCommonProjectId) {
                     log.color = '#bbc9f3';
-                } 
+                }
             }
             colorBarCell.css("background-color", log.color);
             logsContainer.append(logContainer);
@@ -625,16 +659,27 @@ function popup() {
 
                 timeline.append(barGraph);
                 //barGraph.tooltip();
-            });    
+            });
         });
 
         _this.timeRatio.setMyHours(totalMins);
-        $('#mhTotal').text(minutesToString(totalMins));        
-
-
-
-
+        $('#mhTotal').text(minutesToString(totalMins));
     }
+
+    function updateDevOpsWorkItemEffort(devOpsItemId, logDurationInHours){
+        _this.devOpsApi.getItemAsync(devOpsItemId).then(devOpsItem => {
+            _this.devOpsApi.updateRemainingAndCompletedWorkAsync(devOpsItem, logDurationInHours)
+                .then(updatedItem => {
+                    toastr.success(`DevOps Item updated: Remaining ${minutesToString(updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] * 60)} h, Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`);
+                    getLogs();
+                })
+                .catch(x => {
+                    console.log(x);
+                    toastr.error(`DevOps item not updated. Error: ${x.message}`);
+                });
+        });        
+    }
+
 
     function getLogs() {
         let fetchLogsId = moment().valueOf();
@@ -937,7 +982,7 @@ function popup() {
 
     }
 
-    
+
 
     function deleteLogs() {
         _this.axoSoftApi.getWorkLogs(_this.currentDate).then(
@@ -1284,7 +1329,7 @@ function popup() {
                                 .attr("data-logId", devOpsItem.id)
                                 .addClass('logContainer logContainerGrid')
                             myItemsContainer.append(myItemContainer);
-                           
+
                             // var log = $('<div>')
                             //     .attr("data-logId", item.id)
                             //     .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
@@ -1317,14 +1362,14 @@ function popup() {
                             var itemName = $('<div>')
                                 .addClass('axoItemName text-truncate')
                                 .text(devOpsItem.fields['System.Title']);
-                            titleCell.append(itemName);                            
+                            titleCell.append(itemName);
 
                             var commentCell = $('<div>')
                                 .addClass('log-comment');
                             // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
                             // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
                             // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
-                            myItemContainer.append(commentCell);  
+                            myItemContainer.append(commentCell);
 
                             let state = devOpsItem.fields['System.State'];
                             var effortCell = $('<div>')
@@ -1337,17 +1382,17 @@ function popup() {
                             } else if (state == 'Resolved') {
                                 badge.addClass('badge-warning')
                             } else {
-                                badge.addClass('badge-light')                                
+                                badge.addClass('badge-light')
                             }
 
                             effortCell.append(badge);
-                            myItemContainer.append(effortCell);                             
-                            
+                            myItemContainer.append(effortCell);
+
                             var tagsCell = $('<div>')
                                 .addClass('log-tags')
                                 .text(devOpsItem.fields['System.TeamProject'])
-                            myItemContainer.append(tagsCell);     
-                            
+                            myItemContainer.append(tagsCell);
+
                             //actions
                             var actionsCell = $('<div>')
                                 .addClass('log-actions');
@@ -1501,25 +1546,23 @@ function popup() {
 
     function updateDevOps() {
         // get sums per devops item
-        var result = [];
-        _this.myHoursLogs.reduce(function (res, log) {
+        var groupsObject = _this.myHoursLogs.reduce(function (res, log) {
             if (log.devOpsItem) {
                 if (!res[log.devOpsItemId]) {
                     res[log.devOpsItemId] = { id: log.devOpsItemId, duration: log.duration };
-                    result.push(res[log.devOpsItemId])
+                } else {
+                    res[log.devOpsItemId].duration += log.duration;
                 }
-                res[log.devOpsItemId].duration += log.duration;
             }
             return res;
         }, {});
 
 
         // update item by item
-        result.forEach(x => {
-            _this.devOpsApi.updateItemAsync(x.id, x.duration / 60 / 60)
-                .then(_ => { 
-                    toastr.success(`item ${x.id} updated`); 
-                });
+        let groups = Object.entries(groupsObject).map(x => x[1]);
+        groups.forEach(x => {
+            // console.log(x);
+            updateDevOpsWorkItemEffort(x.id, x.duration / 60 / 60);            
         })
     }
 
@@ -1658,7 +1701,7 @@ function popup() {
         if (timeRatio?.ratio !== undefined) {
             elementInfo.hide();
             elementOk?.show();
-            let ratioValid = ((timeRatio.ahAttendance == 0 && timeRatio.mhTotalTime == 0) ||  (timeRatio.ratio >= 0.9 && timeRatio.ratio <= 1));
+            let ratioValid = ((timeRatio.ahAttendance == 0 && timeRatio.mhTotalTime == 0) || (timeRatio.ratio >= 0.9 && timeRatio.ratio <= 1));
             //elementInfo.text((ratio * 100).toFixed(0) + '%');
 
             // let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
@@ -1674,16 +1717,16 @@ function popup() {
                     const minMissingMinutes = timeRatio.ahAttendance * 0.9 - timeRatio.ahAttendance * timeRatio.ratio;
                     if (!ratioValid) {
                         // cardText += ' Missing: ' + minutesToString(Math.abs(minMissingMinutes)) 
-                        cardText += ' Missing: ' + minutesToString(Math.abs(diffMinutes)) + ' (' +  minutesToString(Math.abs(minMissingMinutes)) + ')';
+                        cardText += ' Missing: ' + minutesToString(Math.abs(diffMinutes)) + ' (' + minutesToString(Math.abs(minMissingMinutes)) + ')';
                     } else {
                         cardText += ' Missing: ' + minutesToString(Math.abs(diffMinutes));
                     }
                 }
 
                 if (!ratioValid) {
-                    badgeType = 'badge-warning';  
-                } 
-                    
+                    badgeType = 'badge-warning';
+                }
+
 
                 //cardText += 
                 elementOk?.hide();

@@ -100,7 +100,7 @@ function BalanceView(allHoursApi, viewContainer){
             function (data) {
                 //var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.PaidPresenceValue);
                 var dayDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.DailyBalanceValue);
-                dayDifferences.push(currentAttendance);
+                // dayDifferences.push(currentAttendance);
 
                 let periodDiff = dayDifferences.reduce((a, b) => a + b, 0);
                 $("#currentBalancePeriodDiff").text(minutesToString(periodDiff));
@@ -108,32 +108,35 @@ function BalanceView(allHoursApi, viewContainer){
 
                 var runningDifferences = data.DailyCalculations.map(x => x.CalculationResultSummary.RunningBalanceValue);
 
-                var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
-                labels.push(today.format('ddd'));
+                // var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
+                // labels.push(today.format('ddd'));
 
                 var labels = data.DailyCalculations.map(x => moment(x.DateTime));
-                labels.push(today);
+                // labels.push(today);
 
 
                 var dailyCtx = document.getElementById('dayBalanceChart').getContext('2d');
                 var dailyChart = new Chart(dailyCtx, {
-                    type: 'line',
+                    type: 'bar',
+                    // type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
                             data: dayDifferences,
-                            // backgroundColor: "rgba(102, 153, 204, 1)",
+                            backgroundColor: "rgba(102, 153, 204, 1)",
                             // borderColor: "rgba(102, 153, 204, 0.2)",
-                            backgroundColor: "rgba(102, 153, 204, 0.2)",
-                            borderColor: "rgba(102, 153, 204, 1)",
+
+                            // backgroundColor: "rgba(102, 153, 204, 0.2)",
+                            // borderColor: "rgba(102, 153, 204, 1)",
+
                             // backgroundColor: "rgba(102, 153, 204, 1)",
-                            pointBackgroundColor: "rgba(102, 153, 204, 1)",
-                            pointBorderColor: "#fff",
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: "#fff",
-                            pointHoverBorderColor: "rgba(102, 153, 204, 1)",
-                            tension: 0.5,
-                            // barThickness: 10,
+                            // pointBackgroundColor: "rgba(102, 153, 204, 1)",
+                            // pointBorderColor: "#fff",
+                            // pointHoverRadius: 5,
+                            // pointHoverBackgroundColor: "#fff",
+                            // pointHoverBorderColor: "rgba(102, 153, 204, 1)",
+                            // tension: 0.5,
+                            barThickness: 10,
                         },
                             // {
                             //     data: runningDifferences, 
@@ -146,7 +149,7 @@ function BalanceView(allHoursApi, viewContainer){
                         },
                         scales: {
                             xAxes: [{
-                                barThickness: 16,
+                                // barThickness: 16,
                                 position: 'middle',
                                 gridLines: {
                                     drawBorder: false,
@@ -166,7 +169,7 @@ function BalanceView(allHoursApi, viewContainer){
                                     //display: false,
                                 },
                                 ticks: {
-                                    // maxTicksLimit: 7,
+                                    maxTicksLimit: 5,
                                     // display: false, //this removed the labels on the x-axis
                                     stepSize: 60,
                                     callback: function (value, index, values) {
