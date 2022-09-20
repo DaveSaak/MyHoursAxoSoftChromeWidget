@@ -41,6 +41,34 @@ chrome.webRequest.onCompleted.addListener(function (details) {
     }
 );
 
+
+chrome.webRequest.onCompleted.addListener(function (details) {
+    const parsedUrl = new URL(details.url);
+    //console.log(details);
+    if (details.tabId) {
+        //console.log(details);
+
+        if (details.method === "GET" 
+            && parsedUrl.pathname.includes("/_workitems") 
+            // && parsedUrl.pathname.includes("template/view")
+            ) 
+        {
+            chrome.tabs.sendMessage(details.tabId, { type: 'devops-item-loaded' });
+            console.log('background script message sent: devops-item-loaded');
+        }
+    }
+},
+    {
+        urls: [
+            "https://dev.azure.com/*",
+            // "https://dev.azure.com/Spica-International/*/_workitems/*",
+        ]
+    }
+);
+
+// https://dev.azure.com/Spica-International/Spica%20Common/_workitems
+
+
 chrome.runtime.onMessage.addListener(function (message) {
     if (message && message.type == 'copy') {
         var input = document.createElement('textarea');

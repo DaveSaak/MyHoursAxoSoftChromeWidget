@@ -319,7 +319,7 @@ div.logContainer.active,
 div.logContainer:hover {
     /* box-shadow: 0 0 3px 0px #6d8396; */
 
-    background-color: #dbe4ea9e;
+    background-color: #f1f1f19e;
     /* font-weight: 800; */
     /* color: black; */
 
@@ -646,9 +646,22 @@ div.logContainer:hover {
     font-size: 0.7em;
 }
 
+/* .logs {
+    padding-left: 1rem;
+    padding-right: 1rem;
+} */
+
+.logContainer {
+    /* box-shadow:0 0.5rem 1rem rgb(0 0 0 / 15%); */
+    /* box-shadow:0 0.35rem 0.75rem rgb(0 0 0 / 15%); */
+    /* border: rgba(211, 211, 211, 0.521) 1px solid; */
+    /* margin: 1rem; */
+}
+
+
 .logContainer.logContainerGrid {
     display: grid;
-    grid-template-columns: 0.75rem auto auto 5rem;
+    grid-template-columns: 1rem auto auto 5rem;
     grid-template-rows: auto;
     grid-template-areas: 
       "log-color-bar log-tags log-effort log-effort"
@@ -659,10 +672,11 @@ div.logContainer:hover {
       "log-color-bar log-tags log-tags log-tags"
       "log-color-bar log-title log-effort log-effort"
       "log-color-bar log-comment log-comment log-time";   */
-    padding: 0.25rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0.75rem;
-    margin-right: 0.25rem;
+    padding: 0.75rem;
+    /* margin-top: 0.5rem; */
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
 
     border-radius: 0.25rem;
 }
@@ -683,19 +697,20 @@ div.logContainer:hover {
 .logContainer.logContainerGrid .log-color-bar{
     grid-area: log-color-bar;
 
-    width: 0.25rem;
+    width: 0.3rem;
     height: 3.3rem;
     position: absolute;
-    height: 95%;    
+    height: 98%;   
+    border-radius: 10%; 
 }
 
 .logContainer.logContainerGrid .log-tags{
     grid-area: log-tags;
-    color: #6c757d;
-    /* font-size: 0.7rem; */
-    font-size: 0.8rem;
+    color: #5b6369;
+    font-size: 0.7rem;
     /* text-transform: lowercase; */
-    /* text-transform: uppercase; */
+    text-transform: uppercase;
+    font-weight: 500;
 }
 
 .logContainer.logContainerGrid .log-title{
@@ -709,8 +724,8 @@ div.logContainer:hover {
     /* font-size: 80%; */
     font-size: 90%;
     font-weight: 400;
-    font-style: italic;
-    margin-top: 0.5rem;
+    /* font-style: italic; */
+    margin-top: 0.25rem;
 }
 
 .logContainer.logContainerGrid .log-time{
@@ -749,4 +764,13 @@ div.logContainer:hover {
 
 .logContainer.logContainerGrid:hover .log-time{
     display: none;
+}
+
+.effort-info {
+    color: #5b6369;
+
+}
+
+.empty-state {
+    height: 200px;
 }
