@@ -161,7 +161,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                 onclick: updateRunningLogDescription
             });
 
-
+/*
             if (sender?.url?.startsWith('https://dev.azure.com/')) {
                 chrome.contextMenus.create({
                     type: 'separator',
@@ -176,6 +176,7 @@ chrome.extension.onRequest.addListener(function (request, sender, callback) {
                     onclick: getBranchName
                 });
             }
+            */
         // });
 
 
@@ -319,7 +320,9 @@ function setBadge(value, reference) {
 
         chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` });
         if (ratio < 0.9 || ratio > 1) {
-            chrome.browserAction.setBadgeTextColor({ color: '#111' });
+            if (chrome.browserAction.setBadgeTextColor) {
+                chrome.browserAction.setBadgeTextColor({ color: '#111' });
+            }
             chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
             //chrome.browserAction.setBadgeText({ text: `$` }); 
 
@@ -329,7 +332,9 @@ function setBadge(value, reference) {
             }
         }
         else {
-            chrome.browserAction.setBadgeTextColor({ color: '#111' });
+            if (chrome.browserAction.setBadgeTextColor) {
+                chrome.browserAction.setBadgeTextColor({ color: '#111' });
+            }
             chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
         }
     }
@@ -442,32 +447,37 @@ function startTrackingTimeDevOps(info, tab) {
 }
 
 function startTrackingTime(info, tab) {
-
-    let currentUser = new CurrentUser();
-    let myHoursApi = new MyHoursApi(currentUser);
-
-    myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-        function (token) {
-            console.info('got refresh token. token: ');
-            console.info(token);
-
-            currentUser.setTokenData(token.accessToken, token.refreshToken);
-            currentUser.save();
-
-            myHoursApi.startLog(info.selectionText)
+    const options = new Options();
+    options.load().then(
+        _ => {
+            const currentUser = new CurrentUser();
+            currentUser.load(_ => {
+                const myHoursApi = new MyHoursApi(currentUser);
+                myHoursApi.getRefreshToken(currentUser.refreshToken)
                 .then(
-                    function (data) {
-                        chrome.notifications.create('', getNotificationOptions('Log started. Description: ' + info.selectionText), function () { });
-                        refreshMyHoursPage();
-                    },
-                    function (error) {
-                        console.log(error);
-                        chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
-                    }
-                );
-        }
-    )
+                    function (token) {
+                        console.info('got refresh token. token: ');
+                        console.info(token);
 
+                        currentUser.setTokenData(token.accessToken, token.refreshToken);
+                        currentUser.save();
+
+                        myHoursApi.startLog(info.selectionText)
+                            .then(
+                                function (data) {
+                                    chrome.notifications.create('', getNotificationOptions('Log started. Description: ' + info.selectionText), function () { });
+                                    refreshMyHoursPage();
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
+                                }
+                            );
+                    }
+                )
+            })
+        }
+    );
 }
 
 function stopTimer(info, tab) {
