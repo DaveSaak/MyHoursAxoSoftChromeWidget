@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "author": "Dave",
     "browser_action": {
         "default_popup": "popup.html",
@@ -37,13 +37,7 @@
                 "https://dev.azure.com/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-devops.js"]
-        },        
-        {
-            "matches": [
-                "https://dev.azure.com/Spica-International/*/_boards/board/*"
-            ],
-            "js": ["jquery-3.3.1.min.js","content-script-devops-board.js"]
-        }        
+        }      
     ],
     "icons": {
         "16": "./images/TS-badge16.png",
