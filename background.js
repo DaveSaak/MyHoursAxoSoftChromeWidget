@@ -42,31 +42,47 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 );
 
 
+// chrome.webRequest.onCompleted.addListener(function (details) {
+//     const parsedUrl = new URL(details.url);
+//     if (details.tabId) {
+//         if (details.method === "GET" 
+//             && parsedUrl.pathname.includes("/_workitems") 
+//             ) 
+//         {
+//             chrome.tabs.sendMessage(details.tabId, { type: 'devops-item-loaded' });
+//             console.log('background script message sent: devops-item-loaded');
+//         }
+//     }
+// },
+//     {
+//         urls: [
+//             "https://dev.azure.com/*",
+//         ]
+//     }
+// );
+
+
 chrome.webRequest.onCompleted.addListener(function (details) {
     const parsedUrl = new URL(details.url);
-    //console.log(details);
     if (details.tabId) {
-        //console.log(details);
-
         if (details.method === "GET" 
-            && parsedUrl.pathname.includes("/_workitems") 
-            // && parsedUrl.pathname.includes("template/view")
+            && parsedUrl.pathname.includes("/_versioncontrol/gitUserDefaultRepository") 
             ) 
         {
-            chrome.tabs.sendMessage(details.tabId, { type: 'devops-item-loaded' });
-            console.log('background script message sent: devops-item-loaded');
+            chrome.tabs.sendMessage(details.tabId, { type: 'git-repos-fetched' });
+            console.log('background script message sent: git-repos-fetched');
         }
     }
 },
     {
         urls: [
             "https://dev.azure.com/*",
-            // "https://dev.azure.com/Spica-International/*/_workitems/*",
         ]
     }
 );
 
-// https://dev.azure.com/Spica-International/Spica%20Common/_workitems
+
+
 
 
 chrome.runtime.onMessage.addListener(function (message) {
