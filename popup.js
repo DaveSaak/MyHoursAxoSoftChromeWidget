@@ -29,6 +29,8 @@ function popup() {
     _this.timeRatio = new TimeRatio(showRatio);
     _this.timeRatioAllHourAxo = new TimeRatio(showRatioAllHoursAxo);
 
+    _this.allHoursAttendance = 0;
+
     _this.timeLineWidth = 1300;
     _this.noTimeDataText = "n/a";
     _this.noNumberDataText = "n/a";
@@ -433,10 +435,7 @@ function popup() {
         logsContainer.empty();
 
         if (_this.myHoursLogs?.length == 0) {
-            var emptyStateContainer = $('<div>').addClass('d-flex flex-column');
-            emptyStateContainer.append($('<img src="./images/empty-state.png">').addClass('mx-auto mt-4 empty-state'));
-            emptyStateContainer.append($('<h6>').addClass('mx-auto mt-3 mb-4').text('You have not added any My Hours logs on this day.'));
-            logsContainer.append(emptyStateContainer);
+            showEmptyState();
         }
 
         var totalMins = 0;
@@ -681,6 +680,8 @@ function popup() {
 
         _this.timeRatio.setMyHours(totalMins);
         $('#mhTotal').text(minutesToString(totalMins));
+
+        $('#copyDevOpsButton').toggle(totalMins > 0);
     }
 
     function updateDevOpsWorkItemEffort(devOpsItemId, logDurationInHours){
@@ -695,6 +696,37 @@ function popup() {
                     toastr.error(`DevOps item not updated. Error: ${x.message}`);
                 });
         });        
+    }
+
+    function showEmptyState(){
+        const logsContainer = $('#logs');
+        const emptyStateContainer = $('<div>').addClass('d-flex flex-column');
+        logsContainer.append(emptyStateContainer);
+
+        if (_this.currentDate.isAfter(moment())) {
+            // FUTURE
+            emptyStateContainer.append($('<img src="./images/undraw_exciting_news_re_y1iw.svg">').addClass('empty-state-image'));
+            emptyStateContainer.append($('<h6>').addClass('empty-state-text').text('Always in motion the future is'));
+        } else {
+
+            if (_this.currentDate.isoWeekday() > 5) {
+                // WEEKEND
+                emptyStateContainer.append($('<img src="./images/undraw_explore_re_8l4v.svg">').addClass('empty-state-image'));
+                emptyStateContainer.append($('<h6>').addClass('empty-state-text').text('Weekends are a bit like rainbows; they look good from a distance but disappear when you get up close to them.'));
+            } else {
+                // WEEKDAY
+                if (_this.allHoursAttendance > 0) {
+                    // TIME CLOCKED ON AH
+                    emptyStateContainer.append($('<img src="./images/undraw_empty_re_opql.svg">').addClass('empty-state-image'));
+                    emptyStateContainer.append($('<h6>').addClass('empty-state-text').text('You have not added any My Hours logs on this day.'));
+                } else {
+                    // NO TIME CLOCKED ON AH
+                    emptyStateContainer.append($('<img src="./images/undraw_reading_time_re_phf7.svg">').addClass('empty-state-image'));
+                    emptyStateContainer.append($('<h6>').addClass('empty-state-text').text("It's okay to take a break."));
+
+                }
+            }
+        }        
     }
 
 
@@ -1157,6 +1189,7 @@ function popup() {
 
     function getAllHoursData(fetchLogsId) {
         let currentUserPromise = _this.allHoursApi.getCurrentUserId();
+        _this.allHoursAttendance = 0;
 
         if (currentUserPromise != undefined) {
             currentUserPromise.then(
@@ -1190,6 +1223,7 @@ function popup() {
                                         let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
                                         _this.timeRatio.setAllHours(attendance);
                                         _this.timeRatioAllHourAxo.setAllHours(attendance);
+                                        _this.allHoursAttendance = attendance;
                                         $('#ahAttendance').text(minutesToString(attendance));
                                     } else {
                                         $('#ahAttendance').text('0:00');

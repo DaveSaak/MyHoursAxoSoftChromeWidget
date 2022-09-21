@@ -771,6 +771,18 @@ div.logContainer:hover {
 
 }
 
-.empty-state {
+.empty-state-image {
+    padding-top: 1rem;
     height: 200px;
+}
+
+.empty-state-text {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+    height: 3rem;
+    text-align: center;
 }
