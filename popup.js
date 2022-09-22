@@ -1359,13 +1359,151 @@ function popup() {
         return actionsContainer;
     }
 
+    
+    // function getMyDevOpsItems() {
+    //     _this.devOpsApi.getMyItemsIdsAsync()
+    //         .then(queryResult => {
+    //             // console.log(queryResult);
+
+    //             let myItemsContainer = $('#myDevOpsItems');
+    //             myItemsContainer.empty();
+
+    //             let ids = queryResult.workItems.map(x => x.id).join();
+    //             _this.devOpsApi.getItemsAsync(ids)
+    //                 .then(items => {
+    //                     items.value.sort((a,b) => {
+    //                         const level1 = a.fields['System.TeamProject']?.localeCompare(b.fields['System.TeamProject']);
+    //                         if (level1 != 0) {
+    //                             return level1;
+    //                         }
+    //                         return a.fields['System.Title']?.localeCompare(b.fields['System.Title']);
+    //                     })
+
+
+    //                     // console.log(items);
+
+    //                     let lastTeamProject = '';
+    //                     $('#devops-items-count').text(items.count);
+    //                     $.each(items.value, function (index, devOpsItem) {
+    //                         if (lastTeamProject.localeCompare(devOpsItem.fields['System.TeamProject']) != 0) {
+    //                             var projectContainer = $('<h5>')
+    //                                 // .attr("data-logId", devOpsItem.id)
+    //                                 .addClass('m-2 mt-3')
+    //                                 .text(devOpsItem.fields['System.TeamProject']);
+    //                             myItemsContainer.append(projectContainer);
+    //                             lastTeamProject = devOpsItem.fields['System.TeamProject'];
+    //                         } 
+
+    //                         var myItemContainer = $('<div>')
+    //                             .attr("data-logId", devOpsItem.id)
+    //                             .addClass('logContainer logContainerGrid')
+    //                         myItemsContainer.append(myItemContainer);
+
+    //                         // var log = $('<div>')
+    //                         //     .attr("data-logId", item.id)
+    //                         //     .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
+    //                         // myItemContainer.append(log);
+
+    //                         //color bar
+    //                         var columnColorBarCell = $('<div>')
+    //                             .addClass('log-color-bar')
+    //                             .css("background-color", _this.axoItemColors[numberToIndex(devOpsItem.id, 8)]);
+    //                         myItemContainer.append(columnColorBarCell);
+
+
+    //                         //item name and worklog type
+    //                         var titleCell = $('<div style="gap: 0.5rem">')
+    //                             .addClass('log-title d-flex')
+    //                         myItemContainer.append(titleCell);
+
+    //                         var itemId = $('<div style="width: 4rem">')
+    //                             .text(devOpsItem.id);
+    //                         titleCell.append(itemId);
+
+    //                         var itemTypeIcon = $('<div>');
+    //                         if (devOpsItem.fields['System.WorkItemType'] == 'Task') {
+    //                             itemTypeIcon.append('<i class="fas fa-clipboard-check"></i>').css('color', '#a4880a')
+    //                         } else if (devOpsItem.fields['System.WorkItemType'] == 'Ticket') {
+    //                             itemTypeIcon.append('<i class="fas fa-medal"></i>').css('color', '#cc293d')
+    //                         }
+    //                         titleCell.append(itemTypeIcon);
+
+    //                         var itemName = $('<div style="white-space: break-spaces;">')
+    //                             .addClass('axoItemName')
+    //                             .text(devOpsItem.fields['System.Title']);
+    //                         titleCell.append(itemName);
+
+    //                         var commentCell = $('<div>')
+    //                             .addClass('log-comment');
+    //                         myItemContainer.append(commentCell);                                
+
+    //                         let effortInfo = $('<div class="effort-info d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem; font-style:normal">');
+    //                         commentCell.append(effortInfo);
+    //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0)*60)}h remaining`));     
+    //                         effortInfo.append($('<div>').addClass("mx-2").text('|'));       
+    //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0)*60)}h completed`));     
+    //                         effortInfo.append($('<div>').addClass("mx-2").text('|'));       
+    //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)*60)}h estimated`));     
+            
+    //                         // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
+    //                         // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
+    //                         // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
+                            
+
+    //                         /*
+    //                         let state = devOpsItem.fields['System.State'];
+    //                         var effortCell = $('<div>')
+    //                             .addClass('log-effort');
+    //                         var badge = $('<div class="badgex" style="line-height: 1rem">')
+    //                             .text(state);
+
+    //                         if (state == 'Active') {
+    //                             badge.addClass('badge-primary')
+    //                         } else if (state == 'Resolved') {
+    //                             badge.addClass('badge-warning')
+    //                         } else {
+    //                             badge.addClass('badge-light')
+    //                         }
+                            
+
+    //                         effortCell.append(badge);
+    //                         myItemContainer.append(effortCell);
+    //                         */
+
+    //                         var tagsCell = $('<div>')
+    //                             .addClass('log-tags')
+    //                             // .text(devOpsItem.fields['System.TeamProject'])
+    //                             .text(devOpsItem.fields['System.State'])
+    //                         myItemContainer.append(tagsCell);
+
+    //                         //actions
+    //                         var actionsCell = $('<div>')
+    //                             .addClass('log-actions');
+    //                         actionsCell.append(getDevOpsItemsActions(devOpsItem));
+    //                         myItemContainer.append(actionsCell);
+
+
+
+    //                         // myItemContainer.append(log);
+
+    //                     });
+    //                 })
+    //                 .catch((error) => {
+    //                     console.error('Error:', error);
+    //                 });
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error:', error);
+    //         });
+    // };
+
     function getMyDevOpsItems() {
         _this.devOpsApi.getMyItemsIdsAsync()
             .then(queryResult => {
                 // console.log(queryResult);
 
-                let myItemsContainer = $('#myDevOpsItems');
-                myItemsContainer.empty();
+                let myItemsAccordion = $('#myDevOpsItems #accordion');
+                myItemsAccordion.empty();
 
                 let ids = queryResult.workItems.map(x => x.id).join();
                 _this.devOpsApi.getItemsAsync(ids)
@@ -1383,20 +1521,31 @@ function popup() {
 
                         let lastTeamProject = '';
                         $('#devops-items-count').text(items.count);
+
+                        let projectCard;
+                        let cardBody;
                         $.each(items.value, function (index, devOpsItem) {
                             if (lastTeamProject.localeCompare(devOpsItem.fields['System.TeamProject']) != 0) {
-                                var projectContainer = $('<h5>')
-                                    // .attr("data-logId", devOpsItem.id)
-                                    .addClass('m-2 mt-3')
-                                    .text(devOpsItem.fields['System.TeamProject']);
-                                myItemsContainer.append(projectContainer);
+                                projectCard = $('<div class="card">');
+                                const cardHeader = $(`<div class="card-header" id="heading${index}">`);
+                                cardHeader
+                                    .append($('<h5 class="mb-0">')
+                                        .append($(`<button class="btn btn-link" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">`).text(devOpsItem.fields['System.TeamProject'])));
+                                projectCard.append(cardHeader);
+
+
+                                projectCard.append($(`<div id="collapse${index}" class="collapse show" aria-labelledby="heading${index}" data-parent="#accordion">`));
+                                cardBody = $('<div class="card-body">');
+                                projectCard.append(cardBody);
+
+                                myItemsAccordion.append(projectCard);
                                 lastTeamProject = devOpsItem.fields['System.TeamProject'];
                             } 
 
                             var myItemContainer = $('<div>')
                                 .attr("data-logId", devOpsItem.id)
                                 .addClass('logContainer logContainerGrid')
-                            myItemsContainer.append(myItemContainer);
+                            cardBody.append(myItemContainer);
 
                             // var log = $('<div>')
                             //     .attr("data-logId", item.id)
@@ -1494,7 +1643,7 @@ function popup() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-    };
+    };    
 
     function getRecentAxoItems() {
         _this.recentItemsView.show();
