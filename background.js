@@ -339,7 +339,7 @@ function setBadge(value, reference) {
             if (chrome.browserAction.setBadgeTextColor) {
                 chrome.browserAction.setBadgeTextColor({ color: '#111' });
             }
-            chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
+            chrome.browserAction.setBadgeBackgroundColor({ color: '#FFDBDE)' });
             //chrome.browserAction.setBadgeText({ text: `$` }); 
 
             //inform user that sync must be done every hour or so
@@ -351,7 +351,7 @@ function setBadge(value, reference) {
             if (chrome.browserAction.setBadgeTextColor) {
                 chrome.browserAction.setBadgeTextColor({ color: '#111' });
             }
-            chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
+            chrome.browserAction.setBadgeBackgroundColor({ color: '#43E231' });
         }
     }
     else {

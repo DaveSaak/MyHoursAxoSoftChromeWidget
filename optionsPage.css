@@ -8,8 +8,16 @@
     width: 800px;
 } 
 
-.settings-sub-section {
+.settings-sub-section:not(:first-child) {
     margin-top: 2rem;
+    padding-top: 1rem;;
+    border-top: solid 1px lightgrey;
+}
+
+.settings-sub-section-header {
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding-bottom: 0.5rem;
 }
 
 .settings-header {
@@ -27,12 +35,9 @@
 
 .devops-repos-container {
     margin-left: 1rem;
-    /* max-height: 200px;
-    overflow-y: auto; */
-
-
     
-
+    max-height: 10rem;
+    overflow: auto;
 } 
 
 .show-on-hover{

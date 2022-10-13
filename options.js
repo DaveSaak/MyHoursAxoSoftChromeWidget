@@ -26,6 +26,8 @@ function Options() {
     _this.myHoursCommonProjectId = '';
     // _this.myHoursRootClientId = '';
     _this.myHoursCommonDescriptions = '';
+    _this.myHoursDistractionTaskId = '';
+    _this.myHoursDistractionComment = '';
 
     _this.notificationsBadRatio = true;
 
@@ -104,6 +106,8 @@ function Options() {
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
                             _this.myHoursCommonProjectId = items.options.myHoursCommonProjectId;
                             _this.myHoursCommonDescriptions = items.options.myHoursCommonDescriptions;
+                            _this.myHoursDistractionTaskId = items.options.myHoursDistractionTaskId;
+                            _this.myHoursDistractionComment = items.options.myHoursDistractionComment;
 
                             _this.notificationsBadRatio = items.options.notificationsBadRatio;
                             _this.recentItemsBubbleChartHiddenItemsIds = items.options.recentItemsBubbleChartHiddenItemsIds;

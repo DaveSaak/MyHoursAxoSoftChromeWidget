@@ -41,7 +41,14 @@ function DevOpsApi(options) {
     }
 
     _this.getItemAsync = async function (id) {
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + id;
+        const url = `${_this.options.devOpsInstanceUrl}/_apis/wit/workitems/${id}?$expand=relations`
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders,
+        });
+        return response.json();
+    }
+
+    _this.getItemByUrlAsync = async function (url) {
         const response = await fetch(url, {
             headers: _this.ajaxHeaders,
         });

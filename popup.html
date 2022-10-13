@@ -244,7 +244,30 @@
             >Assigned</a>
         </li>
 
-        <li class="nav-item d-flex align-items-center ml-auto">
+        <li class="nav-item d-flex align-items-center ml-auto mr-2">   
+            <a
+                id='trackDistraction'
+                class="nav-link"
+                title="Track distraction"
+            >
+            <i class="fa-solid fa-bomb fa-fw"></i>
+        </a>
+            
+
+
+            <!-- <button
+            id='trackDistraction'
+            class="ml-auto btn btn-secondary"
+            type="button"
+            title="Track distraction"
+        >
+            <i class="fa-solid fa-bomb"></i>
+            Distraction
+        </button>  -->
+        </li>
+
+
+        <li class="nav-item d-flex align-items-center ">
             <a
                 id='optionsButton'
                 class="nav-link"
@@ -397,10 +420,41 @@
                         id='copyDevOpsButton'
                         class="mr-2 btn btn-secondary"
                         type="button"
+                        hint="Update DevOps Effort for all items"
                     >
                         <i class="fa-solid fa-upload"></i>
-                        Update DevOps Effort for all items
+                        Update Effort for all items
                     </button>
+
+                    <button
+                        id='openAllHoursTimeline'
+                        class="ml-1 btn btn-light"
+                        type="button"
+                        title="Open All Hours Timeline"
+                    >
+                        <!-- <i class="fa-solid fa-arrow-up-right-from-square"></i> -->
+                        Open All Hours
+                    </button>    
+                    
+                    <button
+                        id='openMyHoursTracking'
+                        class="ml-1 btn btn-light"
+                        type="button"
+                        title="Open My Hours Tracking"
+                    >
+                        <!-- <i class="fa-solid fa-arrow-up-right-from-square"></i> -->
+                        Open My Hours
+                    </button>                      
+
+                    <!-- <button
+                        id='trackDistraction'
+                        class="ml-auto btn btn-secondary"
+                        type="button"
+                        title="Track distraction"
+                    >
+                        <i class="fa-solid fa-bomb"></i>
+                        Distraction
+                    </button>  -->
 
                     <button
                         id='deleteWorklogsFromAxoSoftButton'
@@ -790,7 +844,7 @@
 
                 <div
                     id="myDevOpsItems"
-                    class="customScroller mt-3"
+                    class="customScroller mt-3 mx-2"
                     style="overflow: auto; max-height: 400px;"
                 >
                     <div id="accordion">

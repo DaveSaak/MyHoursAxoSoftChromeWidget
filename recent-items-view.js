@@ -16,7 +16,8 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
         
         //get last logs for last 10 days.
         const today = new Date();
-        const tenDaysAgo = new Date(today.getDate() -10);
+        // const tenDaysAgo = new Date(today.getDate()) -10;
+        const tenDaysAgo = moment(today).add(-10, 'day');
 
 
         if(options.useDevOps){

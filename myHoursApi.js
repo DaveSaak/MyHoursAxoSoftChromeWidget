@@ -275,10 +275,13 @@ function MyHoursApi(currentUser) {
                     newLogData.tagIds = [];
                 }
                 
-                if (projectId && taskId) {
-                    newLogData.projectId = projectId;
+                if (taskId) {
                     newLogData.taskId = taskId;
                 }
+
+                if (projectId) {
+                    newLogData.projectId = projectId;
+                }                
 
                 if (tagId){
                     newLogData.tagIds = [];
@@ -692,7 +695,10 @@ function MyHoursApi(currentUser) {
         const responses = await Promise.all(projectTaskListPromises);
         responses.forEach((response, index) => {
             projectsTaskLists.push(
-                {...(response[0]), projectId: projects[index].id}
+                {
+                    ...(response[0]), 
+                    projectId: projects[index].id,
+                    projectName: projects[index].name}
             );
         });
 

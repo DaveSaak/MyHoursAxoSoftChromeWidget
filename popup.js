@@ -138,6 +138,14 @@ function popup() {
             updateDevOps();
         });
 
+        $('#openAllHoursTimeline').click(function () {
+            openAllHoursTimeline();
+        });   
+        
+        $('#openMyHoursTracking').click(function () {
+            openMyHoursTracking();
+        }); 
+
         $('#deleteWorklogsFromAxoSoftButton').click(function () {
             deleteLogs();
         });
@@ -226,6 +234,13 @@ function popup() {
         $('#refreshRatio').click(function () {
             _this.ratioView.show();
         });
+
+        $('#trackDistraction').click(function () {
+            trackDistraction();
+        });
+
+        
+
 
 
         $('.showLogsSwitch').click(function () {
@@ -367,6 +382,7 @@ function popup() {
 
         // just get the promises, we'll run them all at once at the end so we can await them.
         let promises = [];
+        let parentItemPromises = [];
         await _this.myHoursApi.getLogs(_this.currentDate).then(logs => {
             _this.myHoursLogs = logs;
 
@@ -380,10 +396,33 @@ function popup() {
                     if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
                         log.devOpsItemId = regExResults[0];
 
-
+                        // ITEM
                         promises.push(new Promise(function (resolve, reject) {
                             _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
                                 log.devOpsItem = devOpsItem;
+                                log.devOpsItem.parents = [];
+
+                                // ITEM PARENT
+                                if (devOpsItem.relations) {
+                                    //filter out parent
+                                    const parents = devOpsItem.relations.filter(x => x.rel == "System.LinkTypes.Hierarchy-Reverse");
+                                    if (parents.length > 0) {
+                                        parents.forEach(x => {
+                                            parentItemPromises.push(
+                                                new Promise(function (resolve, reject) {
+                                                    _this.devOpsApi.getItemByUrlAsync(x.url).then(parentItem => {
+                                                        devOpsItem.parents.push(parentItem);
+                                                        resolve();
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error('Error fetching DEVOPS parent item:', error);
+                                                        reject();
+                                                    });                                                    
+                                                })
+                                            );
+                                        });
+                                    }
+                                }
                                 resolve();
                             })
                                 .catch((error) => {
@@ -392,6 +431,7 @@ function popup() {
                                 });
                         }));
 
+                        // ITEM UPDATES
                         promises.push(new Promise(function (resolve, reject) {
                             _this.devOpsApi.getItemUpdatesAsync(log.devOpsItemId).then(devOpsItemUpdates => {
                                 log.devOpsItemUpdates = devOpsItemUpdates;
@@ -402,6 +442,8 @@ function popup() {
                                     reject();
                                 });
                         }));
+
+
 
                     }
                 }
@@ -425,6 +467,7 @@ function popup() {
             });
 
         await Promise.all(promises);
+        await Promise.all(parentItemPromises);
         // console.log(_this.myHoursLogs);
 
 
@@ -440,12 +483,25 @@ function popup() {
 
         var totalMins = 0;
         _this.myHoursLogs.forEach(log => {
+
+            if (log.projectId == _this.options.myHoursCommonProjectId) {
+                log.color = '#bbc9f3';
+                if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
+                    log.icon = "fas fa-bomb";
+                } else {
+                    log.icon = "fas fa-crown";
+                }
+            } else if (!log.devOpsItemId) {
+                log.icon = "fas fa-skull";
+            }
+
+
             totalMins = totalMins + (log.duration / 60);
 
             var logContainer = $('<div>')
                 .attr("data-logId", log.id)
                 .attr("data-taskId", log.taskId)
-                .addClass("logContainer  align-items-center logContainerGrid");
+                .addClass("logContainer  align-items-center");
 
             logContainer.mouseenter(function () {
                 $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", true);
@@ -458,27 +514,46 @@ function popup() {
                 hiLiteMyHoursLog();
             });
 
+
+            const logContainerGrid = $('<div>').addClass('logContainerGrid');
+            logContainer.append(logContainerGrid);
             // COLOR COLUMN
             var colorBarCell = $('<div>').addClass('rounded log-color-bar');
-            logContainer.append(colorBarCell);
+            logContainerGrid.append(colorBarCell);
 
             //TAGS 
             var tagsCell = $('<div>').addClass('log-tags');
-            logContainer.append(tagsCell);
-            var worklogTypeInfo = $('<div>')
-                // .addClass('text-muted text-lowercase')
-                // .css('font-size', '0.7rem')
-                .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
-            tagsCell.append(worklogTypeInfo);
+            logContainerGrid.append(tagsCell);
+            
+            // var tagsCell = $('<div>').addClass('log-tags');
+            // logContainerGrid.append(tagsCell);
+            // var worklogTypeInfo = $('<div>').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
+            // tagsCell.append(worklogTypeInfo);            
+
+            
+            // EFFORT
+            // var effortCell = $('<div class="tags">').addClass('log-effort');
+            // logContainerGrid.append(effortCell);
+            // var worklogTypeInfo = $('<div>')
+            //     .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
+            // effortCell.append(worklogTypeInfo);            
 
 
             // TITLE
-            var logTitle = $('<div>').addClass('text-truncate log-title');
+            var logTitle = $('<div>').addClass('log-title text-truncate');
             // logTitle.append('<i class="fas fa-skull" aria-hidden="true"></i>');
             // logTitle.append('<span>').text(`${log.taskName ?? '-not set: task-'}`);
 
-            logTitle.append($('<div>').text(`${log.taskName ?? '-not set: task-'}`));
-            logContainer.append(logTitle);
+            
+            if (log.icon) {
+                logTitle.append(`<i class="${log.icon} mr-2 fa-xs aria-hidden="true"></i>`);  
+            }
+            logTitle.append($('<span>').text(`${log.taskName ?? '-not set: task-'}`));
+
+            logContainerGrid.append(logTitle);
+
+            var worklogTypeInfo = $('<div class="tags">').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
+            logTitle.append(worklogTypeInfo);  
 
 
             // COMMENT
@@ -487,11 +562,11 @@ function popup() {
                 // logComment.append($('<div>').text('Log comment'));
                 logComment.append($('<div>').text(log.note));
             }
-            logContainer.append(logComment);
+            logContainerGrid.append(logComment);
 
             // TIME 
             var columnTime = $('<div>').addClass('log-time');
-            logContainer.append(columnTime);
+            logContainerGrid.append(columnTime);
 
             if (log.duration != null) {
                 var durationInfo = $('<i class="fas fa-circle-notch fa-spin"></i>');
@@ -503,9 +578,10 @@ function popup() {
                 columnTime.append(durationInfo);
             };
 
-            // EFFORT
-            var effortCell = $('<div>').addClass('log-effort');
-            logContainer.append(effortCell);
+    
+            // // EFFORT
+            // var effortCell = $('<div>').addClass('log-effort');
+            // logContainerGrid.append(effortCell);
 
             // ACTIONS COLUMN
             var columnActions = $('<div>').addClass('log-actions');
@@ -560,7 +636,7 @@ function popup() {
                     event.preventDefault();
                     let logDurationInHours = log.duration / 60 / 60;
                     updateDevOpsWorkItemEffort(log.devOpsItemId, logDurationInHours);
-                 });
+                });
 
             let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
             buttons.append(openDevOpsItemButton);
@@ -587,25 +663,48 @@ function popup() {
                 remainingInfo.append($('<div>').text(`h`));
                 remainingInfo.append($('<div>').addClass('ml-1').text(`remaining`));
 
+                // if (log.devOpsItemUpdates?.count > 0) {
+                //     const effortUpdates = log.devOpsItemUpdates.value
+                //         .filter(x => x.fields && x.fields['Microsoft.VSTS.Scheduling.RemainingWork'])
+                //         .sort((a, b) => b.rev - a.rev);
+
+                //     if (effortUpdates.length > 0) {
+                //         const lastEffortUpdate = effortUpdates[0];
+                //         if (lastEffortUpdate.revisedBy._links?.avatar?.href) {
+                //             remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-1">'));
+                //         }
+                //         remainingInfo.append($('<div class="ml-1">').text(`${lastEffortUpdate.revisedBy.displayName}`));
+                //         remainingInfo.append($('<div class="ml-1">').text(` ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).fromNow()}`));
+                //     }
+                // }
+                remainingInfo.append($('<div>').addClass("mx-2").text('|'));
+                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h completed`));
+
+                remainingInfo.append($('<div>').addClass("mx-2").text('|'));
+                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h estimated`));
+
+
                 if (log.devOpsItemUpdates?.count > 0) {
                     const effortUpdates = log.devOpsItemUpdates.value
                         .filter(x => x.fields && x.fields['Microsoft.VSTS.Scheduling.RemainingWork'])
-                        .sort((a,b) => b.rev - a.rev);
+                        .sort((a, b) => b.rev - a.rev);
 
                     if (effortUpdates.length > 0) {
                         const lastEffortUpdate = effortUpdates[0];
-                        if (lastEffortUpdate.revisedBy._links?.avatar?.href){
-                            remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-1">'));
+                        if (lastEffortUpdate.revisedBy._links?.avatar?.href) {
+                            remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-auto">'));
                         }
                         remainingInfo.append($('<div class="ml-1">').text(`${lastEffortUpdate.revisedBy.displayName}`));
-                        remainingInfo.append($('<div class="ml-1">').text(` ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).fromNow()}`)); 
+                        remainingInfo.append($('<div class="ml-1">').text(` ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).fromNow()}`));
                     }
-                }    
-                remainingInfo.append($('<div>').addClass("mx-2").text('|'));       
-                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0)*60)}h completed`));     
+                }                
 
-                remainingInfo.append($('<div>').addClass("mx-2").text('|'));       
-                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)*60)}h estimated`));     
+                if (log.devOpsItem.parents?.length > 0) {
+                    const parentName = log.devOpsItem.parents[0].fields['System.Title'];
+                    tagsCell.append($('<div class="log-sub-title">').text(parentName));
+                }
+                
+    
 
 
             } else {
@@ -614,9 +713,27 @@ function popup() {
                 openDevOpsItemButton.hide();
                 copyWorklogButton.hide();
 
+                // if (log.projectId == _this.options.myHoursCommonProjectId) {
+                //     log.color = '#bbc9f3';
+                // }
+
+                /*
                 if (log.projectId == _this.options.myHoursCommonProjectId) {
                     log.color = '#bbc9f3';
+                    if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
+                        log.icon = "fas fa-bomb";
+                        // barGraph.append('<i class="fas fa-bomb ml-2" aria-hidden="true"></i>');
+                    } else {
+                        log.icon = "fas fa-crown";
+                        // barGraph.append('<i class="fas fa-crown ml-2" aria-hidden="true"></i>');
+                    }
+                } else {
+                // if (!log.devOpsItemId) {
+                    log.icon = "fas fa-skull";
+                    // barGraph.append('<i class="fas fa-skull ml-2" aria-hidden="true"></i>');
                 }
+                */
+
             }
 
             if (!log.taskId) {
@@ -641,10 +758,19 @@ function popup() {
                 barGraph.attr("data-logId", log.id);
                 barGraph.prop('title', title);
 
+                /*
                 if (log.projectId == _this.options.myHoursCommonProjectId) {
-                    barGraph.append('<i class="fas fa-crown ml-2" aria-hidden="true"></i>');
+                    if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
+                        barGraph.append('<i class="fas fa-bomb ml-2" aria-hidden="true"></i>');
+                    } else {
+                        barGraph.append('<i class="fas fa-crown ml-2" aria-hidden="true"></i>');
+                    }
                 } else if (!log.devOpsItemId) {
                     barGraph.append('<i class="fas fa-skull ml-2" aria-hidden="true"></i>');
+                }
+                */
+                if (log.icon) {
+                    barGraph.append(`<i class="${log.icon} ml-2" aria-hidden="true"></i>`);  
                 }
 
 
@@ -684,7 +810,7 @@ function popup() {
         $('#copyDevOpsButton').toggle(totalMins > 0);
     }
 
-    function updateDevOpsWorkItemEffort(devOpsItemId, logDurationInHours){
+    function updateDevOpsWorkItemEffort(devOpsItemId, logDurationInHours) {
         _this.devOpsApi.getItemAsync(devOpsItemId).then(devOpsItem => {
             _this.devOpsApi.updateRemainingAndCompletedWorkAsync(devOpsItem, logDurationInHours)
                 .then(updatedItem => {
@@ -695,10 +821,10 @@ function popup() {
                     console.log(x);
                     toastr.error(`DevOps item not updated. Error: ${x.message}`);
                 });
-        });        
+        });
     }
 
-    function showEmptyState(){
+    function showEmptyState() {
         const logsContainer = $('#logs');
         const emptyStateContainer = $('<div>').addClass('d-flex flex-column');
         logsContainer.append(emptyStateContainer);
@@ -726,7 +852,7 @@ function popup() {
 
                 }
             }
-        }        
+        }
     }
 
 
@@ -1044,6 +1170,22 @@ function popup() {
         );
     }
 
+
+    function trackDistraction(){
+        _this.myHoursApi.startLog(
+            _this.options.myHoursDistractionComment ?? 'Distraction!', 
+            _this.options.myHoursCommonProjectId, 
+            _this.options.myHoursDistractionTaskId,
+            undefined
+            ).then(x => {
+                toastr.success('Tracking distraction.');
+                getLogsForToday();
+            }).catch(e => {
+                toastr.error(`Tracking distraction failed: ${e.message}`);
+                getLogsForToday();
+            })
+    }
+
     function getActionsDropDown(data) {
         let buttonGroup = $('<div>').addClass('btn-group ml-auto');
         buttonGroup.append($('<button type="button" class="btn btn-transparent dropdown-toggleX" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">')
@@ -1269,6 +1411,20 @@ function popup() {
                                         }
                                     });
 
+                                    let missingEvents = data.DailyCalculations[0].MissingEventExceptions;
+                                    missingEvents.forEach(event => {
+                                        var left = timeToPixel(event.Value, _this.timeLineWidth) - 5;
+
+                                        var barGraph = $('<div>');
+                                        barGraph.addClass('allHoursSegment timelineItem');
+                                        barGraph.prop('title', `${moment(event.Value).format('LT')} - ${event.Name}`);
+                                        barGraph.css({
+                                            left: left + 'px',
+                                        });
+                                        barGraph.addClass('timeline-segment missing')
+                                        timeline.append(barGraph);
+                                    })
+
                                 }
                             },
                             function (error) {
@@ -1359,7 +1515,7 @@ function popup() {
         return actionsContainer;
     }
 
-    
+
     // function getMyDevOpsItems() {
     //     _this.devOpsApi.getMyItemsIdsAsync()
     //         .then(queryResult => {
@@ -1444,11 +1600,11 @@ function popup() {
     //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0)*60)}h completed`));     
     //                         effortInfo.append($('<div>').addClass("mx-2").text('|'));       
     //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)*60)}h estimated`));     
-            
+
     //                         // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
     //                         // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
     //                         // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
-                            
+
 
     //                         /*
     //                         let state = devOpsItem.fields['System.State'];
@@ -1464,7 +1620,7 @@ function popup() {
     //                         } else {
     //                             badge.addClass('badge-light')
     //                         }
-                            
+
 
     //                         effortCell.append(badge);
     //                         myItemContainer.append(effortCell);
@@ -1508,7 +1664,7 @@ function popup() {
                 let ids = queryResult.workItems.map(x => x.id).join();
                 _this.devOpsApi.getItemsAsync(ids)
                     .then(items => {
-                        items.value.sort((a,b) => {
+                        items.value.sort((a, b) => {
                             const level1 = a.fields['System.TeamProject']?.localeCompare(b.fields['System.TeamProject']);
                             if (level1 != 0) {
                                 return level1;
@@ -1526,7 +1682,7 @@ function popup() {
                         let cardBody;
                         $.each(items.value, function (index, devOpsItem) {
                             if (lastTeamProject.localeCompare(devOpsItem.fields['System.TeamProject']) != 0) {
-                                projectCard = $('<div class="card">');
+                                projectCard = $('<div class="card border-0">');
                                 const cardHeader = $(`<div class="card-header" id="heading${index}">`);
                                 cardHeader
                                     .append($('<h5 class="mb-0">')
@@ -1540,7 +1696,7 @@ function popup() {
 
                                 myItemsAccordion.append(projectCard);
                                 lastTeamProject = devOpsItem.fields['System.TeamProject'];
-                            } 
+                            }
 
                             var myItemContainer = $('<div>')
                                 .attr("data-logId", devOpsItem.id)
@@ -1583,20 +1739,20 @@ function popup() {
 
                             var commentCell = $('<div>')
                                 .addClass('log-comment');
-                            myItemContainer.append(commentCell);                                
+                            myItemContainer.append(commentCell);
 
                             let effortInfo = $('<div class="effort-info d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem; font-style:normal">');
                             commentCell.append(effortInfo);
-                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0)*60)}h remaining`));     
-                            effortInfo.append($('<div>').addClass("mx-2").text('|'));       
-                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0)*60)}h completed`));     
-                            effortInfo.append($('<div>').addClass("mx-2").text('|'));       
-                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)*60)}h estimated`));     
-            
+                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0) * 60)}h remaining`));
+                            effortInfo.append($('<div>').addClass("mx-2").text('|'));
+                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h completed`));
+                            effortInfo.append($('<div>').addClass("mx-2").text('|'));
+                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h estimated`));
+
                             // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
                             // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
                             // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
-                            
+
 
                             /*
                             let state = devOpsItem.fields['System.State'];
@@ -1643,7 +1799,7 @@ function popup() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-    };    
+    };
 
     function getRecentAxoItems() {
         _this.recentItemsView.show();
@@ -1793,8 +1949,20 @@ function popup() {
         let groups = Object.entries(groupsObject).map(x => x[1]);
         groups.forEach(x => {
             // console.log(x);
-            updateDevOpsWorkItemEffort(x.id, x.duration / 60 / 60);            
+            updateDevOpsWorkItemEffort(x.id, x.duration / 60 / 60);
         })
+    }
+
+    function openAllHoursTimeline(){
+        _this.allHoursApi.getCurrentUserId().then(userId => {
+            const allHoursUrl = encodeURI(`https://pro.allhours.com/employee-day?Employee=${userId}&Date=${_this.currentDate.format('YYYY-MM-DD')}`);
+            window.open(allHoursUrl, '_allHours');        
+        });
+    }
+
+    function openMyHoursTracking(){
+        const myHoursUrl = encodeURI(`https://app.myhours.com/#/track`);
+        window.open(myHoursUrl, '_myHours');        
     }
 
     function getAxoItem(myHoursLog) {

@@ -47,20 +47,22 @@
                 <h3 class="settings-header text-primary">General</h3>
 
                 <div class="settings-data">
-                    <label>Platforms</label>
-                    
-                    <p>
-                        Item numbers will be matched with entities on the selected project management platform.
-                    </p>
 
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="useDevOps">
-                        <label class="custom-control-label" for="useDevOps">Use DevOps as project management platform</label>
+                    <div class="settings-sub-section">
+                        <div class="settings-sub-section-header">Platforms</div>
+                        <p>
+                            Item numbers will be matched with entities on the selected project management platform.
+                        </p>
+
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="useDevOps">
+                            <label class="custom-control-label" for="useDevOps">Use DevOps as project management platform</label>
+                        </div>
                     </div>
                     
 
                     <div class="settings-sub-section">
-                        <label>Notifications</label>
+                        <div class="settings-sub-section-header">Notifications</div>
 
                         <p>
                             We'll check yesterday's ratio and notify you if the ratio is not between 90-100%. The checking will be active till noon.
@@ -77,7 +79,7 @@
                     </div>
 
                     <div class="settings-sub-section">
-                        <label>Recent items view</label>
+                        <div class="settings-sub-section-header">Recent items view</div>
                         <div class="form-group">
                             <!-- <label>Recent items chart</label> -->
                             <p>Enter item ids that will not be shown on the bubble chart. Use ";" as separator.</p>
@@ -249,24 +251,43 @@
                         <input class="form-control" type="text" id='mhCommonDescriptions'/>
                     </div>                     
 
-                    <div class="d-flex">
-                        <button id="saveMhButton" class="btn btn-primary mb-4">Save</button>
+                    <div class="settings-sub-section">
+                        <div class="settings-sub-section-header">Distractions</div>
+                        <div class="form-group">
+                            <!-- <label class="label">Task</label> -->
+                            <p>To track the time spent while being distracted select the task that will be started from the list</p>
+                            <div class="d-flex">
+                                <select class="form-control" style="width: 50%" id='myHoursDistractionTaskId'></select>
+                                <button id="reloadMyHoursDistractionsTasksButton" class="btn btn-secondary ml-2">reload</button>
+                            </div>
+                        </div>  
+
+                        <div class="form-group">
+                            <label>Distraction default description</label>
+                            <input class="form-control" type="text" id='myHoursDistractionComment'/>
+                        </div>                         
+
+                        <div class="d-flex">
+                            <button id="saveMhButton" class="btn btn-primary mb-4">Save</button>
+                        </div>
                     </div>
 
+                    <div class="settings-sub-section">
+                        <div class="settings-sub-section-header">Login</div>
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input class="form-control" id='mhUserName' />
+                        </div>
 
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input class="form-control" id='mhUserName' />
-                    </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input class="form-control" type="password" id='mhPassword' />
+                        </div>
 
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input class="form-control" type="password" id='mhPassword' />
-                    </div>
-
-                    <div class="d-flex align-items-center mb-3">
-                        <button id='loginToMyHours' class="btn btn-primary">Login</button>
-                        <div class='ml-2' id='loginToMyHoursInfo'></div>
+                        <div class="d-flex align-items-center mb-3">
+                            <button id='loginToMyHours' class="btn btn-primary">Login</button>
+                            <div class='ml-2' id='loginToMyHoursInfo'></div>
+                        </div>
                     </div>
                 </div>
             </div>
