@@ -17,7 +17,17 @@ chrome.runtime.onMessage.addListener(function (request) {
         }, 200);
     }
 
+
+    if (request && request.type === 'work-item-fetched') {
+        setTimeout(() => {
+            addStartMyHoursTimer();
+        }, 200);
+    }    
+
 });
+
+
+
 
 /*
 setTimeout(() => {
@@ -129,7 +139,43 @@ function addGitButtonToPopup(){
     })
 }
 
+function addStartMyHoursTimer() {
+    const workItemFormDivs = $('.work-item-form');
 
+    Array.from(workItemFormDivs).forEach((element, index) => {
+        const workItemFormDiv = $(element);
+        const workItemIdSpan = workItemFormDiv.find('[aria-label="ID Field"]');
+        if (workItemIdSpan.length > 0) {
+            // only for tasks
+            const workItemTypeIcon = workItemFormDiv.find('.workitem-header-bar')
+            const workItemTypeTask = workItemTypeIcon.find('[aria-label="Task"]');
+
+            if (workItemTypeTask.length > 0) {
+                const workItemId = workItemIdSpan.text();
+                const toolbarUl = workItemFormDiv.find('.work-item-form-toolbar-container .workitem-tool-bar .menu-bar');
+                if (toolbarUl.length > 0) {
+                    // check if we already have button
+                    const startMhTrackButton = toolbarUl.find('.chrome-extension-start-mh-track');
+                    if (startMhTrackButton.length == 0) {
+
+                        const button = $('<li>');
+                        button.addClass('menu-item follow-item-menu-item-gray chrome-extension-start-mh-track');
+                        button.css({"margin-right": "4px", "min-width": "120px", "background-color": "#2db67e26"});
+
+                        button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
+                        button.append($('<span>').addClass('text').text('Start MH log'));
+                        toolbarUl.prepend(button);
+
+                        button.click(_ => {
+                            chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
+                        })
+                    }
+                }
+            }
+        }
+      });
+   
+}
 
 
 

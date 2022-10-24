@@ -69,6 +69,6 @@
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
         "https://kit.fontawesome.com/*",
-        "https://dev.azure.com/*"        
+        "https://dev.azure.com/*"
     ]
 }

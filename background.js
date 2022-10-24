@@ -72,6 +72,15 @@ chrome.webRequest.onCompleted.addListener(function (details) {
             chrome.tabs.sendMessage(details.tabId, { type: 'git-repos-fetched' });
             console.log('background script message sent: git-repos-fetched');
         }
+
+
+        if (details.method === "POST" 
+        && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch") 
+        ) 
+        {
+            chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
+            console.log('background script message sent: work-item-fetched');
+        }        
     }
 },
     {
@@ -100,6 +109,9 @@ chrome.runtime.onMessage.addListener(function (message) {
         refreshBadge();
     }
 
+    if (message && message.type == 'start-myhours-log') {
+        startTrackingTimeDevOps({ selectionText: message.itemId}, undefined); 
+    }    
 });
 
 

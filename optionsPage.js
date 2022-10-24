@@ -15,6 +15,13 @@ $(function () {
         toggleAxoSection();
     })
 
+      kofiWidgetOverlay.draw('davidsakelsek', {
+        'type': 'floating-chat',
+        'floating-chat.donateButton.text': 'Support me',
+        'floating-chat.donateButton.background-color': '#3c5081',
+        'floating-chat.donateButton.text-color': '#fff'
+      });
+
     _this.options
         .load()
         .then(function () {
