@@ -140,7 +140,7 @@ function addGitButtonToPopup(){
 }
 
 function addStartMyHoursTimer() {
-    const workItemFormDivs = $('.work-item-form');
+    const workItemFormDivs = $("div:not(.dialog) > .work-item-form");
 
     Array.from(workItemFormDivs).forEach((element, index) => {
         const workItemFormDiv = $(element);
@@ -159,16 +159,33 @@ function addStartMyHoursTimer() {
                     if (startMhTrackButton.length == 0) {
 
                         const button = $('<li>');
-                        button.addClass('menu-item follow-item-menu-item-gray chrome-extension-start-mh-track');
+                        button.addClass('menu-item chrome-extension-start-mh-track');
                         button.css({"margin-right": "4px", "min-width": "120px", "background-color": "#2db67e26"});
-
                         button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
-                        button.append($('<span>').addClass('text').text('Start MH log'));
+                        const buttonTextSpan = $('<span>').addClass('text');
+                        buttonTextSpan.text('Start MH log');
+                        button.append($(buttonTextSpan));
                         toolbarUl.prepend(button);
 
                         button.click(_ => {
+                            buttonTextSpan.text('starting...');
                             chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
+                            setTimeout( 
+                                _ => { buttonTextSpan.text('Start MH log'); }, 
+                                2000, 
+                                this
+                            );
                         })
+
+                        button.mouseenter(x => {
+                            button.css({"background-color": "#2db67e60"});
+                        });
+
+                        button.mouseleave(x => {
+                            button.css({"background-color": "#2db67e26"});
+                        });    
+                        
+
                     }
                 }
             }

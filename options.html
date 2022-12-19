@@ -1,300 +1,433 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>Time&Space Chrome Extension</title>
 
-<head>
-    <title>Time&Space Chrome Extension</title>
+        <script src="jquery-3.3.1.min.js"></script>
+        <script src="underscore-min.js"></script>
 
-    <script src="jquery-3.3.1.min.js"></script>
-    <script src="underscore-min.js"></script>
+        <script src="optionsPage.js"></script>
+        <script src="options.js"></script>
+        <script src="moment.js"></script>
+        <script src="worklog.js"></script>
+        <script src="axoSoftApi.js"></script>
+        <script src="allHoursApi.js"></script>
+        <script src="myHoursApi.js"></script>
+        <script src="devopsApi.js"></script>
+        <script src="currentUser.js"></script>
 
+        <script src="toastr.min.js"></script>
+        <link
+            href="toastr.min.css"
+            rel="stylesheet" />
 
-    <script src="optionsPage.js"></script>
-    <script src="options.js"></script>
-    <script src="moment.js"></script>
-    <script src="worklog.js"></script>
-    <script src="axoSoftApi.js"></script>
-    <script src="allHoursApi.js"></script>
-    <script src="myHoursApi.js"></script>
-    <script src="devopsApi.js"></script>
-    <script src="currentUser.js"></script>
+        <script src="ko-fi-overlay-widget.js"></script>
 
-    <script src="toastr.min.js"></script>
-    <link href="toastr.min.css" rel="stylesheet">
+        <!-- <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" /> -->
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/sds.css"
+            media="screen" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="optionsPage.css"
+            media="screen" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/nuito.css"
+            media="screen" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/inter.css"
+            media="screen" />
 
-    <script src="ko-fi-overlay-widget.js"></script>
-
-    <!-- <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" /> -->
-    <link rel="stylesheet" type="text/css" href="css/sds.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="optionsPage.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/nuito.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/inter.css" media="screen" />
-
-    
-    <!-- <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
+        <!-- <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="bootstrap-reboot.min.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="bootstrap-grid.min.css" media="screen" /> -->
+    </head>
 
-</head>
+    <body
+        style="font-family: 'Inter script=latin rev=2', 'Nunito Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
+        <div class="mt-3">
+            <div
+                class="pt-3 pb-2"
+                id="settings-title">
+                <h1 class="title text-center">Time&Space Chrome Extension</h1>
+            </div>
 
-<body style="font-family: 'Inter script=latin rev=2', 'Nunito Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-    <div class="mt-3">
+            <div class="d-flex flex-column justify-content-center">
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">General</h3>
 
-        <div class="pt-3 pb-2" id="settings-title">
-            <h1 class="title text-center">Time&Space Chrome Extension</h1>
-        </div>
+                    <div class="settings-data">
+                        <div class="settings-sub-section">
+                            <div class="settings-sub-section-header">Platforms</div>
+                            <p>
+                                Item numbers will be matched with entities on the selected project management platform.
+                            </p>
 
-        <div class="d-flex flex-column justify-content-center">
-
-            <div class="settings-section">
-                <h3 class="settings-header text-primary">General</h3>
-
-                <div class="settings-data">
-
-                    <div class="settings-sub-section">
-                        <div class="settings-sub-section-header">Platforms</div>
-                        <p>
-                            Item numbers will be matched with entities on the selected project management platform.
-                        </p>
-
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="useDevOps">
-                            <label class="custom-control-label" for="useDevOps">Use DevOps as project management platform</label>
-                        </div>
-                    </div>
-                    
-
-                    <div class="settings-sub-section">
-                        <div class="settings-sub-section-header">Notifications</div>
-
-                        <p>
-                            We'll check yesterday's ratio and notify you if the ratio is not between 90-100%. The checking will be active till noon.
-                        </p>
-
-                        <div class="form-group">
-                            <!-- <label>Bad ratio</label> -->
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="notificationsBadRatio">
-                                <label class="custom-control-label" for="notificationsBadRatio">Show bad ratio notification</label>
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="useDevOps" />
+                                <label
+                                    class="custom-control-label"
+                                    for="useDevOps"
+                                    >Use DevOps as project management platform</label
+                                >
+                            </div>
+                        </div>
+
+                        <div class="settings-sub-section">
+                            <div class="settings-sub-section-header">Notifications</div>
+
+                            <p>
+                                We'll check yesterday's ratio and notify you if the ratio is not between 90-100%. The
+                                checking will be active till noon.
+                            </p>
+
+                            <div class="form-group">
+                                <!-- <label>Bad ratio</label> -->
+                                <div class="custom-control custom-switch">
+                                    <input
+                                        type="checkbox"
+                                        class="custom-control-input"
+                                        id="notificationsBadRatio" />
+                                    <label
+                                        class="custom-control-label"
+                                        for="notificationsBadRatio"
+                                        >Show bad ratio notification</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-sub-section">
+                            <div class="settings-sub-section-header">Recent items view</div>
+                            <div class="form-group">
+                                <!-- <label>Recent items chart</label> -->
+                                <p>Enter item ids that will not be shown on the bubble chart. Use ";" as separator.</p>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="recentItemsBubbleChartHiddenItemsIds" />
                             </div>
 
-                        </div>
-                    </div>
-
-                    <div class="settings-sub-section">
-                        <div class="settings-sub-section-header">Recent items view</div>
-                        <div class="form-group">
-                            <!-- <label>Recent items chart</label> -->
-                            <p>Enter item ids that will not be shown on the bubble chart. Use ";" as separator.</p>
-                            <input class="form-control" type="text" id='recentItemsBubbleChartHiddenItemsIds' />
-                        </div>
-
-                        <div class="d-flex mt-3">
-                            <button id="saveGeneral" class="btn btn-primary">Save</button>
-                        </div>  
-                    </div>                  
-
-                </div>
-            </div>
-
-            <div id="axo-section">
-                <div class="settings-section">
-                    <h3 class="settings-header text-primary">Axo</h3>
-
-                    <div class="settings-data">
-                        <div class="form-group">
-                            <label>AxoSoft API Address</label>
-                            <input class="form-control" type="text" id='axoSoftUrl' />
-                        </div>
-
-                        <div class="form-group">
-                            <label>AxoSoft API Token</label>
-                            <input class="form-control" type="text" id='axoSoftToken' />
-                        </div>
-
-                        <div class="form-group">
-                            <label>AxoSoft User</label>
-                            <select class="form-control" style="width: 50%" id='axoSoftUserId'></select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="label">AxoSoft Default Worklog type </label>
-                            <select class="form-control" style="width: 50%" id='axoSoftDefaultWorklogTypeId'></select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Recent items</label>
-                            <p>Enter item ids that will not be shown on the bubble chart.</p>
-                            <input class="form-control" type="text" id='axoSoftRecentItemsBubbleChartHiddenItemsIds' />
-                        </div>
-
-                        <div class="d-flex">
-                            <button id="saveAxoButton" class="btn btn-primary">Save</button>
+                            <div class="d-flex mt-3">
+                                <button
+                                    id="saveGeneral"
+                                    class="btn btn-primary">
+                                    Save
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="devops-section">
-                <div class="settings-section">
-                    <h3 class="settings-header text-primary">DevOps</h3>
-                    <div class="settings-data">
-                        <div class="form-group">
-                            <label>Instance (url with account name)</label>
-                            <input class="form-control" id='devOpsInstanceUrl' />
+                <div id="axo-section">
+                    <div class="settings-section">
+                        <h3 class="settings-header text-primary">Axo</h3>
+
+                        <div class="settings-data">
+                            <div class="form-group">
+                                <label>AxoSoft API Address</label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="axoSoftUrl" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>AxoSoft API Token</label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="axoSoftToken" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>AxoSoft User</label>
+                                <select
+                                    class="form-control"
+                                    style="width: 50%"
+                                    id="axoSoftUserId"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label">AxoSoft Default Worklog type </label>
+                                <select
+                                    class="form-control"
+                                    style="width: 50%"
+                                    id="axoSoftDefaultWorklogTypeId"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Recent items</label>
+                                <p>Enter item ids that will not be shown on the bubble chart.</p>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="axoSoftRecentItemsBubbleChartHiddenItemsIds" />
+                            </div>
+
+                            <div class="d-flex">
+                                <button
+                                    id="saveAxoButton"
+                                    class="btn btn-primary">
+                                    Save
+                                </button>
+                            </div>
                         </div>
-                        <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
-                        <div class="form-group">
-                            <label>Personal access token (PAT)</label>
-                            <input type="password" class="form-control" id='devOpsPersonalAccessToken' />
-                        </div>
-                        <!-- <div class="form-group">
+                    </div>
+                </div>
+
+                <div id="devops-section">
+                    <div class="settings-section">
+                        <h3 class="settings-header text-primary">DevOps</h3>
+                        <div class="settings-data">
+                            <div class="form-group">
+                                <label>Instance (url with account name)</label>
+                                <input
+                                    class="form-control"
+                                    id="devOpsInstanceUrl" />
+                            </div>
+                            <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
+                            <div class="form-group">
+                                <label>Personal access token (PAT)</label>
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="devOpsPersonalAccessToken" />
+                            </div>
+                            <!-- <div class="form-group">
                             <label>Default Worklog type</label>
                             <p>Default worklog type is used when you start new log from the context menu.</p>
                             <input class="form-control" id='devOpsDefaultWorklogType' />
                         </div> -->
 
-                        <div class="form-group">
-                            <label>Repositories</label>
-                            <p>You can copy commit messages from your repos to the my hours logs. Super nice since you don't have to type same description twice. This action must be triggered manually from the daily log list.</p>
-                            <p>Listed below are the repos that your personal access token has access to.</p>
-                            <div class="ml-3 devops-repos-container">
-                                <ol id='devops-repos'></ol> 
+                            <div class="form-group">
+                                <label>Repositories</label>
+                                <p>
+                                    You can copy commit messages from your repos to the my hours logs. Super nice since
+                                    you don't have to type same description twice. This action must be triggered
+                                    manually from the daily log list.
+                                </p>
+                                <p>Listed below are the repos that your personal access token has access to.</p>
+                                <div class="ml-3 devops-repos-container">
+                                    <ol id="devops-repos"></ol>
+                                </div>
+                                <label>Git author name</label>
+                                <input
+                                    class="form-control"
+                                    id="devOpsAuthorName" />
                             </div>
-                            <label>Git author name</label>
-                            <input class="form-control" id='devOpsAuthorName' />
 
-                        </div>
-
-                        <div class="d-flex">
-                            <button id="saveDevOpsButton" class="btn btn-primary">Save</button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>            
-
-            <div class="settings-section d-none">
-                <h3 class="settings-header text-primary">Content switching</h3>
-                <div class="settings-data">
-                    <div class="form-group">
-                        <label>Content switch project id</label>
-                        <input class="form-control" type="number" id='contentSwitchProjectId' />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Zone re-enter time</label>
-                        <input class="form-control" type="number" id='contentSwitchZoneReEnterTime' />minutes
-                    </div>
-
-                    <div class="form-group">
-                        <label>Development task name</label>
-                        <input class="form-control" id='developmentTaskName' />
-                    </div>
-                </div>
-
-                <button class="btn btn-danger saveButton">Save</button>            
-            </div>
-
-            <div class="settings-section">
-                <h3 class="settings-header text-primary">All Hours</h3>
-                <div class="settings-data">
-                    <div class="form-group">
-                        <label>All Hours API Address</label>
-                        <input class="form-control" type="url" id='ahUrl' />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Identity server secret</label>
-                        <input class="form-control" id='isSecret' />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input class="form-control" id='ahUserName' />
-                    </div>
-
-                    <div class="d-flex">
-                        <button id="saveAllHoursButton" class="btn btn-primary mb-4">Save</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input class="form-control" type="password" id='ahPassword' />
-                    </div>
-                    
-                    <div class="form-group">
-                        <div id='ahAccessToken' class='alert alert-primary'>hit get access token to obtain access to
-                            your attendance data.</div>
-                    </div>
-
-                    <div class="d-flex">
-                        <button id='loginToAllHours' class="btn btn-primary">Login</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3 class="settings-header text-primary">My Hours</h3>
-                <div class="settings-data">
-
-                    <div class="form-group">
-                        <label class="label">Default tag</label>
-                        <select class="form-control" style="width: 50%" id='mhDefaultTagId'></select>
-                    </div>   
-                    
-                    <div class="form-group">
-                        <label class="label">Common project</label>
-                        <p>Common project tasks have no items in the DevOps. Time logged on these projects will be marked with pale color and a crown icon.</p>
-                        <select class="form-control" style="width: 50%" id='myHoursCommonProjectId'></select>
-                    </div>  
-
-                    <div class="form-group">
-                        <label>Common descriptions (used as favs in context menu)</label>
-                        <input class="form-control" type="text" id='mhCommonDescriptions'/>
-                    </div>                     
-
-                    <div class="settings-sub-section">
-                        <div class="settings-sub-section-header">Distractions</div>
-                        <div class="form-group">
-                            <!-- <label class="label">Task</label> -->
-                            <p>To track the time spent while being distracted select the task that will be started from the list</p>
                             <div class="d-flex">
-                                <select class="form-control" style="width: 50%" id='myHoursDistractionTaskId'></select>
-                                <button id="reloadMyHoursDistractionsTasksButton" class="btn btn-secondary ml-2">reload</button>
+                                <button
+                                    id="saveDevOpsButton"
+                                    class="btn btn-primary">
+                                    Save
+                                </button>
                             </div>
-                        </div>  
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section d-none">
+                    <h3 class="settings-header text-primary">Content switching</h3>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <label>Content switch project id</label>
+                            <input
+                                class="form-control"
+                                type="number"
+                                id="contentSwitchProjectId" />
+                        </div>
 
                         <div class="form-group">
-                            <label>Distraction default description</label>
-                            <input class="form-control" type="text" id='myHoursDistractionComment'/>
-                        </div>                         
+                            <label>Zone re-enter time</label>
+                            <input
+                                class="form-control"
+                                type="number"
+                                id="contentSwitchZoneReEnterTime" />minutes
+                        </div>
 
-                        <div class="d-flex">
-                            <button id="saveMhButton" class="btn btn-primary mb-4">Save</button>
+                        <div class="form-group">
+                            <label>Development task name</label>
+                            <input
+                                class="form-control"
+                                id="developmentTaskName" />
                         </div>
                     </div>
 
-                    <div class="settings-sub-section">
-                        <div class="settings-sub-section-header">Login</div>
+                    <button class="btn btn-danger saveButton">Save</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">All Hours</h3>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <label>All Hours API Address</label>
+                            <input
+                                class="form-control"
+                                type="url"
+                                id="ahUrl" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Identity server secret</label>
+                            <input
+                                class="form-control"
+                                id="isSecret" />
+                        </div>
+
                         <div class="form-group">
                             <label>Username</label>
-                            <input class="form-control" id='mhUserName' />
+                            <input
+                                class="form-control"
+                                id="ahUserName" />
+                        </div>
+
+                        <div class="d-flex">
+                            <button
+                                id="saveAllHoursButton"
+                                class="btn btn-primary mb-4">
+                                Save
+                            </button>
                         </div>
 
                         <div class="form-group">
                             <label>Password</label>
-                            <input class="form-control" type="password" id='mhPassword' />
+                            <input
+                                class="form-control"
+                                type="password"
+                                id="ahPassword" />
                         </div>
 
-                        <div class="d-flex align-items-center mb-3">
-                            <button id='loginToMyHours' class="btn btn-primary">Login</button>
-                            <div class='ml-2' id='loginToMyHoursInfo'></div>
+                        <div class="form-group">
+                            <div
+                                id="ahAccessToken"
+                                class="alert alert-primary">
+                                hit get access token to obtain access to your attendance data.
+                            </div>
+                        </div>
+
+                        <div class="d-flex">
+                            <button
+                                id="loginToAllHours"
+                                class="btn btn-primary">
+                                Login
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- <div class="settings-section">
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">My Hours</h3>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <label class="label">Default tag</label>
+                            <select
+                                class="form-control"
+                                style="width: 50%"
+                                id="mhDefaultTagId"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">Common project</label>
+                            <p>
+                                Common project tasks have no items in the DevOps. Time logged on these projects will be
+                                marked with pale color and a crown icon.
+                            </p>
+                            <select
+                                class="form-control"
+                                style="width: 50%"
+                                id="myHoursCommonProjectId"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Common descriptions (used as favs in context menu)</label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                id="mhCommonDescriptions" />
+                        </div>
+
+                        <div class="settings-sub-section">
+                            <div class="settings-sub-section-header">Distractions</div>
+                            <div class="form-group">
+                                <!-- <label class="label">Task</label> -->
+                                <p>
+                                    To track the time spent while being distracted select the task that will be started
+                                    from the list
+                                </p>
+                                <div class="d-flex">
+                                    <select
+                                        class="form-control"
+                                        style="width: 50%"
+                                        id="myHoursDistractionTaskId"></select>
+                                    <button
+                                        id="reloadMyHoursDistractionsTasksButton"
+                                        class="btn btn-secondary ml-2">
+                                        reload
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Distraction default description</label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="myHoursDistractionComment" />
+                            </div>
+
+                            <div class="d-flex">
+                                <button
+                                    id="saveMhButton"
+                                    class="btn btn-primary mb-4">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-sub-section">
+                            <div class="settings-sub-section-header">Login</div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input
+                                    class="form-control"
+                                    id="mhUserName" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input
+                                    class="form-control"
+                                    type="password"
+                                    id="mhPassword" />
+                            </div>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <button
+                                    id="loginToMyHours"
+                                    class="btn btn-primary">
+                                    Login
+                                </button>
+                                <div
+                                    class="ml-2"
+                                    id="loginToMyHoursInfo"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="settings-section">
                 <h3 class="settings-header text-primary">Notifications</h3>
                 <div class="settings-data">
                     <div class="form-group">
@@ -311,17 +444,20 @@
                 </div>
             </div>             -->
 
-            <div class="settings-section">
-                <h3 class="settings-header text-primary">Advanced</h3>
-                <div class="settings-data">
-                    <p>Clear all user specific login data.</p>
-                    <div class="d-flex">
-                        <button id="clearUserButton" class="btn btn-danger">Clear user data</button>
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">Advanced</h3>
+                    <div class="settings-data">
+                        <p>Clear all user specific login data.</p>
+                        <div class="d-flex">
+                            <button
+                                id="clearUserButton"
+                                class="btn btn-danger">
+                                Clear user data
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
-
+    </body>
 </html>

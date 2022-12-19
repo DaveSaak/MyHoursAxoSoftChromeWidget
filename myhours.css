@@ -27,6 +27,15 @@ table.table tr>td.table-cell-title{
 .logs-wrapper .list-log.hiLite {
     background-color: #dceefa;
 }
+
+
+log-form .log-form-body-left .form-row:nth-child(2) .form-group {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+
+
 /* @media (min-width: 992px) {
     .container {
         width: initial;
