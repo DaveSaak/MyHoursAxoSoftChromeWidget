@@ -140,8 +140,9 @@ function addGitButtonToPopup(){
 }
 
 function addStartMyHoursTimer() {
-    const workItemFormDivs = $("div:not(.dialog) > .work-item-form");
-
+    // const workItemFormDivs = $("div:not(.dialog) > .work-item-form");
+    const workItemFormDivs = $(".work-item-form");
+    
     Array.from(workItemFormDivs).forEach((element, index) => {
         const workItemFormDiv = $(element);
         const workItemIdSpan = workItemFormDiv.find('[aria-label="ID Field"]');
@@ -163,7 +164,7 @@ function addStartMyHoursTimer() {
                         button.css({"margin-right": "4px", "min-width": "120px", "background-color": "#2db67e26"});
                         button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
                         const buttonTextSpan = $('<span>').addClass('text');
-                        buttonTextSpan.text('Start MH log');
+                        buttonTextSpan.text(`Start MH log (${workItemId})`);
                         button.append($(buttonTextSpan));
                         toolbarUl.prepend(button);
 
@@ -172,7 +173,7 @@ function addStartMyHoursTimer() {
                             chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
                             setTimeout( 
                                 _ => { buttonTextSpan.text('Start MH log'); }, 
-                                2000, 
+                                3000, 
                                 this
                             );
                         })

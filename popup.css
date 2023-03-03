@@ -581,7 +581,8 @@ div.logContainer:hover {
 }
 
 .axoItemName{
-    font-weight: 600;
+    font-weight: 650;
+    font-size: 1.1rem;
 }
 
 
@@ -776,6 +777,33 @@ div.logContainer:hover {
 .logContainer .logContainerGrid:hover .log-time{
     display: none;
 } */
+
+.devops-task-state-new {
+    border-color: #b2b2b2;
+    background-color: #b2b2b2;
+}
+
+.devops-task-state-active {
+    border-color: #007acc;
+    background-color: #007acc;
+}
+
+.devops-task-state-resolved {
+    border-color: #6951aa;
+    background-color: #6951aa;
+}
+
+.devops-task-state-closed {
+    border-color: #339933;
+    background-color: #339933;
+}
+
+.devops-task-state-removed {
+    border-color: #5688e0;
+    background-color: white;
+}
+
+
 
 .effort-info {
     color: #5b6369;

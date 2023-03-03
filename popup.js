@@ -541,6 +541,7 @@ function popup() {
 
             // TITLE
             var logTitle = $('<div>').addClass('log-title text-truncate');
+            const devOpsItemState = log.devOpsItem?.fields['System.State'];
             // logTitle.append('<i class="fas fa-skull" aria-hidden="true"></i>');
             // logTitle.append('<span>').text(`${log.taskName ?? '-not set: task-'}`);
 
@@ -548,6 +549,16 @@ function popup() {
             if (log.icon) {
                 logTitle.append(`<i class="${log.icon} mr-2 fa-xs aria-hidden="true"></i>`);  
             }
+
+            if (devOpsItemState) {
+                logTitle.append(
+                    $(`<span title="${devOpsItemState}" style="height: 8px; width: 8px; margin-bottom: 2px; margin-right: 5px;">`)
+                        .addClass('rounded-circle')
+                        .addClass('d-inline-block')
+                        .addClass(`devops-task-state-${devOpsItemState?.toLowerCase()}`)
+                );
+            }
+
             logTitle.append($('<span>').text(`${log.taskName ?? '-not set: task-'}`));
 
             logContainerGrid.append(logTitle);
@@ -686,7 +697,8 @@ function popup() {
 
                 if (log.devOpsItemUpdates?.count > 0) {
                     const effortUpdates = log.devOpsItemUpdates.value
-                        .filter(x => x.fields && x.fields['Microsoft.VSTS.Scheduling.RemainingWork'])
+                        .filter(x => x.fields && 
+                            ( x.fields['Microsoft.VSTS.Scheduling.RemainingWork'] || x.fields['Microsoft.VSTS.Scheduling.CompletedWork']))
                         .sort((a, b) => b.rev - a.rev);
 
                     if (effortUpdates.length > 0) {
@@ -701,7 +713,26 @@ function popup() {
 
                 if (log.devOpsItem.parents?.length > 0) {
                     const parentName = log.devOpsItem.parents[0].fields['System.Title'];
-                    tagsCell.append($('<div class="log-sub-title">').text(parentName));
+                    const projectName = log.devOpsItem.parents[0].fields['System.TeamProject'];
+                    // const state = log.devOpsItem.fields['System.State'];
+
+                    let parentInfo = $("<div class='log-sub-title'>")
+                        .append($("<span>")
+                            .text(`${projectName}`))
+                        .append($("<span>")
+                            .text(` - `))                            
+                        .append($("<span>")
+                            // .addClass('ml-2')
+                            .text(`${parentName}`))
+                        // .append($("<span>")
+                        //     .addClass('badge')
+                        //     .addClass(state === "Closed" ? 'badge-success' : state === "Active" ? 'badge-primary' : state === "Resolved" ? 'badge-warning' : 'badge-secondary')
+                        //     .text(`${state}`));
+
+                    tagsCell.append(parentInfo);    
+
+                    // tagsCell.append($('<div class="log-sub-title">').text(`${projectName} - ${parentName}`));
+
                 }
                 
     
@@ -814,7 +845,9 @@ function popup() {
         _this.devOpsApi.getItemAsync(devOpsItemId).then(devOpsItem => {
             _this.devOpsApi.updateRemainingAndCompletedWorkAsync(devOpsItem, logDurationInHours)
                 .then(updatedItem => {
-                    toastr.success(`DevOps Item updated: Remaining ${minutesToString(updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] * 60)} h, Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`);
+                    (updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork']) ?
+                        toastr.success(`DevOps Item updated: Remaining ${minutesToString(updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] * 60)} h, Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`) : 
+                        toastr.success(`DevOps Item updated: Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`);
                     getLogs();
                 })
                 .catch(x => {
@@ -1344,18 +1377,50 @@ function popup() {
                             return;
                         }
 
+                        _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate).then(calc => {
+                            console.log(calc);
+                            if (calc.DailyCalculations.length > 0) {
+                                const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
+                                const plan = Number.parseInt(calc.DailyCalculations[0].Accruals.find(x => x.ValueType == 1)?.Value ?? "0");
+                                let attendance = plan + dayBalance;
+                                _this.timeRatio.setAllHours(attendance);
+                                _this.timeRatioAllHourAxo.setAllHours(attendance);
+                                _this.allHoursAttendance = attendance;
+                                $('#ahAttendance').text(minutesToString(attendance));
+                            } else {
+                                $('#ahAttendance').text('0:00');
+                            }
+                        });                        
+
+                        /*
                         if (_this.currentDate.isSame(moment(), 'day')) {
                             // console.log('it is today');
 
-                            _this.allHoursApi.getCurrentBalance(data).then(
-                                function (data) {
-                                    var attendance = 450 + parseInt(data.CurrentBalanceMinutes);
+                            // _this.allHoursApi.getCurrentBalance(data).then(
+                            //     function (data) {
+                            //         var attendance = 450 + parseInt(data.CurrentBalanceMinutes);
 
-                                    //let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                            //         //let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                            //         _this.timeRatio.setAllHours(attendance);
+                            //         _this.timeRatioAllHourAxo.setAllHours(attendance);
+                            //         $('#ahAttendance').text(minutesToString(attendance));
+                            //     });
+
+                            const today = moment().startOf('day');
+                            _this.allHoursApi.getUserCalculations(data, today, today).then(calc => {
+                                console.log(calc);
+                                if (calc.DailyCalculations.length > 0) {
+                                    const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
+                                    const plan = calc.DailyCalculations[0].PlannedPresenceSegments.find(x => x.Type == 2)?.Value ?? 0;
+                                    let attendance = plan + dayBalance;
                                     _this.timeRatio.setAllHours(attendance);
                                     _this.timeRatioAllHourAxo.setAllHours(attendance);
+                                    _this.allHoursAttendance = attendance;
                                     $('#ahAttendance').text(minutesToString(attendance));
-                                });
+                                } else {
+                                    $('#ahAttendance').text('0:00');
+                                }
+                            });
                         }
                         else {
                             // console.log('it is NOT today');
@@ -1377,6 +1442,7 @@ function popup() {
                                 }
                             );
                         }
+                        */
 
                         _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
@@ -1436,12 +1502,13 @@ function popup() {
                     }
                 })
                 .catch(error => {
-                    $('#ahAttendance').text('login error');
-                    console.error('error while getting the AH current. token may be expired');
+                    $('#ahAttendance').text('error');
+                    console.error(error);
                 })
         }
         else {
-            $('#ahAttendance').text('login error');
+            $('#ahAttendance').text('error');
+            console.error(error);
         }
     }
 
@@ -1515,148 +1582,9 @@ function popup() {
         return actionsContainer;
     }
 
-
-    // function getMyDevOpsItems() {
-    //     _this.devOpsApi.getMyItemsIdsAsync()
-    //         .then(queryResult => {
-    //             // console.log(queryResult);
-
-    //             let myItemsContainer = $('#myDevOpsItems');
-    //             myItemsContainer.empty();
-
-    //             let ids = queryResult.workItems.map(x => x.id).join();
-    //             _this.devOpsApi.getItemsAsync(ids)
-    //                 .then(items => {
-    //                     items.value.sort((a,b) => {
-    //                         const level1 = a.fields['System.TeamProject']?.localeCompare(b.fields['System.TeamProject']);
-    //                         if (level1 != 0) {
-    //                             return level1;
-    //                         }
-    //                         return a.fields['System.Title']?.localeCompare(b.fields['System.Title']);
-    //                     })
-
-
-    //                     // console.log(items);
-
-    //                     let lastTeamProject = '';
-    //                     $('#devops-items-count').text(items.count);
-    //                     $.each(items.value, function (index, devOpsItem) {
-    //                         if (lastTeamProject.localeCompare(devOpsItem.fields['System.TeamProject']) != 0) {
-    //                             var projectContainer = $('<h5>')
-    //                                 // .attr("data-logId", devOpsItem.id)
-    //                                 .addClass('m-2 mt-3')
-    //                                 .text(devOpsItem.fields['System.TeamProject']);
-    //                             myItemsContainer.append(projectContainer);
-    //                             lastTeamProject = devOpsItem.fields['System.TeamProject'];
-    //                         } 
-
-    //                         var myItemContainer = $('<div>')
-    //                             .attr("data-logId", devOpsItem.id)
-    //                             .addClass('logContainer logContainerGrid')
-    //                         myItemsContainer.append(myItemContainer);
-
-    //                         // var log = $('<div>')
-    //                         //     .attr("data-logId", item.id)
-    //                         //     .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
-    //                         // myItemContainer.append(log);
-
-    //                         //color bar
-    //                         var columnColorBarCell = $('<div>')
-    //                             .addClass('log-color-bar')
-    //                             .css("background-color", _this.axoItemColors[numberToIndex(devOpsItem.id, 8)]);
-    //                         myItemContainer.append(columnColorBarCell);
-
-
-    //                         //item name and worklog type
-    //                         var titleCell = $('<div style="gap: 0.5rem">')
-    //                             .addClass('log-title d-flex')
-    //                         myItemContainer.append(titleCell);
-
-    //                         var itemId = $('<div style="width: 4rem">')
-    //                             .text(devOpsItem.id);
-    //                         titleCell.append(itemId);
-
-    //                         var itemTypeIcon = $('<div>');
-    //                         if (devOpsItem.fields['System.WorkItemType'] == 'Task') {
-    //                             itemTypeIcon.append('<i class="fas fa-clipboard-check"></i>').css('color', '#a4880a')
-    //                         } else if (devOpsItem.fields['System.WorkItemType'] == 'Ticket') {
-    //                             itemTypeIcon.append('<i class="fas fa-medal"></i>').css('color', '#cc293d')
-    //                         }
-    //                         titleCell.append(itemTypeIcon);
-
-    //                         var itemName = $('<div style="white-space: break-spaces;">')
-    //                             .addClass('axoItemName')
-    //                             .text(devOpsItem.fields['System.Title']);
-    //                         titleCell.append(itemName);
-
-    //                         var commentCell = $('<div>')
-    //                             .addClass('log-comment');
-    //                         myItemContainer.append(commentCell);                                
-
-    //                         let effortInfo = $('<div class="effort-info d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem; font-style:normal">');
-    //                         commentCell.append(effortInfo);
-    //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0)*60)}h remaining`));     
-    //                         effortInfo.append($('<div>').addClass("mx-2").text('|'));       
-    //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0)*60)}h completed`));     
-    //                         effortInfo.append($('<div>').addClass("mx-2").text('|'));       
-    //                         effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)*60)}h estimated`));     
-
-    //                         // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
-    //                         // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
-    //                         // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
-
-
-    //                         /*
-    //                         let state = devOpsItem.fields['System.State'];
-    //                         var effortCell = $('<div>')
-    //                             .addClass('log-effort');
-    //                         var badge = $('<div class="badgex" style="line-height: 1rem">')
-    //                             .text(state);
-
-    //                         if (state == 'Active') {
-    //                             badge.addClass('badge-primary')
-    //                         } else if (state == 'Resolved') {
-    //                             badge.addClass('badge-warning')
-    //                         } else {
-    //                             badge.addClass('badge-light')
-    //                         }
-
-
-    //                         effortCell.append(badge);
-    //                         myItemContainer.append(effortCell);
-    //                         */
-
-    //                         var tagsCell = $('<div>')
-    //                             .addClass('log-tags')
-    //                             // .text(devOpsItem.fields['System.TeamProject'])
-    //                             .text(devOpsItem.fields['System.State'])
-    //                         myItemContainer.append(tagsCell);
-
-    //                         //actions
-    //                         var actionsCell = $('<div>')
-    //                             .addClass('log-actions');
-    //                         actionsCell.append(getDevOpsItemsActions(devOpsItem));
-    //                         myItemContainer.append(actionsCell);
-
-
-
-    //                         // myItemContainer.append(log);
-
-    //                     });
-    //                 })
-    //                 .catch((error) => {
-    //                     console.error('Error:', error);
-    //                 });
-    //         })
-    //         .catch((error) => {
-    //             console.error('Error:', error);
-    //         });
-    // };
-
     function getMyDevOpsItems() {
         _this.devOpsApi.getMyItemsIdsAsync()
             .then(queryResult => {
-                // console.log(queryResult);
 
                 let myItemsAccordion = $('#myDevOpsItems #accordion');
                 myItemsAccordion.empty();
@@ -1703,11 +1631,6 @@ function popup() {
                                 .addClass('logContainer logContainerGrid')
                             cardBody.append(myItemContainer);
 
-                            // var log = $('<div>')
-                            //     .attr("data-logId", item.id)
-                            //     .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
-                            // myItemContainer.append(log);
-
                             //color bar
                             var columnColorBarCell = $('<div>')
                                 .addClass('log-color-bar')
@@ -1717,68 +1640,72 @@ function popup() {
 
                             //item name and worklog type
                             var titleCell = $('<div style="gap: 0.5rem">')
-                                .addClass('log-title d-flex')
+                                .addClass('log-title d-flex align-items-center')
                             myItemContainer.append(titleCell);
-
-                            var itemId = $('<div style="width: 4rem">')
-                                .text(devOpsItem.id);
-                            titleCell.append(itemId);
 
                             var itemTypeIcon = $('<div>');
                             if (devOpsItem.fields['System.WorkItemType'] == 'Task') {
                                 itemTypeIcon.append('<i class="fas fa-clipboard-check"></i>').css('color', '#a4880a')
                             } else if (devOpsItem.fields['System.WorkItemType'] == 'Ticket') {
-                                itemTypeIcon.append('<i class="fas fa-medal"></i>').css('color', '#cc293d')
+                                itemTypeIcon.append('<i class="fas fa-medal"></i>').css('color', '#c3d84c')
+                            } else if (devOpsItem.fields['System.WorkItemType'] == 'Bug') {
+                                itemTypeIcon.append('<i class="fas fa-bug"></i>').css('color', '#cc293d')
+                            } else if (devOpsItem.fields['System.WorkItemType'] == 'Feature') {
+                                itemTypeIcon.append('<i class="fas fa-trophy"></i>').css('color', '#773b93')
                             }
                             titleCell.append(itemTypeIcon);
 
+                           
+                            const devOpsItemState = devOpsItem.fields['System.State'];
+                            if (devOpsItemState) {
+                                titleCell.append(
+                                    $(`<span title="${devOpsItemState}" style="height: 8px; width: 8px; margin-bottom: 2px; margin-left: 5px;">`)
+                                        .addClass('rounded-circle')
+                                        .addClass('d-inline-block')
+                                        .addClass(`devops-task-state-${devOpsItemState?.toLowerCase()}`)
+                                );
+                            }                            
+
                             var itemName = $('<div style="white-space: break-spaces;">')
                                 .addClass('axoItemName')
-                                .text(devOpsItem.fields['System.Title']);
-                            titleCell.append(itemName);
+                                .text(`${devOpsItem.fields['System.Title']}`);
+                            titleCell.append(itemName);    
+                            var itemId = $('<div style="white-space: break-spaces;">')
+                                .addClass('axoItemName')
+                                .text(`${devOpsItem.id}`);                                
+                            titleCell.append(itemId);
+                           
 
+
+                            var statusRow = $('<div>').addClass('text-truncate');
+
+                            if (devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0 != 0) {
+                                const completedPercent = Math.ceil(
+                                    (devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) *100 /
+                                    (devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)
+                                );
+
+                                statusRow.append($('<div class="" style="font-weight:600">').text(`${completedPercent}% complete`));
+                            }   
+                            myItemContainer.append(statusRow)                         
+
+                            ///////
+
+
+               
                             var commentCell = $('<div>')
                                 .addClass('log-comment');
                             myItemContainer.append(commentCell);
 
                             let effortInfo = $('<div class="effort-info d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem; font-style:normal">');
                             commentCell.append(effortInfo);
-                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0) * 60)}h remaining`));
+
+
+                            effortInfo.append($('<div class="" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0) * 60)}h remaining`));
                             effortInfo.append($('<div>').addClass("mx-2").text('|'));
                             effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h completed`));
                             effortInfo.append($('<div>').addClass("mx-2").text('|'));
                             effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h estimated`));
-
-                            // commentCell.append($('<div class="badge badge-light">').text(`Remaining ${devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? '?'} h`));
-                            // commentCell.append($('<div class="badge badge-light">').text(`Completed ${devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? '?'} h`));
-                            // commentCell.append($('<div class="badge badge-light">').text(`Estimate ${devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? '?'} h`));
-
-
-                            /*
-                            let state = devOpsItem.fields['System.State'];
-                            var effortCell = $('<div>')
-                                .addClass('log-effort');
-                            var badge = $('<div class="badgex" style="line-height: 1rem">')
-                                .text(state);
-
-                            if (state == 'Active') {
-                                badge.addClass('badge-primary')
-                            } else if (state == 'Resolved') {
-                                badge.addClass('badge-warning')
-                            } else {
-                                badge.addClass('badge-light')
-                            }
-                            
-
-                            effortCell.append(badge);
-                            myItemContainer.append(effortCell);
-                            */
-
-                            var tagsCell = $('<div>')
-                                .addClass('log-tags')
-                                // .text(devOpsItem.fields['System.TeamProject'])
-                                .text(devOpsItem.fields['System.State'])
-                            myItemContainer.append(tagsCell);
 
                             //actions
                             var actionsCell = $('<div>')
@@ -1786,9 +1713,6 @@ function popup() {
                             actionsCell.append(getDevOpsItemsActions(devOpsItem));
                             myItemContainer.append(actionsCell);
 
-
-
-                            // myItemContainer.append(log);
 
                         });
                     })

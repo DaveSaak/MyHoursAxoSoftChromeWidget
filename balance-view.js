@@ -22,15 +22,16 @@ function BalanceView(allHoursApi, viewContainer){
                     if (data) {
                         var today = moment().startOf('day');
 
-                        _this.allHoursApi.getCurrentBalance(data).then(
-                            function (data) {
-                                var currentBalance = parseInt(data.CurrentBalanceMinutes);
-                                drawDayBalanceChart(userId, today, currentBalance);
 
-                                // console.log(data.CurrentBalanceMinutes);
-                                $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
-                                $('#homeGreeting').text(data.Greeting);
-                                $('#currentVacationDays').text(data.VacationBalance);
+                        // _this.allHoursApi.getCurrentBalance(data).then(
+                        //     function (data) {
+                        //         var currentBalance = parseInt(data.CurrentBalanceMinutes);
+                                 drawDayBalanceChart(userId, today, 0);
+
+                        //         // console.log(data.CurrentBalanceMinutes);
+                        //         $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
+                        //         $('#homeGreeting').text(data.Greeting);
+                        //         $('#currentVacationDays').text(data.VacationBalance);
 
                                 _this.allHoursApi.getUserCalculations(userId, today, today.clone()).then(
                                     function (data) {
@@ -43,7 +44,7 @@ function BalanceView(allHoursApi, viewContainer){
                                         var dayDiff = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 4);
                                         if (dayDiff.length > 0) {
                                             let dayDiffValue = parseInt(dayDiff[0].Value);
-                                            currentBalanceAlternation = currentBalance - dayDiffValue;
+                                            // currentBalanceAlternation = currentBalance - dayDiffValue;
                                         }
 
                                         //plan
@@ -76,11 +77,12 @@ function BalanceView(allHoursApi, viewContainer){
                                         console.error('error while geeting attendance.');
                                     }
                                 );
-                            },
-                            function (error) {
-                                console.error('error while geeting attendance.');
-                            }
-                        );
+                        //     },
+                        //     function (error) {
+                        //         console.error('error while geeting attendance.');
+                        //     }
+                        // );
+                        
                     }
                 })
                 .catch(error => {
@@ -111,7 +113,7 @@ function BalanceView(allHoursApi, viewContainer){
                 // var labels = data.DailyCalculations.map(x => moment(x.DateTime).format('ddd'));
                 // labels.push(today.format('ddd'));
 
-                var labels = data.DailyCalculations.map(x => moment(x.DateTime));
+                var labels = data.DailyCalculations.map(x => moment(x.Date));
                 // labels.push(today);
 
 

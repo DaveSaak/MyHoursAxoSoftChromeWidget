@@ -33,7 +33,7 @@ function DevOpsApi(options) {
     }
 
     _this.getItemsAsync = async function (ids) {
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,Microsoft.VSTS.Scheduling.RemainingWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,Microsoft.VSTS.Scheduling.CompletedWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
         const response = await fetch(url, {
             headers: _this.ajaxHeaders
         });
@@ -103,20 +103,41 @@ function DevOpsApi(options) {
         completed = Math.round((completed + logDurationInHours) * 100) / 100;
         remaining = Math.round(Math.max(remaining - logDurationInHours, 0) * 100) / 100;
 
-
+        const state = devOpsItem.fields['System.State'];
         var updateData = [
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
-                "value": remaining
-            },
             {
                 "op": "add",
                 "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
                 "value": completed
             },
+        ];        
+        
+        
+        if (state != "Closed") {
+            updateData.push(
+                {
+                    "op": "add",
+                    "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
+                    "value": remaining
+                }
+            )
+        }
+        
+
+
+        // var updateData = [
+        //     {
+        //         "op": "add",
+        //         "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
+        //         "value": remaining
+        //     },
+        //     {
+        //         "op": "add",
+        //         "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
+        //         "value": completed
+        //     },
           
-        ];
+        // ];
 
         const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + devOpsItem.id + "?api-version=6.0";
         const response = await fetch(url, {
@@ -127,29 +148,6 @@ function DevOpsApi(options) {
 
         return response.json();
     };
-
-
-    // _this.updateItemAsync = async function (id, hoursDone) {
-
-    //     await _this.getItemAsync(id).then(devOpsItem => {
-    //         let completedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'];
-    //         let remainingValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'];
-    //         let estimatedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'];
-
-    //         let completed = (completedValue == undefined || Number.isNaN(completedValue)) ? 0 : Number(completedValue);
-    //         let estimated = (estimatedValue == undefined || Number.isNaN(estimatedValue)) ? 0 : Number(estimatedValue);
-    //         let remaining = (remainingValue == undefined || Number.isNaN(remainingValue)) ? estimated : Number(remainingValue);
-
-    //         let logDurationInHours = hoursDone;
-
-    //         completed = Math.round((completed + logDurationInHours) * 100) / 100;
-    //         remaining = Math.round(Math.max(remaining - logDurationInHours, 0) * 100) / 100;
-
-    //         return _this.updateRemainingAndCompletedWorkAsync(id, completed, remaining)
-    //     });
-
-    // }
-
 
     _this.getMyRepositoriesAsync = async function () {
         const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;

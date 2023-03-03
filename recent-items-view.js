@@ -334,9 +334,14 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
 
         let now = moment().startOf('day');
 
-        let excludedItemIds = [
-            ..._this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds?.split(';'), 
-            ..._this.options.recentItemsBubbleChartHiddenItemsIds?.split(';')];
+        let excludedItemIds = [];
+        if (_this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds) {
+            excludedItemIds = _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds?.split(';');
+        }
+        if (_this.options.recentItemsBubbleChartHiddenItemsIds) {
+            excludedItemIds = [...excludedItemIds, ..._this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds?.split(';')];
+        }        
+
         var chartData = {
             datasets:
                 rawData
@@ -514,10 +519,10 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
                 tooltips: {
                     displayColors: false,
                     callbacks: {
-                        title: function (tooltipItem, data) {
-                            return data.labels[tooltipItem[0].index];
+                        // title: function (tooltipItem, data) {
+                        //     return data.labels[tooltipItem[0].index];
 
-                        },
+                        // },
                         label: function (tooltipItem, data) {
                             let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
                             return minutesToString(value, true);
