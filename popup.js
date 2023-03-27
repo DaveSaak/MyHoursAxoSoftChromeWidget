@@ -58,6 +58,7 @@ function popup() {
             _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.myHoursApi, _this.options, _this.axoItemColors);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
             _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi, _this.options);
+            _this.pullRequestsView = new PullRequestsView(_this.devOpsApi, $('#pullRequestsContainer'));
 
 
             // PLATFORM UI MODS
@@ -89,7 +90,7 @@ function popup() {
                         $('#email').val(_this.currentUser.email);
                     }
 
-                    showLoginPage();
+                    // showLoginPage();
                 } else {
                     // console.info('got current user.');
                     if (_this.currentUser.refreshToken != undefined) {
@@ -107,7 +108,7 @@ function popup() {
                         )
                             .catch(error => {
                                 console.error('error: ' + error);
-                                showLoginPage();
+                                // showLoginPage();
 
                             });
                     }
@@ -124,11 +125,11 @@ function popup() {
             login($('#email').val(), $('#password').val());
         });
 
-        $('#loginContainer input').keyup(function (e) {
-            if (e.keyCode == 13) {
-                login($('#email').val(), $('#password').val());
-            }
-        });
+        // $('#loginContainer input').keyup(function (e) {
+        //     if (e.keyCode == 13) {
+        //         login($('#email').val(), $('#password').val());
+        //     }
+        // });
 
         $('#copyToAxoSoftButton').click(function () {
             copyTimelogs();
@@ -161,7 +162,7 @@ function popup() {
 
         $('#logOutButton').click(function () {
             _this.currentUser.clear();
-            showLoginPage();
+            // showLoginPage();
         });
 
         $('#optionsButton').click(function () {
@@ -227,6 +228,10 @@ function popup() {
             _this.ratioView.show();
         });
 
+        $('#pills-pull-requests-tab').click(function () {
+            _this.pullRequestsView.show();
+        });        
+
         $('#pills-devops-assignments-tab').click(function () {
             getMyDevOpsItems();
         });
@@ -239,7 +244,9 @@ function popup() {
             trackDistraction();
         });
 
-        
+        $('#copyCommitMessagesButton').click(function () {
+            copyCommitMessagesForAllLogs();
+        });        
 
 
 
@@ -304,19 +311,19 @@ function popup() {
         _this.getProjectTracks();
     }
 
-    function showLoginPage() {
-        $('body').addClass('narrow');
-        $('body').removeClass('wide');
+    // function showLoginPage() {
+    //     $('body').addClass('narrow');
+    //     $('body').removeClass('wide');
 
-        $('#loginContainer').show();
+    //     $('#loginContainer').show();
 
-        if (_this.currentUser.email != undefined) {
-            $('input#email').val(_this.currentUser.email);
-        }
+    //     if (_this.currentUser.email != undefined) {
+    //         $('input#email').val(_this.currentUser.email);
+    //     }
 
-        $('#password').focus();
+    //     $('#password').focus();
 
-    }
+    // }
 
     function showOptionsPage() {
         chrome.runtime.openOptionsPage();
@@ -327,7 +334,7 @@ function popup() {
         $('body').addClass('wide');
 
         $('#mainContainer').show();
-        $('#loginContainer').hide();
+        // $('#loginContainer').hide();
         $('#loadingContainer').hide();
         $('#usersName').text(_this.currentUser.name);
 
@@ -341,7 +348,7 @@ function popup() {
         $('body').addClass('wide');
 
         $('#mainContainer').hide();
-        $('#loginContainer').hide();
+        // $('#loginContainer').hide();
         $('#loadingContainer').show();
 
     }
@@ -624,7 +631,7 @@ function popup() {
                 .append('<i class="fa-solid fa-code-merge"></i>')
                 .click(function (event) {
                     event.preventDefault();
-                    copyCommitMessage(log);
+                    copyCommitMessage(log, true);
                 });
 
             let openDevOpsItemButton = $('<button>')
@@ -1176,7 +1183,7 @@ function popup() {
                         },
                         function () {
                             console.info('failed to get logs');
-                            showLoginPage();
+                            // showLoginPage();
                         }
                     );
                 });
@@ -1252,7 +1259,7 @@ function popup() {
                 .append('<i class="fa-solid fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
                 .click(function (event) {
                     event.preventDefault();
-                    copyCommitMessage(data);
+                    copyCommitMessage(data, true);
                 }));
         }
 
@@ -1748,13 +1755,13 @@ function popup() {
                     showMainPage();
                 }, function (err) {
                     console.error('error while geeting the user data');
-                    showLoginPage();
+                    // showLoginPage();
                 });
 
             },
             function (error) {
                 console.error('error while geeting the access token');
-                showLoginPage();
+                // showLoginPage();
             }
         )
     }
@@ -1834,7 +1841,7 @@ function popup() {
             })
     }
 
-    function copyCommitMessage(myHoursLog) {
+    function copyCommitMessage(myHoursLog, reloadLogs) {
         myHoursLog?.times.forEach(element => {
 
             _this.devOpsApi.getMyCommitsAsync(moment(element.startTime), moment(element.endTime)).then(
@@ -1845,7 +1852,9 @@ function popup() {
                     if (comment) {
                         _this.myHoursApi.updateLogDescription(myHoursLog, comment).then(x => {
                             toastr.success('Log comment updated.');
-                            getLogs();
+                            if (reloadLogs) {
+                                getLogs();
+                            }
                         });
                     } else {
                         toastr.warning('No commit messages with comments found within the time frame of the log.');
@@ -2103,6 +2112,13 @@ function popup() {
     function hiLiteMyHoursLog(logId) {
         chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
             chrome.tabs.sendMessage(tabs[0].id, { type: 'hilite-log', logId });
+        });
+    }
+
+    function copyCommitMessagesForAllLogs(){
+        _this.myHoursLogs.forEach(log => {
+            copyCommitMessage(log, false);
+            getLogs();
         });
     }
 

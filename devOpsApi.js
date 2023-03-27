@@ -12,6 +12,10 @@ function DevOpsApi(options) {
         'Authorization': 'Basic ' + btoa(":" + _this.options.devOpsPersonalAccessToken)
     };
 
+    _this.getPullRequestPortalLink = function (projectName, repositoryName, codeReviewId) {
+        return `${_this.options.devOpsInstanceUrl}${encodeURIComponent(projectName)}/_git/${encodeURIComponent(repositoryName)}/pullrequest/${codeReviewId}`;
+    }
+
     _this.getMyItemsIdsAsync = async function () {
         const url = _this.options.devOpsInstanceUrl + "/_apis/wit/wiql?api-version=4.1";
         const queryData =
@@ -181,5 +185,46 @@ function DevOpsApi(options) {
         });
 
         return commits;
+    }
+
+    _this.getPullRequestsAsync = async function(){
+
+        let pullRequestPromises = [];
+        const repos = await this.getMyRepositoriesAsync();
+
+        const selectedPullRequestRepos = _this.options.devOpsPullRequestRepos?.split(',');
+        repos.value.forEach(repo => {
+            if (selectedPullRequestRepos.length === 0 || selectedPullRequestRepos.find(x => x === repo.name)) {
+                const url = _this.options.devOpsInstanceUrl +
+                    `/_apis/git/repositories/${repo.id}/pullrequests?api-version=7.0` +
+                    `&searchCriteria.status=active`;
+
+                pullRequestPromises.push(fetch(url, {
+                    headers: _this.ajaxHeaders,
+                }).then(
+                    res => {
+                        console.log(res.headers.get('x-vss-userdata'));
+                        return res.json()
+                    }
+                ));
+            }
+        });
+
+        let pullRequests = [];
+        const responses = await Promise.all(pullRequestPromises);
+        responses.forEach(response => {
+            if (response.count > 0) {
+                pullRequests.push(...response.value);
+            }
+        });
+
+        return pullRequests;        
+
+        // const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories/pullrequests?searchCriteria.status=active&api-version=7.0`;
+        // const response = await fetch(url, {
+        //     headers: _this.ajaxHeaders
+        // });
+        // return response.json();        
+
     }
 }

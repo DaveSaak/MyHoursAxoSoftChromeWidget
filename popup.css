@@ -25,7 +25,7 @@ html {
 
 .wide {
     /* width: 800px; */
-    width: 720px;
+    width: 760px;
     /* 760px; */
     background: transparent;
 
@@ -832,4 +832,13 @@ div.logContainer:hover {
 
 #trackDistraction:hover >i {
     color:#ff5959 !important;
+}
+
+.pull-request {
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.pull-request:hover {
+    background-color: #f1f1f19e;
 }

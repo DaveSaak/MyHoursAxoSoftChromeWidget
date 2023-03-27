@@ -32,6 +32,7 @@ function Options() {
     _this.notificationsBadRatio = true;
 
     _this.devOpsAuthorName = '';
+    _this.devOpsPullRequestRepos = '';
 
     _this.recentItemsBubbleChartHiddenItemsIds = '';
 
@@ -102,6 +103,7 @@ function Options() {
                             _this.devOpsPersonalAccessToken = items.options.devOpsPersonalAccessToken;
                             // _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
                             _this.devOpsAuthorName = items.options.devOpsAuthorName;
+                            _this.devOpsPullRequestRepos = items.options.devOpsPullRequestRepos;
 
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
                             _this.myHoursCommonProjectId = items.options.myHoursCommonProjectId;

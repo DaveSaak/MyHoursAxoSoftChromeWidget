@@ -45,6 +45,7 @@ $(function () {
             $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
             $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
             $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
+            $('#devOpsPullRequestRepos').val(_this.options.devOpsPullRequestRepos);
             
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             $('#myHoursDistractionComment').val(_this.options.myHoursDistractionComment);
@@ -227,6 +228,7 @@ $(function () {
         _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
         _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
         _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
+        _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
         saveOptions();
         toastr.success('DevOps settings saved');
 

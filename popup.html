@@ -33,6 +33,7 @@
     <script src="recent-items-view.js"></script>
     <script src="calendar-view.js"></script>
     <script src="ratio-view.js"></script>
+    <script src="pull-requests-view.js"></script>
 
     <script src="utils.js"></script>
     <script src="popup.js"></script>
@@ -98,10 +99,8 @@
     >
         <div class="m-5 d-flex flex-column align-self-center">
 
-            <!-- <img src="images/myhourslogo.png" /> -->
             <h3 class="mb-4 text-uppercase text-center">Login to My Hours</h3>
             <div class="field">
-                <!-- <label class="text-uppercase text-sm" for="email">Email</label> -->
                 <input
                     class="input "
                     type="email"
@@ -110,7 +109,6 @@
                 >
             </div>
             <div class="field">
-                <!-- <label class="text-uppercase text-sm" for="password">password</label> -->
                 <input
                     class="input "
                     type="password"
@@ -214,6 +212,18 @@
             >Work types</a>
         </li>
 
+        <li class="nav-item d-flex align-items-center">
+            <a
+                class="nav-link"
+                id="pills-pull-requests-tab"
+                data-toggle="pill"
+                href="#pills-pull-requests"
+                role="tab"
+                aria-controls="pills-pull-requests"
+                aria-selected="false"
+            >Pull requests</a>
+        </li>        
+
         <li
             id="nav-calendar"
             class="nav-item d-flex align-items-center"
@@ -241,13 +251,13 @@
                 role="tab"
                 aria-controls="pills-devops-assignments"
                 aria-selected="false"
-            >Assigned</a>
+            >My items</a>
         </li>
 
-        <li class="nav-item d-flex align-items-center ml-auto mr-2">   
+        <li class="nav-item d-flex align-items-center ml-auto mr-1">   
             <a
                 id='trackDistraction'
-                class="nav-link"
+                class="nav-link px-2"
                 title="Track distraction"
             >
             <i class="fa-solid fa-bomb fa-fw"></i>
@@ -423,8 +433,18 @@
                         hint="Update DevOps Effort for all items"
                     >
                         <i class="fa-solid fa-upload"></i>
-                        Update Effort for all items
+                        Update Effort
                     </button>
+
+                    <button
+                        id='copyCommitMessagesButton'
+                        class="mr-2 btn btn-secondary"
+                        type="button"
+                        hint="Update DevOps Effort for all items"
+                    >
+                        <i class="fa-solid fa-code-merge"></i>
+                        Copy commit messages
+                    </button>                    
 
                     <button
                         id='openAllHoursTimeline'
@@ -744,7 +764,31 @@
                 </div>
 
             </div>
+        </div>
 
+        <div
+            class="tab-pane fade"
+            id="pills-pull-requests"
+            role="tabpanel"
+            aria-labelledby="pills-pull-requests-tab"> 
+
+            <div
+                id="pullRequestsContainer"
+                class="mx-1 mb-3"
+            >
+
+                <div class="headerBar mx-3">
+                </div>
+
+                <div class="pull-requests-list customScroller mt-3 mx-2" style="overflow: auto; max-height: 400px;">
+
+                    <h5>Assigned to me <span class="assigned-to-me-count"></span></h5>
+                    <div class="my-pull-requests"></div>
+                    <h5>Assigned to my teams <span class="assigned-to-my-teams-count"></span></h5>
+                    <div class="other-pull-requests"></div>
+
+                </div>
+            </div>
         </div>
 
         <div
