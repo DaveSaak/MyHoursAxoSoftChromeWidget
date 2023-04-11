@@ -1384,50 +1384,50 @@ function popup() {
                             return;
                         }
 
-                        _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate).then(calc => {
-                            console.log(calc);
-                            if (calc.DailyCalculations.length > 0) {
-                                const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
-                                const plan = Number.parseInt(calc.DailyCalculations[0].Accruals.find(x => x.ValueType == 1)?.Value ?? "0");
-                                let attendance = plan + dayBalance;
-                                _this.timeRatio.setAllHours(attendance);
-                                _this.timeRatioAllHourAxo.setAllHours(attendance);
-                                _this.allHoursAttendance = attendance;
-                                $('#ahAttendance').text(minutesToString(attendance));
-                            } else {
-                                $('#ahAttendance').text('0:00');
-                            }
-                        });                        
+                        // _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate).then(calc => {
+                        //     console.log(calc);
+                        //     if (calc.DailyCalculations.length > 0) {
+                        //         const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
+                        //         const plan = Number.parseInt(calc.DailyCalculations[0].Accruals.find(x => x.ValueType == 1)?.Value ?? "0");
+                        //         let attendance = plan + dayBalance;
+                        //         _this.timeRatio.setAllHours(attendance);
+                        //         _this.timeRatioAllHourAxo.setAllHours(attendance);
+                        //         _this.allHoursAttendance = attendance;
+                        //         $('#ahAttendance').text(minutesToString(attendance));
+                        //     } else {
+                        //         $('#ahAttendance').text('0:00');
+                        //     }
+                        // });                        
 
-                        /*
+                        
                         if (_this.currentDate.isSame(moment(), 'day')) {
-                            // console.log('it is today');
+                            console.log('it is today');
 
-                            // _this.allHoursApi.getCurrentBalance(data).then(
-                            //     function (data) {
-                            //         var attendance = 450 + parseInt(data.CurrentBalanceMinutes);
+                            _this.allHoursApi.getCurrentBalance(data).then(
+                                function (data) {
+                                    var attendance = 450 + parseInt(data.Balance);
 
-                            //         //let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                            //         _this.timeRatio.setAllHours(attendance);
-                            //         _this.timeRatioAllHourAxo.setAllHours(attendance);
-                            //         $('#ahAttendance').text(minutesToString(attendance));
-                            //     });
-
-                            const today = moment().startOf('day');
-                            _this.allHoursApi.getUserCalculations(data, today, today).then(calc => {
-                                console.log(calc);
-                                if (calc.DailyCalculations.length > 0) {
-                                    const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
-                                    const plan = calc.DailyCalculations[0].PlannedPresenceSegments.find(x => x.Type == 2)?.Value ?? 0;
-                                    let attendance = plan + dayBalance;
+                                    //let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
                                     _this.timeRatio.setAllHours(attendance);
                                     _this.timeRatioAllHourAxo.setAllHours(attendance);
-                                    _this.allHoursAttendance = attendance;
                                     $('#ahAttendance').text(minutesToString(attendance));
-                                } else {
-                                    $('#ahAttendance').text('0:00');
-                                }
-                            });
+                                });
+
+                            // const today = moment().startOf('day');
+                            // _this.allHoursApi.getUserCalculations(data, today, today).then(calc => {
+                            //     console.log(calc);
+                            //     if (calc.DailyCalculations.length > 0) {
+                            //         const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
+                            //         const plan = calc.DailyCalculations[0].PlannedPresenceSegments.find(x => x.Type == 2)?.Value ?? 0;
+                            //         let attendance = plan + dayBalance;
+                            //         _this.timeRatio.setAllHours(attendance);
+                            //         _this.timeRatioAllHourAxo.setAllHours(attendance);
+                            //         _this.allHoursAttendance = attendance;
+                            //         $('#ahAttendance').text(minutesToString(attendance));
+                            //     } else {
+                            //         $('#ahAttendance').text('0:00');
+                            //     }
+                            // });
                         }
                         else {
                             // console.log('it is NOT today');
@@ -1449,7 +1449,7 @@ function popup() {
                                 }
                             );
                         }
-                        */
+                        
 
                         _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {

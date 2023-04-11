@@ -193,8 +193,7 @@ function AllHoursApi(
             $.ajax({
                 url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
                     "?date=" + dateString +
-                    "&calculationResultTypeCode=33" +
-                    "&timeEventIds=",
+                    "&calculationResultTypeCode=33",
                 //"?userId=" + userId,
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
@@ -221,28 +220,8 @@ function AllHoursApi(
         let promiseFunction = function (resolve, reject) {
             let dateString = moment().startOf('day').format('YYYY-MM-DD') + 'T00:00:00';
 
-            $.ajax({
-                url: `${_this.options.allHoursUrl}UserCalculations/${userId}/balance?dateTime=${dateString}`,
-                headers: {
-                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                    "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
-                },
-                type: "GET",
-                success: function (data) {
-                    //can contain other dates. filter them out
-                    resolve(data);
-                },
-                error: function (data) {
-                    console.error(data);
-                    reject(Error());
-                }
-            });
-
-
             // $.ajax({
-            //     url: _this.options.allHoursUrl + "presence/" + userId + 
-            //         "?provideCurrentBalance=true",
-            //     //"?userId=" + userId,
+            //     url: `${_this.options.allHoursUrl}UserCalculations/${userId}/balance?dateTime=${dateString}`,
             //     headers: {
             //         "Authorization": "Bearer " + _this.options.allHoursAccessToken,
             //         "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
@@ -257,6 +236,24 @@ function AllHoursApi(
             //         reject(Error());
             //     }
             // });
+
+
+            $.ajax({
+                url: _this.options.allHoursUrl + "presence/" + userId,
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                    "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+                },
+                type: "GET",
+                success: function (data) {
+                    //can contain other dates. filter them out
+                    resolve(data);
+                },
+                error: function (data) {
+                    console.error(data);
+                    reject(Error());
+                }
+            });
 
         }
 

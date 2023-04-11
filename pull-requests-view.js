@@ -39,13 +39,13 @@ function PullRequestsView(devOpsApi, viewContainer) {
             const [myPullRequests, otherPullRequests] = partition(pullRequests, pullRequest => pullRequest.reviewers?.filter(x => x.id === '05cd4c16-019c-6f13-8c49-c1885ccc78c8').length > 0);
 
 
-            $('.assigned-to-me-count').text(`(${myPullRequests.length})`);
+            $('.assigned-to-me-count').text(`(${myPullRequests?.length})`);
             myPullRequests.forEach(pullRequest => {
                 const pullRequestUi = getPullRequestUi(pullRequest);
                 myPullRequestsUi.append(pullRequestUi);
             });
 
-            $('.assigned-to-my-teams-count').text(`(${otherPullRequests.length})`);
+            $('.assigned-to-my-teams-count').text(`(${otherPullRequests?.length})`);
             otherPullRequests.forEach(pullRequest => {
                 const pullRequestUi = getPullRequestUi(pullRequest);
                 otherPullRequestsUi.append(pullRequestUi);

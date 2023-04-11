@@ -23,13 +23,14 @@ function BalanceView(allHoursApi, viewContainer){
                         var today = moment().startOf('day');
 
 
-                        // _this.allHoursApi.getCurrentBalance(data).then(
-                        //     function (data) {
-                        //         var currentBalance = parseInt(data.CurrentBalanceMinutes);
-                                 drawDayBalanceChart(userId, today, 0);
+                        _this.allHoursApi.getCurrentBalance(data).then(
+                            function (data) {
+                                // var currentBalance = parseInt(data.Balance);
+                                drawDayBalanceChart(userId, today, 0);
 
                         //         // console.log(data.CurrentBalanceMinutes);
-                        //         $('#currentBalanceDiff').text(minutesToString(currentBalance, true));
+                                $('#currentBalanceDiff').text(minutesToString(data.Balance, true));
+                                $('#currentBalanceRunning').text(minutesToString(data.RunningBalance, true));
                         //         $('#homeGreeting').text(data.Greeting);
                         //         $('#currentVacationDays').text(data.VacationBalance);
 
@@ -40,48 +41,48 @@ function BalanceView(allHoursApi, viewContainer){
                                         let dayCalc = data.DailyCalculations[0];
 
                                         //day balance
-                                        var currentBalanceAlternation = 0;
-                                        var dayDiff = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 4);
-                                        if (dayDiff.length > 0) {
-                                            let dayDiffValue = parseInt(dayDiff[0].Value);
-                                            // currentBalanceAlternation = currentBalance - dayDiffValue;
-                                        }
+                                        // var currentBalanceAlternation = 0;
+                                        // var dayDiff = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 4);
+                                        // if (dayDiff.length > 0) {
+                                        //     let dayDiffValue = parseInt(dayDiff[0].Value);
+                                        //     currentBalanceAlternation = currentBalance - dayDiffValue;
+                                        // }
 
                                         //plan
-                                        var planAccrual = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 1);
-                                        if (planAccrual.length > 0) {
-                                            $('#currentBalancePlan').text(minutesToString(parseInt(planAccrual[0].Value)));
-                                        }
+                                        // var planAccrual = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 1);
+                                        // if (planAccrual.length > 0) {
+                                        //     $('#currentBalancePlan').text(minutesToString(parseInt(planAccrual[0].Value)));
+                                        // }
 
                                         //attendance
-                                        var currentBalanceAttendance = 0;
-                                        var planAttendance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 33);
-                                        if (planAttendance.length > 0) {
-                                            let planAttendanceValue = parseInt(planAttendance[0].Value);
-                                            currentBalanceAttendance = planAttendanceValue + currentBalanceAlternation;
-                                        } else if (currentBalanceAlternation != 0) {
-                                            currentBalanceAttendance = currentBalanceAlternation;
-                                        }
-                                        $('#currentBalanceAttendance').text(minutesToString(currentBalanceAttendance));
+                                        // var currentBalanceAttendance = 0;
+                                        // var planAttendance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 33);
+                                        // if (planAttendance.length > 0) {
+                                        //     let planAttendanceValue = parseInt(planAttendance[0].Value);
+                                        //     currentBalanceAttendance = planAttendanceValue + currentBalanceAlternation;
+                                        // } else if (currentBalanceAlternation != 0) {
+                                        //     currentBalanceAttendance = currentBalanceAlternation;
+                                        // }
+                                        // $('#currentBalanceAttendance').text(minutesToString(currentBalanceAttendance));
 
                                         //running balance
-                                        var runningBalance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 24);
-                                        if (runningBalance.length > 0) {
-                                            let runningBalanceValue = parseInt(runningBalance[0].Value);
-                                            runningBalanceValue = runningBalanceValue + currentBalanceAlternation;
+                                        // var runningBalance = dayCalc.Accruals.filter(x => x.CalculationResultTypeCode == 24);
+                                        // if (runningBalance.length > 0) {
+                                        //     let runningBalanceValue = parseInt(runningBalance[0].Value);
+                                        //     runningBalanceValue = runningBalanceValue + currentBalanceAlternation;
 
-                                            $('#currentBalanceRunning').text(minutesToString(runningBalanceValue, true));
-                                        }
+                                        //     $('#currentBalanceRunning').text(minutesToString(runningBalanceValue, true));
+                                        // }
                                     },
                                     function (error) {
                                         console.error('error while geeting attendance.');
                                     }
                                 );
-                        //     },
-                        //     function (error) {
-                        //         console.error('error while geeting attendance.');
-                        //     }
-                        // );
+                            },
+                            function (error) {
+                                console.error('error while geeting attendance.');
+                            }
+                        );
                         
                     }
                 })

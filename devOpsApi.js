@@ -126,22 +126,16 @@ function DevOpsApi(options) {
                 }
             )
         }
-        
 
-
-        // var updateData = [
-        //     {
-        //         "op": "add",
-        //         "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
-        //         "value": remaining
-        //     },
-        //     {
-        //         "op": "add",
-        //         "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
-        //         "value": completed
-        //     },
-          
-        // ];
+        if (state === 'New'){
+            updateData.push(
+                {
+                    "op": "replace",
+                    "path": "/fields/System.State",
+                    "value": "Active"
+                }
+            )
+        }
 
         const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + devOpsItem.id + "?api-version=6.0";
         const response = await fetch(url, {
@@ -194,7 +188,7 @@ function DevOpsApi(options) {
 
         const selectedPullRequestRepos = _this.options.devOpsPullRequestRepos?.split(',');
         repos.value.forEach(repo => {
-            if (selectedPullRequestRepos.length === 0 || selectedPullRequestRepos.find(x => x === repo.name)) {
+            if (!selectedPullRequestRepos || selectedPullRequestRepos.length === 0 || selectedPullRequestRepos.find(x => x === repo.name)) {
                 const url = _this.options.devOpsInstanceUrl +
                     `/_apis/git/repositories/${repo.id}/pullrequests?api-version=7.0` +
                     `&searchCriteria.status=active`;
