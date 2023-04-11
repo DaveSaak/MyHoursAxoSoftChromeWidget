@@ -188,7 +188,7 @@ function BalanceView(allHoursApi, viewContainer){
                             displayColors: false,
                             callbacks: {
                                 title: function (tooltipItem, data) {
-                                    return tooltipItem[0].xLabel.format('dddd, d.MMMM');
+                                    return tooltipItem[0].xLabel.format('dddd, D.MMMM');
                                     //return value.format('dddd');
                                 },
                                 label: function (tooltipItem, data) {
@@ -253,7 +253,7 @@ function BalanceView(allHoursApi, viewContainer){
                             displayColors: false,
                             callbacks: {
                                 title: function (tooltipItem, data) {
-                                    return tooltipItem[0].xLabel.format('dddd, d.MMMM');
+                                    return tooltipItem[0].xLabel.format('dddd, D.MMMM');
                                     //return value.format('dddd');
                                 },
                                 label: function (tooltipItem, data) {
