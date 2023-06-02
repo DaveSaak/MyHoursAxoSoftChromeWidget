@@ -171,18 +171,28 @@ function popup() {
 
 
         $('#previousDay').click(function () {
-            _this.currentDate = _this.currentDate.add(-1, 'days');
+            setCurrentDate(_this.currentDate.add(-1, 'days'));
+
+            // _this.currentDate = _this.currentDate.add(-1, 'days');
             getLogs();
         });
 
         $('#nextDay').click(function () {
-            _this.currentDate = _this.currentDate.add(1, 'days');
+            setCurrentDate(_this.currentDate.add(1, 'days'));
+            // _this.currentDate = _this.currentDate.add(1, 'days');
             getLogs();
         });
 
         $('#today').click(function () {
-            getLogsForToday();
+            setCurrentDate(new moment());
+            getLogs();
         });
+
+        $('#goToToday').click(function () {
+            setCurrentDate(new moment());
+            getLogs();
+        });        
+       
 
         // $('#current-date').click(function () {
         //     getLogsForToday();
@@ -284,11 +294,13 @@ function popup() {
 
         document.onkeyup = function (event) {
             if (event.keyCode === 37) {
-                _this.currentDate = _this.currentDate.add(-1, 'days');
+                setCurrentDate(_this.currentDate.clone().add(-1, 'days'));
+                // _this.currentDate = _this.currentDate.add(-1, 'days');
                 getLogs();
             }
             else if (event.keyCode === 39) {
-                _this.currentDate = _this.currentDate.add(1, 'days');
+                setCurrentDate(_this.currentDate.clone().add(1, 'days'));
+                // _this.currentDate = _this.currentDate.add(1, 'days');
                 getLogs();
             }
             else if (event.keyCode === 32) {
@@ -303,9 +315,40 @@ function popup() {
             //     getLogsForToday();
             // }            
         };
+
+        // chrome.storage.sync.get({
+        //     'ui-date-value': date.toISOString(),
+        //     'ui-date-timestamp': new Date().toISOString()
+        // });
+
+        chrome.storage.sync.get([
+            'uiDateValue',
+            'uiDateTimestamp',
+           ], function(uiDateOptions) {
+                console.log(uiDateOptions.uiDateValue);
+                console.log(uiDateOptions.uiDateTimestamp);
+
+                const dateSaved = moment(uiDateOptions.uiDateTimestamp);
+                if (dateSaved.isSame(moment(), 'day') && uiDateOptions.uiDateValue) {
+                    const savedCurrentDate = moment(uiDateOptions.uiDateValue);
+                    setCurrentDate(savedCurrentDate);
+                    getLogs();
+                }
+           });        
+    }
+
+    function setCurrentDate(date){
+        _this.currentDate = date;
+
+        chrome.storage.sync.set({
+                'uiDateValue': date.toISOString(),
+                'uiDateTimestamp': new Date().toISOString()
+            });
+
     }
 
     function getLogsForToday() {
+        // setCurrentDate(moment().startOf('day'));
         _this.currentDate = _this.currentDate = moment().startOf('day');
         // getLogs();
         _this.getProjectTracks();
@@ -714,7 +757,17 @@ function popup() {
                             remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-auto">'));
                         }
                         remainingInfo.append($('<div class="ml-1">').text(`${lastEffortUpdate.revisedBy.displayName}`));
-                        remainingInfo.append($('<div class="ml-1">').text(` ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).fromNow()}`));
+
+                        //show time stamp if update was made within last 3 days
+                        const lastUpdate = moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue);
+                        const daysDiff = moment().startOf('day').diff(lastUpdate.clone().startOf('day'), 'days');
+
+                        if (daysDiff <= 3) {
+                            remainingInfo.append($('<div class="ml-1">').text(` ${lastUpdate.format('llll')}`));
+                        } else {
+                            remainingInfo.append($('<div class="ml-1">').text(` ${lastUpdate.fromNow()}`));
+                        }
+                        
                     }
                 }                
 
