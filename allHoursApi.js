@@ -19,7 +19,7 @@ function AllHoursApi(
     _this.getAccessTokenOld = function (email, password) {
         return new Promise(
             function (resolve, reject) {
-                console.info(baseName + ": getting token");
+                // console.info(baseName + ": getting token");
 
                 var loginData = {
                     username: email,
@@ -55,7 +55,7 @@ function AllHoursApi(
     _this.getAccessToken = function (email, password) {
         return new Promise(
             function (resolve, reject) {
-                console.info(baseName + ": getting token");
+                // console.info(baseName + ": getting token");
 
                 var loginData = {
                     username: email,
@@ -98,7 +98,7 @@ function AllHoursApi(
     _this.refreshAccessToken = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info(baseName + ": refreshing token");
+                // console.info(baseName + ": refreshing token");
 
                 var refreshData = {
                     client_id: "ro_client",
@@ -124,9 +124,9 @@ function AllHoursApi(
                         _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString();
                         _this.options.save();
 
-                        console.group('all hours token - referesh');
-                        console.table(data);
-                        console.groupEnd();
+                        // console.group('all hours token - referesh');
+                        // console.table(data);
+                        // console.groupEnd();
 
                         return resolve(data);
                     },
@@ -141,7 +141,7 @@ function AllHoursApi(
 
     _this.getCurrentUserId = function () {
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting logged-in user");
+            // console.info(baseName + ": getting logged-in user");
             $.ajax({
                 url: _this.options.allHoursUrl + "UserInfo",
                 headers: {
@@ -163,7 +163,7 @@ function AllHoursApi(
 
     _this.getCurrentUserName = function () {
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting logged-in user");
+            // console.info(baseName + ": getting logged-in user");
             $.ajax({
                 url: _this.options.allHoursUrl + "UserInfo",
                 headers: {
@@ -188,13 +188,12 @@ function AllHoursApi(
         let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting calculation");
+            // console.info(baseName + ": getting calculation");
 
             $.ajax({
                 url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
                     "?date=" + dateString +
-                    "&calculationResultTypeCode=33" +
-                    "&timeEventIds=",
+                    "&calculationResultTypeCode=33",
                 //"?userId=" + userId,
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
@@ -218,14 +217,29 @@ function AllHoursApi(
 
     
     _this.getCurrentBalance = function (userId) {
-
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting current balance");
+            let dateString = moment().startOf('day').format('YYYY-MM-DD') + 'T00:00:00';
+
+            // $.ajax({
+            //     url: `${_this.options.allHoursUrl}UserCalculations/${userId}/balance?dateTime=${dateString}`,
+            //     headers: {
+            //         "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+            //         "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+            //     },
+            //     type: "GET",
+            //     success: function (data) {
+            //         //can contain other dates. filter them out
+            //         resolve(data);
+            //     },
+            //     error: function (data) {
+            //         console.error(data);
+            //         reject(Error());
+            //     }
+            // });
+
 
             $.ajax({
-                url: _this.options.allHoursUrl + "presence/" + userId + 
-                    "?provideCurrentBalance=true",
-                //"?userId=" + userId,
+                url: _this.options.allHoursUrl + "presence/" + userId,
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                     "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
@@ -255,7 +269,7 @@ function AllHoursApi(
         let dateToString = dateTo.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting calculation");
+            // console.info(baseName + ": getting calculation");
 
             $.ajax({
                 url: _this.options.allHoursUrl + "usercalculations/" + userId +
@@ -288,7 +302,7 @@ function AllHoursApi(
         let dateToString = dateTo.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting clockings");
+            // console.info(baseName + ": getting clockings");
 
             $.ajax({
                 url: _this.options.allHoursUrl + "clockings/getclockings" +
@@ -329,10 +343,10 @@ function AllHoursApi(
         const treshold = 5 * 60;
         let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
         if (allHoursTokenIsExpired) {
-            console.log('ah token expired');
+            // console.log('ah token expired');
             _this.refreshAccessToken().then(
                 function (x) {
-                    console.log('ah token refreshed');
+                    // console.log('ah token refreshed');
                     return new Promise(promiseFunction);
                 }
             )

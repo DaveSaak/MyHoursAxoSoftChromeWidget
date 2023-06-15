@@ -1,2 +1,11 @@
 {
+    "prettier.arrowParens": "always",
+    "prettier.bracketSameLine": true,
+    "prettier.htmlWhitespaceSensitivity": "css",
+    "prettier.printWidth": 120,
+    "prettier.singleAttributePerLine": true,
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "es5",
+    "prettier.useTabs": false,
 }

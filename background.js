@@ -41,6 +41,59 @@ chrome.webRequest.onCompleted.addListener(function (details) {
     }
 );
 
+
+// chrome.webRequest.onCompleted.addListener(function (details) {
+//     const parsedUrl = new URL(details.url);
+//     if (details.tabId) {
+//         if (details.method === "GET" 
+//             && parsedUrl.pathname.includes("/_workitems") 
+//             ) 
+//         {
+//             chrome.tabs.sendMessage(details.tabId, { type: 'devops-item-loaded' });
+//             console.log('background script message sent: devops-item-loaded');
+//         }
+//     }
+// },
+//     {
+//         urls: [
+//             "https://dev.azure.com/*",
+//         ]
+//     }
+// );
+
+
+chrome.webRequest.onCompleted.addListener(function (details) {
+    const parsedUrl = new URL(details.url);
+    if (details.tabId) {
+        if (details.method === "GET" 
+            && parsedUrl.pathname.includes("/_versioncontrol/gitUserDefaultRepository") 
+            ) 
+        {
+            chrome.tabs.sendMessage(details.tabId, { type: 'git-repos-fetched' });
+            console.log('background script message sent: git-repos-fetched');
+        }
+
+
+        if (details.method === "POST" 
+        && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch") 
+        ) 
+        {
+            chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
+            console.log('background script message sent: work-item-fetched');
+        }        
+    }
+},
+    {
+        urls: [
+            "https://dev.azure.com/*",
+        ]
+    }
+);
+
+
+
+
+
 chrome.runtime.onMessage.addListener(function (message) {
     if (message && message.type == 'copy') {
         var input = document.createElement('textarea');
@@ -54,8 +107,11 @@ chrome.runtime.onMessage.addListener(function (message) {
 
     if (message && message.type == 'refreshBadge') {
         refreshBadge();
-    }    
+    }
 
+    if (message && message.type == 'start-myhours-log') {
+        startTrackingTimeDevOps({ selectionText: message.itemId}, undefined); 
+    }    
 });
 
 
@@ -64,92 +120,118 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
     if (request.action == 'createContextMenuItemStartLog') {
-        console.log(chrome.contextMenus);
-
-        chrome.contextMenus.remove("mhParent");
-
-        console.log('create mh tools');
-        chrome.contextMenus.create({
-            title: "My Hours tools",
-            id: "mhParent",
-            contexts: ["all"]
-        });
-
-        chrome.contextMenus.create({
-            // title: "Start timer for Axo Item",
-            title: "Axo: start timer for Item #%s",
-            id: "axoParent",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTimeAxo
-        });
+        // console.log(chrome.contextMenus);
 
         let options = new Options();
         options.load().then(_ => {
-            if (options.myHoursCommonDescriptions) {
-                let descriptions = options.myHoursCommonDescriptions.split(';');
-                descriptions.forEach(function (value, i) {
-                    chrome.contextMenus.create({
-                        title: "Axo: start timer for Item #%s -- " + value,
-                        id:`mhDescription_${i}`,
-                        parentId: "mhParent",
-                        contexts: ["selection"],
-                        onclick: startTrackingTimeAxo
-                    });    
-                })
+
+            chrome.contextMenus.remove("spicaContextMenu");
+
+            // console.log('create mh tools');
+            chrome.contextMenus.create({
+                title: "Spica tools",
+                id: "spicaContextMenu",
+                contexts: ["all"]
+            });
+
+
+            if (!options.useDevOps) {
+                chrome.contextMenus.create({
+                    title: "Axo: start timer for Item #%s",
+                    id: "axoParent",
+                    parentId: "spicaContextMenu",
+                    contexts: ["selection"],
+                    onclick: startTrackingTimeAxo
+                });
+
+                if (options.myHoursCommonDescriptions) {
+                    let descriptions = options.myHoursCommonDescriptions.split(';');
+                    descriptions.forEach(function (value, i) {
+                        if (!options.useDevOps) {
+                            chrome.contextMenus.create({
+                                title: "Axo: start timer for Item #%s -- " + value,
+                                id: `mhDescription_${i}`,
+                                parentId: "spicaContextMenu",
+                                contexts: ["selection"],
+                                onclick: startTrackingTimeAxo
+                            });
+                        }
+                    })
+                }
             }
-        });
-    
-        chrome.contextMenus.create({
-            // title: "Start timer for Axo Item",
-            title: "DevOps: start timer for Item #%s",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTimeDevOps
-        });
 
-        chrome.contextMenus.create({
-            // title: "Start timer with description",
-            title: "Start timer with description: '%s'",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: startTrackingTime
-        });
+            if (options.useDevOps) {
+                chrome.contextMenus.create({
+                    title: "Start timer for #%s",
+                    parentId: "spicaContextMenu",
+                    contexts: ["selection"],
+                    onclick: startTrackingTimeDevOps
+                });
+            }
 
-        chrome.contextMenus.create({
-            type: 'separator',
-            parentId: "mhParent",
-            contexts: ["all"],
-        });     
-        
-        chrome.contextMenus.create({
-            // title: "Add to running log description",
-            title: "Add to running log description",
-            parentId: "mhParent",
-            contexts: ["selection"],
-            onclick: updateRunningLogDescription
-        });          
+            chrome.contextMenus.create({
+                title: "Start timer with description: '%s'",
+                parentId: "spicaContextMenu",
+                contexts: ["selection"],
+                onclick: startTrackingTime
+            });
 
-        chrome.contextMenus.create({
-            title: "Stop running log",
-            parentId: "mhParent",
-            contexts: ["all"],
-            onclick: stopTimer
-        });
-           
-        chrome.contextMenus.create({
-            type: 'separator',
-            parentId: "mhParent",
-            contexts: ["all"],
-        });          
+            chrome.contextMenus.create({
+                type: 'separator',
+                parentId: "spicaContextMenu",
+                contexts: ["all"],
+            });
+
+            chrome.contextMenus.create({
+                title: "Add to running log description",
+                parentId: "spicaContextMenu",
+                contexts: ["selection"],
+                onclick: updateRunningLogDescription
+            });
+
+/*
+            if (sender?.url?.startsWith('https://dev.azure.com/')) {
+                chrome.contextMenus.create({
+                    type: 'separator',
+                    parentId: "spicaContextMenu",
+                    contexts: ["all"],
+                });
+
+                chrome.contextMenus.create({
+                    title: "Copy branch name to clipboard",
+                    parentId: "spicaContextMenu",
+                    contexts: ["selection"],
+                    onclick: getBranchName
+                });
+            }
+            */
+        // });
+
 
         // chrome.contextMenus.create({
-        //     title: "Add new project: '%s'",
-        //     parentId: "mhParent",
+        //     type: 'separator',
+        //     parentId: "spicaContextMenu",
+        //     contexts: ["all"],
+        // });
+
+        // chrome.contextMenus.create({
+        //     title: "Copy branch name to clipboard",
+        //     parentId: "spicaContextMenu",
         //     contexts: ["selection"],
-        //     onclick: createProject
-        // });  
-            
+        //     onclick: getBranchName
+        // });
+
+
+
+        // chrome.contextMenus.create({
+        //     title: "Stop running log",
+        //     parentId: "spicaContextMenu",
+        //     contexts: ["all"],
+        //     onclick: stopTimer
+        // });
+
+    });
+           
 
     }
 }
@@ -162,17 +244,17 @@ chrome.alarms.create("checkAxoWorklogForYesterday", {
     periodInMinutes: checkInterval
 });
 
-chrome.alarms.onAlarm.addListener(function(alarm) {
+chrome.alarms.onAlarm.addListener(function (alarm) {
     if (alarm.name === "checkAxoWorklogForYesterday") {
         console.log('alarm - checkAxoWorklogForYesterday');
         refreshBadge();
     }
 });
 
-function refreshBadge(){
+function refreshBadge() {
     let currentUser = new CurrentUser();
-    let options = new Options();  
-    
+    let options = new Options();
+
     //check only fro m 6.00 till 12.00
 
     let today = moment().startOf('day');
@@ -180,86 +262,114 @@ function refreshBadge(){
     //     return;
     // }
 
-    console.info(`refresh badge: checking ratio`);    
+    console.info(`refresh badge: checking ratio`);
     options.load().then(
         function () {
+            if (!chrome.browserAction?.setBadgeText) {
+                return;
+            }
+
             currentUser.load(function () {
-                let axoSoftApi = new AxoSoftApi(options);
                 let allHoursApi = new AllHoursApi(options);
-
                 let yesterday = today.add(-1, 'days');
-
                 console.info(`refresh badge: get minutes worked yesterday`);
-                axoSoftApi.getWorkLogMinutesWorked(yesterday).then(
-                    function (axoMinutes) {
-                        console.info(`refresh badge: axo minutes ${axoMinutes}`);
-                        allHoursApi.getCurrentUserId().then(
-                            function (currentUserId) {
-                                console.info(`refresh badge: get attendance`);                                        
-                                allHoursApi.getAttendance(currentUserId, yesterday).then(
-                                    function (data) {
-                                        if (data && data.CalculationResultValues.length > 0) {
-                                            let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                            console.info(`refresh badge: ah attendance ${attendance}`);
 
-                                            if (attendance > 0) {
+                if (options.useDevOps) {
+                    const myHoursApi = new MyHoursApi(currentUser);
 
-                                                let ratio = axoMinutes/attendance;
-                                                console.info(`refresh badge: ratio ${ratio}`);
+                    myHoursApi.getLogs(today).then(logs => {
+                        const sumDuration = logs.reduce((accumulator, log) => accumulator + log.duration / 60, 0);
+                        console.log(sumDuration);
 
-                                                chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` }); 
-                                                if (ratio < 0.9 || ratio > 1 ) {
-                                                    chrome.browserAction.setBadgeTextColor({color: '#111'});
-                                                    chrome.browserAction.setBadgeBackgroundColor({ color: '#A4002D)' });
-                                                    //chrome.browserAction.setBadgeText({ text: `$` }); 
-                                                    
-                                                    //inform user that sync must be done every hour or so
-                                                    if (options.notificationsBadRatio && moment().minute() <= 10) {
-                                                        var notificationOptions = {
-                                                            type: 'basic',
-                                                            silent: true,
-                                                            iconUrl: './images/ts-badge.png',
-                                                            title: 'Spica chrome widget',
-                                                            message: `Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`
-                                                        };
-                                                        chrome.notifications.create('', notificationOptions, function () { }); 
-                                                    }
-                                                }
-                                                else {
-                                                    chrome.browserAction.setBadgeTextColor({color: '#111'});
-                                                    chrome.browserAction.setBadgeBackgroundColor({ color: '#339933' });
-                                                }
+                        allHoursApi.getCurrentUserId().then(currentUserId => {
+                            allHoursApi.getAttendance(currentUserId, yesterday).then(results => {
+                                if (results && results.CalculationResultValues.length > 0) {
+                                    let attendance = parseInt(results.CalculationResultValues[0].Value, 10);
+                                    // console.info(`refresh badge: ah attendance ${attendance}`);
+                                    setBadge(sumDuration, attendance);
+                                } else {
+                                    console.info('refresh badge: no attendance data.');
+                                    chrome.browserAction.setBadgeText({ text: `` });
+                                }
+                            });
+                        });
+
+                    });
+                } else {
+                    let axoSoftApi = new AxoSoftApi(options);
+                    axoSoftApi.getWorkLogMinutesWorked(yesterday).then(
+                        function (axoMinutes) {
+                            console.info(`refresh badge: axo minutes ${axoMinutes}`);
+                            allHoursApi.getCurrentUserId().then(
+                                function (currentUserId) {
+                                    console.info(`refresh badge: get attendance`);
+                                    allHoursApi.getAttendance(currentUserId, yesterday).then(
+                                        function (data) {
+                                            if (data && data.CalculationResultValues.length > 0) {
+                                                let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                                                console.info(`refresh badge: ah attendance ${attendance}`);
+                                                setBadge(axoMinutes, attendance);
+                                            } else {
+                                                console.info('refresh badge: no attendance data.');
+                                                chrome.browserAction.setBadgeText({ text: `` });
                                             }
-                                            else {
-                                                console.error('refresh badge: attendance == 0');
-                                                chrome.browserAction.setBadgeText({ text: `` });                                                 
-                                            }
-                                        } else {
-                                            console.info('refresh badge: no attendance data.');
-                                            chrome.browserAction.setBadgeText({ text: `` }); 
-                                        }                                         
 
-                                    },
-                                    function (error) {
-                                        console.error('refresh badge: error while getting attendance.');
-                                        console.log(error);
-                                    }
-                                )
-                            }
-                        )
-                    }
-                )
-                .catch(error => {
-                    console.log('refresh badge: error:');
-                    console.log(error);
-                    chrome.browserAction.setBadgeText({ text: 'Err' }); 
-                    chrome.browserAction.setBadgeBackgroundColor({
-                        color: '#222222'
-                    });                                 
-                });
+                                        },
+                                        function (error) {
+                                            console.error('refresh badge: error while getting attendance.');
+                                            console.log(error);
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                        .catch(error => {
+                            console.log('refresh badge: error:');
+                            console.log(error);
+                            chrome.browserAction.setBadgeText({ text: 'Err' });
+                            chrome.browserAction.setBadgeBackgroundColor({
+                                color: '#222222'
+                            });
+                        });
+                }
             })
         }
     )
+}
+
+function setBadge(value, reference) {
+    // reference = ah
+    // value = axo, devops
+    if (reference > 0) {
+
+        let ratio = value / reference;
+        console.info(`refresh badge: ratio ${ratio}`);
+
+        chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` });
+        if (ratio < 0.9 || ratio > 1) {
+            if (chrome.browserAction.setBadgeTextColor) {
+                chrome.browserAction.setBadgeTextColor({ color: '#111' });
+            }
+            chrome.browserAction.setBadgeBackgroundColor({ color: '#FFDBDE)' });
+            //chrome.browserAction.setBadgeText({ text: `$` }); 
+
+            //inform user that sync must be done every hour or so
+            if (options.notificationsBadRatio && moment().minute() <= 10) {
+                chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { });
+            }
+        }
+        else {
+            if (chrome.browserAction.setBadgeTextColor) {
+                chrome.browserAction.setBadgeTextColor({ color: '#111' });
+            }
+            chrome.browserAction.setBadgeBackgroundColor({ color: '#43E231' });
+        }
+    }
+    else {
+        console.error('refresh badge: reference == 0');
+        chrome.browserAction.setBadgeText({ text: `` });
+    }
 }
 
 function startTrackingTimeAxo(info, tab) {
@@ -289,16 +399,16 @@ function startTrackingTimeAxo(info, tab) {
                         let myHoursNote = info.selectionText;
                         if (defaultWorkLogType !== "") {
                             myHoursNote = myHoursNote + '/' + defaultWorkLogType.toLowerCase();
-                            
+
                             if (info.menuItemId) {
                                 let descriptionIndex = info.menuItemId.split('_')[1];
                                 let description = options.myHoursCommonDescriptions.split(';')[descriptionIndex];
-                                if (description){
+                                if (description) {
                                     myHoursNote = `${myHoursNote} ${description}`;
                                 }
                             }
-                            
-                            
+
+
                         }
 
                         myHoursApi.getRefreshToken(currentUser.refreshToken).then(
@@ -312,26 +422,12 @@ function startTrackingTimeAxo(info, tab) {
                                 myHoursApi.startLog(myHoursNote + ' ')
                                     .then(
                                         function (data) {
-                                            var notificationOptions = {
-                                                type: 'basic',
-                                                iconUrl: './images/ts-badge.png',
-                                                title: 'My Hours',
-                                                message: 'Log started. Axo item #' + info.selectionText
-                                            };
-                                            //chrome.notifications.create('', 'Log started');
-                                            chrome.notifications.create('', notificationOptions, function () { });
+                                            chrome.notifications.create('', getNotificationOptions('Log started. Axo item #' + info.selectionText), function () { });
                                             refreshMyHoursPage();
                                         },
                                         function (error) {
                                             console.log(error);
-                                            var notificationOptions = {
-                                                type: 'basic',
-                                                iconUrl: './images/ts-badge.png',
-                                                title: 'My Hours',
-                                                message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                            };
-                                            //chrome.notifications.create('', 'Bummer something went wrong.');
-                                            chrome.notifications.create('', notificationOptions, function () { });
+                                            chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                                         }
                                     );
                             }
@@ -350,7 +446,6 @@ function startTrackingTimeDevOps(info, tab) {
     options.load().then(
         function () {
             currentUser.load(function () {
-                let defaultTagId = currentUser.myHoursDefaultTagId;
 
                 myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                     function (token) {
@@ -360,162 +455,57 @@ function startTrackingTimeDevOps(info, tab) {
                         currentUser.setTokenData(token.accessToken, token.refreshToken);
                         currentUser.save();
 
-                        myHoursApi.getProjects().then(projects => {
-                            var rootProjects = _.filter(projects,
-                                function (p) {
-                                    return p.clientId == options.myHoursRootClientId;
-                                });                            
-
-                            //get tasklists for projects
-                            
-                            
-
-                            let projectTaskListPromises = [];
-                            rootProjects.forEach(project => {
-                                projectTaskListPromises.push(myHoursApi.getProjectTaskList(project.id));
-                            });
-
-                            Promise.allSettled(projectTaskListPromises).then(results => {
-                                console.log(results);
-
-                                let projectTasks = [];
-                                results.forEach(result => {
-                                    if (result.status == 'fulfilled') {
-                                        result.value.forEach(v => {
-                                            v.incompletedTasks.map(t => {
-                                                projectTasks.push(
-                                                {
-                                                    projectId: result.value.projectId,
-                                                    taskId: t.id,
-                                                    taskName: t.name
-                                                });
-                                            });
-                                            // console.log(v);
-                                        });
+                        myHoursApi.startLogFromId(info.selectionText.trim(), options.myHoursDefaultTagId)
+                            .then(
+                                (data) => {
+                                    if (data.logStarted) {
+                                        refreshMyHoursPage();
+                                        chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
+                                    } else {
+                                        chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
                                     }
-                                })
-                                console.log(projectTasks);
-
-                                var matchingTask = _.find(projectTasks,
-                                    function (t) {
-                                        return t.taskName.startsWith(info.selectionText + ' ');
-                                    }); 
-                                    
-                                if (matchingTask) {
-                                    console.log(matchingTask);
-
-                                    myHoursApi.startLog('', matchingTask.projectId, matchingTask.taskId, options.myHoursDefaultTagId)
-                                        .then(
-                                            function (data) {
-                                                let tagName = '';
-                                                if (data.tags?.length > 0) {
-                                                    tagName = ', work type: ' + data.tags[0].name;
-                                                }
-
-
-                                                var notificationOptions = {
-                                                    type: 'basic',
-                                                    iconUrl: './images/ts-badge.png',
-                                                    title: 'My Hours',
-                                                    message: 'Log started. DevOps item #' + info.selectionText + tagName
-                                                };
-                                                chrome.notifications.create('', notificationOptions, function () { });
-                                                refreshMyHoursPage();
-                                            },
-                                            function (error) {
-                                                console.log(error);
-                                                var notificationOptions = {
-                                                    type: 'basic',
-                                                    iconUrl: './images/ts-badge.png',
-                                                    title: 'My Hours',
-                                                    message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                                };
-                                                //chrome.notifications.create('', 'Bummer something went wrong.');
-                                                chrome.notifications.create('', notificationOptions, function () { });
-                                            }
-                                        );
-
-
-
                                 }
-
-
-                            });
-                            //reach here regardless
-                            // {status: "fulfilled", value: 33}
-                         });
-
-
-                        // myHoursApi.getTasks().then(tasks => {
-                        //     //find task that starts with selected input
-                        //     var matchingTasks = _.find(tasks,
-                        //         function (t) {
-                        //             return t.name.startsWith(info.selectionText + ' ');
-                        //         });
-
-                        //     var task = matchingTasks ? matchingTasks[0]: undefined;
-
-
-                        //     console.log(tasks);
-
-
-
-
-
-                        // });
-
-
-
-
-                    }
-                        
-                    );
+                            )
+                            .catch(() => {
+                                chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
+                            })
+                    });
             });
         });
 }
 
-
 function startTrackingTime(info, tab) {
-
-    let currentUser = new CurrentUser();
-    let myHoursApi = new MyHoursApi(currentUser);
-
-    myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-        function (token) {
-            console.info('got refresh token. token: ');
-            console.info(token);
-
-            currentUser.setTokenData(token.accessToken, token.refreshToken);
-            currentUser.save();
-
-            myHoursApi.startLog(info.selectionText)
+    const options = new Options();
+    options.load().then(
+        _ => {
+            const currentUser = new CurrentUser();
+            currentUser.load(_ => {
+                const myHoursApi = new MyHoursApi(currentUser);
+                myHoursApi.getRefreshToken(currentUser.refreshToken)
                 .then(
-                    function (data) {
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'Log started. Description: ' + info.selectionText
-                        };
-                        //chrome.notifications.create('', 'Log started');
-                        chrome.notifications.create('', notificationOptions, function () { });
-                        refreshMyHoursPage();
-                    },
-                    function (error) {
-                        console.log(error);
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                        };
-                        //chrome.notifications.create('', 'Bummer something went wrong.');
-                        chrome.notifications.create('', notificationOptions, function () { });
-                    }
-                );
-        }
-    )    
+                    function (token) {
+                        console.info('got refresh token. token: ');
+                        console.info(token);
 
+                        currentUser.setTokenData(token.accessToken, token.refreshToken);
+                        currentUser.save();
+
+                        myHoursApi.startLog(info.selectionText)
+                            .then(
+                                function (data) {
+                                    chrome.notifications.create('', getNotificationOptions('Log started. Description: ' + info.selectionText), function () { });
+                                    refreshMyHoursPage();
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
+                                }
+                            );
+                    }
+                )
+            })
+        }
+    );
 }
 
 function stopTimer(info, tab) {
@@ -538,30 +528,19 @@ function stopTimer(info, tab) {
                         myHoursApi.stopTimer()
                             .then(
                                 function (data) {
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'My Hours',
-                                    };
+                                    let message = '';
                                     if (data) {
-                                        notificationOptions.message = "Timer stopped: " + data.note
+                                        message = "Timer stopped: " + data.note
                                     }
                                     else {
-                                        notificationOptions.message = "There are no running logs."
+                                        message = "There are no running logs."
                                     }
-                                    chrome.notifications.create('', notificationOptions, function () { });
+                                    chrome.notifications.create('', getNotificationOptions(message), function () { });
                                     refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'My Hours',
-                                        message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                    };
-                                    //chrome.notifications.create('', 'Bummer something went wrong.');
-                                    chrome.notifications.create('', notificationOptions, function () { });
+                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                                 }
                             );
                     }
@@ -570,6 +549,25 @@ function stopTimer(info, tab) {
             });
         });
 }
+
+// function insertTimeStamp(info, tab){
+
+//         chrome.tabs.sendMessage(tab.id, "getClickedElement", {frameId: info.frameId}, data => {
+//             if (data?.element) {
+//                 const timeStamp = new Date().toDateString() + ': ';
+
+//                 element.focus();
+//                 [...timeStamp].map((x) => {
+//                     document.dispatchEvent(new KeyboardEvent("keydown", { key: x }));
+//                 });
+//             }
+
+//         });
+
+
+
+
+// }
 
 function createProject(info, tab) {
 
@@ -587,29 +585,15 @@ function createProject(info, tab) {
             myHoursApi.createProject(info.selectionText)
                 .then(
                     function (data) {
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: 'Project created.'
-                        };
-                        //chrome.notifications.create('', 'Log started');
-                        chrome.notifications.create('', notificationOptions, function () { });
+                        chrome.notifications.create('', getNotificationOptions('Project created.'), function () { });
                     },
                     function (error) {
                         console.log(error);
-                        var notificationOptions = {
-                            type: 'basic',
-                            iconUrl: './images/ts-badge.png',
-                            title: 'MyHours',
-                            message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                        };
-                        //chrome.notifications.create('', 'Bummer something went wrong.');
-                        chrome.notifications.create('', notificationOptions, function () { });
+                        chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                     }
                 );
         }
-    )    
+    )
 
 }
 
@@ -624,56 +608,40 @@ function updateRunningLogDescription(info, tab) {
             currentUser.load(function () {
                 myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                     function (token) {
-                        console.info('got refresh token. token: ');
-                        console.info(token);
-
                         currentUser.setTokenData(token.accessToken, token.refreshToken);
                         currentUser.save();
 
                         myHoursApi.updateRunningLogDescription(info.selectionText)
                             .then(
                                 function (updatedLog) {
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'MyHours',
-                                    };
+
                                     if (updatedLog) {
-                                        console.log(updatedLog);
-                                        notificationOptions.message = "Description updated: " + updatedLog.note
+                                        chrome.notifications.create('', getNotificationOptions("Description updated: " + updatedLog.note), function () { });
                                     }
                                     else {
-                                        notificationOptions.message = "There are no running logs."
+                                        chrome.notifications.create('', getNotificationOptions("There are no running logs"), function () { });
                                     }
-
-                                    //chrome.notifications.create('', 'Log started');
-                                    chrome.notifications.create('', notificationOptions, function () { });
                                     refreshMyHoursPage();
                                 },
                                 function (error) {
                                     console.log(error);
-                                    var notificationOptions = {
-                                        type: 'basic',
-                                        iconUrl: './images/ts-badge.png',
-                                        title: 'MyHours',
-                                        message: "There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."
-                                    };
-                                    //chrome.notifications.create('', 'Bummer something went wrong.');
-                                    chrome.notifications.create('', notificationOptions, function () { });
+                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
                                 }
                             );
                     }
                 )
-                  
+
             });
         });
 }
 
 function getBranchName(info, tab) {
-    console.log("selection: " + info.selectionText);
+
+    /*
+    // console.log("selection: " + info.selectionText);
     let branchName = info.selectionText.toLowerCase().trim().replace(/ /g, "-");
 
-    console.log('background script - copy-to-clipboard message sent.');
+    // console.log('background script - copy-to-clipboard message sent.');
     //chrome.tabs.sendMessage(tab.id, { type: 'copy-to-clipboard', text: branchName });
 
     navigator.clipboard.writeText(request.branchName).then(function () {
@@ -681,21 +649,53 @@ function getBranchName(info, tab) {
     }, function (err) {
         console.error('Async: Could not copy text: ', err);
     });
+    */
 
+
+    let branchName = info.selectionText
+        .toLowerCase()
+        .trim()
+        .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+        .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+        .replace(/ /g, "-");     //replace spaces with dashes
+
+    // let fullBranchName = itemId + "-" + branchName;
+
+    // chrome.runtime.sendMessage({
+    //     type: 'copy',
+    //     text: branchName
+    // });
+
+    var input = document.createElement('textarea');
+    document.body.appendChild(input);
+    input.value = branchName;
+    input.focus();
+    input.select();
+    document.execCommand('Copy');
+    input.remove();
+
+    chrome.notifications.create('', getNotificationOptions("Copied to clipboard: " + branchName), function () { });
 
 }
 
-function refreshMyHoursPage(){
+function refreshMyHoursPage() {
 
-    chrome.tabs.query({url: 'https://app.myhours.com/*'}, function(foundTabs) {
+    chrome.tabs.query({ url: 'https://app.myhours.com/*' }, function (foundTabs) {
         foundTabs.forEach(myHoursTab => {
             console.info('refreshing myhours tabs');
             chrome.tabs.reload(
                 myHoursTab.id
-              );
+            );
         });
     });
 
 }
 
-
+function getNotificationOptions(message) {
+    return {
+        type: 'basic',
+        iconUrl: './images/ts-badge128.png',
+        title: 'Spica extension',
+        message
+    };
+}

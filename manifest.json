@@ -2,11 +2,11 @@
     "manifest_version": 2,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "3.2.0",
+    "version": "3.4.0",
     "author": "Dave",
     "browser_action": {
         "default_popup": "popup.html",
-        "default_icon": "./images/TS-badge.png"
+        "default_icon": "./images/TS-badge128.png"
     },
     "options_page": "options.html",
     "background": {
@@ -14,6 +14,10 @@
         "persistent": true
     },
     "content_scripts": [
+        {
+            "matches": ["*://*/*"],
+            "js": ["content-script-context-menu.js"]
+        },
         {
             "matches": ["https://app.myhours.com/*"],
             "js": ["jquery-3.3.1.min.js", "content-script.js"],
@@ -30,10 +34,10 @@
         },
         {
             "matches": [
-                "https://dev.azure.com/Spica-International/*"
+                "https://dev.azure.com/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-devops.js"]
-        }        
+        }      
     ],
     "icons": {
         "16": "./images/TS-badge16.png",
@@ -65,6 +69,6 @@
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
         "https://kit.fontawesome.com/*",
-        "https://dev.azure.com/*"        
+        "https://dev.azure.com/*"
     ]
 }

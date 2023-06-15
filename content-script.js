@@ -7,73 +7,93 @@ chrome.runtime.onMessage.addListener(function (request) {
     console.log('content script - got request: ' + request.type);
     console.log(request);
 
+
     if (request && request.type === 'logs-changed') {
         console.log('hello from content script - page rendered');
 
-        //old track view
-        $('log-action-toolbar').parent().parent().each(function (index, data) {
+        // let options = new Options();
+        // options.load().then(_ => {
 
-            var dataContainer = $(data).find('.d-flex.flex-column');
-            var description = dataContainer.find('p').text();
-            console.log('description: ' + description);
+            //old track view
+            $('log-action-toolbar').parent().parent().each(function (index, data) {
 
-            var itemId = getAxoItemId(description);
-            if (!itemId) {
-                var clientProjectTask = $(data).find('span').text();
-                console.log('clientProjectTask: ' + clientProjectTask);
-                itemId = getAxoItemId(clientProjectTask);
-            }
+                var dataContainer = $(data).find('.d-flex.flex-column');
+                var description = dataContainer.find('p').text();
+                console.log('description: ' + description);
 
-            let colorIndex = numberToIndex(itemId, 8);
-            let logColor = 'whitesmoke';
-            if (colorIndex > -1) {
-                logColor = colors[colorIndex];
-            }
-
-            let logStyle = 'solid 6px ' + logColor;
-            $(data).css('border-left', logStyle);
-        });
-
-
-        //new track view
-        $('.list-log').each(function (index, data) {
-
-            var dataContainer = $(data);
-            var description = dataContainer.find('h5 #textDisplay p').text();
-            console.log('description: ' + description);
-
-            var itemId = getAxoItemId(description);
-            if (!itemId) {
-                var clientProjectTask = $(data).find('[data-projectid]').text();
-                console.log('clientProjectTask: ' + clientProjectTask);
-                itemId = getAxoItemId(clientProjectTask);
-            }
-
-            let colorIndex = numberToIndex(itemId, 8);
-            let logColor = 'whitesmoke';
-            let textColor = 'black';
-            if (colorIndex > -1) {
-                logColor = colors[colorIndex];
-                textColor = textColors[colorIndex];
-            }
-
-            let logStyle = 'solid 6px ' + logColor;
-            $(data).find('.row').css('border-left', logStyle);
-
-            //color timeline -- search by description
-            if (description) {
-                let timelineContentItem = $('.vis-timeline .vis-itemset .vis-item div.vis-item-content:contains("' + description + '")');
-                if (timelineContentItem) {
-                    console.log(timelineContentItem);
-                    let timelineItem = $(timelineContentItem).closest('.vis-item');
-                    // timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:white !important; border-color:' + logColor + ' !important;');
-                    timelineItem.attr('style', `background-color: ${logColor} !important; opacity:0.85; line-height: 1.5rem; font-size: 0.88em; color: ${textColor} !important; border-color: ${logColor} !important; border-radius: 0 !important;`);
-                    
-                    //timelineItem.css('background-color', logColor);
-                    // timelineItem.css('color', 'white');
+                var itemId = getAxoItemId(description);
+                if (!itemId) {
+                    var clientProjectTask = $(data).find('span').text();
+                    console.log('clientProjectTask: ' + clientProjectTask);
+                    itemId = getAxoItemId(clientProjectTask);
                 }
-            }
-        });
+
+                let colorIndex = numberToIndex(itemId, 8);
+                let logColor = 'whitesmoke';
+                if (colorIndex > -1) {
+                    logColor = colors[colorIndex];
+                }
+
+                let logStyle = 'solid 6px ' + logColor;
+                $(data).css('border-left', logStyle);
+            });
+
+
+            //new track view
+            $('.list-log').each(function (index, data) {
+
+                var dataContainer = $(data);
+                var description = dataContainer.find('h5 #textDisplay p').text();
+                console.log('description: ' + description);
+
+
+                var itemId = '';
+
+                // if (options.useDevOps) {
+                //     const taskId = dataContainer.find('[data-taskid]').data('taskid');
+                //     itemId = taskId;
+                //     console.log('taskid: ' + taskId);
+                // }
+                // else {
+
+                    // itemId = getAxoItemId(description);
+                    // if (!itemId) {
+                        const taskId = dataContainer.find('[data-taskid]').data('taskid');
+                        var itemId = taskId;
+                        console.log('taskid: ' + taskId);
+                        // var clientProjectTask = $(data).find('[data-projectid]').text();
+                        // console.log('clientProjectTask: ' + clientProjectTask);
+                        // itemId = getAxoItemId(clientProjectTask);
+                    // }
+                // }
+
+                let colorIndex = numberToIndex(itemId, 8);
+                console.log('colorIndex: ' + colorIndex);
+                let logColor = 'lightgray';
+                let textColor = 'black';
+                if (colorIndex > -1) {
+                    logColor = colors[colorIndex];
+                    textColor = textColors[colorIndex];
+                }
+
+                let logStyle = 'solid 6px ' + logColor;
+                $(data).find('.row').css('border-left', logStyle);
+
+                //color timeline -- search by description
+                if (description) {
+                    let timelineContentItem = $('.vis-timeline .vis-itemset .vis-item div.vis-item-content:contains("' + description + '")');
+                    if (timelineContentItem) {
+                        console.log(timelineContentItem);
+                        let timelineItem = $(timelineContentItem).closest('.vis-item');
+                        // timelineItem.attr('style', 'background-color: ' + logColor + ' !important; color:white !important; border-color:' + logColor + ' !important;');
+                        timelineItem.attr('style', `background-color: ${logColor} !important; opacity:0.85; line-height: 1.5rem; font-size: 0.88em; color: ${textColor} !important; border-color: ${logColor} !important; border-radius: 0 !important;`);
+                        
+                        //timelineItem.css('background-color', logColor);
+                        // timelineItem.css('color', 'white');
+                    }
+                }
+            });
+        // })
     }
 
     else if (request && request.type === 'copy-to-clipboard') {

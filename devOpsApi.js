@@ -7,42 +7,16 @@ function DevOpsApi(options) {
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + btoa(":" + _this.options.devOpsPersonalAccessToken)
     };
+    _this.ajaxHeadersPatch = {
+        'Content-Type': 'application/json-patch+json',
+        'Authorization': 'Basic ' + btoa(":" + _this.options.devOpsPersonalAccessToken)
+    };
 
-/*
-    _this.getMyItemsIds = function () {
-        return new Promise(function (resolve, reject) {
-            console.info('getting my items from devops');
-
-            var queryData =
-            {
-                query:
-                    "Select [System.Id], [System.Title], [System.State], [System.AssignedTo] " +
-                    "From WorkItems " +
-                    "Where ([System.WorkItemType] = 'Task' OR [System.WorkItemType] = 'Bug')  AND [State] <> 'Closed' AND [State] <> 'Removed' AND [System.AssignedTo] = @Me " +
-                    "order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
-            }
-
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + "/_apis/wit/wiql?api-version=4.1",
-                headers: _this.ajaxHeaders,
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(queryData),
-
-                success: function (response) {
-                    resolve(response);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
+    _this.getPullRequestPortalLink = function (projectName, repositoryName, codeReviewId) {
+        return `${_this.options.devOpsInstanceUrl}${encodeURIComponent(projectName)}/_git/${encodeURIComponent(repositoryName)}/pullrequest/${codeReviewId}`;
     }
-  */  
 
     _this.getMyItemsIdsAsync = async function () {
-
-        console.info('getting my items from devops');
         const url = _this.options.devOpsInstanceUrl + "/_apis/wit/wiql?api-version=4.1";
         const queryData =
         {
@@ -59,216 +33,124 @@ function DevOpsApi(options) {
             body: JSON.stringify(queryData)
         });
 
-        return response.json();     
-    }    
-
-    /*
-    _this.getItems = function (ids) {
-        return new Promise(function (resolve, reject) {
-            console.info('getting items from devops');
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
-                // url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
-                // url: devOpsUri + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0",
-                headers: {
-                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-                },
-                // headers:  {"Authorization": "Basic " + btoa(":" + pat)},
-                type: "GET",
-
-                success: function (response) {
-                    resolve(response);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
+        return response.json();
     }
-    */
 
     _this.getItemsAsync = async function (ids) {
-        console.info('getting items from devops');
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType&api-version=6.0";
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,Microsoft.VSTS.Scheduling.CompletedWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
         const response = await fetch(url, {
             headers: _this.ajaxHeaders
         });
-        return response.json();        
+        return response.json();
     }
 
     _this.getItemAsync = async function (id) {
-        console.info('getting item from devops');
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + id;
+        const url = `${_this.options.devOpsInstanceUrl}/_apis/wit/workitems/${id}?$expand=relations`
         const response = await fetch(url, {
             headers: _this.ajaxHeaders,
         });
-        return response.json();  
+        return response.json();
+    }
+
+    _this.getItemByUrlAsync = async function (url) {
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders,
+        });
+        return response.json();
+    }
+
+    _this.getItemUpdatesAsync = async function (id) {
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + id + "/updates?$top={100}&&api-version=5.1";
+        const response = await fetch(url, {
+            headers: _this.ajaxHeaders,
+        });
+        return response.json();
     }    
 
-/*
-    _this.getItem = function () {
-        return new Promise(function (resolve, reject) {
-            console.info('getting my items from devops');
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems/26?api-version=6.0",
-                headers: {
-                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-                },
-                type: "GET",
+    // _this.updateRemainingAndCompletedWorkAsync = async function (id, completedWork, remainingWork) {
+    //     var updateData = [
+    //         {
+    //             "op": "add",
+    //             "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
+    //             "value": remainingWork
+    //         },
+    //         {
+    //             "op": "add",
+    //             "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
+    //             "value": completedWork
+    //         },
+    //     ];
 
-                success: function (response) {
-                    resolve(response);
-                },
-                error: function () {
-                    reject();
-                }
-            });
-        })
-    }
-    */
+    //     const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + id + "?api-version=6.0";
+    //     const response = await fetch(url, {
+    //         headers: _this.ajaxHeadersPatch,
+    //         method: 'PATCH',
+    //         body: JSON.stringify(updateData)
+    //     });
 
-    _this.updateItemRemainingAndCompletedWork = function () {
-        return new Promise(function (resolve, reject) {
-            console.info('getting my items from devops');
+    //     return response.json();
+    // };
 
-            var updateData = [
+
+    _this.updateRemainingAndCompletedWorkAsync = async function (devOpsItem, hoursDone) {
+
+        let completedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'];
+        let remainingValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'];
+        let estimatedValue = devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'];
+
+        let completed = (completedValue == undefined || Number.isNaN(completedValue)) ? 0 : Number(completedValue);
+        let estimated = (estimatedValue == undefined || Number.isNaN(estimatedValue)) ? 0 : Number(estimatedValue);
+        let remaining = (remainingValue == undefined || Number.isNaN(remainingValue)) ? estimated : Number(remainingValue);
+
+        let logDurationInHours = hoursDone;
+
+        completed = Math.round((completed + logDurationInHours) * 100) / 100;
+        remaining = Math.round(Math.max(remaining - logDurationInHours, 0) * 100) / 100;
+
+        const state = devOpsItem.fields['System.State'];
+        var updateData = [
+            {
+                "op": "add",
+                "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
+                "value": completed
+            },
+        ];        
+        
+        
+        if (state != "Closed") {
+            updateData.push(
                 {
                     "op": "add",
                     "path": "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
-                    "value": "101"
-                },
-                {
-                    "op": "add",
-                    "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
-                    "value": "17"
-                },
-            ]
-
-
-            $.ajax({
-                url: _this.options.devOpsInstanceUrl + "/AgileProject/_apis/wit/workitems/26?api-version=6.0",
-                headers: {
-                    "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-                },
-                type: "PATCH",
-                contentType: "application/json-patch+json",
-                data: JSON.stringify(updateData),
-
-                success: function (response) {
-                    console.info(response.data);
-                    resolve(response.data);
-                },
-                error: function () {
-                    reject();
+                    "value": remaining
                 }
-            });
-        })
-    }
+            )
+        }
 
+        if (state === 'New'){
+            updateData.push(
+                {
+                    "op": "replace",
+                    "path": "/fields/System.State",
+                    "value": "Active"
+                }
+            )
+        }
 
-    // _this.getMyItemsX = function () {
-    //     return new Promise(function (resolve, reject) {
-    //         console.info('getting my items from devops');
-    //         $.ajax({
-    //             url: _this.options.devOpsInstanceUrl + "/_apis/work/accountMyWork?%24queryOption=3",
-    //             headers: {
-    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-    //             },
-    //             type: "GET",
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + devOpsItem.id + "?api-version=6.0";
+        const response = await fetch(url, {
+            headers: _this.ajaxHeadersPatch,
+            method: 'PATCH',
+            body: JSON.stringify(updateData)
+        });
 
-    //             success: function (response) {
-    //                 //console.info(response);
-    //                 resolve(response.data);
-    //             },
-    //             error: function () {
-    //                 reject();
-    //             }
-    //         });
-    //     })
-    // }
-
-
-    // _this.getMyCommitsOld = function (from, to) {
-    //     return new Promise(function (resolve, reject) {
-    //         console.info('getting my commits within time frame from devops');
-    //         $.ajax({
-    //             url: _this.options.devOpsInstanceUrl +
-    //                 `/_apis/git/repositories/414ad502-0e31-4ffa-8fd6-9a0260246b19/commits?api-version=6.0` +
-    //                 `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
-    //                 `&searchCriteria.fromDate=${from.toISOString()}` +
-    //                 `&searchCriteria.toDate=${to.toISOString()}`,
-    //             headers: {
-    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-    //             },
-    //             type: "GET",
-
-    //             success: function (response) {
-    //                 // console.info(response);
-    //                 resolve(response);
-    //             },
-    //             error: function () {
-    //                 reject();
-    //             }
-    //         });
-    //     })
-    // }
-
-    // _this.getMyCommitsFromRepo = function (from, to, repo) {
-    //     return new Promise(function (resolve, reject) {
-    //         console.info('getting my commits within time frame from devops');
-    //         $.ajax({
-    //             url: _this.options.devOpsInstanceUrl +
-    //                 `/_apis/git/repositories/${repo}/commits?api-version=6.0` +
-    //                 `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
-    //                 `&searchCriteria.fromDate=${from.toISOString()}` +
-    //                 `&searchCriteria.toDate=${to.toISOString()}`,
-    //             headers: {
-    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-    //             },
-    //             type: "GET",
-
-    //             success: function (response) {
-    //                 // console.info(response);
-    //                 resolve(response);
-    //             },
-    //             error: function () {
-    //                 reject();
-    //             }
-    //         });
-    //     })
-    // }
-
-    // _this.getMyRepositories = function () {
-    //     return new Promise(function (resolve, reject) {
-    //         console.info('getting my repositories from devops');
-    //         $.ajax({
-    //             url: _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`,
-    //             headers: {
-    //                 "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-    //             },
-    //             type: "GET",
-
-    //             success: function (response) {
-    //                 // console.info(response);
-    //                 resolve(response);
-    //             },
-    //             error: function () {
-    //                 reject();
-    //             }
-    //         });
-    //     })
-    // }
+        return response.json();
+    };
 
     _this.getMyRepositoriesAsync = async function () {
-        console.info('getting my repositories from devops');
-
         const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;
         const response = await fetch(url, {
             headers: _this.ajaxHeaders
-            // headers: {
-            //     'Content-Type': 'application/json',
-            //     "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-            // },
         });
         return response.json();
     }
@@ -276,20 +158,16 @@ function DevOpsApi(options) {
     _this.getMyCommitsAsync = async function (from, to) {
         let commitPromises = [];
         const repos = await this.getMyRepositoriesAsync();
-            repos.value.forEach(repo => {
-                const url = _this.options.devOpsInstanceUrl +
-                    `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
-                    `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
-                    `&searchCriteria.fromDate=${from.toISOString()}` +
-                    `&searchCriteria.toDate=${to.toISOString()}`;
+        repos.value.forEach(repo => {
+            const url = _this.options.devOpsInstanceUrl +
+                `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
+                `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
+                `&searchCriteria.fromDate=${from.toISOString()}` +
+                `&searchCriteria.toDate=${to.toISOString()}`;
 
-                commitPromises.push(fetch(url, {
-                    headers: _this.ajaxHeaders,
-                    // headers: {
-                    //     'Content-Type': 'application/json',
-                    //     "Authorization": "Basic " + btoa(":" + _this.options.devOpsPersonalAccessToken)
-                    // },
-                }).then(res => res.json()));
+            commitPromises.push(fetch(url, {
+                headers: _this.ajaxHeaders,
+            }).then(res => res.json()));
         });
 
         let commits = [];
@@ -299,7 +177,48 @@ function DevOpsApi(options) {
                 commits.push(...response.value);
             }
         });
+
         return commits;
     }
 
+    _this.getPullRequestsAsync = async function(){
+
+        let pullRequestPromises = [];
+        const repos = await this.getMyRepositoriesAsync();
+
+        const selectedPullRequestRepos = _this.options.devOpsPullRequestRepos?.split(',');
+        repos.value.forEach(repo => {
+            if (!selectedPullRequestRepos || selectedPullRequestRepos.length === 0 || selectedPullRequestRepos.find(x => x === repo.name)) {
+                const url = _this.options.devOpsInstanceUrl +
+                    `/_apis/git/repositories/${repo.id}/pullrequests?api-version=7.0` +
+                    `&searchCriteria.status=active`;
+
+                pullRequestPromises.push(fetch(url, {
+                    headers: _this.ajaxHeaders,
+                }).then(
+                    res => {
+                        console.log(res.headers.get('x-vss-userdata'));
+                        return res.json()
+                    }
+                ));
+            }
+        });
+
+        let pullRequests = [];
+        const responses = await Promise.all(pullRequestPromises);
+        responses.forEach(response => {
+            if (response.count > 0) {
+                pullRequests.push(...response.value);
+            }
+        });
+
+        return pullRequests;        
+
+        // const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories/pullrequests?searchCriteria.status=active&api-version=7.0`;
+        // const response = await fetch(url, {
+        //     headers: _this.ajaxHeaders
+        // });
+        // return response.json();        
+
+    }
 }

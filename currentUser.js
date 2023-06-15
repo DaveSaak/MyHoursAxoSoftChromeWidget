@@ -24,12 +24,12 @@ function CurrentUser() {
     }
 
     this.save = function () {
-        console.info("saving current user");
+        // console.info("saving current user");
 
         if (chrome == undefined || chrome.storage == undefined) {
             console.warn('cannot access chrome storage api');
         } else {
-            console.info("saving current user to the chrome store");
+            // console.info("saving current user to the chrome store");
             chrome.storage.sync.set({
                 'currentUser': this
             })
@@ -37,18 +37,18 @@ function CurrentUser() {
     }
 
     this.load = function (callback) {
-        console.info("loading current user");
+        // console.info("loading current user");
 
         if (chrome == undefined || chrome.storage == undefined) {
             console.warn('cannot access chrome storage api');
 
             if (callback) {
-                console.info("executing load current user callback");
+                // console.info("executing load current user callback");
                 callback();
             }
 
         } else {
-            console.info("loading current user from the chrome store");
+            // console.info("loading current user from the chrome store");
 
             var currentUser = this;
 
@@ -71,7 +71,7 @@ function CurrentUser() {
                 }
 
                 if (callback) {
-                    console.info("executing load current user callback");
+                    // console.info("executing load current user callback");
                     callback();
                 }
             });
@@ -80,7 +80,7 @@ function CurrentUser() {
 
     this.clear = function () {
 
-        console.info("clearing current user");
+        // console.info("clearing current user");
         this.accessToken = undefined;
         this.refreshToken = undefined;
 
@@ -96,7 +96,7 @@ function CurrentUser() {
         if (chrome == undefined || chrome.storage == undefined) {
             console.warn('cannot access chrome storage api');
         } else {
-            console.info("clearing current user from the chrome store");
+            // console.info("clearing current user from the chrome store");
             chrome.storage.sync.remove('currentUser', undefined);
         }
 

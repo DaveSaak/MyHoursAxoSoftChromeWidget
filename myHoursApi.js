@@ -3,9 +3,17 @@ function MyHoursApi(currentUser) {
 
     var baseUrl = 'https://api2.myhours.com/api/';
     var _this = this;
+  
 
     _this.currentUser = currentUser;
     //_this.accessToken = undefined;
+
+    _this.getAjaxHeaders = function() {
+        return {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + _this.currentUser.accessToken
+        }
+    }; 
 
 
     _this.getUser = function () {
@@ -13,7 +21,7 @@ function MyHoursApi(currentUser) {
 
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting user");
+                // console.info("api: getting user");
 
                 $.ajax({
                     //url: "https://api.myhours.com/users",
@@ -38,7 +46,7 @@ function MyHoursApi(currentUser) {
     _this.getAccessToken = function (email, password) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting token");
+                // console.info("api: getting token");
 
                 var loginData = {
                     clientId: "3d6bdd0e-5ee2-4654-ac53-00e440eed057",
@@ -68,7 +76,7 @@ function MyHoursApi(currentUser) {
     _this.getRefreshToken = function (refreshToken) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: using refresh token");
+                // console.info("api: using refresh token");
 
                 var refreshData = {
                     grantType: "refresh_token",
@@ -97,7 +105,7 @@ function MyHoursApi(currentUser) {
         date = date.startOf('day');
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting logs");
+                // console.info("api: getting logs");
 
                 $.ajax({
                     url: baseUrl + "logs",
@@ -130,7 +138,7 @@ function MyHoursApi(currentUser) {
     _this.getLog = function (runningLog) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting log " + runningLog.id);
+                // console.info("api: getting log " + runningLog.id);
 
                 _this.getLogs(moment(runningLog.date))
                     .then(logs => {
@@ -160,7 +168,7 @@ function MyHoursApi(currentUser) {
     _this.getTimes = function (logId) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting times");
+                // console.info("api: getting times");
 
                 $.ajax({
                     url: baseUrl + "times/" + logId,
@@ -183,7 +191,7 @@ function MyHoursApi(currentUser) {
     _this.getActivity = function (dateFrom, dateTo) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting times");
+                // console.info("api: getting times");
 
                 $.ajax({
                     url: baseUrl + "/reports/activity",
@@ -214,7 +222,7 @@ function MyHoursApi(currentUser) {
     _this.addLog = function (projectId, comment, duration) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: adding log");
+                // console.info("api: adding log");
 
                 var currentTime = moment.utc();
                 var newLogData = {
@@ -228,7 +236,7 @@ function MyHoursApi(currentUser) {
                     additionalCost: 0
                 };
 
-                console.info(newLogData);
+                // console.info(newLogData);
 
                 $.ajax({
                     url: baseUrl + "logs/insertlog",
@@ -253,7 +261,7 @@ function MyHoursApi(currentUser) {
     _this.startLog = function (comment, projectId = undefined, taskId = undefined, tagId = undefined) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: staring log");
+                // console.info("api: staring log");
 
                 var currentTime = moment();
                 var newLogData = {
@@ -267,10 +275,13 @@ function MyHoursApi(currentUser) {
                     newLogData.tagIds = [];
                 }
                 
-                if (projectId && taskId) {
-                    newLogData.projectId = projectId;
+                if (taskId) {
                     newLogData.taskId = taskId;
                 }
+
+                if (projectId) {
+                    newLogData.projectId = projectId;
+                }                
 
                 if (tagId){
                     newLogData.tagIds = [];
@@ -278,8 +289,8 @@ function MyHoursApi(currentUser) {
                     newLogData.tagIds.push(tagId);
                 }
 
-                console.info(newLogData);
-                console.info(JSON.stringify(newLogData));
+                // console.info(newLogData);
+                // console.info(JSON.stringify(newLogData));
 
                 $.ajax({
                     url: baseUrl + "logs/startNewLog",
@@ -301,10 +312,41 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    _this.startLogFromId = function(text, myHoursDefaultTagId){
+
+        return new Promise(
+            function (resolve, reject) {        
+
+                _this.getTaskLists().then(taskLists => {
+                    let projectTaskFound = false;
+                    let logStarted = false;
+                    for (const taskList of taskLists) {
+                        const projectTask = taskList.incompletedTasks.find(x => x.name.startsWith(text + ' '));
+                        if (projectTask) {
+                            projectTaskFound = true;
+                            _this.startLog('', taskList.projectId, projectTask.id, myHoursDefaultTagId).then(
+                                function (data) {
+                                    logStarted = true;
+                                    resolve({ logStarted, projectTask});
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    reject({ logStarted, projectTask});
+                                }
+                            )
+                        }
+                    }
+                    if (!projectTaskFound){
+                        resolve({ logStarted });
+                    }
+                })
+            })
+    }
+
     _this.startFromExisting = function(logId){
         return new Promise(
             function (resolve, reject) {
-                console.info("api: staring log from existing");
+                // console.info("api: staring log from existing");
 
                 var currentTime = moment();
                 var newLogData = {
@@ -312,7 +354,7 @@ function MyHoursApi(currentUser) {
                     startTime: currentTime.toISOString(true),
                 };
 
-                console.info(newLogData);
+                // console.info(newLogData);
 
                 $.ajax({
                     url: baseUrl + "logs/insertAndStartFromExisting",
@@ -337,21 +379,23 @@ function MyHoursApi(currentUser) {
     _this.stopTimer = function (comment) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: stop timer");
+                // console.info("api: stop timer");
 
                 _this.getRunning().then(
                     function (logs) {
-                        console.info('got running log: ');
-                        console.info(logs);
+                        // console.info('got running log: ');
+                        // console.info(logs);
 
-                        if (logs.length > 0) {
+                        const myRunningLog = logs.find(x => x.userId == _this.currentUser.id);
+
+                        if (myRunningLog) {
                             var currentTime = moment();
                             var stopTimerData = {
-                                logId: logs[0].id,
+                                logId: myRunningLog.id,
                                 time: currentTime.toISOString(true),
                             };
 
-                            console.info(stopTimerData);
+                            // console.info(stopTimerData);
 
                             $.ajax({
                                 url: baseUrl + "logs/stopTimer",
@@ -386,19 +430,21 @@ function MyHoursApi(currentUser) {
     _this.updateRunningLogDescription = function (comment) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: update running log description");
+                // console.info("api: update running log description");
 
                 _this.getRunning().then(
                     function (logs) {
-                        console.info('got running log: ');
-                        console.info(logs);
+                        // console.info('got running log: ');
+                        // console.info(logs);
 
-                        if (logs.length === 1) {
-                            _this.getLog(logs[0])
+                        const myRunningLog = logs.find(x => x.userId == _this.currentUser.id);
+
+                        if (myRunningLog) {
+                            _this.getLog(myRunningLog)
                                 .then(runningLog => {
                                     var updatedLogData = {
                                         id: runningLog.id,
-                                        note: runningLog.note + ' ' + comment
+                                        note: ((runningLog.note == null ? '' : runningLog.note + ' ') + comment)
                                     };
 
                                     $.ajax({
@@ -439,7 +485,7 @@ function MyHoursApi(currentUser) {
     _this.updateLogDescription = function (log, comment) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: update log description");
+                // console.info("api: update log description");
 
                 _this.getLog(log)
                     .then(existingLog => {
@@ -476,7 +522,7 @@ function MyHoursApi(currentUser) {
     _this.getRunning = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: get running timer");
+                // console.info("api: get running timer");
 
                 var currentTime = moment();
                 // var runningData = {
@@ -508,7 +554,7 @@ function MyHoursApi(currentUser) {
     _this.crateProject = function (projectName) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: creating project log");
+                // console.info("api: creating project log");
 
                 var currentTime = moment();
                 var newProjectData = {
@@ -526,7 +572,7 @@ function MyHoursApi(currentUser) {
                     // roundInterval": 0
                 };
 
-                console.info(newProjectData);
+                // console.info(newProjectData);
 
                 $.ajax({
                     url: baseUrl + "project",
@@ -551,7 +597,7 @@ function MyHoursApi(currentUser) {
     _this.getTags = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting tags");
+                // console.info("api: getting tags");
 
                 $.ajax({
                     url: baseUrl + "tags",
@@ -574,7 +620,7 @@ function MyHoursApi(currentUser) {
     _this.getTasks = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting tasks");
+                // console.info("api: getting tasks");
                 $.ajax({
                     url: baseUrl + "tasks",
                     headers: {
@@ -596,7 +642,7 @@ function MyHoursApi(currentUser) {
     _this.getProjects = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting projects");
+                // console.info("api: getting projects");
                 $.ajax({
                     url: baseUrl + "projects",
                     headers: {
@@ -613,12 +659,57 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }    
+    }   
     
+    _this.getProjectsAsync = async function() {
+        const url = baseUrl + "projects";
+        const response = await fetch(url, {
+            headers: _this.getAjaxHeaders()
+        });
+        return response.json();        
+    }
+
+    _this.getProjectTaskList = async function(projectId) {
+        const url = `${baseUrl}projects/${projectId}/tasklist?localDate=${(new Date()).toISOString}`;
+        const response = await fetch(url, {
+            headers: _this.getAjaxHeaders()
+        });
+        return response.json(); 
+    }
+
+    
+    _this.getTaskLists = async function() {
+        let projectTaskListPromises = [];
+
+        const now = (new Date()).toISOString();
+        const projects = await this.getProjectsAsync();
+        projects.forEach(project => {
+            const url = `${baseUrl}projects/${project.id}/tasklist?localDate=${now}`;
+
+            projectTaskListPromises.push(fetch(url, {
+                headers: _this.getAjaxHeaders(),
+            }).then(res => res.json()));
+        });
+
+        let projectsTaskLists = [];
+        const responses = await Promise.all(projectTaskListPromises);
+        responses.forEach((response, index) => {
+            projectsTaskLists.push(
+                {
+                    ...(response[0]), 
+                    projectId: projects[index].id,
+                    projectName: projects[index].name}
+            );
+        });
+
+        return projectsTaskLists;        
+
+    }
+        
     _this.getProjectTaskList = function (projectId) {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting project tasklist");
+                // console.info("api: getting project tasklist");
                 $.ajax({
                     url: baseUrl + "projects/" + projectId + "/tasklist",
                     headers: {
@@ -636,12 +727,18 @@ function MyHoursApi(currentUser) {
                 });
             }
         )
-    }      
+    }  
+    
+    
+
+
+
+
     
     _this.getClients = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info("api: getting clients");
+                // console.info("api: getting clients");
                 $.ajax({
                     url: baseUrl + "clients",
                     headers: {

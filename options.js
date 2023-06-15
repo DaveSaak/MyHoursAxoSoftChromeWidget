@@ -3,6 +3,8 @@ function Options() {
 
     var _this = this;
 
+    _this.useDevOps = false;
+
     _this.axoSoftUrl = "";
     _this.axoSoftToken = "";
     _this.axoSoftUserId = 0;
@@ -21,18 +23,24 @@ function Options() {
     _this.isSecret = '';
 
     _this.myHoursDefaultTagId = '';
-    _this.myHoursRootClientId = '';
+    _this.myHoursCommonProjectId = '';
+    // _this.myHoursRootClientId = '';
     _this.myHoursCommonDescriptions = '';
+    _this.myHoursDistractionTaskId = '';
+    _this.myHoursDistractionComment = '';
 
     _this.notificationsBadRatio = true;
 
     _this.devOpsAuthorName = '';
+    _this.devOpsPullRequestRepos = '';
+
+    _this.recentItemsBubbleChartHiddenItemsIds = '';
 
 
 
 
     _this.save = function () {
-        console.info("saving options");
+        // console.info("saving options");
 
         return new Promise(
             function (resolve, reject) {
@@ -42,7 +50,7 @@ function Options() {
 
                     reject();
                 } else {
-                    console.info("saving options to the chrome store");
+                    // console.info("saving options to the chrome store");
                     chrome.storage.sync.set({
                         'options': _this
                     })
@@ -54,7 +62,7 @@ function Options() {
 
 
     _this.load = function () {
-        console.info("loading options");
+        // console.info("loading options");
 
         return new Promise(
             function (resolve, reject) {
@@ -63,12 +71,15 @@ function Options() {
 
                     reject();
                 } else {
-                    console.info("loading options from the chrome store");
+                    // console.info("loading options from the chrome store");
 
                     chrome.storage.sync.get('options', function (items) {
                         if (items.options) {
-                            console.info("found saved options");
+                            // console.info("found saved options");
                             //console.info(items.options);
+
+                            _this.useDevOps = items.options.useDevOps;
+
 
                             _this.axoSoftUrl = items.options.axoSoftUrl;
                             _this.axoSoftToken = items.options.axoSoftToken;
@@ -90,15 +101,18 @@ function Options() {
 
                             _this.devOpsInstanceUrl = items.options.devOpsInstanceUrl;
                             _this.devOpsPersonalAccessToken = items.options.devOpsPersonalAccessToken;
-                            _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
+                            // _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
                             _this.devOpsAuthorName = items.options.devOpsAuthorName;
+                            _this.devOpsPullRequestRepos = items.options.devOpsPullRequestRepos;
 
-                            _this.mhDefaultTagId = items.options.mhDefaultTagId;
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
-                            _this.myHoursRootClientId = items.options.myHoursRootClientId;
+                            _this.myHoursCommonProjectId = items.options.myHoursCommonProjectId;
                             _this.myHoursCommonDescriptions = items.options.myHoursCommonDescriptions;
+                            _this.myHoursDistractionTaskId = items.options.myHoursDistractionTaskId;
+                            _this.myHoursDistractionComment = items.options.myHoursDistractionComment;
 
                             _this.notificationsBadRatio = items.options.notificationsBadRatio;
+                            _this.recentItemsBubbleChartHiddenItemsIds = items.options.recentItemsBubbleChartHiddenItemsIds;
                         }
 
                         resolve();
