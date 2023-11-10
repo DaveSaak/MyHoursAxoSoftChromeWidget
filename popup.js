@@ -58,7 +58,8 @@ function popup() {
             _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.myHoursApi, _this.options, _this.axoItemColors);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
             _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi, _this.options);
-            _this.pullRequestsView = new PullRequestsView(_this.devOpsApi, $('#pullRequestsContainer'));
+            _this.pullRequestsView = new PullRequestsView(_this.options, _this.devOpsApi, $('#pullRequestsContainer'));
+            _this.dashboardView = new DashboardView(_this.options, _this.allHoursApi, $('#dashboardContainer'));
 
 
             // PLATFORM UI MODS
@@ -245,6 +246,10 @@ function popup() {
         $('#pills-devops-assignments-tab').click(function () {
             getMyDevOpsItems();
         });
+
+        $('#pills-dashboard-tab').click(function () {
+            _this.dashboardView.show();
+        });  
 
         $('#refreshRatio').click(function () {
             _this.ratioView.show();
@@ -543,6 +548,7 @@ function popup() {
                 }
             } else if (!log.devOpsItemId) {
                 log.icon = "fas fa-skull";
+                log.color = "coral";
             }
 
 
@@ -1485,18 +1491,26 @@ function popup() {
                         else {
                             // console.log('it is NOT today');
                             _this.allHoursApi.getAttendance(data, _this.currentDate).then(
-                                function (data) {
-                                    if (data && data.CalculationResultValues.length > 0) {
-                                        let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                        _this.timeRatio.setAllHours(attendance);
-                                        _this.timeRatioAllHourAxo.setAllHours(attendance);
-                                        _this.allHoursAttendance = attendance;
-                                        $('#ahAttendance').text(minutesToString(attendance));
-                                    } else {
-                                        $('#ahAttendance').text('0:00');
-                                    }
+                                function(workAttendance) {
+
+                                        _this.timeRatio.setAllHours(workAttendance);
+                                        _this.timeRatioAllHourAxo.setAllHours(workAttendance);
+                                        _this.allHoursAttendance = workAttendance;
+                                        $('#ahAttendance').text(minutesToString(workAttendance));
 
                                 },
+                                // function (data) {
+                                //     if (data && data.CalculationResultValues.length > 0) {
+                                //         let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
+                                //         _this.timeRatio.setAllHours(attendance);
+                                //         _this.timeRatioAllHourAxo.setAllHours(attendance);
+                                //         _this.allHoursAttendance = attendance;
+                                //         $('#ahAttendance').text(minutesToString(attendance));
+                                //     } else {
+                                //         $('#ahAttendance').text('0:00');
+                                //     }
+
+                                // },
                                 function (error) {
                                     console.error('error while geting attendance.');
                                 }
@@ -1520,7 +1534,7 @@ function popup() {
                                     // console.groupEnd();
 
                                     $.each(segments, function (index, segment) {
-                                        if (segment.Type === 4 && segment.StartTime && segment.StartTime.trim() !== "") {
+                                        if ((segment.Type === 4 || segment.Type === 6) && segment.StartTime && segment.StartTime.trim() !== "") {
                                             var left = timeToPixel(segment.StartTime, _this.timeLineWidth);
                                             var right = timeToPixel(segment.EndTime, _this.timeLineWidth);
 
@@ -1531,6 +1545,12 @@ function popup() {
                                                 left: left + 'px',
                                                 width: right - left + 'px',
                                             });
+                                            if (segment.Type === 4) {
+                                                barGraph.addClass('time-line-segment-paid-presence');
+                                            }
+                                            if (segment.Type === 6) {
+                                                barGraph.addClass('time-line-segment-paid-absence');
+                                            }                                            
                                             barGraph.addClass('timeline-segment')
 
                                             timeline.append(barGraph);

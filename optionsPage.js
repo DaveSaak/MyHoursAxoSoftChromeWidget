@@ -45,7 +45,9 @@ $(function () {
             $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
             $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
             $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
+            $('#devOpsUserId').val(_this.options.devOpsUserId);
             $('#devOpsPullRequestRepos').val(_this.options.devOpsPullRequestRepos);
+            $('#devOpsPullRequestMyReviewerGroups').val(_this.options.devOpsPullRequestMyReviewerGroups);
             
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             $('#myHoursDistractionComment').val(_this.options.myHoursDistractionComment);
@@ -54,6 +56,10 @@ $(function () {
             $('#recentItemsBubbleChartHiddenItemsIds').val(_this.options.recentItemsBubbleChartHiddenItemsIds);
 
             $('#reloadMyHoursDistractionsTasksButton').click(_ => { populateMyHoursDistractionTasks() });
+
+            $('#extraTravelReimbursementDistance').val(_this.options.extraTravelReimbursementDistance);
+            $('#extraTravelReimbursementKmCost').val(_this.options.extraTravelReimbursementKmCost);
+
 
             _this.currentUser = new CurrentUser();
             _this.axoSoftApi = new AxoSoftApi(_this.options);
@@ -228,11 +234,19 @@ $(function () {
         _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
         _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
         _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
+        _this.options.devOpsUserId = $('#devOpsUserId').val();
         _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
+        _this.options.devOpsPullRequestMyReviewerGroups = $('#devOpsPullRequestMyReviewerGroups').val();
         saveOptions();
         toastr.success('DevOps settings saved');
-
     });    
+
+    $('#saveExtrasButton').click(function () {
+        _this.options.extraTravelReimbursementDistance = $('#extraTravelReimbursementDistance').val();
+        _this.options.extraTravelReimbursementKmCost = $('#extraTravelReimbursementKmCost').val();
+        saveOptions();
+        toastr.success('Extra settings saved');
+    });   
 
     $('#clearUserButton').click(x => {
         let currentUser = new CurrentUser();

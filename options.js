@@ -32,9 +32,14 @@ function Options() {
     _this.notificationsBadRatio = true;
 
     _this.devOpsAuthorName = '';
+    _this.devOpsUserId = '';
     _this.devOpsPullRequestRepos = '';
+    _this.devOpsPullRequestMyReviewerGroups = '';
 
     _this.recentItemsBubbleChartHiddenItemsIds = '';
+
+    _this.extraTravelReimbursementDistance = 0;
+    _this.extraTravelReimbursementKmCost = 0;
 
 
 
@@ -103,7 +108,9 @@ function Options() {
                             _this.devOpsPersonalAccessToken = items.options.devOpsPersonalAccessToken;
                             // _this.devOpsDefaultWorklogType = items.options.devOpsDefaultWorklogType;
                             _this.devOpsAuthorName = items.options.devOpsAuthorName;
+                            _this.devOpsUserId = items.options.devOpsUserId;
                             _this.devOpsPullRequestRepos = items.options.devOpsPullRequestRepos;
+                            _this.devOpsPullRequestMyReviewerGroups = items.options.devOpsPullRequestMyReviewerGroups;
 
                             _this.myHoursDefaultTagId = items.options.myHoursDefaultTagId;
                             _this.myHoursCommonProjectId = items.options.myHoursCommonProjectId;
@@ -113,6 +120,10 @@ function Options() {
 
                             _this.notificationsBadRatio = items.options.notificationsBadRatio;
                             _this.recentItemsBubbleChartHiddenItemsIds = items.options.recentItemsBubbleChartHiddenItemsIds;
+
+
+                            _this.extraTravelReimbursementDistance = items.options.extraTravelReimbursementDistance;
+                            _this.extraTravelReimbursementKmCost = items.options.extraTravelReimbursementKmCost;
                         }
 
                         resolve();

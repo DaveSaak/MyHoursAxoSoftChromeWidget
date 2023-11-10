@@ -179,9 +179,17 @@ div#logs li .column {
     top: 18px;
     height: 18px;
     position: absolute;
-    background-color: rgba(55, 109, 148);
+    /* background-color: rgba(55, 109, 148); */
     border-radius: 1px;
     opacity: 0.5;
+}
+
+.time-line-segment-paid-absence {
+    background-color: rgb(154, 224, 175);
+}
+
+.time-line-segment-paid-presence {
+    background-color: rgba(55, 109, 148);
 }
 
 .timeline-segment.missing {

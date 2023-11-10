@@ -257,6 +257,12 @@ function refreshBadge() {
 
     //check only fro m 6.00 till 12.00
 
+    const now = moment();
+    let showRatioForToday = true;
+    if (now.hour() < 9 ) {
+        showRatioForToday = false;
+    }
+    
     let today = moment().startOf('day');
     // if (today.hour() < 6 && hour() > 14){
     //     return;
@@ -271,7 +277,11 @@ function refreshBadge() {
 
             currentUser.load(function () {
                 let allHoursApi = new AllHoursApi(options);
-                let yesterday = today.add(-1, 'days');
+
+
+                let dateToCheck = showRatioForToday ? today.clone() : today.add(-1, 'days');
+
+
                 console.info(`refresh badge: get minutes worked yesterday`);
 
                 if (options.useDevOps) {
@@ -282,33 +292,50 @@ function refreshBadge() {
                         console.log(sumDuration);
 
                         allHoursApi.getCurrentUserId().then(currentUserId => {
-                            allHoursApi.getAttendance(currentUserId, yesterday).then(results => {
+                            allHoursApi.getAttendance(currentUserId, dateToCheck).then(workAttendance => {
+                                setBadge(sumDuration, workAttendance);
+
+                                /*
                                 if (results && results.CalculationResultValues.length > 0) {
                                     let attendance = parseInt(results.CalculationResultValues[0].Value, 10);
                                     // console.info(`refresh badge: ah attendance ${attendance}`);
                                     setBadge(sumDuration, attendance);
+
+                                    flashBadge();
                                 } else {
                                     console.info('refresh badge: no attendance data.');
                                     chrome.browserAction.setBadgeText({ text: `` });
                                 }
+                                */
                             });
                         });
 
                     });
                 } else {
                     let axoSoftApi = new AxoSoftApi(options);
-                    axoSoftApi.getWorkLogMinutesWorked(yesterday).then(
+                    axoSoftApi.getWorkLogMinutesWorked(dateToCheck).then(
                         function (axoMinutes) {
                             console.info(`refresh badge: axo minutes ${axoMinutes}`);
                             allHoursApi.getCurrentUserId().then(
                                 function (currentUserId) {
                                     console.info(`refresh badge: get attendance`);
-                                    allHoursApi.getAttendance(currentUserId, yesterday).then(
+                                    allHoursApi.getAttendance(currentUserId, dateToCheck).then(
                                         function (data) {
                                             if (data && data.CalculationResultValues.length > 0) {
                                                 let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
                                                 console.info(`refresh badge: ah attendance ${attendance}`);
                                                 setBadge(axoMinutes, attendance);
+
+
+                                                flashBadge();
+
+                                                // if (attendance > 0) {
+                                                //     let ratio = axoMinutes / attendance;
+                                                //     if (ratio < 0.9) {
+                                                //         flashBadge();
+                                                //     }
+                                                // }
+
                                             } else {
                                                 console.info('refresh badge: no attendance data.');
                                                 chrome.browserAction.setBadgeText({ text: `` });
@@ -336,6 +363,22 @@ function refreshBadge() {
             })
         }
     )
+}
+
+function flashBadge() {
+    let count = 0;
+
+    function execute() {
+        if (count < 10) {
+            chrome.browserAction.setBadgeBackgroundColor({
+                color: isOdd(count) ? '#FFDBDE' : '#43E231'	
+            });
+
+            count++;
+            setTimeout(execute, 500); 
+        }
+    }
+    execute();
 }
 
 function setBadge(value, reference) {

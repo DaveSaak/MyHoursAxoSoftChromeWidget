@@ -231,11 +231,26 @@
                             </div>
 
                             <div class="form-group">
+                                <label>User id</label>
+                                <input
+                                    class="form-control"
+                                    id="devOpsUserId" />
+                            </div>
+
+                            <div class="form-group">
                                 <label>Show pull requests from following repos</label>
                                 <p>Enter repo names, delimit with comma.</p>
                                 <input
                                     class="form-control"
                                     id="devOpsPullRequestRepos" />                                    
+                            </div>
+
+                            <div class="form-group">
+                                <label>Show pull requests from following reviewer groups as mine</label>
+                                <p>Enter ids, delimit with comma.</p>
+                                <input
+                                    class="form-control"
+                                    id="devOpsPullRequestMyReviewerGroups" />                                    
                             </div>
 
                             <div class="d-flex">
@@ -454,6 +469,39 @@
                     </div>                    
                 </div>
             </div>             -->
+
+
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">Extras</h3>
+                    <div class="settings-data">
+                        <!-- <p>Clear all user specific login data.</p> -->
+
+                        Daily travel cost reimbursement
+                        <div class="form-group">
+                            <label>Cost per km </label>
+                            <input
+                                class="form-control w-25"
+                                type="text"
+                                id="extraTravelReimbursementKmCost" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Distance one way </label>
+                            <input
+                                class="form-control w-25"
+                                type="text"
+                                id="extraTravelReimbursementDistance" />
+                        </div>
+
+                        <div class="d-flex">
+                            <button
+                                id="saveExtrasButton"
+                                class="btn btn-secondary">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">Advanced</h3>

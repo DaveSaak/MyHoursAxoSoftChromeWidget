@@ -190,6 +190,22 @@ function AllHoursApi(
         let promiseFunction = function (resolve, reject) {
             // console.info(baseName + ": getting calculation");
 
+
+            _this.getUserCalculations(userId, date, date).then(
+                function(userCalculation){
+                    const workAttendance = userCalculation.DailyCalculations[0].Accruals.find(x => x.Id=="407d91af-458d-426f-a6bc-aa8b009eed92");
+                    if (workAttendance) {
+                        resolve(workAttendance.Value);
+                    } else {
+                        resolve(0);
+                    }
+                }
+            )
+
+
+
+
+/*
             $.ajax({
                 url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
                     "?date=" + dateString +
@@ -209,6 +225,8 @@ function AllHoursApi(
                     reject(Error());
                 }
             });
+
+            */
 
         }
 

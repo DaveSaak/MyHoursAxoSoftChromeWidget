@@ -1,7 +1,8 @@
 'use strict'
 
-function PullRequestsView(devOpsApi, viewContainer) {
+function PullRequestsView(options, devOpsApi, viewContainer) {
     var _this = this;
+    _this.options = options;
     _this.devOpsApi = devOpsApi;
     _this.viewContainer = viewContainer;
 
@@ -15,6 +16,9 @@ function PullRequestsView(devOpsApi, viewContainer) {
 
 
     function getPullRequests() {
+       // _this.devOpsApi.getConnectionDataAsync().then(connectionData => {console.log(connectionData);});
+
+
         _this.devOpsApi.getPullRequestsAsync().then(pullRequests => {
             console.log(pullRequests);
             pullRequests = pullRequests.filter(x => x.reviewers?.length > 0);
@@ -28,6 +32,7 @@ function PullRequestsView(devOpsApi, viewContainer) {
             myPullRequestsUi.empty();
 
             //split into mine and others
+            const devOpsPullRequestMyReviewerGroups = _this.options.devOpsPullRequestMyReviewerGroups?.split(',');
 
             const partition = (array, callback) => {
                 const matches = []
@@ -36,7 +41,10 @@ function PullRequestsView(devOpsApi, viewContainer) {
                 return [matches, nonMatches]
             }
 
-            const [myPullRequests, otherPullRequests] = partition(pullRequests, pullRequest => pullRequest.reviewers?.filter(x => x.id === '05cd4c16-019c-6f13-8c49-c1885ccc78c8').length > 0);
+            const [myPullRequests, otherPullRequests] = 
+                partition(pullRequests, pullRequest => pullRequest.reviewers?.filter(
+                    x => x.id === _this.options.devOpsUserId || devOpsPullRequestMyReviewerGroups.filter(g => x.id == g).length > 0
+                ).length > 0);
 
 
             $('.assigned-to-me-count').text(`(${myPullRequests?.length})`);
@@ -45,11 +53,33 @@ function PullRequestsView(devOpsApi, viewContainer) {
                 myPullRequestsUi.append(pullRequestUi);
             });
 
+            const threeDaysAgo = (new Date()).getTime() - (300 * 24 * 60 * 60 * 1000);
+            const lastThreeDaysPullRequests = myPullRequests
+                .filter(x => 
+                    (+(new Date(x.creationDate)) > threeDaysAgo) && 
+                    x.reviewers?.filter(
+                        r => (r.id === _this.options.devOpsUserId || devOpsPullRequestMyReviewerGroups.filter(
+                            g => r.id == g
+                            ).length > 0
+                            ) && r.vote == 0)
+                        .length > 0);
+
+            const tab = $('#pills-pull-requests-tab');
+            if (lastThreeDaysPullRequests.length > 0) {
+                tab.text = `Pull Requests (${lastThreeDaysPullRequests.length})`;
+            } else {    
+                tab.text = `Pull Requests`;
+            };
+
+            console.log('lastThreeDaysPullRequests', lastThreeDaysPullRequests);
+
             $('.assigned-to-my-teams-count').text(`(${otherPullRequests?.length})`);
             otherPullRequests.forEach(pullRequest => {
                 const pullRequestUi = getPullRequestUi(pullRequest);
                 otherPullRequestsUi.append(pullRequestUi);
             });
+
+
 
 
 
@@ -104,8 +134,28 @@ function PullRequestsView(devOpsApi, viewContainer) {
             const reviewerUi = $('<div>').addClass('d-flex align-items-center mr-2');//.text(reviewer.displayName);
             const avatarUi = $('<img src="' + reviewer.imageUrl + '" style="border-radius: 100%;width: 13px; height: 15px; padding-bottom: 2px" class="mr-1">');
             reviewerUi.append(avatarUi);
-            const reviewerNameUi = $('<span>').text(reviewer.displayName);
+            const reviewerNameUi = $('<span title=' + reviewer.id + '>').text(reviewer.displayName);
             reviewerUi.append(reviewerNameUi);
+
+            let reviewerVoteUi;
+            switch (reviewer.vote) {
+                case 10:
+                    reviewerVoteUi = $('<span>').addClass('ml-2 badge badge-success').text('approved');
+                    break;
+                case 5:
+                    reviewerVoteUi = $('<span>').addClass('ml-2 badge badge-success').text('approved with suggestions');
+                    break;
+                case -5:          
+                    reviewerVoteUi = $('<span>').addClass('ml-2 badge badge-warning').text('waiting for author');
+                    break;                          
+                case -10:          
+                    reviewerVoteUi = $('<span>').addClass('ml-2 badge badge-danger').text('rejected');
+                    break;    
+
+            };
+            if (reviewerUi) {
+                reviewerUi.append(reviewerVoteUi);
+            }
             reviewersListUi.append(reviewerUi);
         });
         reviewersUi.append(reviewersListUi);
