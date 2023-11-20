@@ -157,6 +157,30 @@ div#logs li .column {
     position: absolute;
 }
 
+.timeline-tick-now {
+    width: 2px;
+    top: 0px;
+    height: 55px;
+    position: absolute;
+    background-color: #3b8fc2;
+  }
+
+  /* .timeline-tick-now::before, */
+  .timeline-tick-now::after {
+    content: '';
+    position: absolute;
+    width: 5px; 
+    height: 5px;
+    border-radius: 50%; 
+    background-color: #3b8fc2;
+    left: 50%; 
+    transform: translateX(-50%);
+  }
+
+  /* .timeline-tick-now::after{
+    top: 52px;
+  } */
+
 .timeline-time {
     width: 20px;
     top: 45px;
@@ -182,6 +206,22 @@ div#logs li .column {
     /* background-color: rgba(55, 109, 148); */
     border-radius: 1px;
     opacity: 0.5;
+}
+
+.timeline-segment-clocking {
+    top: 23px;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    background-color: #2c314f;
+    border-radius: 50%;
+    opacity: 0.7;
+    z-index: 1;
+    transform: translateX(-50%);
+}
+
+.timeline-segment-clocking:hover {
+    opacity: 1;
 }
 
 .time-line-segment-paid-absence {

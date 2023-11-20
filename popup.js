@@ -433,6 +433,17 @@ function popup() {
         }
     }
 
+    function drawNow(timelineContainer){
+        const now = moment();
+        if (_this.currentDate.isSame(now, 'day')) {
+            var tick = $('<div>').css({
+                left: timeToPixel(now, _this.timeLineWidth) + 'px',
+            });
+            tick.addClass('timeline-tick-now');
+            timelineContainer.append(tick);
+        }
+    }
+
     _this.getProjectTracks = async function () {
 
         // just get the promises, we'll run them all at once at the end so we can await them.
@@ -971,6 +982,7 @@ function popup() {
         var timeline = $('#timeline');
         timeline.empty();
         drawTimeLineTimes(timeline);
+        drawNow(timeline);
         topContainer.toggleClass('d-none', false);
 
 
@@ -1557,19 +1569,34 @@ function popup() {
                                         }
                                     });
 
-                                    let missingEvents = data.DailyCalculations[0].MissingEventExceptions;
-                                    missingEvents.forEach(event => {
-                                        var left = timeToPixel(event.Value, _this.timeLineWidth) - 5;
+                                    if (data.DailyCalculations[0].Clockings?.length > 0) {
+                                        let clockings = data.DailyCalculations[0].Clockings;
 
-                                        var barGraph = $('<div>');
-                                        barGraph.addClass('allHoursSegment timelineItem');
-                                        barGraph.prop('title', `${moment(event.Value).format('LT')} - ${event.Name}`);
-                                        barGraph.css({
-                                            left: left + 'px',
+                                        clockings.forEach(clocking => {
+                                            const left = timeToPixel(clocking.Timestamp, _this.timeLineWidth);
+                                            var clockingCircle = $('<div>');
+                                            clockingCircle.addClass('timeline-segment-clocking');
+                                            clockingCircle.prop('title', clocking.ClockingDefinitionName + ' at ' + dateTimeToHourString(clocking.Timestamp));
+                                            clockingCircle.css({
+                                                left: left + 'px',
+                                            });           
+                                            timeline.append(clockingCircle);                                 
                                         });
-                                        barGraph.addClass('timeline-segment missing')
-                                        timeline.append(barGraph);
-                                    })
+                                    }
+
+                                    // let missingEvents = data.DailyCalculations[0].MissingEventExceptions;
+                                    // missingEvents.forEach(event => {
+                                    //     var left = timeToPixel(event.Value, _this.timeLineWidth) - 5;
+
+                                    //     var barGraph = $('<div>');
+                                    //     barGraph.addClass('allHoursSegment timelineItem');
+                                    //     barGraph.prop('title', `${moment(event.Value).format('LT')} - ${event.Name}`);
+                                    //     barGraph.css({
+                                    //         left: left + 'px',
+                                    //     });
+                                    //     barGraph.addClass('timeline-segment missing')
+                                    //     timeline.append(barGraph);
+                                    // })                                    
 
                                 }
                             },
@@ -2164,7 +2191,11 @@ function popup() {
 
     function intervalToString(startTime, endTime, durationMinutes) {
         let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
-        return interval + ' (' + minutesToString(durationMinutes / 60) + 'h )';
+        return interval + ' (' + minutesToString(durationMinutes) + 'h )';
+    }
+
+    function dateTimeToHourString(dateTime) {
+        return moment(dateTime).format('LT');
     }
 
     function startDrag(e) {
