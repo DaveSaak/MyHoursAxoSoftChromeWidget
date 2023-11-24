@@ -40,6 +40,7 @@ function Options() {
 
     _this.extraTravelReimbursementDistance = 0;
     _this.extraTravelReimbursementKmCost = 0;
+    _this.extraShowGaps = false;
 
 
 
@@ -124,6 +125,7 @@ function Options() {
 
                             _this.extraTravelReimbursementDistance = items.options.extraTravelReimbursementDistance;
                             _this.extraTravelReimbursementKmCost = items.options.extraTravelReimbursementKmCost;
+                            _this.extraShowGaps = items.options.extraShowGaps;
                         }
 
                         resolve();

@@ -5,14 +5,12 @@ html {
     transition: width 1s ease-in-out; */
 
     font-size: 14px !important;
-    
+
     /* background-image: -webkit-gradient(linear, left top, left bottom, from(#64c7a5), to(#17889e)); */
     /* border: 5px solid white;
     border-radius: 10px; */
 
     /* background-image: -webkit-gradient(linear, left top, right bottom, from(#EC978C), to(#FC5296)); */
-
-    
 }
 
 html {
@@ -135,7 +133,7 @@ div#logs li .column {
 .timelineItem.timeline-log:hover,
 .timelineItem.timeline-log.active {
     transform: scale(1.1) translate(0px, -3px);
-    opacity: 0.85;
+    opacity: 0.9;
     transition: all 0.2s;
     z-index: 2;
 }
@@ -163,21 +161,21 @@ div#logs li .column {
     height: 55px;
     position: absolute;
     background-color: #3b8fc2;
-  }
+}
 
-  /* .timeline-tick-now::before, */
-  .timeline-tick-now::after {
+/* .timeline-tick-now::before, */
+.timeline-tick-now::after {
     content: '';
     position: absolute;
-    width: 5px; 
+    width: 5px;
     height: 5px;
-    border-radius: 50%; 
+    border-radius: 50%;
     background-color: #3b8fc2;
-    left: 50%; 
+    left: 50%;
     transform: translateX(-50%);
-  }
+}
 
-  /* .timeline-tick-now::after{
+/* .timeline-tick-now::after{
     top: 52px;
   } */
 
@@ -304,7 +302,7 @@ div#logs li .column {
 
 .actionButton:before,
 .actionButton:after {
-    content: " ";
+    content: ' ';
     position: absolute;
     border-radius: 99px;
 }
@@ -351,8 +349,7 @@ div#logs li .column {
 .btn.btn-toggle:hover {
     background-color: white;
     color: black;
-    transition: border-color 0.4s ease 0s, background-color 0.4s ease 0s,
-        color 0.4s ease 0s;
+    transition: border-color 0.4s ease 0s, background-color 0.4s ease 0s, color 0.4s ease 0s;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     border: solid rgba(95, 95, 95, 1) 0px;
 }
@@ -492,13 +489,10 @@ div.logContainer:hover {
     width: 170px;
 }
 
-
-
-.columnInfo{
+.columnInfo {
     display: flex;
     flex-direction: column;
     font-size: 0.8rem;
-
 }
 .logContainer:hover .columnInfo {
     display: none;
@@ -515,7 +509,6 @@ div.logContainer:hover {
     display: block;
 }
 
-
 /* #home .statistics .sublabel{
     font-size: 0.8rem;
 } */
@@ -524,7 +517,7 @@ div.logContainer:hover {
     font-size: 0.8rem;
 }
 
-#stats .card:hover{
+#stats .card:hover {
     cursor: pointer;
 }
 
@@ -543,7 +536,7 @@ div.logContainer:hover {
     /* margin: 1rem; */
 }
 
-.stats-card-deck >.card {
+.stats-card-deck > .card {
     margin-right: 0.5rem;
     width: 10rem;
     /* height: 5rem; */
@@ -564,14 +557,14 @@ div.logContainer:hover {
     cursor: default;
 }
 
-.statistics-sm div:first-child{
+.statistics-sm div:first-child {
     margin-right: 0.25rem;
     font-size: 1.2rem;
     /* width: 3rem; */
     /* text-align: right; */
 }
 
-.statistics-sm div:nth-child(2){
+.statistics-sm div:nth-child(2) {
     font-weight: normal;
     font-size: 0.9rem;
 }
@@ -586,17 +579,16 @@ div.logContainer:hover {
     cursor: default;
 }
 
-.statistics-xs div:first-child{
+.statistics-xs div:first-child {
     margin-right: 0.25rem;
     width: 3rem;
     /* font-size: 1.1rem; */
 }
 
-.statistics-xs div:nth-child(2){
+.statistics-xs div:nth-child(2) {
     font-weight: normal;
     font-size: 0.85rem;
 }
-
 
 /* .stats-card-deck > .statistics-sm.card .card-body {
     display: flex;
@@ -605,7 +597,7 @@ div.logContainer:hover {
     margin: 0.25rem;
 } */
 
-.stats-card-deck > .card .card-body{
+.stats-card-deck > .card .card-body {
     /* display: flex;
     justify-content: space-between; */
 }
@@ -628,25 +620,23 @@ div.logContainer:hover {
     margin-top: 0.5rem;
 }
 
-.axoItemName{
+.axoItemName {
     font-weight: 650;
     font-size: 1.1rem;
 }
 
-
 .btn-clock-in {
-
 }
 
-.stats-label{
+.stats-label {
     font-size: 0.9em;
 }
 
-.stats-data{
+.stats-data {
     font-weight: 600;
 }
 
-.stats-sub-data{
+.stats-sub-data {
     /* font-weight: 300;
     font-size: 0.8em; */
 }
@@ -660,7 +650,7 @@ div.logContainer:hover {
 
 #pills-tab a.nav-link:not(.active),
 #pills-tab a.nav-link:hover:not(.active) {
-    color: white !important; 
+    color: white !important;
 }
 
 #pills-tab a.nav-link.active {
@@ -681,7 +671,7 @@ div.logContainer:hover {
     border-color: #dae1e7;
 }
 
-.btn-group button.btn-transparent:first-child{
+.btn-group button.btn-transparent:first-child {
     border-color: transparent;
 }
 
@@ -695,7 +685,7 @@ div.logContainer:hover {
 }
 
 .calendar-day {
-    background-color: #EDEDED;
+    background-color: #ededed;
     /* border: 2px solid white; */
 }
 
@@ -716,35 +706,33 @@ div.logContainer:hover {
 
     border-radius: 0.25rem;
 
-
     /* box-shadow:0 0.5rem 1rem rgb(0 0 0 / 15%); */
     /* box-shadow:0 0.35rem 0.75rem rgb(0 0 0 / 15%); */
     /* border: rgba(211, 211, 211, 0.521) 1px solid; */
     /* margin: 1rem; */
 }
 
-
 .logContainer .logContainerGrid {
     display: grid;
     grid-template-columns: 1rem auto auto 5rem;
     grid-template-rows: auto 3rem auto;
-    grid-template-areas: 
-      "log-color-bar log-tags log-tags log-tags"
-      "log-color-bar log-title log-title log-time"
-      "log-color-bar log-sub-title log-sub-title log-sub-title"
-      "log-color-bar log-comment log-comment log-comment";  
+    grid-template-areas:
+        'log-color-bar log-tags log-tags log-tags'
+        'log-color-bar log-title log-title log-time'
+        'log-color-bar log-sub-title log-sub-title log-sub-title'
+        'log-color-bar log-comment log-comment log-comment';
 }
 
-.logContainer .logContainerGrid .log-color-bar{
+.logContainer .logContainerGrid .log-color-bar {
     grid-area: log-color-bar;
 
     width: 0.3rem;
     height: 3.3rem;
-    height: 98%;   
-    border-radius: 10%; 
+    height: 98%;
+    border-radius: 10%;
 }
 
-.logContainer .logContainerGrid .log-tags{
+.logContainer .logContainerGrid .log-tags {
     grid-area: log-tags;
     /* color: #5b6369; */
     /* font-size: 0.7rem; */
@@ -759,7 +747,7 @@ div.logContainer:hover {
     text-transform: uppercase;
 }
 
-.logContainer .logContainerGrid .log-title{
+.logContainer .logContainerGrid .log-title {
     grid-area: log-title;
     font-weight: 650;
     font-size: 1.1rem;
@@ -772,7 +760,7 @@ div.logContainer:hover {
     font-weight: 500;
 }
 
-.logContainer .logContainerGrid .log-comment{
+.logContainer .logContainerGrid .log-comment {
     grid-area: log-comment;
     /* font-size: 80%; */
     font-size: 90%;
@@ -781,7 +769,7 @@ div.logContainer:hover {
     margin-top: 0.25rem;
 }
 
-.logContainer .logContainerGrid .log-time{
+.logContainer .logContainerGrid .log-time {
     grid-area: log-time;
     text-align: end;
     margin-right: 1rem;
@@ -789,8 +777,7 @@ div.logContainer:hover {
     font-size: 1.1rem;
 }
 
-
-.logContainer .log-actions{
+.logContainer .log-actions {
     grid-area: log-actionsX;
     display: none;
 
@@ -801,12 +788,11 @@ div.logContainer:hover {
     padding: 1rem;
 }
 
-
-.logContainer:hover .log-actions{
+.logContainer:hover .log-actions {
     display: block;
 }
 
-.logContainer .logContainerGrid .log-effort{
+.logContainer .logContainerGrid .log-effort {
     grid-area: log-effort;
     display: flex;
     gap: 0.25rem;
@@ -814,8 +800,7 @@ div.logContainer:hover {
     margin-right: 0.75rem;
 
     color: #6c757d;
-    font-size: 0.8rem;    
-    
+    font-size: 0.8rem;
 }
 
 /* .logContainer .logContainerGrid:hover .log-effort{
@@ -851,11 +836,8 @@ div.logContainer:hover {
     background-color: white;
 }
 
-
-
 .effort-info {
     color: #5b6369;
-
 }
 
 .empty-state-image {
@@ -872,14 +854,14 @@ div.logContainer:hover {
     padding-right: 6rem;
     height: 3rem;
     text-align: center;
-} 
+}
 
 #trackDistraction:hover {
     transform: scale(1.5);
 }
 
-#trackDistraction:hover >i {
-    color:#ff5959 !important;
+#trackDistraction:hover > i {
+    color: #ff5959 !important;
 }
 
 .pull-request {
@@ -890,3 +872,16 @@ div.logContainer:hover {
 .pull-request:hover {
     background-color: #f1f1f19e;
 }
+
+.timeline-gap {
+    border: solid 1px hsl(191 81% 55% / 1);
+    /* border-radius: 10px; */
+    background-color: hsl(191.16deg 100% 91.57% / 70%);
+    opacity: 0.8;
+}
+
+#timeline.show-gaps .timeline-log:not(.timeline-gap) {
+    display: none;
+}
+
+

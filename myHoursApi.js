@@ -258,6 +258,55 @@ function MyHoursApi(currentUser) {
         )
     }
 
+    _this.addLogWithTime = function (start, end, comment, projectId = undefined, taskId = undefined, tagId = undefined) {
+        return new Promise(
+            function (resolve, reject) {
+                // console.info("api: adding log");
+                var newLogData = {
+                    note: comment,
+                    date: moment(start).toISOString(true),
+                    start: moment(start).toISOString(true),
+                    end: moment(end).toISOString(true),
+                    billable: false,
+                    additionalCost: 0
+                };
+
+               
+                if (taskId) {
+                    newLogData.taskId = taskId;
+                }
+
+                if (projectId) {
+                    newLogData.projectId = projectId;
+                }                
+
+                if (tagId){
+                    newLogData.tagIds = [];
+                    newLogData.tagIds.push(tagId);
+                }
+
+                // console.info(newLogData);
+
+                $.ajax({
+                    url: baseUrl + "logs/insertlog",
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    data: JSON.stringify(newLogData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }
+
     _this.startLog = function (comment, projectId = undefined, taskId = undefined, tagId = undefined) {
         return new Promise(
             function (resolve, reject) {

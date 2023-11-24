@@ -17,6 +17,8 @@ function popup() {
     _this.myHoursLogs = undefined;
     _this.worklogTypes = undefined;
     _this.timeUnits = undefined;
+    _this.allHoursSegments = undefined;
+    _this.gaps = [];
 
     _this.currentDate = moment();
     _this.currentUser = new CurrentUser();
@@ -77,6 +79,12 @@ function popup() {
                 $('#copyDevOpsButton').hide();
 
                 $('#nav-devops').remove();
+            }
+
+            if (_this.options.extraShowGaps) {
+                $('#fillGapsButton').show();
+            } else {
+                $('#fillGapsButton').hide();
             }
 
 
@@ -280,6 +288,48 @@ function popup() {
 
         });
 
+        $('#show-gaps-switch').click(function () {
+            let show = $('#show-gaps-switch').prop("checked");
+            if (show) {
+                $('#timeline').addClass('show-gaps');
+            }
+            else {
+                $('#timeline').removeClass('show-gaps');
+            }
+        });
+
+        $('#fillGapsButton').click(function () {
+            if (_this.gaps?.length > 0) {
+                _this.gaps.forEach(gap => {
+                    _this.myHoursApi.addLogWithTime(
+                        gap.start, gap.end,
+                        "fill the gap", 
+                        _this.options.myHoursCommonProjectId,
+                        undefined,
+                        _this.options.myHoursDefaultTagId)
+                        .then(
+                            function (data) {
+                                // console.log(data);
+                                getLogs();
+                            },
+                            function (error) {
+                                console.log(error);
+                            });
+
+
+                });
+                
+            }
+        });
+        $('#fillGapsButton').mouseenter(function () {
+            $('#timeline').toggleClass("show-gaps", true);
+        });
+        $('#fillGapsButton').mouseleave(function () {
+            $('#timeline').toggleClass("show-gaps", false);
+        });
+
+        
+
         // $('#switchContentButton').click(function () {
         //     _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
         //         .then(
@@ -339,7 +389,7 @@ function popup() {
                     setCurrentDate(savedCurrentDate);
                     getLogs();
                 }
-           });        
+           }); 
     }
 
     function setCurrentDate(date){
@@ -436,11 +486,19 @@ function popup() {
     function drawNow(timelineContainer){
         const now = moment();
         if (_this.currentDate.isSame(now, 'day')) {
-            var tick = $('<div>').css({
+            var tick = $('<div id="now-tick">').css({
                 left: timeToPixel(now, _this.timeLineWidth) + 'px',
             });
             tick.addClass('timeline-tick-now');
             timelineContainer.append(tick);
+
+
+            setInterval(() => {
+                tick.css({
+                    left: timeToPixel(moment(), _this.timeLineWidth) + 'px',
+                });
+                console.log('tick');
+            }, 60 * 1000);
         }
     }
 
@@ -1281,6 +1339,107 @@ function popup() {
         );
     }
 
+    function getGaps() {
+        _this.gaps = [];
+        // ah segments
+
+        if (!_this.allHoursSegments) {
+            return;
+        }
+
+        const segments = _this.allHoursSegments
+            .filter(segment => segment.Type === 4)
+            .map(segment => {
+                return {
+                    start: new Date(segment.StartTime),
+                    end: new Date(segment.EndTime),
+                }
+            });
+        
+
+        // mg logs
+        const flattenArray = arr => arr.reduce((acc, item) => acc.concat(Array.isArray(item) ? flattenArray(item) : item), []);
+        const times = flattenArray(_this.myHoursLogs.map(log => {
+            return log.times
+                .filter(time => time.endTime)
+                .map(time => {
+                    return {
+                        start: new Date(time.startTime),
+                        end: new Date(time.endTime)
+                    }
+                })
+        }));
+       
+
+        const leftOvers = [...segments];
+        times.forEach(time => {
+
+            for (let i = 0; i < leftOvers.length; i++) {
+                const leftOver = leftOvers[i];
+
+                // delete leftOver if it is fully covered by time
+                if (time.start <= leftOver.start && time.end >= leftOver.end) {
+                    leftOvers.splice(i, 1);
+                    //i--;
+                }
+
+                //cut leftOver if it is partially covered by time
+                else if (time.start <= leftOver.start && time.end >= leftOver.start && time.end <= leftOver.end) {
+                    leftOvers[i].start = time.end;
+                }
+
+                //cut rightOver if it is partially covered by time
+                else if (time.start >= leftOver.start && time.start <= leftOver.end && time.end >= leftOver.end) {
+                    leftOvers[i].end = time.start;
+                }
+
+                // split leftOver if it is partially covered by time
+                if (time.start >= leftOver.start && time.end <= leftOver.end) {
+                    leftOvers.splice(i, 0, {
+                        start: leftOver.start,
+                        end: time.start
+                    });
+                    leftOvers.splice(i + 1, 1, {
+                        start: time.end,
+                        end: leftOver.end
+                    });
+                    i++;
+                }
+            }
+        });
+
+        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > 10 * 60 * 1000);
+
+        console.log('gaps', _this.gaps);  
+
+        if (_this.gaps.length > 0) {
+            $('#fillGapsButton').prop('disabled', false);//addClass('btn-primary');
+
+        } else {
+            $('#fillGapsButton').prop('disabled', true);//addClass('btn-primary');
+
+        }
+
+        var timeline = $('#timeline');
+        _this.gaps.forEach(gap => {
+            var left = timeToPixel(gap.start, _this.timeLineWidth);
+            var right = timeToPixel(gap.end, _this.timeLineWidth);
+            var title = intervalToString(gap.start, gap.end);
+
+            var barGraph = $('<div>');
+            barGraph.prop('title', title);
+            barGraph.css({
+                left: left + 'px',
+                width: right - left + 'px'
+            });
+            barGraph.addClass('timelineItem timeline-log timeline-gap');
+            // barGraph.append(`<i class="fa-solid fa-fill-drip ml-2" aria-hidden="true"></i>`);  
+
+            timeline.append(barGraph);
+            
+        });
+    }
+
 
     function trackDistraction(){
         _this.myHoursApi.startLog(
@@ -1532,6 +1691,7 @@ function popup() {
 
                         _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
+                                _this.allHoursSegments = undefined;
                                 if (fetchLogsId !== _this.fetchLogsId) {
                                     console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
                                     return;
@@ -1539,6 +1699,7 @@ function popup() {
 
                                 if (data && data.DailyCalculations.length > 0) {
                                     let segments = data.DailyCalculations[0].CalculationResultSegments;
+                                    _this.allHoursSegments = segments;
                                     var timeline = $('#timeline');
 
                                     // console.group('all hours segments');
@@ -1598,6 +1759,10 @@ function popup() {
                                     //     timeline.append(barGraph);
                                     // })                                    
 
+                                }
+
+                                if (_this.options.extraShowGaps) {
+                                    getGaps();
                                 }
                             },
                             function (error) {
@@ -2191,7 +2356,7 @@ function popup() {
 
     function intervalToString(startTime, endTime, durationMinutes) {
         let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
-        return interval + ' (' + minutesToString(durationMinutes) + 'h )';
+        return interval + (durationMinutes != undefined ? ' (' + minutesToString(durationMinutes) + 'h )' : '');
     }
 
     function dateTimeToHourString(dateTime) {
