@@ -6,7 +6,9 @@ function CalendarView(myHoursApi, allHoursApi, axoSoftApi, viewContainer) {
     _this.allHoursApi = allHoursApi;
     _this.axoSoftApi = axoSoftApi;
     _this.viewContainer = viewContainer;
-    _this.heatmapColors = ["#EEEEEE", "#D6E77F", "#8AC760", "#40A43A", "#19691F"];
+    // _this.heatmapColors = ["#EEEEEE", "#D6E77F", "#8AC760", "#40A43A", "#19691F"];
+    // _this.heatmapColors = ["#EEEEEE", "#C6E1E4", "#93BDB9", "#53BD99", "#D37B71","#A55F58"];
+    _this.heatmapColors = ["#EEEEEE", '#B2E0E0', '#5AC0C0', '#6ED18E', '#FFB74D', '#FF7373'];
 
     _this.show = function () {
         let today = moment().startOf('day');
@@ -70,7 +72,21 @@ function CalendarView(myHoursApi, allHoursApi, axoSoftApi, viewContainer) {
                 }
 
                 let minutes = minutesPerDay.find(x => x.date.isSame(currDay, 'day'))?.duration || 0;
-                let heatmapColorIndex = Math.min(Math.ceil(minutes / (3 * 60)), 4);
+
+                let heatmapColorIndex = 0;
+                if (minutes > 9 * 60) {
+                    heatmapColorIndex = 5
+                } else if (minutes > 8.5 * 60) {
+                    heatmapColorIndex = 4
+                } else if (minutes > 6.5 * 60) {
+                    heatmapColorIndex = 3
+                } else if (minutes > 4 * 60) {
+                    heatmapColorIndex = 2
+                } else if (minutes > 0 * 60) {
+                    heatmapColorIndex = 1
+                }
+
+                // let heatmapColorIndex = Math.min(Math.ceil(minutes / (3 * 60)), 4);
                 calendarContainer.append($('<div>')
                     .addClass("calendar-day")
                     .css("background-color", _this.heatmapColors[heatmapColorIndex])

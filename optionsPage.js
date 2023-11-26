@@ -60,6 +60,8 @@ $(function () {
             $('#extraTravelReimbursementDistance').val(_this.options.extraTravelReimbursementDistance);
             $('#extraTravelReimbursementKmCost').val(_this.options.extraTravelReimbursementKmCost);
             $('#extraShowGaps').prop('checked', _this.options.extraShowGaps);
+            $('#extraGapsMinLength').val(_this.options.extraGapsMinLength);
+
 
 
             _this.currentUser = new CurrentUser();
@@ -246,6 +248,7 @@ $(function () {
         _this.options.extraTravelReimbursementDistance = $('#extraTravelReimbursementDistance').val();
         _this.options.extraTravelReimbursementKmCost = $('#extraTravelReimbursementKmCost').val();
         _this.options.extraShowGaps = $('#extraShowGaps').prop('checked');
+        _this.options.extraGapsMinLength = $('#extraGapsMinLength').val();
         saveOptions();
         toastr.success('Extra settings saved');
     });   

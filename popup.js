@@ -72,7 +72,7 @@ function popup() {
 
                 $('#nav-ratio').remove();
                 // $('#nav-recent-items').remove();
-                $('#nav-calendar').remove();
+                // $('#nav-calendar').remove();
 
             } else {
                 $('#copyToAxoSoftButton').show();
@@ -1408,7 +1408,7 @@ function popup() {
             }
         });
 
-        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > 10 * 60 * 1000);
+        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.extraGapsMinLength * 60 * 1000);
 
         console.log('gaps', _this.gaps);  
 
@@ -1424,7 +1424,7 @@ function popup() {
         _this.gaps.forEach(gap => {
             var left = timeToPixel(gap.start, _this.timeLineWidth);
             var right = timeToPixel(gap.end, _this.timeLineWidth);
-            var title = intervalToString(gap.start, gap.end);
+            var title = intervalToString(gap.start, gap.end, (gap.end - gap.start)/1000/60);
 
             var barGraph = $('<div>');
             barGraph.prop('title', title);

@@ -242,7 +242,7 @@
                                 <p>Enter repo names, delimit with comma.</p>
                                 <input
                                     class="form-control"
-                                    id="devOpsPullRequestRepos" />                                    
+                                    id="devOpsPullRequestRepos" />
                             </div>
 
                             <div class="form-group">
@@ -250,7 +250,7 @@
                                 <p>Enter ids, delimit with comma.</p>
                                 <input
                                     class="form-control"
-                                    id="devOpsPullRequestMyReviewerGroups" />                                    
+                                    id="devOpsPullRequestMyReviewerGroups" />
                             </div>
 
                             <div class="d-flex">
@@ -470,27 +470,43 @@
                 </div>
             </div>             -->
 
-
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">Extras</h3>
                     <div class="settings-data">
                         <!-- <p>Clear all user specific login data.</p> -->
 
-
-
                         <div class="settings-sub-section-header">Gaps</div>
                         <p>
-                            Show gaps between All Hours segments anf Time logs. 
-                            This allows you to fill the gaps with single click. 
-                            Minimum length of the gap must be 10 minutes.
+                            Show gaps between All Hours segments anf Time logs. This allows you to fill the gaps with
+                            single click.
                         </p>
-                        <div class="mb-5">
-
-                            <input type="checkbox" id="extraShowGaps">
-                            Show gaps 
+                        <div class="mb-4">
+                            <div class="custom-control custom-switch">
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="extraShowGaps" />
+                                <label
+                                    class="custom-control-label"
+                                    for="extraShowGaps"
+                                    >Enable gaps management</label
+                                >
+                            </div>
                         </div>
 
-
+                        <div class="form-group">
+                            <label>Minimal gap length in minutes</label>
+                            <p>
+                                Set the minimum length of the gap. This will filter out short gaps between tasks
+                                that are not worth filling.
+                            </p>
+                            <input
+                                class="form-control w-25"
+                                type="number"
+                                min="10"
+                                max="180"
+                                id="extraGapsMinLength" />
+                        </div>
 
                         <div class="settings-sub-section-header">Just for fun</div>
                         Daily travel cost reimbursement
