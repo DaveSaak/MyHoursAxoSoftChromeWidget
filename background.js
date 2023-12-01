@@ -311,55 +311,7 @@ function refreshBadge() {
                         });
 
                     });
-                } else {
-                    let axoSoftApi = new AxoSoftApi(options);
-                    axoSoftApi.getWorkLogMinutesWorked(dateToCheck).then(
-                        function (axoMinutes) {
-                            console.info(`refresh badge: axo minutes ${axoMinutes}`);
-                            allHoursApi.getCurrentUserId().then(
-                                function (currentUserId) {
-                                    console.info(`refresh badge: get attendance`);
-                                    allHoursApi.getAttendance(currentUserId, dateToCheck).then(
-                                        function (data) {
-                                            if (data && data.CalculationResultValues.length > 0) {
-                                                let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                                console.info(`refresh badge: ah attendance ${attendance}`);
-                                                setBadge(axoMinutes, attendance);
-
-
-                                                flashBadge();
-
-                                                // if (attendance > 0) {
-                                                //     let ratio = axoMinutes / attendance;
-                                                //     if (ratio < 0.9) {
-                                                //         flashBadge();
-                                                //     }
-                                                // }
-
-                                            } else {
-                                                console.info('refresh badge: no attendance data.');
-                                                chrome.browserAction.setBadgeText({ text: `` });
-                                            }
-
-                                        },
-                                        function (error) {
-                                            console.error('refresh badge: error while getting attendance.');
-                                            console.log(error);
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                    )
-                        .catch(error => {
-                            console.log('refresh badge: error:');
-                            console.log(error);
-                            chrome.browserAction.setBadgeText({ text: 'Err' });
-                            chrome.browserAction.setBadgeBackgroundColor({
-                                color: '#222222'
-                            });
-                        });
-                }
+                } 
             })
         }
     )
@@ -415,70 +367,6 @@ function setBadge(value, reference) {
     }
 }
 
-function startTrackingTimeAxo(info, tab) {
-
-    let currentUser = new CurrentUser();
-    let options = new Options();
-    let myHoursApi = new MyHoursApi(currentUser);
-
-    options.load().then(
-        function () {
-            currentUser.load(function () {
-                let axoSoftApi = new AxoSoftApi(options);
-
-                axoSoftApi.getWorkLogTypes()
-                    .then(response => {
-                        let defaultWorkLogType = "";
-                        let worklogTypes = response;
-                        var workLogType = _.find(worklogTypes,
-                            function (w) {
-                                return w.id.toString() === options.axoSoftDefaultWorklogTypeId.toString();
-                            });
-
-                        if (workLogType) {
-                            defaultWorkLogType = workLogType.name;
-                        }
-
-                        let myHoursNote = info.selectionText;
-                        if (defaultWorkLogType !== "") {
-                            myHoursNote = myHoursNote + '/' + defaultWorkLogType.toLowerCase();
-
-                            if (info.menuItemId) {
-                                let descriptionIndex = info.menuItemId.split('_')[1];
-                                let description = options.myHoursCommonDescriptions.split(';')[descriptionIndex];
-                                if (description) {
-                                    myHoursNote = `${myHoursNote} ${description}`;
-                                }
-                            }
-
-
-                        }
-
-                        myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-                            function (token) {
-                                console.info('got refresh token. token: ');
-                                console.info(token);
-
-                                currentUser.setTokenData(token.accessToken, token.refreshToken);
-                                currentUser.save();
-
-                                myHoursApi.startLog(myHoursNote + ' ')
-                                    .then(
-                                        function (data) {
-                                            chrome.notifications.create('', getNotificationOptions('Log started. Axo item #' + info.selectionText), function () { });
-                                            refreshMyHoursPage();
-                                        },
-                                        function (error) {
-                                            console.log(error);
-                                            chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
-                                        }
-                                    );
-                            }
-                        )
-                    });
-            });
-        });
-}
 
 function startTrackingTimeDevOps(info, tab) {
 

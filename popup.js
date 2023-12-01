@@ -25,7 +25,6 @@ function popup() {
     _this.options = new Options();
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser);
-    _this.axoSoftApi = new AxoSoftApi(_this.options);
     _this.devOpsApi = new DevOpsApi(_this.options);
 
     _this.timeRatio = new TimeRatio(showRatio);
@@ -57,31 +56,26 @@ function popup() {
         function () {
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
-            _this.recentItemsView = new RecentItemsView(_this.axoSoftApi, _this.myHoursApi, _this.options, _this.axoItemColors);
-            _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, _this.axoSoftApi, $('#calendarContainer'));
-            _this.ratioView = new RatioView(_this.allHoursApi, _this.axoSoftApi, _this.options);
+            _this.recentItemsView = new RecentItemsView(_this.myHoursApi, _this.options, _this.axoItemColors);
+            _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, $('#calendarContainer'));
+            _this.ratioView = new RatioView(_this.allHoursApi, _this.options);
             _this.pullRequestsView = new PullRequestsView(_this.options, _this.devOpsApi, $('#pullRequestsContainer'));
             _this.dashboardView = new DashboardView(_this.options, _this.allHoursApi, $('#dashboardContainer'));
 
 
             // PLATFORM UI MODS
             if (_this.options.useDevOps) {
-                $('#copyToAxoSoftButton').hide();
                 $('#copyDevOpsButton').show();
                 $('.statistics-sm.axo').hide();
 
                 $('#nav-ratio').remove();
                 // $('#nav-recent-items').remove();
                 // $('#nav-calendar').remove();
-
-            } else {
-                $('#copyToAxoSoftButton').show();
-                $('#copyDevOpsButton').hide();
-
-                $('#nav-devops').remove();
             }
 
-            if (_this.options.extraShowGaps) {
+
+
+            if (_this.options.gaps.showGaps) {
                 $('#fillGapsButton').show();
             } else {
                 $('#fillGapsButton').hide();
@@ -140,9 +134,6 @@ function popup() {
         //     }
         // });
 
-        $('#copyToAxoSoftButton').click(function () {
-            copyTimelogs();
-        });
 
         $('#copyDevOpsButton').click(function () {
             updateDevOps();
@@ -156,12 +147,7 @@ function popup() {
             openMyHoursTracking();
         }); 
 
-        $('#deleteWorklogsFromAxoSoftButton').click(function () {
-            deleteLogs();
-        });
-
-
-        $('.allHoursStats').click(function () {
+          $('.allHoursStats').click(function () {
             showHomePage();
         });
 
@@ -1124,272 +1110,12 @@ function popup() {
             getAllHoursData(fetchLogsId);
             return;
         }
-
-
-
-        _this.axoSoftApi.getWorkLogMinutesWorked(_this.currentDate).then(function (minutesWorked) {
-            // console.info(minutesWorked);
-
-            if (fetchLogsId !== _this.fetchLogsId) {
-                console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
-                return;
-            }
-
-
-            $("#axoTotal").text(minutesToString(minutesWorked));
-            _this.timeRatioAllHourAxo.setMyHours(minutesWorked);
-        })
-            .catch(error => {
-                console.log(error);
-                showAlert('could not connect to Axo.');
-            });
-
-
-        _this.axoSoftApi.getWorkLogTypes()
-            .then(response => {
-
-                if (fetchLogsId !== _this.fetchLogsId) {
-                    console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
-                    return;
-                }
-
-                _this.worklogTypes = response;
-                _this.axoSoftApi.getTimeUnits().then(function (response) {
-                    _this.timeUnits = response;
-
-                    getAllHoursData(fetchLogsId);
-                    var logsContainer2 = $('#logsContainer');
-
-                    _this.myHoursApi.getLogs(_this.currentDate).then(
-                        function (logs) {
-
-                            if (fetchLogsId !== _this.fetchLogsId) {
-                                console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
-                                return;
-                            }
-
-                            $('#copyToAxoSoftButton').prop('disabled', logs.length == 0);
-
-                            _this.myHoursLogs = logs;
-                            _this.myHoursTaskSummary = {};
-
-                            var totalMins = 0;
-
-                            logsContainer2.toggleClass('d-none', _this.myHoursLogs.length === 0);
-
-                            $.each(_this.myHoursLogs, function (index, data) {
-                                totalMins = totalMins + (data.duration / 60);
-
-                                var log = $('<div>')
-                                    .attr("data-logId", data.id)
-                                    .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
-
-                                var columnColorBar = $('<div>')
-                                    .addClass('columnColorBar rounded mr-2');
-
-
-                                var columnMain = $('<div>')
-                                    .addClass('mainColumn columnMain d-flex flex-column');
-
-                                var columnAxoWorklogType = $('<div>')
-                                    .addClass('axoWorklogTypeColumn');
-
-                                columnMain.append(columnAxoWorklogType);
-
-
-
-                                log.mouseenter(function () {
-                                    $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", true);
-                                    $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", true);
-                                    hiLiteMyHoursLog(data.id);
-                                });
-                                log.mouseleave(function () {
-                                    $('#timeline .timeline-log[data-logId="' + data.id + '"]').toggleClass("active", false);
-                                    $('#timeline .timeline-log').not('[data-logId="' + data.id + '"]').toggleClass("deactivate", false);
-                                    hiLiteMyHoursLog();
-                                });
-
-                                var worklogTypeInfo = $('<div>')
-                                    .addClass('text-muted text-lowercase worklogType')
-                                    .css('font-size', '0.7rem');
-
-                                columnAxoWorklogType.append(worklogTypeInfo);
-
-                                var columnTime = $('<div>')
-                                    .addClass('columnTime text-right');
-                                //.css('text-align', 'right')
-                                //.css('font-weight', '600');
-
-                                if (data.duration != null) {
-                                    var durationInfo = $('<i class="fas fa-spinner fa-spin"></i>');
-                                    if (!data.running) {
-                                        var duration = minutesToString(data.duration / 60);
-                                        durationInfo = $('<span>').text(duration);
-                                    }
-                                    columnTime.append(durationInfo);
-                                }
-
-
-                                var columnStatus = $('<div>')
-                                    .addClass('statusColumn ml-auto');
-
-                                var status = ($('<div>')
-                                    .addClass('d-flex align-items-center columnStatus'));
-                                columnStatus.append(status);
-
-                                getAxoItem(data).then(item => {
-                                    data.axoName = item.name;
-                                    data.axoId = item.id;
-                                    data.axoItemType = item.item_type;
-                                    let remainingDurationIsAvailable = (item.remaining_duration.time_unit.id !== 0)
-
-                                    if (remainingDurationIsAvailable) {
-                                        data.axoRemainingDurationTimeUnitId = item.remaining_duration.time_unit.id;
-                                        data.axoRemainingDuration = item.remaining_duration.duration;
-                                        data.axoRemainingTimeMins = getRemainingMinutes(data.axoRemainingDurationTimeUnitId, data.axoRemainingDuration);
-                                    }
-                                    data.color = _this.axoItemColors[numberToIndex(data.axoId, 8)];
-                                    columnColorBar.css("background-color", data.color);
-
-
-                                    if (data.taskName) {
-                                        let worklogTypeId = getWorklogTypeId(data.taskName, _this.worklogTypes, false);
-                                        data.axoWorklogTypeId = worklogTypeId;
-                                    }
-                                    else {
-                                        let partialWorkLogTypeName = getPartialWorkLogType(data);
-                                        let worklogTypeId = getWorklogTypeId(partialWorkLogTypeName, _this.worklogTypes, true);
-                                        data.axoWorklogTypeId = worklogTypeId;
-                                    }
-                                    let worklogTypeName = getWorklogTypeName(data.axoWorklogTypeId, _this.worklogTypes);
-                                    data.axoWorklogTypeName = worklogTypeName;
-
-                                    worklogTypeInfo.text(data.axoWorklogTypeName);
-
-
-
-                                    var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn');
-                                    var truncatedAxoName = data.axoName; //truncateText(data.axoName, 50);
-                                    var success = $('<div>')
-                                        .addClass('axoItemName text-truncate')
-                                        .text('' + data.axoId + " -- " + truncatedAxoName)
-                                        //.css("background-color", data.color)
-                                        //.css("color", "white")
-                                        .click(function (event) {
-                                            if (data.projectId && event.ctrlKey) {
-                                                window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
-                                            }
-                                            status.append(remainingHoursInfo);
-                                        });
-
-                                    if (data.note) {
-                                        success.attr('title', data.note);
-                                    }
-
-                                    var itemComment = $('<div>')
-                                        .addClass('text-muted small worklogType')
-                                        .text('' + data.note);
-
-                                    {
-                                        var remainingHoursInfo = $('<span>').addClass('small');
-
-                                        if (remainingDurationIsAvailable) {
-                                            var reminingHrs = Math.round(data.axoRemainingTimeMins / 60);
-                                            remainingHoursInfo.text(reminingHrs + " hrs left");
-                                        } else {
-                                            remainingHoursInfo.addClass('badge-danger');
-                                            remainingHoursInfo.text("enter estimate to sync");
-                                        }
-                                        status.append(remainingHoursInfo);
-                                    }
-
-                                    status.append(getActionsDropDown(data));
-
-                                    logStatus.append(success);
-                                    logStatus.append(itemComment);
-                                    getTimes(data, timeline);
-                                },
-                                    function (err) {
-                                        var logStatus = $('*[data-logid="' + data.id + '"] .mainColumn .tags');
-                                        logStatus.empty();
-                                        var fail = $('<div>');
-                                        fail.append($('<i class="fa-solid fa-skull-crossbones"></i>'));
-                                        fail.append($("<span>").addClass("axoItemName ml-2").html("Work Item not found"));
-                                        //logStatus.append(fail);
-
-                                        data.color = 'whitesmoke';
-                                        getTimes(data, timeline);
-                                        columnMain.append(fail);
-                                    });
-
-                                log.append(columnColorBar);
-                                //log.append(columnAxoWorklogType);
-                                log.append(columnMain);
-                                log.append(columnTime);
-                                log.append(columnStatus);
-
-                                log.append(log);
-                                logsContainer.append(log);
-                            });
-                            _this.timeRatio.setMyHours(totalMins);
-                            $('#mhTotal').text(minutesToString(totalMins));
-
-                            // let ahTopRange = moment.duration(totalMins / 0.9, 'minutes');
-                            // let ahBottomRange = moment.duration(totalMins, 'minutes');
-                            // $('#ahRange').text("[" + moment.utc(ahBottomRange.as('milliseconds')).format('HH:mm') + '-' + moment.utc(ahTopRange.as('milliseconds')).format('HH:mm') + ']');
-
-                            $('#tasks').empty();
-                            $.each(_this.myHoursTaskSummary, function (index, summary) {
-                                let summaryHours = Math.round(summary / 60 / 60 * 100) / 100;
-
-                                let taskCssClass = "is-info";
-                                if (index == 'development' && summaryHours >= 4) {
-                                    taskCssClass = "is-success"
-                                } else if (index == 'development' && summaryHours < 1) {
-                                    taskCssClass = "is-danger"
-                                }
-
-                                var taskControl = $('<div>').addClass('control');
-                                var taskGroup = $('<div>').addClass('tags has-addons');
-                                var taskName = $('<span>').text(index).addClass('tag is-dark').css("font-style", "italic");
-                                var taskTime = $('<span>').text(minutesToString(summary / 60)).addClass('tag').addClass(taskCssClass);
-
-                                taskGroup.append(taskName);
-                                taskGroup.append(taskTime);
-
-                                taskControl.append(taskGroup);
-
-                                $('#tasks').append(taskControl);
-                            });
-                        },
-                        function () {
-                            console.info('failed to get logs');
-                            // showLoginPage();
-                        }
-                    );
-                });
-
-            })
-            .catch(error => {
-                console.log(error);
-                showAlert('could not connect to Axo.');
-            });
-
-
     }
 
 
 
-    function deleteLogs() {
-        _this.axoSoftApi.getWorkLogs(_this.currentDate).then(
-            function (logs) {
+        
 
-                $.each(logs.data, function (index, workLog) {
-                    _this.axoSoftApi.deleteWorkLog(workLog.id);
-                });
-            }
-        );
-    }
 
     function getGaps() {
         _this.gaps = [];
@@ -1460,7 +1186,7 @@ function popup() {
             }
         });
 
-        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.extraGapsMinLength * 60 * 1000);
+        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.gaps.minLength * 60 * 1000);
 
         console.log('gaps', _this.gaps);  
 
@@ -2090,74 +1816,6 @@ function popup() {
         return timeUnit.conversion_factor * duration;
     }
 
-    _this.addAxoWorkLog = function (myHoursLog, myHoursTotalMinsDoneForAxoId) {
-        return new Promise(
-            function (resolve, reject) {
-                // console.log(myHoursLog);
-
-                var logStatus = $('*[data-logid="' + myHoursLog.id + '"] .statusColumn .d-flex');
-                logStatus.empty();
-
-                if (myHoursLog.duration === 0) {
-                    logStatus.append('<span>').addClass('tag is-warning').text("empty log. skipping.");
-                    return;
-                }
-
-                if (!myHoursLog.axoId) {
-                    logStatus.append('<span>').addClass('tag is-danger').text("axo item not found");
-                    return;
-                }
-
-                // console.info('copy to axo: item Id' + myHoursLog.axoId);
-                // console.info(myHoursLog);
-
-                var worklog = new Worklog;
-                worklog.user.id = parseInt(_this.options.axoSoftUserId);
-                worklog.work_done.duration = myHoursLog.duration / 60; // mins
-                worklog.item.id = myHoursLog.axoId;
-                worklog.item.item_type = myHoursLog.axoItemType; //item.item_type;
-                worklog.work_log_type.id = myHoursLog.axoWorklogTypeId;
-                worklog.description = myHoursLog.note;
-                worklog.date_time = moment(myHoursLog.date).add(8, 'hours').toDate();
-
-                let remainingTimeMins = getRemainingMinutes(myHoursLog.axoRemainingDurationTimeUnitId, myHoursLog.axoRemainingDuration);
-                // console.log(`remaining item mins: itemId: ${worklog.item.id}`);
-                // console.log(`remaining item mins: remaining time mins: ${remainingTimeMins}`);
-                // console.log(`remaining item mins: worklog done mins: ${worklog.work_done.duration}`);
-
-                //worklog.remaining_time.duration = Math.max(remainingTimeMins - worklog.work_done.duration, 0);
-                worklog.remaining_time.duration = Math.max(remainingTimeMins - myHoursTotalMinsDoneForAxoId, 0);
-                // console.log(`remaining item mins: new remaining time mins: ${worklog.remaining_time.duration}`);
-
-                _this.axoSoftApi.addWorkLog(worklog)
-                    .then(
-                        function () {
-                            // console.info('worklog added');
-                            var success = $('<span>').addClass('tag');
-                            var reminingHrs = Math.round(worklog.remaining_time.duration / 60);
-                            if (reminingHrs > 0) {
-                                success.addClass('is-success')
-                            } else {
-                                success.addClass('is-warning')
-                            }
-                            success.text(reminingHrs + "h left");
-
-                            logStatus.append(success);
-                            //logStatus.append('<span>').addClass('tag is-success').text("OK -- " + +" hrs left");
-
-                            chrome.runtime.sendMessage({ type: 'refreshBadge' });
-
-                            return resolve();
-                        }
-                    )
-                    .catch(error => {
-                        logStatus.append('<span>').addClass('tag is-danger').text("error adding log").css('color: red');
-                        console.error('error: ' + error);
-                        return reject(error);
-                    });
-            })
-    }
-
     function copyCommitMessage(myHoursLog, reloadLogs) {
         myHoursLog?.times.forEach(element => {
 
@@ -2215,107 +1873,6 @@ function popup() {
         window.open(myHoursUrl, '_myHours');        
     }
 
-    function getAxoItem(myHoursLog) {
-        let itemNumberRegEx = new RegExp('^[0-9]*');
-        if (myHoursLog.projectName != null) {
-            let regExResults = itemNumberRegEx.exec(myHoursLog.projectName);
-            if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
-                return _this.axoSoftApi.getFeatureItem(regExResults[0]);
-            }
-        }
-
-        if (myHoursLog.note != null) {
-            let regExResults = itemNumberRegEx.exec(myHoursLog.note);
-
-            if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
-                //remove id from the note 
-                myHoursLog.note = myHoursLog.note.replace(itemNumberRegEx, '');
-                return _this.axoSoftApi.getFeatureItem(regExResults[0]);
-            }
-        }
-        return Promise.reject(new Error('project not found'));
-    }
-
-    function getPartialWorkLogType(myHoursLog) {
-        let workLogTypeRegEx = new RegExp('^\/[A-Za-z]*');
-        if (myHoursLog.note != null) {
-
-            let regExResults = workLogTypeRegEx.exec(myHoursLog.note);
-
-            if (regExResults && regExResults.length > 0 && regExResults[0] !== '') {
-                // remove id from the note 
-                myHoursLog.note = myHoursLog.note.replace(workLogTypeRegEx, '').trim();
-                return regExResults[0].substr(1);
-            }
-        }
-        return '';
-    }
-
-
-    function copyTimelogs() {
-        // console.info(_this.myHoursLogs);
-
-        if (_this.options.axoSoftUserId == undefined) {
-            $('#alertContainer').show();
-            $('#alertContainer div.alert').text("AxoSoft user not defined. Check settings.");
-        }
-        else {
-            $('#alertContainer').hide();
-            $('#axoNotAccessible').hide();
-            try {
-                const totalMinsDurationByAxoId = _this.myHoursLogs.reduce((result, worklog) => {
-                    result[worklog.axoId] = result[worklog.axoId] ? result[worklog.axoId] + (worklog.duration / 60) : (worklog.duration / 60);
-                    return result;
-                }, {});
-                console.table(totalMinsDurationByAxoId);
-
-                _this.myHoursLogs.forEach(worklog => {
-                    _this.addAxoWorkLog(worklog, totalMinsDurationByAxoId[worklog.axoId]);
-                });
-            } catch (e) {
-                console.log(e);
-                $('#axoNotAccessible').show();
-            }
-        }
-    }
-
-    function getWorklogTypeId(taskName, worklogTypes, partialMatch) {
-        if (taskName != undefined) {
-            var workLogType = _.find(worklogTypes,
-                function (w) {
-                    if (!partialMatch) {
-                        return w.name.toUpperCase() === taskName.toUpperCase();
-                    }
-                    else {
-                        return w.name.toUpperCase().startsWith(taskName.toUpperCase());
-                    }
-                });
-
-            if (workLogType != undefined) {
-                return workLogType.id;
-            }
-        }
-        return _this.options.axoSoftDefaultWorklogTypeId;
-    }
-
-    function getWorklogTypeName(id, worklogTypes) {
-        var workLogType = _.find(worklogTypes,
-            function (w) {
-                return w.id.toString() === id.toString();
-            });
-
-        if (workLogType) {
-            return workLogType.name;
-        }
-        return 'unknown worklog type'
-    }
-
-    function truncateText(text, maxLength) {
-        if (text.length > maxLength) {
-            return text.substring(0, maxLength) + '...';
-        }
-        return text;
-    }
 
     function timeToPixel(date, fullLength) {
         var mmt = moment(date);

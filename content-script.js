@@ -118,30 +118,9 @@ var requestData = { "action": "createContextMenuItem" };
 //send request to background script
 chrome.extension.sendRequest(requestData);
 
-
-
-
 function numberToIndex(num, length) {
     if (!num) {
         return -1;
     }
     return num % length;
-}
-
-function getAxoItemId(stringWithNumberAtBegining) {
-    if (stringWithNumberAtBegining != null) {
-        var itemId = (stringWithNumberAtBegining
-            .match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [])
-            .map(function (v) {
-                return +v;
-            }).shift();
-
-        return itemId;
-
-        // if (itemId !== undefined) {
-        //     return _this.axoSoftApi.getFeatureItem(itemId);
-        // }
-    }
-    return undefined;
-
 }

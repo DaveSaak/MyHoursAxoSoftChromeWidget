@@ -1,16 +1,12 @@
 function Options() {
     'use strict';
 
+    const storageKeys = ['gaps', 'options', 'travelReimbursement'];
+
     var _this = this;
 
     _this.useDevOps = false;
 
-    _this.axoSoftUrl = "";
-    _this.axoSoftToken = "";
-    _this.axoSoftUserId = 0;
-    _this.axoSoftDefaultWorklogTypeId = 3;
-    _this.axoSoftRecentItemsBubbleChartHiddenItemsIds = '';
-    
     _this.contentSwitchProjectId = 0;
     _this.developmentTaskName = 'development';
     _this.contentSwitchZoneReEnterTime = 10;
@@ -24,7 +20,6 @@ function Options() {
 
     _this.myHoursDefaultTagId = '';
     _this.myHoursCommonProjectId = '';
-    // _this.myHoursRootClientId = '';
     _this.myHoursCommonDescriptions = '';
     _this.myHoursDistractionTaskId = '';
     _this.myHoursDistractionComment = '';
@@ -38,12 +33,19 @@ function Options() {
 
     _this.recentItemsBubbleChartHiddenItemsIds = '';
 
-    _this.extraTravelReimbursementDistance = 0;
-    _this.extraTravelReimbursementKmCost = 0;
-    _this.extraShowGaps = false;
-    _this.extraGapsMinLength = 15;
 
+    // _this.extraShowGaps = false;
+    // _this.extraGapsMinLength = 15;
 
+    _this.gaps = {
+        showGaps: false,
+        minLength: 15
+    }
+
+    _this.travelReimbursement = {
+        distance: 0,
+        kmCost: 0
+    }
 
 
     _this.save = function () {
@@ -57,12 +59,32 @@ function Options() {
 
                     reject();
                 } else {
+
+                    const {gaps, travelReimbursement, ...mainOptions} = _this;
+// console.log(gaps);
+// console.log(travelReimbursement);
+// console.log(mainOptions);
+
+                    // const subset = {c, d};
+
+                    const items = {
+                        options: mainOptions,
+                        gaps: gaps,
+                        travelReimbursement: travelReimbursement
+                    }
+
                     // console.info("saving options to the chrome store");
-                    chrome.storage.sync.set({
-                        'options': _this
+                    chrome.storage.sync.set(items, function () {
+                        // Callback function to handle the completion of the storage operation
+                        if (chrome.runtime.lastError) {
+                            console.error(chrome.runtime.lastError);
+                            reject();
+                        } else {
+                            console.log('Items have been successfully set in chrome.storage.sync');
+                            resolve(_this);
+                        }
                     })
-                    console.log('options', _this);
-                    resolve(_this);
+
                 }
             }
         );
@@ -81,19 +103,12 @@ function Options() {
                 } else {
                     // console.info("loading options from the chrome store");
 
-                    chrome.storage.sync.get('options', function (items) {
+                    chrome.storage.sync.get(storageKeys, function (items) {
                         if (items.options) {
                             // console.info("found saved options");
                             //console.info(items.options);
 
                             _this.useDevOps = items.options.useDevOps;
-
-
-                            _this.axoSoftUrl = items.options.axoSoftUrl;
-                            _this.axoSoftToken = items.options.axoSoftToken;
-                            _this.axoSoftUserId = items.options.axoSoftUserId;
-                            _this.axoSoftDefaultWorklogTypeId = items.options.axoSoftDefaultWorklogTypeId;
-                            _this.axoSoftRecentItemsBubbleChartHiddenItemsIds = items.options.axoSoftRecentItemsBubbleChartHiddenItemsIds;
 
                             _this.contentSwitchProjectId = items.options.contentSwitchProjectId;
                             _this.developmentTaskName = items.options.developmentTaskName;
@@ -124,13 +139,15 @@ function Options() {
                             _this.notificationsBadRatio = items.options.notificationsBadRatio;
                             _this.recentItemsBubbleChartHiddenItemsIds = items.options.recentItemsBubbleChartHiddenItemsIds;
 
-
-                            _this.extraTravelReimbursementDistance = items.options.extraTravelReimbursementDistance;
-                            _this.extraTravelReimbursementKmCost = items.options.extraTravelReimbursementKmCost;
-                            _this.extraShowGaps = items.options.extraShowGaps;
-                            _this.extraGapsMinLength = items.options.extraGapsMinLength;
-
                             console.log('options', items.options);
+                        }
+
+                        if (items.gaps) {
+                            _this.gaps = items.gaps;
+                        }
+
+                        if (items.travelReimbursement) {
+                            _this.travelReimbursement = items.travelReimbursement;
                         }
 
                         resolve();

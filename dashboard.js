@@ -15,7 +15,7 @@ function DashboardView(options, allHoursApi, viewContainer){
         $('#travelReimbursementToday').text('');
         $('#travelReimbursementTodaySpinner').hide();
 
-        if (_this.options.extraTravelReimbursementDistance == undefined || _this.options.extraTravelReimbursementKmCost == undefined) { 
+        if (_this.options.travelReimbursement.distance == undefined || _this.options.travelReimbursement.kmCost == undefined) { 
             setTravelReimbursementToday('Not configured'); 
         } else {
             $('#travelReimbursementTodaySpinner').show();
@@ -33,7 +33,7 @@ function DashboardView(options, allHoursApi, viewContainer){
                                     const calculationToday = userCalculations.DailyCalculations[0];
                                     $('#travelReimbursementTodaySpinner').hide();
                                     if (calculationToday.Clockings.some(x => x.ClockingDefinitionId == "834df343-3597-45e8-bbca-60865a85398b")) {
-                                        setTravelReimbursementToday(`${(_this.options.extraTravelReimbursementDistance * _this.options.extraTravelReimbursementKmCost * 2).toFixed(2)} EUR`);
+                                        setTravelReimbursementToday(`${(_this.options.travelReimbursement.distance * _this.options.travelReimbursement.kmCost * 2).toFixed(2)} EUR`);
                                     } else {
                                         setTravelReimbursementToday(':P')
 

@@ -10,7 +10,6 @@
         <script src="options.js"></script>
         <script src="moment.js"></script>
         <script src="worklog.js"></script>
-        <script src="axoSoftApi.js"></script>
         <script src="allHoursApi.js"></script>
         <script src="myHoursApi.js"></script>
         <script src="devopsApi.js"></script>
@@ -121,63 +120,6 @@
                             <div class="d-flex mt-3">
                                 <button
                                     id="saveGeneral"
-                                    class="btn btn-primary">
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="axo-section">
-                    <div class="settings-section">
-                        <h3 class="settings-header text-primary">Axo</h3>
-
-                        <div class="settings-data">
-                            <div class="form-group">
-                                <label>AxoSoft API Address</label>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    id="axoSoftUrl" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>AxoSoft API Token</label>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    id="axoSoftToken" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>AxoSoft User</label>
-                                <select
-                                    class="form-control"
-                                    style="width: 50%"
-                                    id="axoSoftUserId"></select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="label">AxoSoft Default Worklog type </label>
-                                <select
-                                    class="form-control"
-                                    style="width: 50%"
-                                    id="axoSoftDefaultWorklogTypeId"></select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Recent items</label>
-                                <p>Enter item ids that will not be shown on the bubble chart.</p>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    id="axoSoftRecentItemsBubbleChartHiddenItemsIds" />
-                            </div>
-
-                            <div class="d-flex">
-                                <button
-                                    id="saveAxoButton"
                                     class="btn btn-primary">
                                     Save
                                 </button>

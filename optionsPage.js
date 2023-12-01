@@ -26,12 +26,6 @@ $(function () {
         .load()
         .then(function () {
             $('#useDevOps').prop( "checked", _this.options.useDevOps);
-
-            $('#axoSoftUrl').val(_this.options.axoSoftUrl);
-            $('#axoSoftToken').val(_this.options.axoSoftToken);
-            $('#axoSoftUserId').val(_this.options.axoSoftUserId);
-            $('#axoSoftDefaultWorklogTypeId').val(_this.options.axoSoftDefaultWorklogTypeId);
-            $('#axoSoftRecentItemsBubbleChartHiddenItemsIds').val(_this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds);
             
             $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
             $('#developmentTaskName').val(_this.options.developmentTaskName);
@@ -57,15 +51,15 @@ $(function () {
 
             $('#reloadMyHoursDistractionsTasksButton').click(_ => { populateMyHoursDistractionTasks() });
 
-            $('#extraTravelReimbursementDistance').val(_this.options.extraTravelReimbursementDistance);
-            $('#extraTravelReimbursementKmCost').val(_this.options.extraTravelReimbursementKmCost);
-            $('#extraShowGaps').prop('checked', _this.options.extraShowGaps);
-            $('#extraGapsMinLength').val(_this.options.extraGapsMinLength);
+            $('#extraTravelReimbursementDistance').val(_this.options.travelReimbursement.distance);
+            $('#extraTravelReimbursementKmCost').val(_this.options.travelReimbursement.kmCost);
+
+            $('#extraShowGaps').prop('checked', _this.options.gaps.showGaps);
+            $('#extraGapsMinLength').val(_this.options.gaps.minLength);
 
 
 
             _this.currentUser = new CurrentUser();
-            _this.axoSoftApi = new AxoSoftApi(_this.options);
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser);
             _this.devOpsApi = new DevOpsApi(_this.options);
@@ -84,40 +78,6 @@ $(function () {
                             </div>
                         </li>`);
                 })
-            });
-
-            _this.axoSoftApi.getUsers().then(function (users) {
-                users = _.sortBy(users, function (u) {
-                    return u.full_name;
-                });
-                var $select = $("#axoSoftUserId");
-                $(users).each(function (i, user) {
-                    if (user.is_active === true) {
-                        $select.append($("<option>", {
-                            value: user.id,
-                            html: user.full_name //+ ' -- ' + user.id
-                        }));
-                    }
-                });
-                $select.val(_this.options.axoSoftUserId);
-            });
-
-            // AXO
-            toggleAxoSection();
-
-            // AXO Worklogs
-            _this.axoSoftApi.getWorkLogTypes().then(function (workLogTypes) {
-                workLogTypes = _.sortBy(workLogTypes, function (o) {
-                    return o.name;
-                });
-                var $select = $("#axoSoftDefaultWorklogTypeId");
-                $(workLogTypes).each(function (i, workLogType) {
-                    $select.append($("<option>", {
-                        value: workLogType.id,
-                        html: workLogType.name
-                    }));
-                });
-                $select.val(_this.options.axoSoftDefaultWorklogTypeId);
             });
 
             // MH 
@@ -230,16 +190,6 @@ $(function () {
             }
         );
     });    
-
-    $('#saveAxoButton').click(function () {
-        _this.options.axoSoftUrl = $('#axoSoftUrl').val();
-        _this.options.axoSoftToken = $('#axoSoftToken').val();
-        _this.options.axoSoftUserId = $('#axoSoftUserId').val();
-        _this.options.axoSoftDefaultWorklogTypeId = $('#axoSoftDefaultWorklogTypeId').val();
-        _this.options.axoSoftRecentItemsBubbleChartHiddenItemsIds = $('#axoSoftRecentItemsBubbleChartHiddenItemsIds').val();
-        saveOptions();
-        toastr.success('Axo settings saved');
-    });   
     
     $('#saveMhButton').click(function () {
         _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
@@ -275,10 +225,11 @@ $(function () {
     });    
 
     $('#saveExtrasButton').click(function () {
-        _this.options.extraTravelReimbursementDistance = $('#extraTravelReimbursementDistance').val();
-        _this.options.extraTravelReimbursementKmCost = $('#extraTravelReimbursementKmCost').val();
-        _this.options.extraShowGaps = $('#extraShowGaps').prop('checked');
-        _this.options.extraGapsMinLength = $('#extraGapsMinLength').val();
+        _this.options.travelReimbursement.distance = $('#extraTravelReimbursementDistance').val();
+        _this.options.travelReimbursement.kmCost = $('#extraTravelReimbursementKmCost').val();
+        
+        _this.options.gaps.showGaps = $('#extraShowGaps').prop('checked');
+        _this.options.gaps.minLength = $('#extraGapsMinLength').val();
         saveOptions().then(
             function(x){
                 toastr.success('Extra settings saved');

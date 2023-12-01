@@ -2,11 +2,9 @@
 
 
 
-function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewContainer){
+function RecentItemsView(myHoursApi, options, viewContainer){
     var _this = this;
-    _this.axoSoftApi = axoSoftApi;
     _this.options = options;
-    _this.axoItemColors = axoItemColors;
     _this.viewContainer = viewContainer;
     _this.myHoursApi = myHoursApi;
 
@@ -18,7 +16,6 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
         const today = new Date();
         // const tenDaysAgo = new Date(today.getDate()) -10;
         const tenDaysAgo = moment(today).add(-10, 'day');
-
 
         if(options.useDevOps){
             //DEVOPS
@@ -116,215 +113,7 @@ function RecentItemsView(axoSoftApi, myHoursApi, options, axoItemColors, viewCon
 
 
             });
-        } else {
-            // AXO
-            _this.axoSoftApi.getWorkLogsWithinLastTenDays().then(
-                function (recentWorkLogsWithinTenDaysResponse) {
-                    $('#recentItemsWorkLogsCount').text(recentWorkLogsWithinTenDaysResponse.data.length);
-
-                    let totalWorked = recentWorkLogsWithinTenDaysResponse.metadata.minutes_worked;
-                    $('.recentItemsTotal').text(minutesToString(totalWorked));
-
-                    let recentAxoItems = recentWorkLogsWithinTenDaysResponse.data.reduce((accumulator, workLog) => {
-                        let key = workLog.item.id + "-" + workLog.work_log_type.id;
-                        if (key in accumulator) {
-                            accumulator[key].lastSeen = moment.max(accumulator[key].lastSeen, moment(workLog.date_time));
-                            accumulator[key].count = accumulator[key].count + 1;
-                            accumulator[key].workDone = accumulator[key].workDone + workLog.work_done.duration_minutes;
-                        }
-                        else {
-                            accumulator[key] = {
-                                itemId: workLog.item.id,
-                                itemName: workLog.item.name,
-                                workLogTypeId: workLog.work_log_type.id,
-                                workLogTypeName: workLog.work_log_type.name,
-                                lastSeen: moment(workLog.date_time),
-                                count: 1,
-                                workDone: workLog.work_done.duration_minutes,
-                            }
-                        }
-                        return accumulator;
-                    }, {});
-
-                    recentAxoItems = Object.entries(recentAxoItems).map(x => x[1]);
-                    recentAxoItems.sort((a, b) => {
-                        let order = b.lastSeen.unix() - a.lastSeen.unix();
-                        if (order != 0)
-                            return order;
-                        return b.count - a.count;
-                    });
-
-                    $('#recentAxoItems').empty();
-
-                    $('#recentItemsCount').text(recentAxoItems.length);
-                    $.each(recentAxoItems, function (index, recentAxoItem) {
-                        //container
-                        var log = $('<div>')
-                            .attr("data-logId", recentAxoItem.itemId)
-                            .attr("data-workLogTypeId", recentAxoItem.workLogTypeId)
-                            .addClass("d-flex logContainer my-1 p-1 mr-1 align-items-center");
-                        $('#recentAxoItems').append(log);
-
-                        //color bar
-                        var columnColorBar = $('<div>')
-                            .addClass('columnColorBar rounded mr-2')
-                            .css("background-color", _this.axoItemColors[numberToIndex(recentAxoItem.itemId, 8)]);
-                        log.append(columnColorBar);
-
-                        //item name and worklog type
-                        var columnMain = $('<div>')
-                            .addClass('mainColumn columnMain d-flex flex-column')
-                        log.append(columnMain);
-
-                        var columnAxoWorklogType = $('<div>')
-                            .addClass('axoWorklogTypeColumn');
-
-                        columnMain.append(columnAxoWorklogType);
-
-                        var worklogTypeInfo = $('<div>')
-                            .addClass('text-muted text-lowercase worklogType')
-                            .css('font-size', '0.7rem')
-                            .text(recentAxoItem.workLogTypeName);
-
-                        columnAxoWorklogType.append(worklogTypeInfo);
-
-                        var axoItemName = $('<div>')
-                            .addClass('axoItemName text-truncate')
-                            .text(recentAxoItem.itemId + " -- " + recentAxoItem.itemName);
-                        columnMain.append(axoItemName);
-
-
-
-                        //last seen info
-                        var lastSeen = $('<div>')
-                            .addClass('columnLastSeen ml-3')
-                            .text(recentAxoItem.lastSeen.fromNow());
-                        log.append(lastSeen);
-
-                        //count info
-                        var countInfo = $('<div>')
-                            .addClass('columnCountInfo text-right small ml-3')
-                            .text(recentAxoItem.count + "x");
-                        log.append(countInfo);
-
-                        //count info
-                        var workDoneInfo = $('<div>')
-                            .addClass('columnWorkDoneInfo text-right small ml-3')
-                            .text(minutesToString(recentAxoItem.workDone));
-                        log.append(workDoneInfo);
-
-                        //actions
-                        var actions = $('<div>')
-                            .addClass('ml-3');
-                        actions.append(getRecentAxoItemsActionsDropDown(recentAxoItem));
-                        log.append(actions);
-
-
-                    });
-                    // console.log(recentAxoItems)
-
-                    let recentWorkTypes = recentWorkLogsWithinTenDaysResponse.data.reduce((accumulator, workLog) => {
-                        let key = workLog.work_log_type.name;
-                        if (key in accumulator) {
-                            accumulator[key].count = accumulator[key].count + 1;
-                            accumulator[key].workDone = accumulator[key].workDone + workLog.work_done.duration_minutes;
-                        }
-                        else {
-                            accumulator[key] = {
-                                workLogTypeId: workLog.work_log_type.id,
-                                workLogTypeName: workLog.work_log_type.name,
-                                count: 1,
-                                workDone: workLog.work_done.duration_minutes,
-                            }
-                        }
-                        return accumulator;
-                    }, {});
-                    recentWorkTypes = Object.entries(recentWorkTypes).map(x => x[1]);
-                    recentWorkTypes.map(x => x.workLogTypeName);
-                    recentWorkTypes.map(x => x.workDone);
-                    console.log(recentWorkTypes);
-
-                    let developmentMinutes = recentWorkTypes.find(x => x.workLogTypeId === 1);
-                    let internalWorkMinutes = recentWorkTypes.find(x => x.workLogTypeId === 3);
-                    let researchWorkMinutes = recentWorkTypes.find(x => x.workLogTypeId === 7);
-
-                    let developmentPercentage = '-';
-                    let internalWorkPercentage = '-';
-                    let researchWorkPercentage = '-';
-                    if (totalWorked !== 0) {
-                        developmentPercentage = developmentMinutes ? Math.round(developmentMinutes.workDone / totalWorked * 100) : 0;
-                        internalWorkPercentage = internalWorkMinutes ? Math.round(internalWorkMinutes.workDone / totalWorked * 100) : 0;
-                        researchWorkPercentage = researchWorkMinutes ? Math.round(researchWorkMinutes.workDone / totalWorked * 100) : 0;
-                    }
-                    $('#recentItemsDevelopmentPercentage').text(developmentPercentage + '%');
-                    $('#recentItemsInternalWorkPercentage').text(internalWorkPercentage + '%');
-                    $('#recentItemsResearchPercentage').text(researchWorkPercentage + '%');
-                    $('#recentItemsUnassignedPercentage').text(researchWorkPercentage + '%');
-
-                    recentWorkTypes.sort((a, b) => b.workLogTypeId - a.workLogTypeId);
-                
-
-
-                    // chart shows data per item id, work type is ignored
-                    let recentAxoItems2 = recentWorkLogsWithinTenDaysResponse.data.reduce((accumulator, workLog) => {
-                        let key = workLog.item.id;
-                        if (key in accumulator) {
-                            accumulator[key].lastSeen = moment.max(accumulator[key].lastSeen, moment(workLog.date_time));
-                            accumulator[key].count = accumulator[key].count + 1;
-                            accumulator[key].workDone = accumulator[key].workDone + workLog.work_done.duration_minutes;
-                        }
-                        else {
-                            accumulator[key] = {
-                                itemId: workLog.item.id,
-                                itemName: workLog.item.name,
-                                workLogTypeId: workLog.work_log_type.id,
-                                workLogTypeName: workLog.work_log_type.name,
-                                lastSeen: moment(workLog.date_time),
-                                count: 1,
-                                workDone: workLog.work_done.duration_minutes,
-                            }
-                        }
-                        return accumulator;
-                    }, {});
-                    recentAxoItems2 = Object.entries(recentAxoItems2).map(x => x[1]);
-                    var recentItemsCtx = document.getElementById('recentItemsChart').getContext('2d');
-                    drawRecentItemsChart(recentItemsCtx, recentAxoItems2);
-
-
-
-                    var worklogTypeData = {
-                        datasets: [
-                            {
-                                data: recentWorkTypes.map(x => x.workDone),
-                                borderWidth: 2,
-                                lineTension: 0.5,
-                                label: "ten day overview",
-                                backgroundColor: "rgba(102, 153, 204, 0.2)",
-                                borderColor: "rgba(102, 153, 204, 1)",
-                                pointBackgroundColor: "rgba(102, 153, 204, 1)",
-                                pointBorderColor: "#fff",
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: "#fff",
-                                pointHoverBorderColor: "rgba(102, 153, 204, 1)",
-                            },
-                        ],
-
-                        labels:
-                            recentWorkTypes.map(x => x.workLogTypeName),
-                    };
-                    console.log(worklogTypeData);
-
-                    // var worklogTypeCtx = document.getElementById('worklogTypeChart').getContext('2d');
-                    // drawWorkLogTypeChart(worklogTypeCtx, worklogTypeData);
-
-                    renderWorkLogTypeChart(recentWorkTypes);
-
-
-
-
-                }
-            );
-        }
+        } 
     }
 
     function drawRecentItemsChart(context, rawData) {
