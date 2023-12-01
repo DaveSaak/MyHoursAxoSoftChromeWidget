@@ -193,23 +193,42 @@ $(function () {
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
-        saveOptions();
+        saveOptions().then(
+            function(x){
+                toastr.success('Settings saved');
+            },
+            function(err){
+                toastr.error('Error saving Settings.');
+            }
+        );
     });
 
     $('#saveGeneral').click(function () {
         _this.options.useDevOps = $('#useDevOps').prop('checked');
         _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
         _this.options.recentItemsBubbleChartHiddenItemsIds = $('#recentItemsBubbleChartHiddenItemsIds').val();
-        saveOptions();
-        toastr.success('General settings saved');
+        saveOptions().then(
+            function(x){
+                toastr.success('General settings saved');
+            },
+            function(err){
+                toastr.error('Error saving General settings.');
+            }
+        );
     });      
 
     $('#saveAllHoursButton').click(function () {
         _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
-        saveOptions();
-        toastr.success('All Hours settings saved');
+        saveOptions().then(
+            function(x){
+                toastr.success('All Hours settings saved');
+            },
+            function(err){
+                toastr.error('Error saving All Hours settings.');
+            }
+        );
     });    
 
     $('#saveAxoButton').click(function () {
@@ -228,9 +247,14 @@ $(function () {
         _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         _this.options.myHoursDistractionTaskId = $('#myHoursDistractionTaskId').val();
         _this.options.myHoursDistractionComment = $('#myHoursDistractionComment').val();
-        saveOptions();
-        toastr.success('My Hours settings saved');
-
+        saveOptions().then(
+            function(x){
+                toastr.success('My Hours settings saved');
+            },
+            function(err){
+                toastr.error('Error saving My Hours settings.');
+            }
+        );
     });     
 
     $('#saveDevOpsButton').click(function () {
@@ -240,8 +264,14 @@ $(function () {
         _this.options.devOpsUserId = $('#devOpsUserId').val();
         _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
         _this.options.devOpsPullRequestMyReviewerGroups = $('#devOpsPullRequestMyReviewerGroups').val();
-        saveOptions();
-        toastr.success('DevOps settings saved');
+        saveOptions().then(
+            function(x){
+                toastr.success('DevOps settings saved');
+            },
+            function(err){
+                toastr.error('Error saving DevOps settings.');
+            }
+        );
     });    
 
     $('#saveExtrasButton').click(function () {
@@ -249,8 +279,15 @@ $(function () {
         _this.options.extraTravelReimbursementKmCost = $('#extraTravelReimbursementKmCost').val();
         _this.options.extraShowGaps = $('#extraShowGaps').prop('checked');
         _this.options.extraGapsMinLength = $('#extraGapsMinLength').val();
-        saveOptions();
-        toastr.success('Extra settings saved');
+        saveOptions().then(
+            function(x){
+                toastr.success('Extra settings saved');
+            },
+            function(err){
+                toastr.error('Error saving Extra settings.');
+            }
+        );
+        
     });   
 
     $('#clearUserButton').click(x => {
@@ -351,10 +388,15 @@ $(function () {
         );
     }
 
-    function saveOptions() {
-        _this.options.save().then(function () {
+    // function saveOptions() {
+    //     _this.options.save().then(function (x) {
+    //         console.log(x);
 
-        });
+    //     });
+    // }
+
+    function saveOptions() {
+        return _this.options.save();
     }
 
     function setAllHoursAccessTokenStyle(style) {

@@ -61,6 +61,7 @@ function Options() {
                     chrome.storage.sync.set({
                         'options': _this
                     })
+                    console.log('options', _this);
                     resolve(_this);
                 }
             }
@@ -128,6 +129,8 @@ function Options() {
                             _this.extraTravelReimbursementKmCost = items.options.extraTravelReimbursementKmCost;
                             _this.extraShowGaps = items.options.extraShowGaps;
                             _this.extraGapsMinLength = items.options.extraGapsMinLength;
+
+                            console.log('options', items.options);
                         }
 
                         resolve();

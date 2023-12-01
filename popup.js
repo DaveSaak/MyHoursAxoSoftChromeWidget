@@ -328,6 +328,35 @@ function popup() {
             $('#timeline').toggleClass("show-gaps", false);
         });
 
+        $('#startLunchBreakButton').click(function () {
+
+            _this.allHoursApi.getCurrentUserId().then(userId => {
+                _this.allHoursApi.startLunchBreak(userId).then(
+                    function (data) {
+                        // start lunch break in MH
+                        _this.myHoursApi.startLog('lunch break', _this.options.myHoursCommonProjectId).then(
+                            function (data) {
+                                getLogs();
+                                toastr.success(`You are ready to have lunch! All Hours clocking added. My Hours Log started.`);
+                             
+                            },
+                            function (error) {
+                                toastr.error(`There was error starting Lunch task in My Hours.`);
+                                console.error('Cannot star Lunch in MH:', error);
+                            }
+                        )
+                    },
+                    function (error) {
+                        toastr.error(`There was error adding Lunch clocking in All Hours.`);
+                        console.error('Error adding lunch clocking:', error);
+                    }
+                );     
+            });
+
+
+
+        })
+
         
 
         // $('#switchContentButton').click(function () {
@@ -714,6 +743,8 @@ function popup() {
                 columnTime.append(durationInfo);
             };
 
+
+
     
             // // EFFORT
             // var effortCell = $('<div>').addClass('log-effort');
@@ -774,11 +805,32 @@ function popup() {
                     updateDevOpsWorkItemEffort(log.devOpsItemId, logDurationInHours);
                 });
 
+            let stopRunningLogButton = $('<button>')
+                .addClass("btn btn-transparent mr-1")
+                .attr("title", "Stop running log")
+                .append($('<i class="fa-solid fa-stop"></i>'))
+                .click(function (event) {
+                    event.preventDefault();
+                    _this.myHoursApi.stopTimer().then(
+                        function () {
+                            console.info('worklog stopped');
+                            getLogsForToday();
+                        }
+                    );
+            });
+              
+
             let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
             buttons.append(openDevOpsItemButton);
-            buttons.append(copyWorklogButton);
-            buttons.append(copyCommitMessagesButton);
-            buttons.append(startTrackingTimeShortcut);
+            
+            if (!log.running) {
+                buttons.append(copyCommitMessagesButton);
+                buttons.append(startTrackingTimeShortcut);
+            }  else {
+                buttons.append(stopRunningLogButton);
+
+            }
+
 
             columnActions.append(buttons);
 

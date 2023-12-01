@@ -278,6 +278,29 @@ function AllHoursApi(
         return checkTokenAndExecutePromise(promiseFunction);
     }
 
+    _this.startLunchBreak = async function (userId) {
+
+        const url = _this.options.allHoursUrl + "/Clockings/Authentic";
+        const headers = {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+            "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+        };
+        const data =
+        {
+            UserId: userId,
+            ClockingDefinitionId: '0085e8de-9b0a-4004-bd36-2252b5ab5aa6',
+            Authentic: true,
+            Origin: 2
+        };
+        const response = await fetch(url, {
+            headers,
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        return response;
+    }
+
 
     _this.getUserCalculations = function (userId, dateFrom, dateTo) {
         dateFrom = dateFrom.clone().startOf('day');
