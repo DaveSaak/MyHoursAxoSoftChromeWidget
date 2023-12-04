@@ -43,6 +43,8 @@ function popup() {
     _this.recentItemsChart = undefined;
     _this.calendarChart = undefined;
 
+    _this.myHoursLunchProjectTaskId = 12738329;
+
 
 
 
@@ -320,7 +322,8 @@ function popup() {
                 _this.allHoursApi.startLunchBreak(userId).then(
                     function (data) {
                         // start lunch break in MH
-                        _this.myHoursApi.startLog('lunch break', _this.options.myHoursCommonProjectId).then(
+
+                        _this.myHoursApi.startLog('lunch break', _this.options.myHoursCommonProjectId, _this.myHoursLunchProjectTaskId).then(
                             function (data) {
                                 getLogs();
                                 toastr.success(`You are ready to have lunch! All Hours clocking added. My Hours Log started.`);
@@ -625,7 +628,10 @@ function popup() {
 
             if (log.projectId == _this.options.myHoursCommonProjectId) {
                 log.color = '#bbc9f3';
-                if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
+                if (log.projectId == _this.options.myHoursCommonProjectId && log.taskId == _this.myHoursLunchProjectTaskId) {
+                    log.icon = "fas fa-coffee";
+                }
+                else if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
                     log.icon = "fas fa-bomb";
                 } else {
                     log.icon = "fas fa-crown";
@@ -1539,7 +1545,7 @@ function popup() {
 
                                 }
 
-                                if (_this.options.extraShowGaps) {
+                                if (_this.options.gaps.showGaps) {
                                     getGaps();
                                 }
                             },
