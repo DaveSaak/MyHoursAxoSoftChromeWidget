@@ -57,6 +57,8 @@ $(function () {
             $('#extraShowGaps').prop('checked', _this.options.gaps.showGaps);
             $('#extraGapsMinLength').val(_this.options.gaps.minLength);
 
+            $('#kaboomDefinitions').val(JSON.stringify(_this.options.kaboomDefinitions, null, 2));
+
 
 
             _this.currentUser = new CurrentUser();
@@ -223,6 +225,20 @@ $(function () {
             }
         );
     });    
+
+    $('#saveKaboomButton').click(function () {
+        _this.options.kaboomDefinitions = JSON.parse($('#kaboomDefinitions').val());
+        saveOptions().then(
+            function(x){
+                toastr.success('Kaboom settings saved');
+            },
+            function(err){
+                toastr.error('Error saving Kaboom settings.');
+            }
+        );
+    });
+
+
 
     $('#saveExtrasButton').click(function () {
         _this.options.travelReimbursement.distance = $('#extraTravelReimbursementDistance').val();

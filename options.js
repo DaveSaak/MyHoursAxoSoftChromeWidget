@@ -1,7 +1,7 @@
 function Options() {
     'use strict';
 
-    const storageKeys = ['gaps', 'options', 'travelReimbursement'];
+    const storageKeys = ['gaps', 'options', 'travelReimbursement', 'kaboomDefinitions'];
 
     var _this = this;
 
@@ -33,6 +33,8 @@ function Options() {
 
     _this.recentItemsBubbleChartHiddenItemsIds = '';
 
+    // _this.kaboomDefinitions = '';
+
 
     // _this.extraShowGaps = false;
     // _this.extraGapsMinLength = 15;
@@ -47,6 +49,8 @@ function Options() {
         kmCost: 0
     }
 
+    _this.kaboomDefinitions = [];
+
 
     _this.save = function () {
         // console.info("saving options");
@@ -60,7 +64,7 @@ function Options() {
                     reject();
                 } else {
 
-                    const {gaps, travelReimbursement, ...mainOptions} = _this;
+                    const {gaps, travelReimbursement, kaboomDefinitions, ...mainOptions} = _this;
 // console.log(gaps);
 // console.log(travelReimbursement);
 // console.log(mainOptions);
@@ -70,7 +74,8 @@ function Options() {
                     const items = {
                         options: mainOptions,
                         gaps: gaps,
-                        travelReimbursement: travelReimbursement
+                        travelReimbursement: travelReimbursement,
+                        kaboomDefinitions: kaboomDefinitions
                     }
 
                     // console.info("saving options to the chrome store");
@@ -148,6 +153,10 @@ function Options() {
 
                         if (items.travelReimbursement) {
                             _this.travelReimbursement = items.travelReimbursement;
+                        }
+                    
+                        if (items.kaboomDefinitions) {
+                            _this.kaboomDefinitions = items.kaboomDefinitions;
                         }
 
                         resolve();

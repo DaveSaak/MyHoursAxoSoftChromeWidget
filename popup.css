@@ -912,3 +912,46 @@ div.logContainer:hover {
 }
 
 
+.btn.kaboom-button {
+    min-height: 3rem;
+    min-width: 3rem;
+    /* transform: scale(1.5); */
+    border-radius: 3rem;
+    border-width: 0.25rem;
+    border-color: #ffffffa8;
+    background-color: #cc65ff;
+    /* color: white; */
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn.kaboom-button:hover {
+    transform: scale(1.25);
+    /* color: white; */
+}
+
+.kaboom-toolbar {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+
+}
+
+.kaboom-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.125rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* .kaboom-text {
+    display: none;
+}
+
+.btn.kaboom-button:hover .kaboom-text {
+    display: block;
+} */

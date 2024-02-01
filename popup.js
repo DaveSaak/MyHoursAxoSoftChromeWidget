@@ -54,6 +54,10 @@ function popup() {
 
     chrome.runtime.sendMessage({ type: 'refreshBadge' });
 
+    // $(function () {
+    //     $('[data-toggle="tooltip"]').tooltip()
+    //   })
+
     _this.options.load().then(
         function () {
             _this.allHoursApi = new AllHoursApi(_this.options);
@@ -63,6 +67,35 @@ function popup() {
             _this.ratioView = new RatioView(_this.allHoursApi, _this.options);
             _this.pullRequestsView = new PullRequestsView(_this.options, _this.devOpsApi, $('#pullRequestsContainer'));
             _this.dashboardView = new DashboardView(_this.options, _this.allHoursApi, $('#dashboardContainer'));
+
+            // KABOOMS
+
+            let toolbar = $('.kaboom-toolbar');
+            _this.options.kaboomDefinitions.forEach(kaboomDefinition => {
+                if (kaboomDefinition.actions) {
+                    //group definition
+                    let group = $('<div>').addClass('kaboom-group');
+                    toolbar.append(group);
+
+                    kaboomDefinition.actions.forEach(action => {   
+                        action.backgroundColor = kaboomDefinition.backgroundColor;
+                        action.color = kaboomDefinition.color;
+
+                        let kaboomButton = getKaboomButton(action);
+                        group.append(kaboomButton);
+                     });
+
+
+                    
+                    
+                } else {
+                    //single action definition
+                    let kaboomButton = getKaboomButton(kaboomDefinition);
+                    toolbar.append(kaboomButton);
+                }
+
+
+            });
 
 
             // PLATFORM UI MODS
@@ -143,13 +176,13 @@ function popup() {
 
         $('#openAllHoursTimeline').click(function () {
             openAllHoursTimeline();
-        });   
-        
+        });
+
         $('#openMyHoursTracking').click(function () {
             openMyHoursTracking();
-        }); 
+        });
 
-          $('.allHoursStats').click(function () {
+        $('.allHoursStats').click(function () {
             showHomePage();
         });
 
@@ -188,8 +221,8 @@ function popup() {
         $('#goToToday').click(function () {
             setCurrentDate(new moment());
             getLogs();
-        });        
-       
+        });
+
 
         // $('#current-date').click(function () {
         //     getLogsForToday();
@@ -237,7 +270,7 @@ function popup() {
 
         $('#pills-pull-requests-tab').click(function () {
             _this.pullRequestsView.show();
-        });        
+        });
 
         $('#pills-devops-assignments-tab').click(function () {
             getMyDevOpsItems();
@@ -245,7 +278,7 @@ function popup() {
 
         $('#pills-dashboard-tab').click(function () {
             _this.dashboardView.show();
-        });  
+        });
 
         $('#refreshRatio').click(function () {
             _this.ratioView.show();
@@ -257,7 +290,7 @@ function popup() {
 
         $('#copyCommitMessagesButton').click(function () {
             copyCommitMessagesForAllLogs();
-        });        
+        });
 
 
 
@@ -291,7 +324,7 @@ function popup() {
                 _this.gaps.forEach(gap => {
                     _this.myHoursApi.addLogWithTime(
                         gap.start, gap.end,
-                        "fill the gap", 
+                        "fill the gap",
                         _this.options.myHoursCommonProjectId,
                         undefined,
                         _this.options.myHoursDefaultTagId)
@@ -306,7 +339,7 @@ function popup() {
 
 
                 });
-                
+
             }
         });
         $('#fillGapsButton').mouseenter(function () {
@@ -327,7 +360,7 @@ function popup() {
                             function (data) {
                                 getLogs();
                                 toastr.success(`You are ready to have lunch! All Hours clocking added. My Hours Log started.`);
-                             
+
                             },
                             function (error) {
                                 toastr.error(`There was error starting Lunch task in My Hours.`);
@@ -339,14 +372,14 @@ function popup() {
                         toastr.error(`There was error adding Lunch clocking in All Hours.`);
                         console.error('Error adding lunch clocking:', error);
                     }
-                );     
+                );
             });
 
 
 
         })
 
-        
+
 
         // $('#switchContentButton').click(function () {
         //     _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
@@ -397,26 +430,26 @@ function popup() {
         chrome.storage.sync.get([
             'uiDateValue',
             'uiDateTimestamp',
-           ], function(uiDateOptions) {
-                console.log(uiDateOptions.uiDateValue);
-                console.log(uiDateOptions.uiDateTimestamp);
+        ], function (uiDateOptions) {
+            console.log(uiDateOptions.uiDateValue);
+            console.log(uiDateOptions.uiDateTimestamp);
 
-                const dateSaved = moment(uiDateOptions.uiDateTimestamp);
-                if (dateSaved.isSame(moment(), 'day') && uiDateOptions.uiDateValue) {
-                    const savedCurrentDate = moment(uiDateOptions.uiDateValue);
-                    setCurrentDate(savedCurrentDate);
-                    getLogs();
-                }
-           }); 
+            const dateSaved = moment(uiDateOptions.uiDateTimestamp);
+            if (dateSaved.isSame(moment(), 'day') && uiDateOptions.uiDateValue) {
+                const savedCurrentDate = moment(uiDateOptions.uiDateValue);
+                setCurrentDate(savedCurrentDate);
+                getLogs();
+            }
+        });
     }
 
-    function setCurrentDate(date){
+    function setCurrentDate(date) {
         _this.currentDate = date;
 
         chrome.storage.sync.set({
-                'uiDateValue': date.toISOString(),
-                'uiDateTimestamp': new Date().toISOString()
-            });
+            'uiDateValue': date.toISOString(),
+            'uiDateTimestamp': new Date().toISOString()
+        });
 
     }
 
@@ -501,7 +534,7 @@ function popup() {
         }
     }
 
-    function drawNow(timelineContainer){
+    function drawNow(timelineContainer) {
         const now = moment();
         if (_this.currentDate.isSame(now, 'day')) {
             var tick = $('<div id="now-tick">').css({
@@ -556,10 +589,10 @@ function popup() {
                                                         devOpsItem.parents.push(parentItem);
                                                         resolve();
                                                     })
-                                                    .catch((error) => {
-                                                        console.error('Error fetching DEVOPS parent item:', error);
-                                                        reject();
-                                                    });                                                    
+                                                        .catch((error) => {
+                                                            console.error('Error fetching DEVOPS parent item:', error);
+                                                            reject();
+                                                        });
                                                 })
                                             );
                                         });
@@ -670,13 +703,13 @@ function popup() {
             //TAGS 
             var tagsCell = $('<div>').addClass('log-tags');
             logContainerGrid.append(tagsCell);
-            
+
             // var tagsCell = $('<div>').addClass('log-tags');
             // logContainerGrid.append(tagsCell);
             // var worklogTypeInfo = $('<div>').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
             // tagsCell.append(worklogTypeInfo);            
 
-            
+
             // EFFORT
             // var effortCell = $('<div class="tags">').addClass('log-effort');
             // logContainerGrid.append(effortCell);
@@ -691,9 +724,9 @@ function popup() {
             // logTitle.append('<i class="fas fa-skull" aria-hidden="true"></i>');
             // logTitle.append('<span>').text(`${log.taskName ?? '-not set: task-'}`);
 
-            
+
             if (log.icon) {
-                logTitle.append(`<i class="${log.icon} mr-2 fa-xs aria-hidden="true"></i>`);  
+                logTitle.append(`<i class="${log.icon} mr-2 fa-xs aria-hidden="true"></i>`);
             }
 
             if (devOpsItemState) {
@@ -710,7 +743,7 @@ function popup() {
             logContainerGrid.append(logTitle);
 
             var worklogTypeInfo = $('<div class="tags">').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
-            logTitle.append(worklogTypeInfo);  
+            logTitle.append(worklogTypeInfo);
 
 
             // COMMENT
@@ -737,7 +770,7 @@ function popup() {
 
 
 
-    
+
             // // EFFORT
             // var effortCell = $('<div>').addClass('log-effort');
             // logContainerGrid.append(effortCell);
@@ -809,16 +842,16 @@ function popup() {
                             getLogsForToday();
                         }
                     );
-            });
-              
+                });
+
 
             let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
             buttons.append(openDevOpsItemButton);
-            
+
             if (!log.running) {
                 buttons.append(copyCommitMessagesButton);
                 buttons.append(startTrackingTimeShortcut);
-            }  else {
+            } else {
                 buttons.append(stopRunningLogButton);
 
             }
@@ -866,8 +899,8 @@ function popup() {
 
                 if (log.devOpsItemUpdates?.count > 0) {
                     const effortUpdates = log.devOpsItemUpdates.value
-                        .filter(x => x.fields && 
-                            ( x.fields['Microsoft.VSTS.Scheduling.RemainingWork'] || x.fields['Microsoft.VSTS.Scheduling.CompletedWork']))
+                        .filter(x => x.fields &&
+                            (x.fields['Microsoft.VSTS.Scheduling.RemainingWork'] || x.fields['Microsoft.VSTS.Scheduling.CompletedWork']))
                         .sort((a, b) => b.rev - a.rev);
 
                     if (effortUpdates.length > 0) {
@@ -886,9 +919,9 @@ function popup() {
                         } else {
                             remainingInfo.append($('<div class="ml-1">').text(` ${lastUpdate.fromNow()}`));
                         }
-                        
+
                     }
-                }                
+                }
 
                 if (log.devOpsItem.parents?.length > 0) {
                     const parentName = log.devOpsItem.parents[0].fields['System.Title'];
@@ -899,22 +932,22 @@ function popup() {
                         .append($("<span>")
                             .text(`${projectName}`))
                         .append($("<span>")
-                            .text(` - `))                            
+                            .text(` - `))
                         .append($("<span>")
                             // .addClass('ml-2')
                             .text(`${parentName}`))
-                        // .append($("<span>")
-                        //     .addClass('badge')
-                        //     .addClass(state === "Closed" ? 'badge-success' : state === "Active" ? 'badge-primary' : state === "Resolved" ? 'badge-warning' : 'badge-secondary')
-                        //     .text(`${state}`));
+                    // .append($("<span>")
+                    //     .addClass('badge')
+                    //     .addClass(state === "Closed" ? 'badge-success' : state === "Active" ? 'badge-primary' : state === "Resolved" ? 'badge-warning' : 'badge-secondary')
+                    //     .text(`${state}`));
 
-                    tagsCell.append(parentInfo);    
+                    tagsCell.append(parentInfo);
 
                     // tagsCell.append($('<div class="log-sub-title">').text(`${projectName} - ${parentName}`));
 
                 }
-                
-    
+
+
 
 
             } else {
@@ -980,7 +1013,7 @@ function popup() {
                 }
                 */
                 if (log.icon) {
-                    barGraph.append(`<i class="${log.icon} ml-2" aria-hidden="true"></i>`);  
+                    barGraph.append(`<i class="${log.icon} ml-2" aria-hidden="true"></i>`);
                 }
 
 
@@ -1025,7 +1058,7 @@ function popup() {
             _this.devOpsApi.updateRemainingAndCompletedWorkAsync(devOpsItem, logDurationInHours)
                 .then(updatedItem => {
                     (updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork']) ?
-                        toastr.success(`DevOps Item updated: Remaining ${minutesToString(updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] * 60)} h, Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`) : 
+                        toastr.success(`DevOps Item updated: Remaining ${minutesToString(updatedItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] * 60)} h, Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`) :
                         toastr.success(`DevOps Item updated: Completed ${minutesToString(updatedItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] * 60)} h`);
                     getLogs();
                 })
@@ -1120,7 +1153,7 @@ function popup() {
 
 
 
-        
+
 
 
     function getGaps() {
@@ -1139,7 +1172,7 @@ function popup() {
                     end: new Date(segment.EndTime),
                 }
             });
-        
+
 
         // mg logs
         const flattenArray = arr => arr.reduce((acc, item) => acc.concat(Array.isArray(item) ? flattenArray(item) : item), []);
@@ -1153,7 +1186,7 @@ function popup() {
                     }
                 })
         }));
-       
+
 
         const leftOvers = [...segments];
         times.forEach(time => {
@@ -1194,7 +1227,7 @@ function popup() {
 
         _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.gaps.minLength * 60 * 1000);
 
-        console.log('gaps', _this.gaps);  
+        console.log('gaps', _this.gaps);
 
         if (_this.gaps.length > 0) {
             $('#fillGapsButton').prop('disabled', false);//addClass('btn-primary');
@@ -1208,7 +1241,7 @@ function popup() {
         _this.gaps.forEach(gap => {
             var left = timeToPixel(gap.start, _this.timeLineWidth);
             var right = timeToPixel(gap.end, _this.timeLineWidth);
-            var title = intervalToString(gap.start, gap.end, (gap.end - gap.start)/1000/60);
+            var title = intervalToString(gap.start, gap.end, (gap.end - gap.start) / 1000 / 60);
 
             var barGraph = $('<div>');
             barGraph.prop('title', title);
@@ -1220,24 +1253,24 @@ function popup() {
             // barGraph.append(`<i class="fa-solid fa-fill-drip ml-2" aria-hidden="true"></i>`);  
 
             timeline.append(barGraph);
-            
+
         });
     }
 
 
-    function trackDistraction(){
+    function trackDistraction() {
         _this.myHoursApi.startLog(
-            _this.options.myHoursDistractionComment ?? 'Distraction!', 
-            _this.options.myHoursCommonProjectId, 
+            _this.options.myHoursDistractionComment ?? 'Distraction!',
+            _this.options.myHoursCommonProjectId,
             _this.options.myHoursDistractionTaskId,
             undefined
-            ).then(x => {
-                toastr.success('Tracking distraction.');
-                getLogsForToday();
-            }).catch(e => {
-                toastr.error(`Tracking distraction failed: ${e.message}`);
-                getLogsForToday();
-            })
+        ).then(x => {
+            toastr.success('Tracking distraction.');
+            getLogsForToday();
+        }).catch(e => {
+            toastr.error(`Tracking distraction failed: ${e.message}`);
+            getLogsForToday();
+        })
     }
 
     function getActionsDropDown(data) {
@@ -1413,7 +1446,7 @@ function popup() {
                         //     }
                         // });                        
 
-                        
+
                         if (_this.currentDate.isSame(moment(), 'day')) {
                             console.log('it is today');
 
@@ -1446,12 +1479,12 @@ function popup() {
                         else {
                             // console.log('it is NOT today');
                             _this.allHoursApi.getAttendance(data, _this.currentDate).then(
-                                function(workAttendance) {
+                                function (workAttendance) {
 
-                                        _this.timeRatio.setAllHours(workAttendance);
-                                        _this.timeRatioAllHourAxo.setAllHours(workAttendance);
-                                        _this.allHoursAttendance = workAttendance;
-                                        $('#ahAttendance').text(minutesToString(workAttendance));
+                                    _this.timeRatio.setAllHours(workAttendance);
+                                    _this.timeRatioAllHourAxo.setAllHours(workAttendance);
+                                    _this.allHoursAttendance = workAttendance;
+                                    $('#ahAttendance').text(minutesToString(workAttendance));
 
                                 },
                                 // function (data) {
@@ -1471,7 +1504,7 @@ function popup() {
                                 }
                             );
                         }
-                        
+
 
                         _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
@@ -1507,7 +1540,7 @@ function popup() {
                                             }
                                             if (segment.Type === 6) {
                                                 barGraph.addClass('time-line-segment-paid-absence');
-                                            }                                            
+                                            }
                                             barGraph.addClass('timeline-segment')
 
                                             timeline.append(barGraph);
@@ -1524,8 +1557,8 @@ function popup() {
                                             clockingCircle.prop('title', clocking.ClockingDefinitionName + ' at ' + dateTimeToHourString(clocking.Timestamp));
                                             clockingCircle.css({
                                                 left: left + 'px',
-                                            });           
-                                            timeline.append(clockingCircle);                                 
+                                            });
+                                            timeline.append(clockingCircle);
                                         });
                                     }
 
@@ -1711,7 +1744,7 @@ function popup() {
                             }
                             titleCell.append(itemTypeIcon);
 
-                           
+
                             const devOpsItemState = devOpsItem.fields['System.State'];
                             if (devOpsItemState) {
                                 titleCell.append(
@@ -1720,35 +1753,35 @@ function popup() {
                                         .addClass('d-inline-block')
                                         .addClass(`devops-task-state-${devOpsItemState?.toLowerCase()}`)
                                 );
-                            }                            
+                            }
 
                             var itemName = $('<div style="white-space: break-spaces;">')
                                 .addClass('axoItemName')
                                 .text(`${devOpsItem.fields['System.Title']}`);
-                            titleCell.append(itemName);    
+                            titleCell.append(itemName);
                             var itemId = $('<div style="white-space: break-spaces;">')
                                 .addClass('axoItemName')
-                                .text(`${devOpsItem.id}`);                                
+                                .text(`${devOpsItem.id}`);
                             titleCell.append(itemId);
-                           
+
 
 
                             var statusRow = $('<div>').addClass('text-truncate');
 
                             if (devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0 != 0) {
                                 const completedPercent = Math.ceil(
-                                    (devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) *100 /
+                                    (devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 100 /
                                     (devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0)
                                 );
 
                                 statusRow.append($('<div class="" style="font-weight:600">').text(`${completedPercent}% complete`));
-                            }   
-                            myItemContainer.append(statusRow)                         
+                            }
+                            myItemContainer.append(statusRow)
 
                             ///////
 
 
-               
+
                             var commentCell = $('<div>')
                                 .addClass('log-comment');
                             myItemContainer.append(commentCell);
@@ -1867,16 +1900,16 @@ function popup() {
         })
     }
 
-    function openAllHoursTimeline(){
+    function openAllHoursTimeline() {
         _this.allHoursApi.getCurrentUserId().then(userId => {
             const allHoursUrl = encodeURI(`https://pro.allhours.com/employee-day?Employee=${userId}&Date=${_this.currentDate.format('YYYY-MM-DD')}`);
-            window.open(allHoursUrl, '_allHours');        
+            window.open(allHoursUrl, '_allHours');
         });
     }
 
-    function openMyHoursTracking(){
+    function openMyHoursTracking() {
         const myHoursUrl = encodeURI(`https://app.myhours.com/#/track`);
-        window.open(myHoursUrl, '_myHours');        
+        window.open(myHoursUrl, '_myHours');
     }
 
 
@@ -1999,11 +2032,33 @@ function popup() {
         });
     }
 
-    function copyCommitMessagesForAllLogs(){
+    function copyCommitMessagesForAllLogs() {
         _this.myHoursLogs.forEach(log => {
             copyCommitMessage(log, false);
             getLogs();
         });
+    }
+    function getKaboomButton(kaboomDefinition) {
+
+        let kaboomButton = $('<button>')
+            .addClass("btn kaboom-button")
+            .attr("title", kaboomDefinition.description)
+            .attr("data-toggle", "tooltip")
+            .css("background-color", kaboomDefinition.backgroundColor)
+            .attr("data-placement", "bottom")
+            .css("color", kaboomDefinition.color)
+            .append($('<i class="fa-fw fa-solid fa-' + kaboomDefinition.icon + '"></i>'))
+            .append(kaboomDefinition.text ? $('<span>')
+                .text(kaboomDefinition.text)
+                .addClass('kaboom-text') : undefined)
+            .tooltip()
+            .click(function (event) {
+                //kaboomDefinition.action();
+                event.preventDefault();
+            });
+            return kaboomButton;
+
+
     }
 
     initInterface();
