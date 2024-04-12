@@ -71,10 +71,15 @@ function popup() {
             // KABOOMS
 
             let toolbar = $('.kaboom-toolbar');
+            
             _this.options.kaboomDefinitions.forEach(kaboomDefinition => {
                 if (kaboomDefinition.actions) {
                     //group definition
                     let group = $('<div>').addClass('kaboom-group');
+                    //console.log(group.pullRight);
+                    if (kaboomDefinition.pullRight) {
+                        group.css('margin-left', 'auto');
+                    }
                     toolbar.append(group);
 
                     kaboomDefinition.actions.forEach(action => {   
@@ -84,18 +89,51 @@ function popup() {
                         let kaboomButton = getKaboomButton(action);
                         group.append(kaboomButton);
                      });
-
-
-                    
-                    
                 } else {
-                    //single action definition
                     let kaboomButton = getKaboomButton(kaboomDefinition);
                     toolbar.append(kaboomButton);
                 }
-
-
             });
+            
+
+/*
+            _this.options.kaboomDefinitions.forEach((kaboomDefinition, index) => {
+                if (kaboomDefinition.actions) {
+                    //group definition
+                    let group = $('<div>').addClass('dropdown');
+                    //console.log(group.pullRight);
+                    // if (kaboomDefinition.pullRight) {
+                    //     group.css('margin-left', 'auto');
+                    // }
+                    toolbar.append(group);
+
+                    group.append(
+                        $(' <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="dropdown' + index + '" aria-expanded="false">Open</button>')
+                    );
+
+                    
+                    let menu = $('<ul class="dropdown-menu" aria-labelledby="dropdown' + index +'">');
+                    group.append(menu);
+
+
+                
+
+                    kaboomDefinition.actions.forEach(action => {   
+                        action.backgroundColor = kaboomDefinition.backgroundColor;
+                        action.color = kaboomDefinition.color;
+
+                        let item = $('<li class="dropdown-item">');
+                        let kaboomButton = getKaboomButton(action);
+                        item.append(kaboomButton);
+                        menu.append(item);
+                     });
+                } 
+                // else {
+                //     let kaboomButton = getKaboomButton(kaboomDefinition);
+                //     toolbar.append(kaboomButton);
+                // }
+            });
+            */
 
 
             // PLATFORM UI MODS
@@ -2047,18 +2085,126 @@ function popup() {
             .css("background-color", kaboomDefinition.backgroundColor)
             .attr("data-placement", "bottom")
             .css("color", kaboomDefinition.color)
-            .append($('<i class="fa-fw fa-solid fa-' + kaboomDefinition.icon + '"></i>'))
             .append(kaboomDefinition.text ? $('<span>')
                 .text(kaboomDefinition.text)
                 .addClass('kaboom-text') : undefined)
             .tooltip()
             .click(function (event) {
-                //kaboomDefinition.action();
+                kaboom(kaboomDefinition);
                 event.preventDefault();
             });
+
+            if (kaboomDefinition.icon) {
+                kaboomButton.append($('<i class="fa-fw fa-solid fa-' + kaboomDefinition.icon + '"></i>'))
+            }
+
             return kaboomButton;
 
 
+    }
+
+    function kaboom(kaboomDefinition){
+
+        if (kaboomDefinition.allHours?.action === 'add-clocking') {
+            if (kaboomDefinition.allHours?.clockingDefinitionId){     
+                _this.allHoursApi.getCurrentUserId().then(userId => {
+                    _this.allHoursApi.addClocking(userId, kaboomDefinition.allHours.clockingDefinitionId).then(
+                        function (data) {
+                            toastr.success(`Clocking added to All Hours.`);
+                        },
+                        function (error) {
+                            toastr.error(`There was error while adding clocking in All Hours.`);
+                            console.error('There was error while adding clocking in All Hours:', error);
+                        }
+                    );
+                });
+    
+            }
+        }
+
+        if (kaboomDefinition.allHours?.action === 'open-app') {
+            openAllHoursTimeline();
+        }        
+
+
+        if (kaboomDefinition.myHours?.action === 'start-log') {
+            if (kaboomDefinition.myHours?.projectId){
+                _this.myHoursApi.startLog(
+                    kaboomDefinition.myHours.description, 
+                    kaboomDefinition.myHours.projectId, 
+                    kaboomDefinition.myHours.taskId, 
+                    kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
+                    function (data) {
+                        getLogs();
+                        toastr.success(`My Hours Log started.`);
+                    },
+                    function (error) {
+                        toastr.error(`There was error starting My Hours log.`);
+                        console.error('There was error starting My Hours log:', error);
+                    }
+                )
+            }
+        }
+
+        if (kaboomDefinition.myHours?.action === 'add-log') {
+            if (kaboomDefinition.myHours?.projectId){
+                let startMins = kaboomDefinition.myHours.startTime;
+                let startTimeHours = Math.floor(startMins / 60); 
+                let startTimeMinutes = startMins % 60; 
+                let startTime = new Date().setHours(startTimeHours, startTimeMinutes, 0, 0);
+
+                let endMins = kaboomDefinition.myHours.startTime + kaboomDefinition.myHours.duration;
+                let endTimeHours = Math.floor(endMins / 60); 
+                let endTimeMinutes = endMins % 60; 
+                let endTime = new Date().setHours(endTimeHours, endTimeMinutes, 0, 0);
+
+                _this.myHoursApi.addLogWithTime(
+                    startTime,
+                    endTime,
+                    kaboomDefinition.myHours.description, 
+                    kaboomDefinition.myHours.projectId, 
+                    kaboomDefinition.myHours.taskId, 
+                    kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
+                    function (data) {
+                        getLogs();
+                        toastr.success(`My Hours Log added.`);
+                    },
+                    function (error) {
+                        toastr.error(`There was error adding My Hours log.`);
+                        console.error('There was error adding My Hours log:', error);
+                    }
+                )
+            }
+        }   
+        
+        if (kaboomDefinition.myHours?.action === 'stop-running-log') {
+            _this.myHoursApi.stopTimer().then(
+                function () {
+                    toastr.success(`My Hours Log stopped.`);
+                },
+                function (error) {
+                    toastr.error(`There was error stopping My Hours log.`);
+                    console.error('There was error stopping My Hours log:', error);
+                }
+            )
+        }
+        
+        if (kaboomDefinition.myHours?.action === 'open-app') {
+            openMyHoursTracking();
+        }
+        
+
+        // if (kaboomDefinition.myHours?.stopRunningLog) {
+        //     _this.myHoursApi.stopTimer().then(
+        //         function () {
+        //             toastr.success(`My Hours Log stopped.`);
+        //         },
+        //         function (error) {
+        //             toastr.error(`There was error stopping My Hours log.`);
+        //             console.error('There was error stopping My Hours log:', error);
+        //         }
+        //     )
+        // }
     }
 
     initInterface();

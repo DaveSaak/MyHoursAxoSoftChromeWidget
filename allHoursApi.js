@@ -301,6 +301,29 @@ function AllHoursApi(
         return response;
     }
 
+    _this.addClocking = async function (userId, clockingDefinitionId) {
+
+        const url = _this.options.allHoursUrl + "/Clockings/Authentic";
+        const headers = {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+            "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+        };
+        const data =
+        {
+            UserId: userId,
+            ClockingDefinitionId: clockingDefinitionId,
+            Authentic: true,
+            Origin: 2
+        };
+        const response = await fetch(url, {
+            headers,
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        return response;
+    }
+
 
     _this.getUserCalculations = function (userId, dateFrom, dateTo) {
         dateFrom = dateFrom.clone().startOf('day');

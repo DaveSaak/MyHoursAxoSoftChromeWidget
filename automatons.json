@@ -1,0 +1,248 @@
+[
+    {
+        "backgroundColor": "#3d348b",
+        "color": "white",
+        "actions": [
+            {
+                "text": "",
+                "description": "standup",
+                "icon": "user-friends",
+
+                "myHours": {
+                    "action": "add-log",
+                    "projectId": 1870755,
+                    "taskId": 10481568,
+                    "tagIds": [77593],
+                    "description": "standup meeting",
+                    "startTime":"510",
+                    "duration": "30"
+                }
+            },
+
+            {
+                "text": "",
+                "description": "All Hours daily",
+                "icon": "calendar-day",
+                "myHours": {
+                    "action": "add-log",
+                    "projectId": 1870755,
+                    "taskId": 10481568,
+                    "tagIds": [77593],
+                    "description": "All Hours daily",
+                    "startTime":"540",
+                    "duration": "30"
+                }
+            },
+
+            {
+                "text": "",
+                "description": "scrum related stuff",
+                "icon": "chess-king",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10481568,
+                    "tagIds": [77593],
+                    "description": "scrum"
+                }
+            }
+        ]
+    },
+
+    {
+        "backgroundColor": "#087e8b",
+        "color": "white",
+        "actions": [
+            {
+                "id": "",
+                "text": "",
+                "description": "warmup",
+                "icon": "fire",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10465248,
+                    "tagIds": [77593],
+                    "description": "sync with the team"
+                }
+            },
+            {
+                "id": "",
+                "text": "",
+                "description": "meetings",
+                "icon": "handshake",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10465248,
+                    "tagIds": [77593],
+                    "description": "meeting"
+                }
+            },
+            {
+                "text": "",
+                "description": "education",
+                "icon": "graduation-cap",
+                "myHours": {
+                    "action": "start-log",
+                    "description": "learning new stuff"
+                }
+            },
+
+            {
+                "text": "",
+                "description": "research",
+                "icon": "flask",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10481563,
+                    "tagIds": [77594],
+                    "description": "research"
+                }
+            },
+
+            
+            {
+                "text": "",
+                "description": "devops",
+                "icon": "infinity",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10481559,
+                    "tagIds": [77596],
+                    "description": "devops"
+                }
+            },
+            {
+                "id": "",
+                "text": "",
+                "description": "distraction",
+                "icon": "bomb",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10465248,
+                    "tagIds": [77593],
+                    "description": "distraction"
+                }
+            }
+        ]
+    },
+
+    {
+        "backgroundColor": "#d31b64",
+        "color": "white",
+        "actions": [
+            {
+                "text": "",
+                "description": "Cloud Spine Automation - development",
+                "icon": "laptop-code",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 2171615,
+                    "taskId": 12164707,
+                    "tagIds": [77055],
+                    "description": "cloud spine development"
+                }
+            },
+            {
+                "text": "",
+                "description": "Cloud Spine Automation - meetings",
+                "icon": "handshake",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 2171615,
+                    "taskId": 12164692,
+                    "tagIds": [77593],
+                    "description": "cloud spine meeting"
+                }
+            },
+            {
+                "text": "",
+                "description": "Cloud Spine Automation - forenzics",
+                "icon": "microscope",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 2171615,
+                    "taskId": 12164692,
+                    "tagIds": [77596],
+                    "description": "accounting forenzics"
+                }
+            }
+        ]
+    },
+
+    {
+        "backgroundColor": "#1b7bba",
+        "color": "white",
+        "actions": [
+            {
+                "text": "",
+                "description": "start lunch",
+                "icon": "coffee",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 12738329,
+                    "tagIds":[140445],
+                    "description": "out for lunch"
+                },
+                "allHours": {
+                    "action": "add-clocking",
+                    "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
+                    "comment": "lunch"
+                }
+            },
+
+            {
+                "description": "start remote work",
+                "icon": "laptop-code",
+
+                "allHours": {
+                    "action": "add-clocking",
+                    "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
+                    "comment": "clock in remote"
+                }
+            },
+            {
+                "description": "clock out",
+                "icon": "door-open",
+
+                "allHours": {
+                    "action": "add-clocking",
+                    "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
+                    "comment": "clock out"
+                },
+                "myHours": {
+                    "action": "stop-running-log"
+                }
+            }
+
+        ]
+    },
+
+    {
+        "backgroundColor": "#6aa921",
+        "color": "white",
+        "actions": [
+            {
+                "text": "mh",
+                "description": "start MH",
+                "myHours": {
+                    "action": "open-app"
+                }
+            },
+
+            {
+                "text": "ah",
+                "description": "open AH",
+                "allHours": {
+                    "action": "open-app"
+                }
+            }
+
+        ]
+    }    
+]
