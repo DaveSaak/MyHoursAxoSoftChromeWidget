@@ -3,6 +3,34 @@
         "backgroundColor": "#3d348b",
         "color": "white",
         "actions": [
+
+            {
+                "description": "start remote work",
+                "icon": "laptop-code",
+
+                "allHours": {
+                    "action": "add-clocking",
+                    "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
+                    "comment": "clock in remote"
+                },
+                "myHours": {
+                    "action": "stop-running-log"
+                }
+            },
+
+            {
+                "id": "",
+                "text": "",
+                "description": "warmup",
+                "icon": "fire",
+                "myHours": {
+                    "action": "start-log",
+                    "projectId": 1870755,
+                    "taskId": 10465248,
+                    "tagIds": [77593],
+                    "description": "sync with the team"
+                }
+            },
             {
                 "text": "",
                 "description": "standup",
@@ -14,8 +42,8 @@
                     "taskId": 10481568,
                     "tagIds": [77593],
                     "description": "standup meeting",
-                    "startTime":"510",
-                    "duration": "30"
+                    "startTime":510,
+                    "duration": 30
                 }
             },
 
@@ -29,23 +57,44 @@
                     "taskId": 10481568,
                     "tagIds": [77593],
                     "description": "All Hours daily",
-                    "startTime":"540",
-                    "duration": "30"
+                    "startTime":540,
+                    "duration": 30
                 }
             },
 
             {
                 "text": "",
-                "description": "scrum related stuff",
-                "icon": "chess-king",
+                "description": "start lunch",
+                "icon": "coffee",
                 "myHours": {
                     "action": "start-log",
                     "projectId": 1870755,
-                    "taskId": 10481568,
-                    "tagIds": [77593],
-                    "description": "scrum"
+                    "taskId": 12738329,
+                    "tagIds":[140445],
+                    "description": "out for lunch"
+                },
+                "allHours": {
+                    "action": "add-clocking",
+                    "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
+                    "comment": "lunch"
+                }
+            },
+
+            {
+                "description": "clock out",
+                "icon": "door-open",
+
+                "allHours": {
+                    "action": "add-clocking",
+                    "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
+                    "comment": "clock out"
+                },
+                "myHours": {
+                    "action": "stop-running-log"
                 }
             }
+
+
         ]
     },
 
@@ -54,16 +103,15 @@
         "color": "white",
         "actions": [
             {
-                "id": "",
                 "text": "",
-                "description": "warmup",
-                "icon": "fire",
+                "description": "scrum related stuff",
+                "icon": "rocket",
                 "myHours": {
                     "action": "start-log",
                     "projectId": 1870755,
-                    "taskId": 10465248,
+                    "taskId": 10481568,
                     "tagIds": [77593],
-                    "description": "sync with the team"
+                    "description": "scrum"
                 }
             },
             {
@@ -115,17 +163,17 @@
                     "description": "devops"
                 }
             },
+
             {
-                "id": "",
                 "text": "",
-                "description": "distraction",
-                "icon": "bomb",
+                "description": "docs",
+                "icon": "book",
                 "myHours": {
                     "action": "start-log",
                     "projectId": 1870755,
-                    "taskId": 10465248,
-                    "tagIds": [77593],
-                    "description": "distraction"
+                    "taskId": 10481561,
+                    "tagIds": [77598],
+                    "description": "documentation"
                 }
             }
         ]
@@ -175,68 +223,31 @@
     },
 
     {
-        "backgroundColor": "#1b7bba",
+        "backgroundColor": "#9d57ef",
         "color": "white",
         "actions": [
-            {
+              {
+                "id": "",
                 "text": "",
-                "description": "start lunch",
-                "icon": "coffee",
+                "description": "distraction",
+                "icon": "bomb",
                 "myHours": {
                     "action": "start-log",
                     "projectId": 1870755,
-                    "taskId": 12738329,
-                    "tagIds":[140445],
-                    "description": "out for lunch"
-                },
-                "allHours": {
-                    "action": "add-clocking",
-                    "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
-                    "comment": "lunch"
-                }
-            },
-
-            {
-                "description": "start remote work",
-                "icon": "laptop-code",
-
-                "allHours": {
-                    "action": "add-clocking",
-                    "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
-                    "comment": "clock in remote"
-                }
-            },
-            {
-                "description": "clock out",
-                "icon": "door-open",
-
-                "allHours": {
-                    "action": "add-clocking",
-                    "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
-                    "comment": "clock out"
-                },
-                "myHours": {
-                    "action": "stop-running-log"
+                    "taskId": 10465248,
+                    "tagIds": [77593],
+                    "description": "distraction"
                 }
             }
-
         ]
     },
 
     {
-        "backgroundColor": "#6aa921",
+        "backgroundColor": "#3b8fc2",
         "color": "white",
         "actions": [
             {
-                "text": "mh",
-                "description": "start MH",
-                "myHours": {
-                    "action": "open-app"
-                }
-            },
-
-            {
-                "text": "ah",
+                "text": "AH",
                 "description": "open AH",
                 "allHours": {
                     "action": "open-app"
