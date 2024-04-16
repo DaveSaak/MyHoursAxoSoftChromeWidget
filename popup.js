@@ -1468,21 +1468,7 @@ function popup() {
                             console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
                             return;
                         }
-
-                        // _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate).then(calc => {
-                        //     console.log(calc);
-                        //     if (calc.DailyCalculations.length > 0) {
-                        //         const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
-                        //         const plan = Number.parseInt(calc.DailyCalculations[0].Accruals.find(x => x.ValueType == 1)?.Value ?? "0");
-                        //         let attendance = plan + dayBalance;
-                        //         _this.timeRatio.setAllHours(attendance);
-                        //         _this.timeRatioAllHourAxo.setAllHours(attendance);
-                        //         _this.allHoursAttendance = attendance;
-                        //         $('#ahAttendance').text(minutesToString(attendance));
-                        //     } else {
-                        //         $('#ahAttendance').text('0:00');
-                        //     }
-                        // });                        
+                     
 
 
                         if (_this.currentDate.isSame(moment(), 'day')) {
@@ -1490,31 +1476,15 @@ function popup() {
 
                             _this.allHoursApi.getCurrentBalance(data).then(
                                 function (data) {
-                                    var attendance = 450 + parseInt(data.Balance);
+                                    var attendance = 480 + parseInt(data.Balance);
 
-                                    //let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
                                     _this.timeRatio.setAllHours(attendance);
                                     _this.timeRatioAllHourAxo.setAllHours(attendance);
                                     $('#ahAttendance').text(minutesToString(attendance));
                                 });
-
-                            // const today = moment().startOf('day');
-                            // _this.allHoursApi.getUserCalculations(data, today, today).then(calc => {
-                            //     console.log(calc);
-                            //     if (calc.DailyCalculations.length > 0) {
-                            //         const dayBalance = calc.DailyCalculations[0].CalculationResultSummary.DailyBalanceValue ?? 0;
-                            //         const plan = calc.DailyCalculations[0].PlannedPresenceSegments.find(x => x.Type == 2)?.Value ?? 0;
-                            //         let attendance = plan + dayBalance;
-                            //         _this.timeRatio.setAllHours(attendance);
-                            //         _this.timeRatioAllHourAxo.setAllHours(attendance);
-                            //         _this.allHoursAttendance = attendance;
-                            //         $('#ahAttendance').text(minutesToString(attendance));
-                            //     } else {
-                            //         $('#ahAttendance').text('0:00');
-                            //     }
-                            // });
                         }
-                        else {
+                        else 
+                        {
                             // console.log('it is NOT today');
                             _this.allHoursApi.getAttendance(data, _this.currentDate).then(
                                 function (workAttendance) {
@@ -1525,18 +1495,6 @@ function popup() {
                                     $('#ahAttendance').text(minutesToString(workAttendance));
 
                                 },
-                                // function (data) {
-                                //     if (data && data.CalculationResultValues.length > 0) {
-                                //         let attendance = parseInt(data.CalculationResultValues[0].Value, 10);
-                                //         _this.timeRatio.setAllHours(attendance);
-                                //         _this.timeRatioAllHourAxo.setAllHours(attendance);
-                                //         _this.allHoursAttendance = attendance;
-                                //         $('#ahAttendance').text(minutesToString(attendance));
-                                //     } else {
-                                //         $('#ahAttendance').text('0:00');
-                                //     }
-
-                                // },
                                 function (error) {
                                     console.error('error while geting attendance.');
                                 }
@@ -2151,12 +2109,14 @@ function popup() {
                 let startMins = kaboomDefinition.myHours.startTime;
                 let startTimeHours = Math.floor(startMins / 60); 
                 let startTimeMinutes = startMins % 60; 
-                let startTime = new Date().setHours(startTimeHours, startTimeMinutes, 0, 0);
+                let startTime = new Date();
+                startTime.setHours(startTimeHours, startTimeMinutes, 0, 0);
 
                 let endMins = kaboomDefinition.myHours.startTime + kaboomDefinition.myHours.duration;
                 let endTimeHours = Math.floor(endMins / 60); 
                 let endTimeMinutes = endMins % 60; 
-                let endTime = new Date().setHours(endTimeHours, endTimeMinutes, 0, 0);
+                let endTime = new Date();
+                endTime.setHours(endTimeHours, endTimeMinutes, 0, 0);
 
                 _this.myHoursApi.addLogWithTime(
                     startTime,
