@@ -70,7 +70,7 @@ function AllHoursApi(
                 var urlencoded = Object.keys(loginData).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(loginData[key])).join('&');
 
                 $.ajax({
-                    url: "https://login.allhours.com/connect/token",
+                    url: "https://login.spica.com/connect/token",
                     dataType: 'json',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
@@ -112,7 +112,7 @@ function AllHoursApi(
 
 
                 $.ajax({
-                    url: "https://login.allhours.com/connect/token",
+                    url: "https://login.spica.com/connect/token",
                     dataType: 'json',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
