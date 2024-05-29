@@ -140,6 +140,9 @@ function addGitButtonToPopup(){
 }
 
 function addStartMyHoursTimer() {
+
+    addStartTrackButtonToLinkedTasks();
+
     // const workItemFormDivs = $("div:not(.dialog) > .work-item-form");
     const workItemFormDivs = $(".work-item-form");
     
@@ -196,5 +199,42 @@ function addStartMyHoursTimer() {
 }
 
 
+function addStartTrackButtonToLinkedTasks(){
 
+    const taskLinks = $(".links-control-container .la-item:has(.bowtie-symbol-task)");
+
+    Array.from(taskLinks).forEach((taskItem, index) => {
+
+        const workItemId = $(taskItem).find('.la-primary-data .la-primary-data-id').html().replace('&nbsp;','');
+
+        if (workItemId.length > 0) {
+
+            const buttonContainer = $(taskItem);
+            const button = $('<button>').addClass('la-item-delete');
+            button.css({
+                "margin-right": "20px", 
+                "min-width": "120px", 
+                "border-color":"transparent", 
+                "background-color": "#dff4eb", 
+                "cursor": "pointer",
+                "padding": "5px",
+            });
+            button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
+            const buttonTextSpan = $('<span>').addClass('text');
+            buttonTextSpan.text(`Start MH log (${workItemId})`);
+            button.append($(buttonTextSpan));
+            buttonContainer.append(button);
+
+            button.on('click', function() {
+                buttonTextSpan.text('starting...');
+                chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
+                setTimeout( 
+                    _ => { buttonTextSpan.text('Start MH log'); }, 
+                    3000, 
+                    this
+                );
+            });
+        }
+    });
+}
 

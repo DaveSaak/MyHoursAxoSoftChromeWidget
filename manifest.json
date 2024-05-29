@@ -19,7 +19,7 @@
             "js": ["content-script-context-menu.js"]
         },
         {
-            "matches": ["https://app.myhours.com/*"],
+            "matches": ["https://legacy.myhours.com/*"],
             "js": ["jquery-3.3.1.min.js", "content-script.js"],
             "css": ["myhours.css"]
         },
@@ -59,6 +59,7 @@
         "contextMenus",
         "clipboardWrite",
         "https://app.myhours.com/*",
+        "https://legacy.myhours.com/*",
         "https://api.myhours.com/*",
         "https://api2.myhours.com/*",
         "https://myhoursproduction-api.azurewebsites.net/api/*",
