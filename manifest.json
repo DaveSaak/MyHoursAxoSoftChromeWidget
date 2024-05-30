@@ -30,7 +30,7 @@
                 "https://dev.azure.com/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
-            "css": ["axo.css"]
+            "css": ["axo.css","devops-content-script.css"]
         },
         {
             "matches": [

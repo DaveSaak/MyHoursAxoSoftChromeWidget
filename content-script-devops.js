@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (request && request.type === 'work-item-fetched') {
         setTimeout(() => {
             addStartMyHoursTimer();
-        }, 200);
+        }, 500);
     }    
 
 });
@@ -163,8 +163,11 @@ function addStartMyHoursTimer() {
                     if (startMhTrackButton.length == 0) {
 
                         const button = $('<li>');
-                        button.addClass('menu-item chrome-extension-start-mh-track');
-                        button.css({"margin-right": "4px", "min-width": "120px", "background-color": "#2db67e26"});
+                        button.addClass('menu-item chrome-extension-start-mh-track my-hours-track-button');
+                        button.css({
+                            "margin-right": "4px", 
+                            "background-color": "#2db67e26"
+                        });
                         button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
                         const buttonTextSpan = $('<span>').addClass('text');
                         buttonTextSpan.text(`Start MH log (${workItemId})`);
@@ -210,13 +213,9 @@ function addStartTrackButtonToLinkedTasks(){
         if (workItemId.length > 0) {
 
             const buttonContainer = $(taskItem);
-            const button = $('<button>').addClass('la-item-delete');
+            const button = $('<button>').addClass('la-item-delete my-hours-track-button');
             button.css({
                 "margin-right": "20px", 
-                "min-width": "120px", 
-                "border-color":"transparent", 
-                "background-color": "#dff4eb", 
-                "cursor": "pointer",
                 "padding": "5px",
             });
             button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
