@@ -1,259 +1,285 @@
 [
     {
-        "backgroundColor": "#3d348b",
-        "color": "white",
-        "actions": [
-
-            {
-                "description": "start remote work",
-                "icon": "laptop-code",
-
-                "allHours": {
-                    "action": "add-clocking",
-                    "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
-                    "comment": "clock in remote"
-                },
-                "myHours": {
-                    "action": "stop-running-log"
-                }
-            },
-
-            {
-                "id": "",
-                "text": "",
-                "description": "warmup",
-                "icon": "fire",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10465248,
-                    "tagIds": [77593],
-                    "description": "sync with the team"
-                }
-            },
-            {
-                "text": "",
-                "description": "standup",
-                "icon": "user-friends",
-
-                "myHours": {
-                    "action": "add-log",
-                    "projectId": 1870755,
-                    "taskId": 10481568,
-                    "tagIds": [77593],
-                    "description": "standup meeting",
-                    "startTime":510,
-                    "duration": 30
-                }
-            },
-
-            {
-                "text": "",
-                "description": "All Hours daily",
-                "icon": "calendar-day",
-                "myHours": {
-                    "action": "add-log",
-                    "projectId": 1870755,
-                    "taskId": 10481568,
-                    "tagIds": [77593],
-                    "description": "All Hours daily",
-                    "startTime":540,
-                    "duration": 30
-                }
-            },
-
-            {
-                "text": "",
-                "description": "start lunch",
-                "icon": "coffee",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 12738329,
-                    "tagIds":[140445],
-                    "description": "out for lunch"
-                },
-                "allHours": {
-                    "action": "add-clocking",
-                    "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
-                    "comment": "lunch"
-                }
-            },
-
-            {
-                "description": "clock out",
-                "icon": "door-open",
-
-                "allHours": {
-                    "action": "add-clocking",
-                    "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
-                    "comment": "clock out"
-                },
-                "myHours": {
-                    "action": "stop-running-log"
-                }
-            }
-
-
-        ]
+      "actions": [
+        {
+          "allHours": {
+            "action": "add-clocking",
+            "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
+            "comment": "clock in remote"
+          },
+          "backgroundColor": "#3d348b",
+          "color": "white",
+          "description": "start remote work",
+          "icon": "industry",
+          "myHours": {
+            "action": "stop-running-log"
+          }
+        },
+        {
+          "backgroundColor": "#3d348b",
+          "color": "white",
+          "description": "warmup",
+          "icon": "fire",
+          "id": "",
+          "myHours": {
+            "action": "start-log",
+            "description": "sync with the team",
+            "projectId": 1870755,
+            "tagIds": [
+              77593
+            ],
+            "taskId": 10465248
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#3d348b",
+          "color": "white",
+          "description": "standup",
+          "icon": "user-friends",
+          "myHours": {
+            "action": "start-log",
+            "description": "standup meeting",
+            "projectId": 1870755,
+            "tagIds": [
+              148112
+            ],
+            "taskId": 10481568
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#3d348b",
+          "color": "white",
+          "description": "All Hours daily",
+          "icon": "calendar-day",
+          "myHours": {
+            "action": "start-log",
+            "description": "All Hours daily",
+            "projectId": 1870755,
+            "tagIds": [
+              148112
+            ],
+            "taskId": 10481568
+          },
+          "text": ""
+        },
+        {
+          "allHours": {
+            "action": "add-clocking",
+            "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
+            "comment": "lunch"
+          },
+          "backgroundColor": "#3d348b",
+          "color": "white",
+          "description": "start lunch",
+          "icon": "coffee",
+          "myHours": {
+            "action": "start-log",
+            "description": "out for lunch",
+            "projectId": 1870755,
+            "tagIds": [
+              140445
+            ],
+            "taskId": 12738329
+          },
+          "text": ""
+        },
+        {
+          "allHours": {
+            "action": "add-clocking",
+            "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
+            "comment": "clock out"
+          },
+          "backgroundColor": "#3d348b",
+          "color": "white",
+          "description": "clock out",
+          "icon": "door-open",
+          "myHours": {
+            "action": "stop-running-log"
+          }
+        }
+      ],
+      "backgroundColor": "#3d348b",
+      "color": "white"
     },
-
     {
-        "backgroundColor": "#087e8b",
-        "color": "white",
-        "actions": [
-            {
-                "text": "",
-                "description": "scrum related stuff",
-                "icon": "rocket",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10481568,
-                    "tagIds": [77593],
-                    "description": "scrum"
-                }
-            },
-            {
-                "id": "",
-                "text": "",
-                "description": "meetings",
-                "icon": "handshake",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10465248,
-                    "tagIds": [77593],
-                    "description": "meeting"
-                }
-            },
-            {
-                "text": "",
-                "description": "education",
-                "icon": "graduation-cap",
-                "myHours": {
-                    "action": "start-log",
-                    "description": "learning new stuff"
-                }
-            },
-
-            {
-                "text": "",
-                "description": "research",
-                "icon": "flask",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10481563,
-                    "tagIds": [77594],
-                    "description": "research"
-                }
-            },
-
-            
-            {
-                "text": "",
-                "description": "devops",
-                "icon": "infinity",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10481559,
-                    "tagIds": [77596],
-                    "description": "devops"
-                }
-            },
-
-            {
-                "text": "",
-                "description": "docs",
-                "icon": "book",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10481561,
-                    "tagIds": [77598],
-                    "description": "documentation"
-                }
-            }
-        ]
+      "actions": [
+        {
+          "backgroundColor": "#087e8b",
+          "color": "white",
+          "description": "scrum related stuff",
+          "icon": "rocket",
+          "myHours": {
+            "action": "start-log",
+            "description": "scrum",
+            "projectId": 1870755,
+            "tagIds": [
+              77593
+            ],
+            "taskId": 10481568
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#087e8b",
+          "color": "white",
+          "description": "meetings",
+          "icon": "handshake",
+          "id": "",
+          "myHours": {
+            "action": "start-log",
+            "description": "meeting",
+            "projectId": 1870755,
+            "tagIds": [
+              77593
+            ],
+            "taskId": 10465248
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#087e8b",
+          "color": "white",
+          "description": "research",
+          "icon": "flask",
+          "myHours": {
+            "action": "start-log",
+            "description": "research",
+            "projectId": 1870755,
+            "tagIds": [
+              77594
+            ],
+            "taskId": 10481563
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#087e8b",
+          "color": "white",
+          "description": "devops",
+          "icon": "infinity",
+          "myHours": {
+            "action": "start-log",
+            "description": "devops",
+            "projectId": 1870755,
+            "tagIds": [
+              77596
+            ],
+            "taskId": 10481559
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#087e8b",
+          "color": "white",
+          "description": "docs",
+          "icon": "book",
+          "myHours": {
+            "action": "start-log",
+            "description": "documentation",
+            "projectId": 1870755,
+            "tagIds": [
+              77598
+            ],
+            "taskId": 10481561
+          },
+          "text": ""
+        }
+      ],
+      "backgroundColor": "#087e8b",
+      "color": "white"
     },
-
     {
-        "backgroundColor": "#d31b64",
-        "color": "white",
-        "actions": [
-            {
-                "text": "",
-                "description": "Cloud Spine Automation - development",
-                "icon": "laptop-code",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 2171615,
-                    "taskId": 12164707,
-                    "tagIds": [77055],
-                    "description": "cloud spine development"
-                }
-            },
-            {
-                "text": "",
-                "description": "Cloud Spine Automation - meetings",
-                "icon": "handshake",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 2171615,
-                    "taskId": 12164692,
-                    "tagIds": [77593],
-                    "description": "cloud spine meeting"
-                }
-            },
-            {
-                "text": "",
-                "description": "Cloud Spine Automation - forenzics",
-                "icon": "microscope",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 2171615,
-                    "taskId": 12164692,
-                    "tagIds": [77596],
-                    "description": "accounting forenzics"
-                }
-            }
-        ]
+      "actions": [
+        {
+          "backgroundColor": "#d31b64",
+          "color": "white",
+          "description": "Cloud Spine Automation - development",
+          "icon": "laptop-code",
+          "myHours": {
+            "action": "start-log",
+            "description": "cloud spine development",
+            "projectId": 2171615,
+            "tagIds": [
+              77055
+            ],
+            "taskId": 12164707
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#d31b64",
+          "color": "white",
+          "description": "Cloud Spine Automation - meetings",
+          "icon": "handshake",
+          "myHours": {
+            "action": "start-log",
+            "description": "cloud spine meeting",
+            "projectId": 2171615,
+            "tagIds": [
+              77593
+            ],
+            "taskId": 12164692
+          },
+          "text": ""
+        },
+        {
+          "backgroundColor": "#d31b64",
+          "color": "white",
+          "description": "Cloud Spine Automation - forenzics",
+          "icon": "microscope",
+          "myHours": {
+            "action": "start-log",
+            "description": "accounting forenzics",
+            "projectId": 2171615,
+            "tagIds": [
+              77596
+            ],
+            "taskId": 12164692
+          },
+          "text": ""
+        }
+      ],
+      "backgroundColor": "#d31b64",
+      "color": "white"
     },
-
     {
-        "backgroundColor": "#9d57ef",
-        "color": "white",
-        "actions": [
-              {
-                "id": "",
-                "text": "",
-                "description": "distraction",
-                "icon": "bomb",
-                "myHours": {
-                    "action": "start-log",
-                    "projectId": 1870755,
-                    "taskId": 10465248,
-                    "tagIds": [77593],
-                    "description": "distraction"
-                }
-            }
-        ]
+      "actions": [
+        {
+          "backgroundColor": "#9d57ef",
+          "color": "white",
+          "description": "distraction",
+          "icon": "bomb",
+          "id": "",
+          "myHours": {
+            "action": "start-log",
+            "description": "distraction",
+            "projectId": 1870755,
+            "tagIds": [
+              77593
+            ],
+            "taskId": 10465248
+          },
+          "text": ""
+        }
+      ],
+      "backgroundColor": "#9d57ef",
+      "color": "white"
     },
-
     {
-        "backgroundColor": "#3b8fc2",
-        "color": "white",
-        "actions": [
-            {
-                "text": "AH",
-                "description": "open AH",
-                "allHours": {
-                    "action": "open-app"
-                }
-            }
-
-        ]
-    }    
-]
+      "actions": [
+        {
+          "allHours": {
+            "action": "open-app"
+          },
+          "backgroundColor": "#3b8fc2",
+          "color": "white",
+          "description": "open AH",
+          "text": "AH"
+        }
+      ],
+      "backgroundColor": "#3b8fc2",
+      "color": "white"
+    }
+  ]
