@@ -123,6 +123,7 @@ function addGitButtonToPopup(){
         const headerContent = header.first('.work-item-form-headerContent');
         const itemId = headerContent.find('[aria-label="ID Field"]').text();
         const itemTitle = headerContent.find('[aria-label="Title Field"]').val();
+        const isUserStory = $('.vc-create-branch-from-git-ref-dialog .bowtie-icon.bowtie-symbol-book').length > 0;
     
         console.log(`item: ${itemId}, title: ${itemTitle}`);
     
@@ -132,10 +133,13 @@ function addGitButtonToPopup(){
             .replace(/[\W_]+/g, " ")  //remove all non alpha chars
             .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
             .replace(/ /g, "-");     //replace spaces with dashes
-    
-        const fullBranchName = itemId + "-" + branchName;      
+      
+        const fullBranchName = `${itemId}${(isUserStory ? '-FEAT' : '')}-${branchName}`;
         
-        branchNameSection.find('input').val(fullBranchName);
+        const branchNameInput = branchNameSection.find('input');
+        // branchNameInput.focus();
+        branchNameInput.val(fullBranchName);
+        branchNameInput.focus();
     })
 }
 
@@ -170,7 +174,7 @@ function addStartMyHoursTimer() {
                         });
                         button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
                         const buttonTextSpan = $('<span>').addClass('text');
-                        buttonTextSpan.text(`Start MH log (${workItemId})`);
+                        buttonTextSpan.text(`Start log (${workItemId})`);
                         button.append($(buttonTextSpan));
                         toolbarUl.prepend(button);
 
@@ -178,7 +182,7 @@ function addStartMyHoursTimer() {
                             buttonTextSpan.text('starting...');
                             chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
                             setTimeout( 
-                                _ => { buttonTextSpan.text('Start MH log'); }, 
+                                _ => { buttonTextSpan.text(`Start log (${workItemId})`); }, 
                                 3000, 
                                 this
                             );
