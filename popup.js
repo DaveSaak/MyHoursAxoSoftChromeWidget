@@ -695,6 +695,7 @@ function popup() {
         }
 
         var totalMins = 0;
+        var totalMinsWithTag = 0;
         _this.myHoursLogs.forEach(log => {
 
             if (log.projectId == _this.options.myHoursCommonProjectId) {
@@ -714,6 +715,9 @@ function popup() {
 
 
             totalMins = totalMins + (log.duration / 60);
+            if (log.tags?.length > 0) {
+                totalMinsWithTag = totalMinsWithTag + (log.duration / 60);
+            }
 
             var logContainer = $('<div>')
                 .attr("data-logId", log.id)
@@ -780,7 +784,10 @@ function popup() {
 
             logContainerGrid.append(logTitle);
 
-            var worklogTypeInfo = $('<div class="tags">').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
+            var worklogTypeInfo = $('<div class="tags">').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : 'worklog type not set');
+            if (log.tags?.length == 0) {
+                worklogTypeInfo.addClass('no-tags');
+            }
             logTitle.append(worklogTypeInfo);
 
 
@@ -1039,6 +1046,10 @@ function popup() {
                 barGraph.attr("data-logId", log.id);
                 barGraph.prop('title', title);
 
+                if (log.tags?.length == 0) {
+                    barGraph.addClass('no-tags');
+                }
+
                 /*
                 if (log.projectId == _this.options.myHoursCommonProjectId) {
                     if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
@@ -1067,6 +1078,8 @@ function popup() {
                         left: left + 'px',
                         width: right - left + 'px',
                         "background-color": log.color,
+                        // "border-color": log.color,
+
                     });
                 }
 
@@ -1085,8 +1098,9 @@ function popup() {
             });
         });
 
-        _this.timeRatio.setMyHours(totalMins);
-        $('#mhTotal').text(minutesToString(totalMins));
+        _this.timeRatio.setMyHours(totalMinsWithTag);
+        // $('#mhTotal').text(`${minutesToString(totalMinsWithTag)}/${minutesToString(totalMins)}`);
+        $('#mhTotal').text(`${minutesToString(totalMinsWithTag)}`);
 
         $('#copyDevOpsButton').toggle(totalMins > 0);
     }

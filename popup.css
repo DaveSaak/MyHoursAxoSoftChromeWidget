@@ -197,6 +197,17 @@ div#logs li .column {
     z-index: 1;
 }
 
+.timeline-log.no-tags {
+    /* border-width: 2px;
+    border-color: red;
+    border-style: dashed; */
+    border-width: 2px;
+    border-style: solid;
+    background-color: white !important;
+    border-color: rgb(182 40 40);
+    ;
+}
+
 .timeline-segment {
     top: 18px;
     height: 18px;
@@ -772,6 +783,10 @@ div.logContainer:hover {
     color: #5b6369;
     font-size: 0.7rem;
     text-transform: uppercase;
+}
+
+.logContainer .logContainerGrid .tags.no-tags {
+    color: rgb(182 40 40);
 }
 
 .logContainer .logContainerGrid .log-title {

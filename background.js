@@ -288,6 +288,7 @@ function refreshBadge() {
                     const myHoursApi = new MyHoursApi(currentUser);
 
                     myHoursApi.getLogs(today).then(logs => {
+                        logs = logs.filter(log => log.log.tags?.length > 0);  //filter out logs without tags
                         const sumDuration = logs.reduce((accumulator, log) => accumulator + log.duration / 60, 0);
                         console.log(sumDuration);
 
@@ -612,6 +613,15 @@ function getBranchName(info, tab) {
 function refreshMyHoursPage() {
 
     chrome.tabs.query({ url: 'https://app.myhours.com/*' }, function (foundTabs) {
+        foundTabs.forEach(myHoursTab => {
+            console.info('refreshing myhours tabs');
+            chrome.tabs.reload(
+                myHoursTab.id
+            );
+        });
+    });
+
+    chrome.tabs.query({ url: 'https://legacy.myhours.com/*' }, function (foundTabs) {
         foundTabs.forEach(myHoursTab => {
             console.info('refreshing myhours tabs');
             chrome.tabs.reload(
