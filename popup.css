@@ -750,6 +750,10 @@ div.logContainer:hover {
     /* margin: 1rem; */
 }
 
+.logContainer.no-tags {
+    background-color: #b6282812;
+}
+
 .logContainer .logContainerGrid {
     display: grid;
     grid-template-columns: 1rem auto auto 5rem;

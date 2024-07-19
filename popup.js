@@ -723,6 +723,9 @@ function popup() {
                 .attr("data-logId", log.id)
                 .attr("data-taskId", log.taskId)
                 .addClass("logContainer  align-items-center");
+            if (log.tags?.length == 0) {
+                logContainer.addClass('no-tags');
+            }
 
             logContainer.mouseenter(function () {
                 $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", true);
