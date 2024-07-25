@@ -312,7 +312,7 @@ function MyHoursApi(currentUser) {
             function (resolve, reject) {
                 // console.info("api: staring log");
 
-                var currentTime = moment();
+                var currentTime = moment().millisecond(0);
                 var newLogData = {
                     note: comment,
                     date: currentTime.format('YYYY-MM-DD'),
