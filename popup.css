@@ -831,7 +831,7 @@ div.logContainer:hover {
     right: 0;
     top: 0;
     background: #f6f6f6;
-    padding: 1rem;
+    padding: 1rem 1rem 0.5rem 1rem;
 }
 
 .logContainer:hover .log-actions {
@@ -847,6 +847,14 @@ div.logContainer:hover {
 
     color: #6c757d;
     font-size: 0.8rem;
+}
+
+.logContainer .edit-comment-button {
+    display: none;
+}
+
+.logContainer .logContainerGrid:hover .edit-comment-button {
+    display: inline-block;
 }
 
 /* .logContainer .logContainerGrid:hover .log-effort{

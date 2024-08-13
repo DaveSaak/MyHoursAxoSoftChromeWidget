@@ -531,7 +531,7 @@ function MyHoursApi(currentUser) {
         )
     }
 
-    _this.updateLogDescription = function (log, comment) {
+    _this.updateLogDescription = function (log, comment, append = true) {
         return new Promise(
             function (resolve, reject) {
                 // console.info("api: update log description");
@@ -540,7 +540,7 @@ function MyHoursApi(currentUser) {
                     .then(existingLog => {
                         var updatedLogData = {
                             id: existingLog.id,
-                            note: existingLog.note + ' ' + comment
+                            note: append ? existingLog.note + ' ' + comment : comment
                         };
 
                         $.ajax({

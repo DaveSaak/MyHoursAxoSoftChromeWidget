@@ -447,14 +447,14 @@ function popup() {
                 // _this.currentDate = _this.currentDate.add(1, 'days');
                 getLogs();
             }
-            else if (event.keyCode === 32) {
-                if (!event.ctrlKey) {
-                    getLogsForToday();
-                }
-                else {
-                    getLogs();
-                }
-            }
+            // else if (event.keyCode === 32) {
+            //     if (!event.ctrlKey) {
+            //         getLogsForToday();
+            //     }
+            //     else {
+            //         getLogs();
+            //     }
+            // }
             // else if (event.keyCode === 32) {
             //     getLogsForToday();
             // }            
@@ -798,7 +798,84 @@ function popup() {
             var logComment = $('<div>').addClass('log-comment');
             if (log.note) {
                 // logComment.append($('<div>').text('Log comment'));
-                logComment.append($('<div>').text(log.note));
+
+                const editCommentContainer = $('<div>').hide();
+                const editTextArea = $('<textarea rows="4">').addClass('edit-comment form-control mb-1').text(log.note);
+                // editTextArea.keydown(function(e) {
+                //     if (e.ctrlKey && e.keyCode === 13) {
+                //         //save 
+                //     }
+                // });
+
+                editCommentContainer.append(editTextArea);
+                let saveCommentButton = $('<button>')
+                    .addClass("btn btn-transparent mr-1")
+                    .attr("title", "Save")
+                    .append('<i class="fa-solid fa-save"></i>')
+                    .click(function (event) {
+                        event.preventDefault();
+
+                        _this.myHoursApi.updateLogDescription(log, editTextArea.val(), false).then(
+                            function(data) {
+                                toastr.success('Comment updated');
+                                readOnlyComment.text(editTextArea.val());
+                                readOnlyCommentContainer.show();
+                                editCommentContainer.hide();
+                            },
+                            function(error) {
+                                toastr.error('Error updating comment');
+                            }
+                        );
+
+                    });
+                let cancelCommentButton = $('<button>')
+                    .addClass("btn btn-transparent mr-1")
+                    .attr("title", "Discard changes")
+                    .append('<i class="fa-solid fa-times"></i>')
+                    .click(function (event) {
+                        event.preventDefault();
+                        readOnlyCommentContainer.show();
+                        editCommentContainer.hide();
+                    });
+                editCommentContainer.append(saveCommentButton);
+                editCommentContainer.append(cancelCommentButton);
+
+                logComment.append(editCommentContainer);
+
+                const readOnlyCommentContainer = $('<div>');
+                readOnlyCommentContainer.dblclick(function () {
+                    editTextArea.val(log.note);
+                    readOnlyCommentContainer.hide();
+                    editCommentContainer.show();
+                });
+                const readOnlyComment = $('<span>').addClass('read-only-comment').text(log.note);
+                readOnlyCommentContainer.append(readOnlyComment);
+                // let editCommentButton = $('<button>')
+                //     .addClass("btn btn-transparent btn-sm mr-1 fa-link edit-comment-button")
+                //     // .addClass("edit-comment-button")
+                //     .attr("title", "Edit comment")
+                //     .append('<small class="fa-solid fa-pencil fa-sm"></small>')
+                //     .click(function (event) {
+                //         event.preventDefault();
+                //         editTextArea.val(log.note);
+                //         readOnlyCommentContainer.hide();
+                //         editCommentContainer.show();
+                //     });
+                // readOnlyCommentContainer.append(editCommentButton);
+
+                logComment.append(readOnlyCommentContainer);
+
+
+
+
+                
+
+                // readOnlyComment.ondblclick = function () {
+                //     editTextArea.show();
+                //     readOnlyComment.hide();
+                
+                // }
+
             }
             logContainerGrid.append(logComment);
 
@@ -826,6 +903,19 @@ function popup() {
             // ACTIONS COLUMN
             var columnActions = $('<div>').addClass('log-actions');
             logContainer.append(columnActions);
+
+
+            // let editCommentButton = $('<button>')
+            //     .addClass("btn btn-transparent mr-1")
+            //     .attr("title", "Edit comment")
+            //     .append('<i class="fa-solid fa-pencil"></i>')
+            //     .click(function (event) {
+            //         event.preventDefault();
+                    
+            //         $('.logContainer[data-logId="' + log.id + '"] .edit-comment').show();
+            //         $('.logContainer[data-logId="' + log.id + '"] .read-only-comment').hide();
+
+            //     });
 
 
             let startTrackingTimeShortcut = $('<button>')
@@ -894,6 +984,7 @@ function popup() {
 
 
             let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
+            // buttons.append(editCommentButton);
             buttons.append(openDevOpsItemButton);
 
             if (!log.running) {
@@ -2078,6 +2169,13 @@ function popup() {
 
     }
 
+    function refreshToday(delay = 200) {
+        setTimeout(() => {
+            setCurrentDate(new moment());
+            getLogs();
+        }, delay);
+    }
+
     function kaboom(kaboomDefinition){
 
         if (kaboomDefinition.allHours?.action === 'add-clocking') {
@@ -2086,6 +2184,7 @@ function popup() {
                     _this.allHoursApi.addClocking(userId, kaboomDefinition.allHours.clockingDefinitionId).then(
                         function (data) {
                             toastr.success(`Clocking added to All Hours.`);
+                            refreshToday();
                         },
                         function (error) {
                             toastr.error(`There was error while adding clocking in All Hours.`);
@@ -2110,8 +2209,8 @@ function popup() {
                     kaboomDefinition.myHours.taskId, 
                     kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
                     function (data) {
-                        getLogs();
                         toastr.success(`My Hours Log started.`);
+                        refreshToday();
                     },
                     function (error) {
                         toastr.error(`There was error starting My Hours log.`);
@@ -2143,8 +2242,8 @@ function popup() {
                     kaboomDefinition.myHours.taskId, 
                     kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
                     function (data) {
-                        getLogs();
                         toastr.success(`My Hours Log added.`);
+                        refreshToday();
                     },
                     function (error) {
                         toastr.error(`There was error adding My Hours log.`);
@@ -2158,6 +2257,7 @@ function popup() {
             _this.myHoursApi.stopTimer().then(
                 function () {
                     toastr.success(`My Hours Log stopped.`);
+                    refreshToday();
                 },
                 function (error) {
                     toastr.error(`There was error stopping My Hours log.`);
