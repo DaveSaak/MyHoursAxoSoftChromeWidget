@@ -97,7 +97,7 @@ function BalanceView(allHoursApi, viewContainer){
     }
 
     function drawDayBalanceChart(userId, today, currentAttendance) {
-        var tenDaysAgo = today.clone().add(-14, 'day');
+        var tenDaysAgo = today.clone().add(-35, 'day');
 
         _this.allHoursApi.getUserCalculations(userId, tenDaysAgo, today.clone().add(-1, 'day')).then(
             function (data) {
