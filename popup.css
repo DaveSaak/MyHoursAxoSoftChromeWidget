@@ -754,6 +754,12 @@ div.logContainer:hover {
     background-color: #b6282812;
 }
 
+.logContainer.edit-mode,
+.logContainer:hover.edit-mode {
+    /* background-color: #DEE2E6; */
+    background-color: #f6f6f6;
+}
+
 .logContainer .logContainerGrid {
     display: grid;
     grid-template-columns: 1rem auto auto 5rem;
@@ -851,6 +857,8 @@ div.logContainer:hover {
 
 .logContainer .edit-comment-button {
     display: none;
+    position: absolute;
+    bottom: 7px;
 }
 
 .logContainer .logContainerGrid:hover .edit-comment-button {
@@ -952,7 +960,7 @@ div.logContainer:hover {
     flex-direction: row;
     gap: 0.5rem;
     align-items: center;
-    margin-left: -0.25rem;
+    margin-left: -0.4rem;
 }
 
 .btn.kaboom-button i {

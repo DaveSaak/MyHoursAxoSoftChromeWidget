@@ -11,7 +11,7 @@ function popup() {
 
     toastr.options = {
         "closeButton": true,
-        "timeOut": "4000",
+        "timeOut": "2000",
     }
 
     _this.myHoursLogs = undefined;
@@ -49,6 +49,17 @@ function popup() {
 
 
     _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
+    _this.colorsAlt = [
+        // '#f8f9fa',
+        // '#e9ecef',
+        '#dee2e6',
+        '#ced4da',
+        '#adb5bd',
+        '#6c757d',
+        // '#495057',
+        // '#343a40',
+        // '#212529',
+      ];
 
     _this.fetchLogsId = 0;
 
@@ -437,16 +448,16 @@ function popup() {
         // });
 
         document.onkeyup = function (event) {
-            if (event.keyCode === 37) {
-                setCurrentDate(_this.currentDate.clone().add(-1, 'days'));
-                // _this.currentDate = _this.currentDate.add(-1, 'days');
-                getLogs();
-            }
-            else if (event.keyCode === 39) {
-                setCurrentDate(_this.currentDate.clone().add(1, 'days'));
-                // _this.currentDate = _this.currentDate.add(1, 'days');
-                getLogs();
-            }
+            // if (event.keyCode === 37) {
+            //     setCurrentDate(_this.currentDate.clone().add(-1, 'days'));
+            //     // _this.currentDate = _this.currentDate.add(-1, 'days');
+            //     getLogs();
+            // }
+            // else if (event.keyCode === 39) {
+            //     setCurrentDate(_this.currentDate.clone().add(1, 'days'));
+            //     // _this.currentDate = _this.currentDate.add(1, 'days');
+            //     getLogs();
+            // }
             // else if (event.keyCode === 32) {
             //     if (!event.ctrlKey) {
             //         getLogsForToday();
@@ -599,7 +610,7 @@ function popup() {
         await _this.myHoursApi.getLogs(_this.currentDate).then(logs => {
             _this.myHoursLogs = logs;
 
-            _this.myHoursLogs.forEach(log => {
+            _this.myHoursLogs?.forEach(log => {
 
                 // RESOLVE DEVOPS ITEM
                 log.devOpsItemId = '';
@@ -652,6 +663,7 @@ function popup() {
                             })
                                 .catch((error) => {
                                     console.error('Error fetching DEVOPS updates', error);
+                                    toastr.error('Error fetching DEVOPS updates. Open DevOps portal in one of your tabs and try again.');
                                     reject();
                                 });
                         }));
@@ -677,6 +689,7 @@ function popup() {
         })
             .catch((error) => {
                 console.error('Error fetching MY HOURS logs:', error);
+                //toastr.error('Error fetching MY HOURS logs.');
             });
 
         await Promise.all(promises);
@@ -696,7 +709,7 @@ function popup() {
 
         var totalMins = 0;
         var totalMinsWithTag = 0;
-        _this.myHoursLogs.forEach(log => {
+        _this.myHoursLogs?.forEach(log => {
 
             if (log.projectId == _this.options.myHoursCommonProjectId) {
                 log.color = '#bbc9f3';
@@ -796,10 +809,10 @@ function popup() {
 
             // COMMENT
             var logComment = $('<div>').addClass('log-comment');
-            if (log.note) {
+            if (log.note || true) {
                 // logComment.append($('<div>').text('Log comment'));
 
-                const editCommentContainer = $('<div>').hide();
+                const editCommentContainer = $('<div>').addClass('edit-comment-container').hide();
                 const editTextArea = $('<textarea rows="4">').addClass('edit-comment form-control mb-1').text(log.note);
                 // editTextArea.keydown(function(e) {
                 //     if (e.ctrlKey && e.keyCode === 13) {
@@ -811,9 +824,10 @@ function popup() {
                 let saveCommentButton = $('<button>')
                     .addClass("btn btn-transparent mr-1")
                     .attr("title", "Save")
-                    .append('<i class="fa-solid fa-save"></i>')
+                    .append('<i class="fa-solid fa-save mr-1"></i> Save')
                     .click(function (event) {
                         event.preventDefault();
+                        logContainer.removeClass('edit-mode shadow');
 
                         _this.myHoursApi.updateLogDescription(log, editTextArea.val(), false).then(
                             function(data) {
@@ -831,9 +845,10 @@ function popup() {
                 let cancelCommentButton = $('<button>')
                     .addClass("btn btn-transparent mr-1")
                     .attr("title", "Discard changes")
-                    .append('<i class="fa-solid fa-times"></i>')
+                    .append('<i class="fa-solid fa-times mr-1"></i> Discard changes')
                     .click(function (event) {
                         event.preventDefault();
+                        logContainer.removeClass('edit-mode shadow');
                         readOnlyCommentContainer.show();
                         editCommentContainer.hide();
                     });
@@ -842,7 +857,7 @@ function popup() {
 
                 logComment.append(editCommentContainer);
 
-                const readOnlyCommentContainer = $('<div>');
+                const readOnlyCommentContainer = $('<div>').addClass('read-only-comment-container');
                 readOnlyCommentContainer.dblclick(function () {
                     editTextArea.val(log.note);
                     readOnlyCommentContainer.hide();
@@ -851,12 +866,12 @@ function popup() {
                 const readOnlyComment = $('<span>').addClass('read-only-comment').text(log.note);
                 readOnlyCommentContainer.append(readOnlyComment);
                 // let editCommentButton = $('<button>')
-                //     .addClass("btn btn-transparent btn-sm mr-1 fa-link edit-comment-button")
-                //     // .addClass("edit-comment-button")
+                //     .addClass("btn btn-transparent btn-sm ml-1 text-gray edit-comment-button")
                 //     .attr("title", "Edit comment")
-                //     .append('<small class="fa-solid fa-pencil fa-sm"></small>')
+                //     .append('<i class="fa-solid fa-pencil"></i>')
                 //     .click(function (event) {
                 //         event.preventDefault();
+                //         logContainer.addClass('edit-mode shadow');
                 //         editTextArea.val(log.note);
                 //         readOnlyCommentContainer.hide();
                 //         editCommentContainer.show();
@@ -916,6 +931,22 @@ function popup() {
             //         $('.logContainer[data-logId="' + log.id + '"] .read-only-comment').hide();
 
             //     });
+
+            let editCommentButton = $('<button>')
+                .addClass("btn btn-transparent btn-sm ml-1")
+                .attr("title", "Edit comment")
+                .append('<i class="fa-solid fa-pencil"></i>')
+                .click(function (event) {
+                    event.preventDefault();
+                    logContainer.addClass('edit-mode shadow');
+                    let editTextArea = logContainer.find('textarea');
+                    editTextArea.val(log.note);
+                    let readOnlyCommentContainer = logContainer.find('.read-only-comment-container');
+                    readOnlyCommentContainer.hide();
+                    let editCommentContainer = logContainer.find('.edit-comment-container');
+                    editCommentContainer.show();
+                });
+        
 
 
             let startTrackingTimeShortcut = $('<button>')
@@ -984,7 +1015,7 @@ function popup() {
 
 
             let buttons = $("<div>").addClass("d-flex ml-auto justify-content-end");
-            // buttons.append(editCommentButton);
+            buttons.append(editCommentButton);
             buttons.append(openDevOpsItemButton);
 
             if (!log.running) {
@@ -1119,7 +1150,8 @@ function popup() {
             }
 
             if (!log.taskId) {
-                log.color = 'lightgray';
+                // log.color = 'lightgray';
+                log.color = _this.colorsAlt[numberToIndex(log.taskId, _this.colorsAlt.length-1)];
             }
 
             colorBarCell.css("background-color", log.color);
@@ -2137,7 +2169,7 @@ function popup() {
     }
 
     function copyCommitMessagesForAllLogs() {
-        _this.myHoursLogs.forEach(log => {
+        _this.myHoursLogs?.forEach(log => {
             copyCommitMessage(log, false);
             getLogs();
         });
@@ -2184,7 +2216,7 @@ function popup() {
                     _this.allHoursApi.addClocking(userId, kaboomDefinition.allHours.clockingDefinitionId).then(
                         function (data) {
                             toastr.success(`Clocking added to All Hours.`);
-                            refreshToday();
+                            refreshToday(1000);
                         },
                         function (error) {
                             toastr.error(`There was error while adding clocking in All Hours.`);
@@ -2210,7 +2242,7 @@ function popup() {
                     kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
                     function (data) {
                         toastr.success(`My Hours Log started.`);
-                        refreshToday();
+                        refreshToday(1000);
                     },
                     function (error) {
                         toastr.error(`There was error starting My Hours log.`);
@@ -2243,7 +2275,8 @@ function popup() {
                     kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
                     function (data) {
                         toastr.success(`My Hours Log added.`);
-                        refreshToday();
+
+                        refreshToday(1000);
                     },
                     function (error) {
                         toastr.error(`There was error adding My Hours log.`);
@@ -2257,7 +2290,7 @@ function popup() {
             _this.myHoursApi.stopTimer().then(
                 function () {
                     toastr.success(`My Hours Log stopped.`);
-                    refreshToday();
+                    refreshToday(1000);
                 },
                 function (error) {
                     toastr.error(`There was error stopping My Hours log.`);
