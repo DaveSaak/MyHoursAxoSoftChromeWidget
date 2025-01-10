@@ -15,6 +15,10 @@
     },
     "content_scripts": [
         {
+            "matches": ["*://localhost/*"],
+            "js": ["content-script-dx.js"]
+        },
+        {
             "matches": ["*://*/*"],
             "js": ["content-script-context-menu.js"]
         },
