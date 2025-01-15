@@ -14,7 +14,7 @@ const hideLicensePanelIfVisible = () => {
     const intervalId = setInterval(() => {
         const licensePanel = document.querySelector('body > dx-license');
 
-        if (!licensePanel.length) {
+        if (licensePanel != null && !licensePanel.length) {
             const fakeLicensePanelContainer = document.createElement('div');
             const fakeLicensePanel = document.createElement('dx-license');
             fakeLicensePanelContainer.appendChild(fakeLicensePanel);
