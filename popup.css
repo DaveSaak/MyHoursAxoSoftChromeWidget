@@ -249,6 +249,14 @@ div#logs li .column {
     transform: rotateY(0deg) rotate(45deg);
 }
 
+.time-line-segment-undefined-presence {
+    background-color: rgba(55, 109, 148);
+}
+
+.time-line-segment-undefined-presence-fadeout {
+    background: linear-gradient(to right, rgba(55, 109, 148), rgba(200, 200, 200, 0));
+}
+
 #timelineContainer {
     height: 65px;
     width: 1320px;

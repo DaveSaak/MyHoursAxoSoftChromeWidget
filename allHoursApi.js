@@ -201,37 +201,13 @@ function AllHoursApi(
                     }
                 }
             )
-
-
-
-
-/*
-            $.ajax({
-                url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
-                    "?date=" + dateString +
-                    "&calculationResultTypeCode=33",
-                //"?userId=" + userId,
-                headers: {
-                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                    "X-Timezone-Offset": date.toDate().getTimezoneOffset()
-                },
-                type: "GET",
-                success: function (data) {
-                    //can contain other dates. filter them out
-                    resolve(data);
-                },
-                error: function (data) {
-                    console.error(data);
-                    reject(Error());
-                }
-            });
-
-            */
-
-        }
-
+        };
         return checkTokenAndExecutePromise(promiseFunction);
     }
+    
+
+
+ 
 
     
     _this.getCurrentBalance = function (userId) {
@@ -389,7 +365,34 @@ function AllHoursApi(
 
         };
         return checkTokenAndExecutePromise(promiseFunction);
-    }    
+    }   
+    
+    _this.getButtonsAndStatus = function () {
+        // const date = ;
+        // let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
+
+        let promiseFunction = function (resolve, reject) {
+            // console.info(baseName + ": getting calculation");
+
+            $.ajax({
+                url: _this.options.allHoursUrl + "clocks/web",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                    "X-Timezone-Offset": moment().startOf('day').toDate().getTimezoneOffset()
+                },
+                type: "GET",
+                success: function (data) {
+                    //can contain other dates. filter them out
+                    resolve(data);
+                },
+                error: function (data) {
+                    console.error(data);
+                    reject(Error());
+                }
+            });
+        };
+        return checkTokenAndExecutePromise(promiseFunction);
+    }
 
     // function checkTokenAndExecutePromise(promiseFunction) {
     //     const treshold = 5* 60;

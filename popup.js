@@ -1604,6 +1604,8 @@ function popup() {
                     getCurrentBalance();
 
                     if (data) {
+                        var timeline = $('#timeline');
+
                         if (fetchLogsId !== _this.fetchLogsId) {
                             console.info(`fetch log id mismatch. skipping. local fetch id: ${fetchLogsId}, global fetch id: ${_this.fetchLogsId}`);
                             return;
@@ -1622,6 +1624,37 @@ function popup() {
                                     _this.timeRatioAllHourAxo.setAllHours(attendance);
                                     $('#ahAttendance').text(minutesToString(attendance));
                                 });
+
+                            _this.allHoursApi.getButtonsAndStatus().then(
+                                function(webClocks) {
+                                    if (webClocks) {
+                                        if (webClocks.Status.UserStatus == 0 || webClocks.Status.UserStatus == 9) {
+                                            const lastEventTimeStamp = moment(webClocks.Status.EventTimestamp);
+                                            var left = timeToPixel(lastEventTimeStamp, _this.timeLineWidth);
+                                            var right = timeToPixel(moment(), _this.timeLineWidth);
+
+                                            var barGraph = $('<div>');
+                                            barGraph.addClass('allHoursSegment timelineItem');
+                                            barGraph.prop('title', intervalToString(lastEventTimeStamp, moment(), undefined, 'non-terminated time'));
+                                            barGraph.css({left: left + 'px',width: right - left + 'px'});
+                                            barGraph.addClass('timeline-segment time-line-segment-undefined-presence');
+                                            timeline.append(barGraph);
+
+                                            
+                                            var left = right
+                                            var right = timeToPixel(moment().add('minutes', 15), _this.timeLineWidth);
+                                            var barGraph = $('<div>');
+                                            barGraph.addClass('allHoursSegment timelineItem');
+                                            barGraph.prop('title', intervalToString(moment(), moment().add('minutes', 15), undefined, 'non-terminated time fadeout'));
+                                            barGraph.css({ left: left + 'px', width: right - left + 'px'});
+                                            barGraph.addClass('timeline-segment time-line-segment-undefined-presence-fadeout');
+                                            timeline.append(barGraph);
+
+                                            
+                                        }
+                                    }
+                                }
+                            );                                
                         }
                         else 
                         {
@@ -1641,7 +1674,7 @@ function popup() {
                             );
                         }
 
-
+                        
                         _this.allHoursApi.getUserCalculations(data, _this.currentDate, _this.currentDate.clone()).then(
                             function (data) {
                                 _this.allHoursSegments = undefined;
@@ -1653,7 +1686,7 @@ function popup() {
                                 if (data && data.DailyCalculations.length > 0) {
                                     let segments = data.DailyCalculations[0].CalculationResultSegments;
                                     _this.allHoursSegments = segments;
-                                    var timeline = $('#timeline');
+                                    // var timeline = $('#timeline');
 
                                     // console.group('all hours segments');
                                     // console.table(segments);
@@ -2138,9 +2171,9 @@ function popup() {
         elementInfo.text(_this.noNumberDataText);
     }
 
-    function intervalToString(startTime, endTime, durationMinutes) {
+    function intervalToString(startTime, endTime, durationMinutes, description = undefined) {
         let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
-        return interval + (durationMinutes != undefined ? ' (' + minutesToString(durationMinutes) + 'h )' : '');
+        return interval + (durationMinutes != undefined ? ' (' + minutesToString(durationMinutes) + 'h )' : '') + (description ? ' -- ' + description : '');
     }
 
     function dateTimeToHourString(dateTime) {

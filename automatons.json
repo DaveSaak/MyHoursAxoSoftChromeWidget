@@ -10,7 +10,7 @@
           "backgroundColor": "#3d348b",
           "color": "white",
           "description": "start remote work",
-          "icon": "industry",
+          "icon": "sign-in-alt",
           "myHours": {
             "action": "stop-running-log"
           }
@@ -94,7 +94,7 @@
           "backgroundColor": "#3d348b",
           "color": "white",
           "description": "clock out",
-          "icon": "door-open",
+          "icon": "sign-out-alt",
           "myHours": {
             "action": "stop-running-log"
           }
@@ -109,7 +109,7 @@
           "backgroundColor": "#087e8b",
           "color": "white",
           "description": "scrum related stuff",
-          "icon": "rocket",
+          "icon": "chalkboard-teacher",
           "myHours": {
             "action": "start-log",
             "description": "scrum",
@@ -154,11 +154,27 @@
           },
           "text": ""
         },
+{
+            "backgroundColor": "#087e8b",
+            "color": "white",
+            "description": "knowledge transfer",
+            "icon": "brain",
+            "myHours": {
+              "action": "start-log",
+              "description": "knowledge transfer",
+              "projectId": 1870755,
+              "tagIds": [
+                77055
+              ],
+              "taskId": 10481557
+            },
+            "text": ""
+          },
         {
           "backgroundColor": "#087e8b",
           "color": "white",
           "description": "devops",
-          "icon": "infinity",
+          "icon": "robot",
           "myHours": {
             "action": "start-log",
             "description": "devops",
@@ -276,7 +292,16 @@
           "backgroundColor": "#3b8fc2",
           "color": "white",
           "description": "open AH",
-          "text": "AH"
+          "text": "Ah"
+        },
+{
+          "myHours": {
+            "action": "open-app"
+          },
+          "backgroundColor": "#3b8fc2",
+          "color": "white",
+          "description": "open MH",
+          "text": "Mh"
         }
       ],
       "backgroundColor": "#3b8fc2",
