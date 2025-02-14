@@ -37,7 +37,7 @@ function DevOpsApi(options) {
     }
 
     _this.getItemsAsync = async function (ids) {
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,Microsoft.VSTS.Scheduling.CompletedWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
+        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,System.Tags,Microsoft.VSTS.Scheduling.CompletedWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
         const response = await fetch(url, {
             headers: _this.ajaxHeaders
         });

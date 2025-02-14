@@ -14,7 +14,8 @@ html {
 }
 
 html {
-    height: initial !important;
+    /* height: initial !important; */
+    height: 599px !important;
 }
 
 .narrow {
@@ -385,6 +386,7 @@ div#logs div:hover .tag.tag-button {
 div.logContainer {
     border-radius: 0.25rem;
     position: relative;
+    border-color: transparent;
 }
 
 div.logContainer.active,
@@ -751,6 +753,9 @@ div.logContainer:hover {
     margin-left: 0.5rem;
 
     border-radius: 0.25rem;
+    border-style: solid;
+    border-color: transparent;
+    border-width: 2px;
 
     /* box-shadow:0 0.5rem 1rem rgb(0 0 0 / 15%); */
     /* box-shadow:0 0.35rem 0.75rem rgb(0 0 0 / 15%); */
@@ -999,6 +1004,27 @@ div.logContainer:hover {
     align-items: center;
     flex-wrap: wrap;
     border-radius: 3rem;
+}
+
+.draggable {
+    /* border-end-end-radius: 1px; */
+    border-radius: 1rem !important;
+}
+
+.dragging {
+    transform: scale(1);
+}
+
+.drag-over {
+    /* border-color: #5977ff !important; */
+    border-style: dashed;
+    background-color: #f0f0f3;
+
+    /* transform: rotate(0.7deg); */
+
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+
+    /* border: 1px dashed grey !important; */
 }
 
 /* .kaboom-group button:nth-of-type(n+2) {

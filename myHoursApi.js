@@ -568,6 +568,38 @@ function MyHoursApi(currentUser) {
         )
     }    
 
+    _this.updateLog = function (logId, projectId, taskId, tagId) {
+        return new Promise(
+            function (resolve, reject) {
+                // console.info("api: update log project/task/tag");
+
+                var updatedLogData = {
+                    id: logId,
+                    projectId: projectId,
+                    taskId: taskId,
+                    tagIds: [tagId]
+                };
+
+                $.ajax({
+                    url: baseUrl + "logs", //"Admin/editLogOnBehalf",
+                    type: "PUT",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + _this.currentUser.accessToken
+                    },
+                    data: JSON.stringify(updatedLogData),
+                    success: function (data) {
+                        return resolve(data);
+                    },
+                    error: function (data) {
+                        console.error(data);
+                        return reject(data);
+                    }
+                });
+            }
+        )
+    }
+
     _this.getRunning = function () {
         return new Promise(
             function (resolve, reject) {
