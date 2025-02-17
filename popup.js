@@ -2312,12 +2312,43 @@ function popup() {
 
                 const logId = container.attributes['data-logId']?.value;
 
-                if (logId) {
+                const log = _this.myHoursLogs.find(x => x.id == logId);
+
+
+                // const {
+                //     id, userId, projectId, taskId, invoiceId, tags,
+                //     note, date, duration, 
+                //     projectInvoiceMethod, projectArchived, taskArchived, 
+                //     customField1, customField2, customField3, 
+                //     running, startTime, endTime, times, 
+                //     status,                    
+                //     billableAmount, billable, expense, amount, rate,
+                //     laborCost, laborRate, laborHours, 
+                //     billableDuration, billableHours,
+                //     attachments
+                // } = logData;
+
+
+                let editedLog = mapLogDtoToInput(log);
+
+                console.log(editedLog);
+             
+
+
+
+                if (editedLog){
+                    editedLog.projectId = kaboomDefinition.myHours.projectId;
+                    editedLog.taskId = kaboomDefinition.myHours.taskId;
+                    editedLog.tags = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds.map(x => { return {id: x}}) : undefined;
+
                     _this.myHoursApi.updateLog(
-                        logId,
-                        kaboomDefinition.myHours.projectId, 
-                        kaboomDefinition.myHours.taskId, 
-                        kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
+                        editedLog
+                    ).then(
+
+                        // logId,
+                        // kaboomDefinition.myHours.projectId, 
+                        // kaboomDefinition.myHours.taskId, 
+                        // kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
                         function (data) {
                             toastr.success(`My Hours Log updated.`);
                             getLogs();
@@ -2332,6 +2363,36 @@ function popup() {
         });
 
     }
+
+    function mapLogDtoToInput(logDto) {
+        return {
+            id: logDto.id,
+            running: logDto.running,
+            tagIds: logDto.tags.map(tag => tag.id),
+            tags: [],
+            projectId: logDto.projectId,
+            taskId: logDto.taskId,
+            billable: logDto.billable,
+            date: logDto.date.split("T")[0],  // Extracts date part
+            endTime: logDto.endTime,
+            expense: logDto.expense || null,
+            note: logDto.note,
+            startTime: logDto.startTime,
+            customField1: logDto.customField1 || 0,
+            customField2: logDto.customField2 || 0,
+            customField3: logDto.customField3 || 0,
+            attachments: logDto.attachments || [],
+            userId: logDto.userId,
+            isStart: false,  // Not present in input, assuming default `false`
+            originType: 11,  // Not present in input, assuming constant `11`
+            start: logDto.startTime,
+            end: logDto.endTime
+        };
+    }
+    
+
+
+
 
     function refreshToday(delay = 200) {
         setTimeout(() => {

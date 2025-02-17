@@ -568,17 +568,18 @@ function MyHoursApi(currentUser) {
         )
     }    
 
-    _this.updateLog = function (logId, projectId, taskId, tagId) {
+    // _this.updateLog = function (logId, projectId, taskId, tagId) {
+    _this.updateLog = function (log) {
         return new Promise(
             function (resolve, reject) {
                 // console.info("api: update log project/task/tag");
 
-                var updatedLogData = {
-                    id: logId,
-                    projectId: projectId,
-                    taskId: taskId,
-                    tagIds: [tagId]
-                };
+                // var updatedLogData = {
+                //     id: logId,
+                //     projectId: projectId,
+                //     taskId: taskId,
+                //     tagIds: [tagId]
+                // };
 
                 $.ajax({
                     url: baseUrl + "logs", //"Admin/editLogOnBehalf",
@@ -587,7 +588,8 @@ function MyHoursApi(currentUser) {
                     headers: {
                         "Authorization": "Bearer " + _this.currentUser.accessToken
                     },
-                    data: JSON.stringify(updatedLogData),
+                    data: JSON.stringify(log),
+                    // data: JSON.stringify(updatedLogData),
                     success: function (data) {
                         return resolve(data);
                     },
