@@ -2339,7 +2339,8 @@ function popup() {
                 if (editedLog){
                     editedLog.projectId = kaboomDefinition.myHours.projectId;
                     editedLog.taskId = kaboomDefinition.myHours.taskId;
-                    editedLog.tags = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds.map(x => { return {id: x}}) : undefined;
+                    // editedLog.tagIds = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds.map(x => { return {id: x}}) : undefined;
+                    editedLog.tagIds = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds : undefined;
 
                     _this.myHoursApi.updateLog(
                         editedLog
