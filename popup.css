@@ -1019,10 +1019,11 @@ div.logContainer:hover {
     /* border-color: #5977ff !important; */
     border-style: dashed;
     background-color: #f0f0f3;
+    border-width: 1px;
 
     /* transform: rotate(0.7deg); */
 
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    /* box-shadow: 0 0.15rem 0.51rem rgba(0, 0, 0, 0.15) !important; */
 
     /* border: 1px dashed grey !important; */
 }

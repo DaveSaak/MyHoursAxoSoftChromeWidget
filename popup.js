@@ -2261,10 +2261,15 @@ function popup() {
 
                 const dataObj = {
                     kaboomIndex: item.attributes['data-kaboom-index'].value,
-                    actionIndex: item.attributes['data-action-index'].value,
+                    actionIndex: item.attributes['data-action-index'].value
                 };
                 e.dataTransfer.setData('application/json', JSON.stringify(dataObj));
-                // e.dataTransfer.setData('text/plain', item.attributes['data-kaboom-index'].value);
+
+                const bgColor = window.getComputedStyle(e.target).backgroundColor;
+                console.log(bgColor);
+                updateCSSClass("drag-over", { backgroundColor: rgbToHex(bgColor, 0.1) });
+
+
                 item.classList.add('dragging');
             });
     
@@ -2285,71 +2290,33 @@ function popup() {
                 if (!container.classList.contains('drag-over')) {
                     container.classList.add('drag-over');
                 }
-
-                // const indexes = JSON.parse(e.dataTransfer.getData('application/json'));
-                // const kaboomIndex = parseInt(indexes.kaboomIndex);
-                // const actionIndex = parseInt(indexes.actionIndex);
-                // const kaboom = _this.options.kaboomDefinitions[kaboomIndex];
-                // const action = kaboom.actions[actionIndex];
-
-                // const color = action.backgroundColor || kaboom.backgroundColor;
-                // container.style.borderColor = color;
             });
     
             container.addEventListener('dragleave', () => {
+                container.backgroundColor = 'initial';
                 container.classList.remove('drag-over');
-                // container.style.borderColor = 'transparent';
             });
     
             container.addEventListener('drop', (e) => {
                 e.preventDefault();
                 container.classList.remove('drag-over');
-                // container.style.borderColor = 'transparent';
                 const indexes = JSON.parse(e.dataTransfer.getData('application/json'));
                 const kaboomIndex = parseInt(indexes.kaboomIndex);
                 const actionIndex = parseInt(indexes.actionIndex);
                 const kaboomDefinition = _this.options.kaboomDefinitions[kaboomIndex].actions[actionIndex];
 
                 const logId = container.attributes['data-logId']?.value;
-
                 const log = _this.myHoursLogs.find(x => x.id == logId);
-
-
-                // const {
-                //     id, userId, projectId, taskId, invoiceId, tags,
-                //     note, date, duration, 
-                //     projectInvoiceMethod, projectArchived, taskArchived, 
-                //     customField1, customField2, customField3, 
-                //     running, startTime, endTime, times, 
-                //     status,                    
-                //     billableAmount, billable, expense, amount, rate,
-                //     laborCost, laborRate, laborHours, 
-                //     billableDuration, billableHours,
-                //     attachments
-                // } = logData;
-
-
                 let editedLog = mapLogDtoToInput(log);
-
-                console.log(editedLog);
-             
-
-
 
                 if (editedLog){
                     editedLog.projectId = kaboomDefinition.myHours.projectId;
                     editedLog.taskId = kaboomDefinition.myHours.taskId;
-                    // editedLog.tagIds = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds.map(x => { return {id: x}}) : undefined;
                     editedLog.tagIds = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds : undefined;
 
                     _this.myHoursApi.updateLog(
                         editedLog
                     ).then(
-
-                        // logId,
-                        // kaboomDefinition.myHours.projectId, 
-                        // kaboomDefinition.myHours.taskId, 
-                        // kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
                         function (data) {
                             toastr.success(`My Hours Log updated.`);
                             getLogs();
@@ -2362,7 +2329,30 @@ function popup() {
                 }
             });
         });
+    }
 
+    function rgbToHex(rgb, alpha = 1) {
+        const match = rgb.match(/\d+/g); // Extract numbers
+        if (!match || match.length < 3) return "#000000"; // Default if no match
+    
+        // Convert RGB to Hex
+        const hex = match.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, "0")).join("");
+    
+        // Convert Alpha to Hex (0 to 1 range → 00 to FF)
+        const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, "0");
+    
+        return `#${hex}${alphaHex}`; // Return with Alpha
+    }
+
+    function updateCSSClass(className, newStyles) {
+        for (let sheet of document.styleSheets) {
+            for (let rule of sheet.cssRules || sheet.rules) {
+                if (rule.selectorText === `.${className}`) {
+                    rule.style.backgroundColor = newStyles.backgroundColor; // Modify background color
+                    return;
+                }
+            }
+        }
     }
 
     function mapLogDtoToInput(logDto) {
