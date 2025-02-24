@@ -2218,7 +2218,7 @@ function popup() {
     }
     function getKaboomButton(kaboomDefinition) {
         
-        const isDraggable = kaboomDefinition.myHours?.action === 'start-log' || kaboomDefinition.myHours?.action === 'add-log';
+        const isDraggable = (kaboomDefinition.myHours?.action === 'start-log' || kaboomDefinition.myHours?.action === 'add-log') && (kaboomDefinition.myHours.projectId);
 
 
         let kaboomButton = $('<button>')
@@ -2418,7 +2418,7 @@ function popup() {
 
 
         if (kaboomDefinition.myHours?.action === 'start-log') {
-            if (kaboomDefinition.myHours?.projectId){
+            // if (kaboomDefinition.myHours?.projectId){
                 _this.myHoursApi.startLog(
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
@@ -2433,7 +2433,7 @@ function popup() {
                         console.error('There was error starting My Hours log:', error);
                     }
                 )
-            }
+            // }
         }
 
         if (kaboomDefinition.myHours?.action === 'add-log') {

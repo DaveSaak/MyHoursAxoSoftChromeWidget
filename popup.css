@@ -973,7 +973,7 @@ div.logContainer:hover {
     flex-direction: row;
     gap: 0.5rem;
     align-items: center;
-    margin-left: -0.4rem;
+    margin-left: -0.5rem;
 }
 
 .btn.kaboom-button i {
