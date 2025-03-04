@@ -83,7 +83,7 @@ function popup() {
 
             let toolbar = $('.kaboom-toolbar');
             
-            _this.options.kaboomDefinitions.forEach(kaboomDefinition => {
+            _this.options.kaboomDefinitions.forEach((kaboomDefinition, kaboomIndex) => {
                 if (kaboomDefinition.actions) {
                     //group definition
                     let group = $('<div>').addClass('kaboom-group');
@@ -93,9 +93,11 @@ function popup() {
                     }
                     toolbar.append(group);
 
-                    kaboomDefinition.actions.forEach(action => {   
+                    kaboomDefinition.actions.forEach((action, actionIndex) => {   
                         action.backgroundColor = kaboomDefinition.backgroundColor;
                         action.color = kaboomDefinition.color;
+                        action.kaboomIndex = kaboomIndex;
+                        action.actionIndex = actionIndex;
 
                         let kaboomButton = getKaboomButton(action);
                         group.append(kaboomButton);
@@ -105,6 +107,8 @@ function popup() {
                     toolbar.append(kaboomButton);
                 }
             });
+            activateDraggableKabooms();
+            
             
 
 /*
@@ -735,7 +739,7 @@ function popup() {
             var logContainer = $('<div>')
                 .attr("data-logId", log.id)
                 .attr("data-taskId", log.taskId)
-                .addClass("logContainer  align-items-center");
+                .addClass("logContainer  align-items-center drag-container");
             if (log.tags?.length == 0) {
                 logContainer.addClass('no-tags');
             }
@@ -797,6 +801,10 @@ function popup() {
             }
 
             logTitle.append($('<span>').text(`${log.taskName ?? '-not set: task-'}`));
+
+            log.devOpsItem?.parents[0]?.fields['System.Tags']?.split(',').forEach(tag => {
+                logTitle.append($('<span class="badge badge-secondary ml-2">').text(`${tag}`));
+            })
 
             logContainerGrid.append(logTitle);
 
@@ -1223,6 +1231,7 @@ function popup() {
                 //barGraph.tooltip();
             });
         });
+        activateDraggableKaboomContainers();
 
         _this.timeRatio.setMyHours(totalMinsWithTag);
         // $('#mhTotal').text(`${minutesToString(totalMinsWithTag)}/${minutesToString(totalMins)}`);
@@ -2208,6 +2217,9 @@ function popup() {
         });
     }
     function getKaboomButton(kaboomDefinition) {
+        
+        const isDraggable = (kaboomDefinition.myHours?.action === 'start-log' || kaboomDefinition.myHours?.action === 'add-log') && (kaboomDefinition.myHours.projectId);
+
 
         let kaboomButton = $('<button>')
             .addClass("btn kaboom-button")
@@ -2215,6 +2227,8 @@ function popup() {
             .attr("data-toggle", "tooltip")
             .css("background-color", kaboomDefinition.backgroundColor)
             .attr("data-placement", "bottom")
+            .attr("data-kaboom-index", kaboomDefinition.kaboomIndex)
+            .attr("data-action-index", kaboomDefinition.actionIndex)
             .css("color", kaboomDefinition.color)
             .append(kaboomDefinition.text ? $('<span>')
                 .text(kaboomDefinition.text)
@@ -2225,6 +2239,11 @@ function popup() {
                 event.preventDefault();
             });
 
+            if (isDraggable) {
+                kaboomButton.attr('draggable', true);
+                kaboomButton.addClass('draggable');
+            }
+
             if (kaboomDefinition.icon) {
                 kaboomButton.append($('<i class="fa-fw fa-solid fa-' + kaboomDefinition.icon + '"></i>'))
             }
@@ -2233,6 +2252,138 @@ function popup() {
 
 
     }
+
+    function activateDraggableKabooms() {
+        const draggables = document.querySelectorAll('.draggable');
+    
+        draggables.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+
+                const dataObj = {
+                    kaboomIndex: item.attributes['data-kaboom-index'].value,
+                    actionIndex: item.attributes['data-action-index'].value
+                };
+                e.dataTransfer.setData('application/json', JSON.stringify(dataObj));
+
+                const bgColor = window.getComputedStyle(e.target).backgroundColor;
+                console.log(bgColor);
+                updateCSSClass("drag-over", { backgroundColor: rgbToHex(bgColor, 0.1) });
+
+
+                item.classList.add('dragging');
+            });
+    
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+            });
+        });
+    
+        
+    }
+
+    function activateDraggableKaboomContainers() {
+        const containers = document.querySelectorAll('.drag-container');
+
+        containers.forEach(container => {
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!container.classList.contains('drag-over')) {
+                    container.classList.add('drag-over');
+                }
+            });
+    
+            container.addEventListener('dragleave', () => {
+                container.backgroundColor = 'initial';
+                container.classList.remove('drag-over');
+            });
+    
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                container.classList.remove('drag-over');
+                const indexes = JSON.parse(e.dataTransfer.getData('application/json'));
+                const kaboomIndex = parseInt(indexes.kaboomIndex);
+                const actionIndex = parseInt(indexes.actionIndex);
+                const kaboomDefinition = _this.options.kaboomDefinitions[kaboomIndex].actions[actionIndex];
+
+                const logId = container.attributes['data-logId']?.value;
+                const log = _this.myHoursLogs.find(x => x.id == logId);
+                let editedLog = mapLogDtoToInput(log);
+
+                if (editedLog){
+                    editedLog.projectId = kaboomDefinition.myHours.projectId;
+                    editedLog.taskId = kaboomDefinition.myHours.taskId;
+                    editedLog.tagIds = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds : undefined;
+
+                    _this.myHoursApi.updateLog(
+                        editedLog
+                    ).then(
+                        function (data) {
+                            toastr.success(`My Hours Log updated.`);
+                            getLogs();
+                        },
+                        function (error) {
+                            toastr.error(`There was error updating My Hours log.`);
+                            console.error('There was error updating My Hours log:', error);
+                        }
+                    )
+                }
+            });
+        });
+    }
+
+    function rgbToHex(rgb, alpha = 1) {
+        const match = rgb.match(/\d+/g); // Extract numbers
+        if (!match || match.length < 3) return "#000000"; // Default if no match
+    
+        // Convert RGB to Hex
+        const hex = match.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, "0")).join("");
+    
+        // Convert Alpha to Hex (0 to 1 range → 00 to FF)
+        const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, "0");
+    
+        return `#${hex}${alphaHex}`; // Return with Alpha
+    }
+
+    function updateCSSClass(className, newStyles) {
+        for (let sheet of document.styleSheets) {
+            for (let rule of sheet.cssRules || sheet.rules) {
+                if (rule.selectorText === `.${className}`) {
+                    rule.style.backgroundColor = newStyles.backgroundColor; // Modify background color
+                    return;
+                }
+            }
+        }
+    }
+
+    function mapLogDtoToInput(logDto) {
+        return {
+            id: logDto.id,
+            running: logDto.running,
+            tagIds: logDto.tags.map(tag => tag.id),
+            tags: [],
+            projectId: logDto.projectId,
+            taskId: logDto.taskId,
+            billable: logDto.billable,
+            date: logDto.date.split("T")[0],  // Extracts date part
+            endTime: logDto.endTime,
+            expense: logDto.expense || null,
+            note: logDto.note,
+            startTime: logDto.startTime,
+            customField1: logDto.customField1 || 0,
+            customField2: logDto.customField2 || 0,
+            customField3: logDto.customField3 || 0,
+            attachments: logDto.attachments || [],
+            userId: logDto.userId,
+            isStart: false,  // Not present in input, assuming default `false`
+            originType: 11,  // Not present in input, assuming constant `11`
+            start: logDto.startTime,
+            end: logDto.endTime
+        };
+    }
+    
+
+
+
 
     function refreshToday(delay = 200) {
         setTimeout(() => {
@@ -2267,7 +2418,7 @@ function popup() {
 
 
         if (kaboomDefinition.myHours?.action === 'start-log') {
-            if (kaboomDefinition.myHours?.projectId){
+            // if (kaboomDefinition.myHours?.projectId){
                 _this.myHoursApi.startLog(
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
@@ -2282,7 +2433,7 @@ function popup() {
                         console.error('There was error starting My Hours log:', error);
                     }
                 )
-            }
+            // }
         }
 
         if (kaboomDefinition.myHours?.action === 'add-log') {

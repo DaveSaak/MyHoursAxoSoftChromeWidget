@@ -21,7 +21,8 @@ chrome.runtime.onMessage.addListener(function (request) {
     if (request && request.type === 'work-item-fetched') {
         setTimeout(() => {
             addStartMyHoursTimer();
-        }, 500);
+            addCopyBranchNameButton();
+        }, 2000);
     }    
 
 });
@@ -147,6 +148,7 @@ function addStartMyHoursTimer() {
 
     addStartTrackButtonToLinkedTasks();
 
+    /*
     // const workItemFormDivs = $("div:not(.dialog) > .work-item-form");
     const workItemFormDivs = $(".work-item-form");
     
@@ -202,29 +204,89 @@ function addStartMyHoursTimer() {
             }
         }
       });
-   
+   */
+}
+
+function addCopyBranchNameButton(){
+    const header = $('.work-item-form-header');
+    const copyButton = header.find('.bolt-clipboard-button');
+    
+    if (copyButton.length == 1) {
+        const buttonContainer = $('<div title="copy branch name to clipboard">').addClass('bolt-clipboard-button');
+        const copyBranchNameButton = $('<button style="background-color:transparent; border-color:transparent; cursor:pointer">').addClass('bolt-clipboard-button fabric-icon ms-Icon--GitGraph');
+        buttonContainer.append(copyBranchNameButton);
+        copyButton.after(buttonContainer);
+        // copyBranchName.text('Copy branch name');
+
+        copyBranchNameButton.on('click', function() {
+            const itemLabel = $('.bolt-dialog-focus-element').attr("aria-label");
+            const branchName = itemLabel
+                .toLowerCase()
+                .trim()
+                .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+                .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+                .replace(/ /g, "-");     //replace spaces with dashes
+
+
+            // const itemId = header.find('[aria-label="ID Field"]').text();
+            // const itemTitle = header.find('[aria-label="Title Field"]').val();
+            // const branchName = itemTitle
+            //     .toLowerCase()
+            //     .trim()
+            //     .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+            //     .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+            //     .replace(/ /g, "-");     //replace spaces with dashes
+            // const fullBranchName = itemId + "-" + branchName;
+
+            navigator.clipboard.writeText(branchName);
+            // chrome.runtime.sendMessage({ type: 'copy', text: fullBranchName });
+        });
+
+
+        
+
+
+    }
+
+
+    
+
+
 }
 
 
 function addStartTrackButtonToLinkedTasks(){
 
-    const taskLinks = $(".links-control-container .la-item:has(.bowtie-symbol-task)");
+    const containers = $(".compact-links-list .artifact-link-container");
 
-    Array.from(taskLinks).forEach((taskItem, index) => {
+    // const taskLinks = container.filter(".compact-links-list .artifact-link-container .flex-center.artifact-link:has(.bowtie-symbol-task)");
+    const taskLinks = containers.find(".flex-center.artifact-link:has(.bowtie-symbol-task)");
 
-        const workItemId = $(taskItem).find('.la-primary-data .la-primary-data-id').html().replace('&nbsp;','');
+    // Array.from(taskLinks).forEach((taskItem, index) => {
+    taskLinks.each((index, taskItem) => {
+
+        //const workItemId = $(taskItem).find('.la-primary-data .la-primary-data-id').html().replace('&nbsp;','');
+        const workItemId = $(taskItem).find('.artifact-link-id').text();
 
         if (workItemId.length > 0) {
 
-            const buttonContainer = $(taskItem);
-            const button = $('<button>').addClass('la-item-delete my-hours-track-button');
+            const buttonContainer = $(taskItem); //.parent(); //$(taskItem);
+            // const buttonContainer = $(taskItem).parent('.artifact-link-container').find('.remove-item-button-container'); //$(taskItem);
+
+            buttonContainer.remove('.mh-timer-link');
+
+            const button = $('<a>').addClass('mh-timer-link artifact-link-link h-scroll-hidden text-ellipsis bolt-link no-underline-link');
+            // const button = $('<a>').addClass('mh-timer-link artifact-link-link h-scroll-hidden text-ellipsis bolt-header-command-item-button bolt-button bolt-icon-button no-underline-link');
+            
+
             button.css({
-                "margin-right": "20px", 
-                "padding": "5px",
+                // "margin-left": "auto", 
+                "margin-left": "1rem", 
             });
             button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
             const buttonTextSpan = $('<span>').addClass('text');
-            buttonTextSpan.text(`Start MH log (${workItemId})`);
+            buttonTextSpan.text(`start timer`);
+            // buttonTextSpan.text(`start timer (${workItemId})`);
             button.append($(buttonTextSpan));
             buttonContainer.append(button);
 
