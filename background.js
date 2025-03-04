@@ -1,642 +1,97 @@
-chrome.webRequest.onCompleted.addListener(function (details) {
-    const parsedUrl = new URL(details.url);
-    if (details.tabId) {
-        // console.log(details.method);
-        // console.log(parsedUrl.pathname);
-        if (
-            (details.method === "GET" && parsedUrl.pathname === "/api/logs") ||
-            (details.method === "PUT" && parsedUrl.pathname === "/api/logs")) {
-            chrome.tabs.sendMessage(details.tabId, { type: 'logs-changed' });
-            console.log('background script message sent: logs-changed');
-        }
-    }
-},
-    {
-        urls: [
-            "https://myhoursproduction-api.azurewebsites.net/api/*",
-            "https://api2.myhours.com/api/*"
-        ]
-    }
-);
-
-chrome.webRequest.onCompleted.addListener(function (details) {
-    const parsedUrl = new URL(details.url);
-    //console.log(details);
-    if (details.tabId) {
-        //console.log(details);
-
-        if (details.method === "GET" &&
-            parsedUrl.pathname.includes("/OnTime/api/v6/features") &&
-            parsedUrl.pathname.includes("template/view")) {
-            chrome.tabs.sendMessage(details.tabId, { type: 'axo-item-loaded' });
-            console.log('background script message sent: axo-item-loaded');
-        }
-    }
-},
-    {
-        urls: [
-            "http://despacito.spica.si/OnTime/api/*",
-            "https://ontime.spica.com:442/OnTime/api/*",
-        ]
-    }
-);
-
-
-// chrome.webRequest.onCompleted.addListener(function (details) {
-//     const parsedUrl = new URL(details.url);
-//     if (details.tabId) {
-//         if (details.method === "GET" 
-//             && parsedUrl.pathname.includes("/_workitems") 
-//             ) 
-//         {
-//             chrome.tabs.sendMessage(details.tabId, { type: 'devops-item-loaded' });
-//             console.log('background script message sent: devops-item-loaded');
+// chrome.webRequest.onCompleted.addListener(
+//     function (details) {
+//         const parsedUrl = new URL(details.url);
+//         if (details.tabId) {
+//             if (
+//                 (details.method === "GET" && parsedUrl.pathname === "/api/logs") ||
+//                 (details.method === "PUT" && parsedUrl.pathname === "/api/logs")
+//             ) {
+//                 chrome.tabs.sendMessage(details.tabId, { type: 'logs-changed' });
+//                 console.log('Service Worker message sent: logs-changed');
+//             }
 //         }
-//     }
-// },
-//     {
-//         urls: [
-//             "https://dev.azure.com/*",
-//         ]
-//     }
+//     },
+//     { urls: ["https://myhoursproduction-api.azurewebsites.net/api/*", "https://api2.myhours.com/api/*"] }
 // );
 
-
-chrome.webRequest.onCompleted.addListener(function (details) {
-    const parsedUrl = new URL(details.url);
-    if (details.tabId) {
-        if (details.method === "GET" 
-            && parsedUrl.pathname.includes("/_versioncontrol/gitUserDefaultRepository") 
-            ) 
-        {
-            chrome.tabs.sendMessage(details.tabId, { type: 'git-repos-fetched' });
-            console.log('background script message sent: git-repos-fetched');
-        }
-
-
-        if (details.method === "POST" 
-        && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch") 
-        ) 
-        {
-            chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
-            console.log('background script message sent: work-item-fetched');
-        }        
-    }
-},
-    {
-        urls: [
-            "https://dev.azure.com/*",
-        ]
-    }
-);
-
-
-
-
-
-chrome.runtime.onMessage.addListener(function (message) {
-    if (message && message.type == 'copy') {
-        var input = document.createElement('textarea');
-        document.body.appendChild(input);
-        input.value = message.text;
-        input.focus();
-        input.select();
-        document.execCommand('Copy');
-        input.remove();
-    }
-
-    if (message && message.type == 'refreshBadge') {
-        refreshBadge();
-    }
-
-    if (message && message.type == 'start-myhours-log') {
-        startTrackingTimeDevOps({ selectionText: message.itemId}, undefined); 
-    }    
-});
-
-
-// var requestData = {"action": "createContextMenuItemStartLog"};
-// chrome.extension.sendRequest(requestData);
-
-chrome.extension.onRequest.addListener(function (request, sender, callback) {
-    if (request.action == 'createContextMenuItemStartLog') {
-        // console.log(chrome.contextMenus);
-
-        let options = new Options();
-        options.load().then(_ => {
-
-            chrome.contextMenus.remove("spicaContextMenu");
-
-            // console.log('create mh tools');
-            chrome.contextMenus.create({
-                title: "Spica tools",
-                id: "spicaContextMenu",
-                contexts: ["all"]
-            });
-
-
-            if (!options.useDevOps) {
-                chrome.contextMenus.create({
-                    title: "Axo: start timer for Item #%s",
-                    id: "axoParent",
-                    parentId: "spicaContextMenu",
-                    contexts: ["selection"],
-                    onclick: startTrackingTimeAxo
-                });
-
-                if (options.myHoursCommonDescriptions) {
-                    let descriptions = options.myHoursCommonDescriptions.split(';');
-                    descriptions.forEach(function (value, i) {
-                        if (!options.useDevOps) {
-                            chrome.contextMenus.create({
-                                title: "Axo: start timer for Item #%s -- " + value,
-                                id: `mhDescription_${i}`,
-                                parentId: "spicaContextMenu",
-                                contexts: ["selection"],
-                                onclick: startTrackingTimeAxo
-                            });
-                        }
-                    })
-                }
-            }
-
-            if (options.useDevOps) {
-                chrome.contextMenus.create({
-                    title: "Start timer for #%s",
-                    parentId: "spicaContextMenu",
-                    contexts: ["selection"],
-                    onclick: startTrackingTimeDevOps
-                });
-            }
-
-            chrome.contextMenus.create({
-                title: "Start timer with description: '%s'",
-                parentId: "spicaContextMenu",
-                contexts: ["selection"],
-                onclick: startTrackingTime
-            });
-
-            chrome.contextMenus.create({
-                type: 'separator',
-                parentId: "spicaContextMenu",
-                contexts: ["all"],
-            });
-
-            chrome.contextMenus.create({
-                title: "Add to running log description",
-                parentId: "spicaContextMenu",
-                contexts: ["selection"],
-                onclick: updateRunningLogDescription
-            });
-
-/*
-            if (sender?.url?.startsWith('https://dev.azure.com/')) {
-                chrome.contextMenus.create({
-                    type: 'separator',
-                    parentId: "spicaContextMenu",
-                    contexts: ["all"],
-                });
-
-                chrome.contextMenus.create({
-                    title: "Copy branch name to clipboard",
-                    parentId: "spicaContextMenu",
-                    contexts: ["selection"],
-                    onclick: getBranchName
-                });
-            }
-            */
-        // });
-
-
-        // chrome.contextMenus.create({
-        //     type: 'separator',
-        //     parentId: "spicaContextMenu",
-        //     contexts: ["all"],
-        // });
-
-        // chrome.contextMenus.create({
-        //     title: "Copy branch name to clipboard",
-        //     parentId: "spicaContextMenu",
-        //     contexts: ["selection"],
-        //     onclick: getBranchName
-        // });
-
-
-
-        // chrome.contextMenus.create({
-        //     title: "Stop running log",
-        //     parentId: "spicaContextMenu",
-        //     contexts: ["all"],
-        //     onclick: stopTimer
-        // });
-
-    });
-           
-
-    }
-}
-);
-
-
-var checkInterval = 10;
-chrome.alarms.create("checkAxoWorklogForYesterday", {
-    delayInMinutes: 1,
-    periodInMinutes: checkInterval
-});
-
-chrome.alarms.onAlarm.addListener(function (alarm) {
-    if (alarm.name === "checkAxoWorklogForYesterday") {
-        console.log('alarm - checkAxoWorklogForYesterday');
-        refreshBadge();
-    }
-});
-
-function refreshBadge() {
-    let currentUser = new CurrentUser();
-    let options = new Options();
-
-    //check only fro m 6.00 till 12.00
-
-    const now = moment();
-    let showRatioForToday = true;
-    if (now.hour() < 9 ) {
-        showRatioForToday = false;
-    }
-    
-    let today = moment().startOf('day');
-    // if (today.hour() < 6 && hour() > 14){
-    //     return;
-    // }
-
-    console.info(`refresh badge: checking ratio`);
-    options.load().then(
-        function () {
-            if (!chrome.browserAction?.setBadgeText) {
-                return;
-            }
-
-            currentUser.load(function () {
-                let allHoursApi = new AllHoursApi(options);
-
-
-                let dateToCheck = showRatioForToday ? today.clone() : today.add(-1, 'days');
-
-
-                console.info(`refresh badge: get minutes worked yesterday`);
-
-                if (options.useDevOps) {
-                    const myHoursApi = new MyHoursApi(currentUser);
-
-                    myHoursApi.getLogs(today).then(logs => {
-                        logs = logs.filter(log => log.log.tags?.length > 0);  //filter out logs without tags
-                        const sumDuration = logs.reduce((accumulator, log) => accumulator + log.duration / 60, 0);
-                        console.log(sumDuration);
-
-                        allHoursApi.getCurrentUserId().then(currentUserId => {
-                            allHoursApi.getAttendance(currentUserId, dateToCheck).then(workAttendance => {
-                                setBadge(sumDuration, workAttendance);
-
-                                /*
-                                if (results && results.CalculationResultValues.length > 0) {
-                                    let attendance = parseInt(results.CalculationResultValues[0].Value, 10);
-                                    // console.info(`refresh badge: ah attendance ${attendance}`);
-                                    setBadge(sumDuration, attendance);
-
-                                    flashBadge();
-                                } else {
-                                    console.info('refresh badge: no attendance data.');
-                                    chrome.browserAction.setBadgeText({ text: `` });
-                                }
-                                */
-                            });
-                        });
-
-                    });
-                } 
-            })
-        }
-    )
-}
-
-function flashBadge() {
-    let count = 0;
-
-    function execute() {
-        if (count < 10) {
-            chrome.browserAction.setBadgeBackgroundColor({
-                color: isOdd(count) ? '#FFDBDE' : '#43E231'	
-            });
-
-            count++;
-            setTimeout(execute, 500); 
-        }
-    }
-    execute();
-}
-
-function setBadge(value, reference) {
-    // reference = ah
-    // value = axo, devops
-    if (reference > 0) {
-
-        let ratio = value / reference;
-        console.info(`refresh badge: ratio ${ratio}`);
-
-        chrome.browserAction.setBadgeText({ text: `${Math.floor(ratio * 100)}%` });
-        if (ratio < 0.9 || ratio > 1) {
-            if (chrome.browserAction.setBadgeTextColor) {
-                chrome.browserAction.setBadgeTextColor({ color: '#111' });
-            }
-            chrome.browserAction.setBadgeBackgroundColor({ color: '#FFDBDE)' });
-            //chrome.browserAction.setBadgeText({ text: `$` }); 
-
-            //inform user that sync must be done every hour or so
-            if (options.notificationsBadRatio && moment().minute() <= 10) {
-                chrome.notifications.create('', getNotificationOptions(`Yesterdays' ratio is ${Math.floor(ratio * 100)}%. Do something about it.`), function () { });
-            }
-        }
-        else {
-            if (chrome.browserAction.setBadgeTextColor) {
-                chrome.browserAction.setBadgeTextColor({ color: '#111' });
-            }
-            chrome.browserAction.setBadgeBackgroundColor({ color: '#43E231' });
-        }
-    }
-    else {
-        console.error('refresh badge: reference == 0');
-        chrome.browserAction.setBadgeText({ text: `` });
-    }
-}
-
-
-function startTrackingTimeDevOps(info, tab) {
-
-    let currentUser = new CurrentUser();
-    let options = new Options();
-    let myHoursApi = new MyHoursApi(currentUser);
-
-    options.load().then(
-        function () {
-            currentUser.load(function () {
-
-                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-                    function (token) {
-                        console.info('got refresh token. token: ');
-                        console.info(token);
-
-                        currentUser.setTokenData(token.accessToken, token.refreshToken);
-                        currentUser.save();
-
-                        myHoursApi.startLogFromId(info.selectionText.trim(), options.myHoursDefaultTagId)
-                            .then(
-                                (data) => {
-                                    if (data.logStarted) {
-                                        refreshMyHoursPage();
-                                        chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
-                                    } else {
-                                        chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
-                                    }
-                                }
-                            )
-                            .catch(() => {
-                                chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
-                            })
-                    });
-            });
-        });
-}
-
-function startTrackingTime(info, tab) {
-    const options = new Options();
-    options.load().then(
-        _ => {
-            const currentUser = new CurrentUser();
-            currentUser.load(_ => {
-                const myHoursApi = new MyHoursApi(currentUser);
-                myHoursApi.getRefreshToken(currentUser.refreshToken)
-                .then(
-                    function (token) {
-                        console.info('got refresh token. token: ');
-                        console.info(token);
-
-                        currentUser.setTokenData(token.accessToken, token.refreshToken);
-                        currentUser.save();
-
-                        myHoursApi.startLog(info.selectionText)
-                            .then(
-                                function (data) {
-                                    chrome.notifications.create('', getNotificationOptions('Log started. Description: ' + info.selectionText), function () { });
-                                    refreshMyHoursPage();
-                                },
-                                function (error) {
-                                    console.log(error);
-                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
-                                }
-                            );
-                    }
-                )
-            })
-        }
-    );
-}
-
-function stopTimer(info, tab) {
-
-    let currentUser = new CurrentUser();
-    let options = new Options();
-    let myHoursApi = new MyHoursApi(currentUser);
-
-    options.load().then(
-        function () {
-            currentUser.load(function () {
-                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-                    function (token) {
-                        console.info('got refresh token. token: ');
-                        console.info(token);
-
-                        currentUser.setTokenData(token.accessToken, token.refreshToken);
-                        currentUser.save();
-
-                        myHoursApi.stopTimer()
-                            .then(
-                                function (data) {
-                                    let message = '';
-                                    if (data) {
-                                        message = "Timer stopped: " + data.note
-                                    }
-                                    else {
-                                        message = "There are no running logs."
-                                    }
-                                    chrome.notifications.create('', getNotificationOptions(message), function () { });
-                                    refreshMyHoursPage();
-                                },
-                                function (error) {
-                                    console.log(error);
-                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
-                                }
-                            );
-                    }
-                )
-
-            });
-        });
-}
-
-// function insertTimeStamp(info, tab){
-
-//         chrome.tabs.sendMessage(tab.id, "getClickedElement", {frameId: info.frameId}, data => {
-//             if (data?.element) {
-//                 const timeStamp = new Date().toDateString() + ': ';
-
-//                 element.focus();
-//                 [...timeStamp].map((x) => {
-//                     document.dispatchEvent(new KeyboardEvent("keydown", { key: x }));
-//                 });
+// chrome.webRequest.onCompleted.addListener(
+//     function (details) {
+//         const parsedUrl = new URL(details.url);
+//         if (details.tabId) {
+//             if (details.method === "GET" &&
+//                 parsedUrl.pathname.includes("/OnTime/api/v6/features") &&
+//                 parsedUrl.pathname.includes("template/view")
+//             ) {
+//                 chrome.tabs.sendMessage(details.tabId, { type: 'axo-item-loaded' });
+//                 console.log('Service Worker message sent: axo-item-loaded');
 //             }
+//         }
+//     },
+//     { urls: ["http://despacito.spica.si/OnTime/api/*", "https://ontime.spica.com:442/OnTime/api/*"] }
+// );
 
+// chrome.runtime.onMessage.addListener((message) => {
+//     if (message.type === 'copy') {
+//         navigator.clipboard.writeText(message.text).then(() => {
+//             console.log('Text copied to clipboard');
+//         }).catch(err => {
+//             console.error('Failed to copy text:', err);
 //         });
+//     }
 
+//     if (message.type === 'refreshBadge') {
+//         refreshBadge();
+//     }
 
+//     if (message.type === 'start-myhours-log') {
+//         startTrackingTimeDevOps({ selectionText: message.itemId }, undefined);
+//     }
+// });
 
+// // Context Menu
+// chrome.runtime.onInstalled.addListener(() => {
+//     console.log('Extension installed');
+    
+//     chrome.contextMenus.create({
+//         title: "Spica Tools",
+//         id: "spicaContextMenu",
+//         contexts: ["all"]
+//     });
 
-// }
+//     chrome.contextMenus.create({
+//         title: "Start Timer for #%s",
+//         id: "startTimer",
+//         parentId: "spicaContextMenu",
+//         contexts: ["selection"],
+//         onclick: startTrackingTime
+//     });
 
-function createProject(info, tab) {
+//     chrome.contextMenus.create({
+//         title: "Add to running log",
+//         id: "addToLog",
+//         parentId: "spicaContextMenu",
+//         contexts: ["selection"],
+//         onclick: updateRunningLogDescription
+//     });
 
-    let currentUser = new CurrentUser();
-    let myHoursApi = new MyHoursApi(currentUser);
+//     chrome.contextMenus.create({
+//         title: "Copy Branch Name",
+//         id: "copyBranch",
+//         parentId: "spicaContextMenu",
+//         contexts: ["selection"],
+//         onclick: getBranchName
+//     });
+// });
 
-    myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-        function (token) {
-            console.info('got refresh token. token: ');
-            console.info(token);
+// // Alarms API for periodic badge refresh
+// chrome.alarms.create("checkAxoWorklog", {
+//     delayInMinutes: 1,
+//     periodInMinutes: 10
+// });
 
-            currentUser.setTokenData(token.accessToken, token.refreshToken);
-            currentUser.save();
-
-            myHoursApi.createProject(info.selectionText)
-                .then(
-                    function (data) {
-                        chrome.notifications.create('', getNotificationOptions('Project created.'), function () { });
-                    },
-                    function (error) {
-                        console.log(error);
-                        chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
-                    }
-                );
-        }
-    )
-
-}
-
-function updateRunningLogDescription(info, tab) {
-
-    let currentUser = new CurrentUser();
-    let options = new Options();
-    let myHoursApi = new MyHoursApi(currentUser);
-
-    options.load().then(
-        function () {
-            currentUser.load(function () {
-                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-                    function (token) {
-                        currentUser.setTokenData(token.accessToken, token.refreshToken);
-                        currentUser.save();
-
-                        myHoursApi.updateRunningLogDescription(info.selectionText)
-                            .then(
-                                function (updatedLog) {
-
-                                    if (updatedLog) {
-                                        chrome.notifications.create('', getNotificationOptions("Description updated: " + updatedLog.note), function () { });
-                                    }
-                                    else {
-                                        chrome.notifications.create('', getNotificationOptions("There are no running logs"), function () { });
-                                    }
-                                    refreshMyHoursPage();
-                                },
-                                function (error) {
-                                    console.log(error);
-                                    chrome.notifications.create('', getNotificationOptions("There was an error. Open widget so the token gets refreshed. If that doesn't help check console for errors."), function () { });
-                                }
-                            );
-                    }
-                )
-
-            });
-        });
-}
-
-function getBranchName(info, tab) {
-
-    /*
-    // console.log("selection: " + info.selectionText);
-    let branchName = info.selectionText.toLowerCase().trim().replace(/ /g, "-");
-
-    // console.log('background script - copy-to-clipboard message sent.');
-    //chrome.tabs.sendMessage(tab.id, { type: 'copy-to-clipboard', text: branchName });
-
-    navigator.clipboard.writeText(request.branchName).then(function () {
-        console.log('Async: Copying to clipboard was successful!');
-    }, function (err) {
-        console.error('Async: Could not copy text: ', err);
-    });
-    */
-
-
-    let branchName = info.selectionText
-        .toLowerCase()
-        .trim()
-        .replace(/[\W_]+/g, " ")  //remove all non alpha chars
-        .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
-        .replace(/ /g, "-");     //replace spaces with dashes
-
-    // let fullBranchName = itemId + "-" + branchName;
-
-    // chrome.runtime.sendMessage({
-    //     type: 'copy',
-    //     text: branchName
-    // });
-
-    var input = document.createElement('textarea');
-    document.body.appendChild(input);
-    input.value = branchName;
-    input.focus();
-    input.select();
-    document.execCommand('Copy');
-    input.remove();
-
-    chrome.notifications.create('', getNotificationOptions("Copied to clipboard: " + branchName), function () { });
-
-}
-
-function refreshMyHoursPage() {
-
-    chrome.tabs.query({ url: 'https://app.myhours.com/*' }, function (foundTabs) {
-        foundTabs.forEach(myHoursTab => {
-            console.info('refreshing myhours tabs');
-            chrome.tabs.reload(
-                myHoursTab.id
-            );
-        });
-    });
-
-    chrome.tabs.query({ url: 'https://legacy.myhours.com/*' }, function (foundTabs) {
-        foundTabs.forEach(myHoursTab => {
-            console.info('refreshing myhours tabs');
-            chrome.tabs.reload(
-                myHoursTab.id
-            );
-        });
-    });
-
-}
-
-function getNotificationOptions(message) {
-    return {
-        type: 'basic',
-        iconUrl: './images/ts-badge128.png',
-        title: 'Spica extension',
-        message
-    };
-}
+// chrome.alarms.onAlarm.addListener((alarm) => {
+//     if (alarm.name === "checkAxoWorklog") {
+//         console.log('Alarm triggered: checking worklog');
+//         refreshBadge();
+//     }
+// });
