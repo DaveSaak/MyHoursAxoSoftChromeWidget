@@ -208,16 +208,26 @@ function addStartMyHoursTimer() {
 }
 
 function addCopyBranchNameButton(){
-    /*
     const header = $('.work-item-form-header');
     const copyButton = header.find('.bolt-clipboard-button');
-
+    
     if (copyButton.length == 1) {
-        
-        const copyBranchName = $('<button>').addClass('bolt-clipboard-button');
-        copyBranchName.text('Copy branch name');
+        const buttonContainer = $('<div title="copy branch name to clipboard">').addClass('bolt-clipboard-button');
+        const copyBranchNameButton = $('<button style="background-color:transparent; border-color:transparent; cursor:pointer">').addClass('bolt-clipboard-button fabric-icon ms-Icon--GitGraph');
+        buttonContainer.append(copyBranchNameButton);
+        copyButton.after(buttonContainer);
+        // copyBranchName.text('Copy branch name');
 
-        copyBranchName.on('click', function() {
+        copyBranchNameButton.on('click', function() {
+            const itemLabel = $('.bolt-dialog-focus-element').attr("aria-label");
+            const branchName = itemLabel
+                .toLowerCase()
+                .trim()
+                .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+                .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+                .replace(/ /g, "-");     //replace spaces with dashes
+
+
             // const itemId = header.find('[aria-label="ID Field"]').text();
             // const itemTitle = header.find('[aria-label="Title Field"]').val();
             // const branchName = itemTitle
@@ -228,15 +238,18 @@ function addCopyBranchNameButton(){
             //     .replace(/ /g, "-");     //replace spaces with dashes
             // const fullBranchName = itemId + "-" + branchName;
 
-            navigator.clipboard.writeText('fullBranchName');
+            navigator.clipboard.writeText(branchName);
             // chrome.runtime.sendMessage({ type: 'copy', text: fullBranchName });
         });
 
-        copyButton.closest().append(copyBranchName);
+
+        
 
 
     }
-        */
+
+
+    
 
 
 }

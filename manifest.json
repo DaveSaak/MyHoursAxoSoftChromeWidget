@@ -1,17 +1,16 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "4.0.0",
+    "version": "5.0.0",
     "author": "Dave",
-    "browser_action": {
+    "action": {
         "default_popup": "popup.html",
         "default_icon": "./images/TS-badge128.png"
     },
     "options_page": "options.html",
     "background": {
-        "page": "background.html",
-        "persistent": true
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
@@ -47,12 +46,17 @@
         "16": "./images/TS-badge16.png",
         "48": "./images/TS-badge48.png",
         "128": "./images/TS-badge128.png"
-      },
-      "web_accessible_resources": [
-        "fonts/*.ttf",
-        "css/*.css",
-        "webfonts/*" 
-      ],      
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "fonts/*.ttf",
+                "css/*.css",
+                "webfonts/*"
+            ],
+            "matches": ["<all_urls>"]
+        }
+    ],
     "permissions": [
         "alarms",
         "storage",
@@ -62,6 +66,7 @@
         "webRequest",
         "contextMenus",
         "clipboardWrite",
+        "scripting",
         "https://app.myhours.com/*",
         "https://legacy.myhours.com/*",
         "https://api.myhours.com/*",
