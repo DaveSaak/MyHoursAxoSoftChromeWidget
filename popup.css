@@ -775,7 +775,7 @@ div.logContainer:hover {
 
 .logContainer .logContainerGrid {
     display: grid;
-    grid-template-columns: 1rem auto auto 5rem;
+    grid-template-columns: 1rem auto auto 8rem;
     grid-template-rows: auto 3rem auto;
     grid-template-areas:
         'log-color-bar log-tags log-tags log-tags'
@@ -840,6 +840,8 @@ div.logContainer:hover {
     margin-right: 1rem;
     font-weight: 650;
     font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .logContainer .log-actions {
@@ -850,7 +852,7 @@ div.logContainer:hover {
     right: 0;
     top: 0;
     background: #f6f6f6;
-    padding: 1rem 1rem 0.5rem 1rem;
+    padding: 1rem 1rem 1rem 1rem;
 }
 
 .logContainer:hover .log-actions {

@@ -914,6 +914,13 @@ function popup() {
                     durationInfo.append($('<span class="small"> h</span>'));
                 }
                 columnTime.append(durationInfo);
+
+                if (log.times?.length > 0) {
+                    const timesInfo = $('<small style="font-size:0.75rem">').addClass('times-info');
+                    timesInfo.text(intervalToString(log.times[0].startTime, log.times[0].endTime));
+                    columnTime.append(timesInfo);
+
+                }
             };
 
 
@@ -1176,8 +1183,9 @@ function popup() {
                 var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + log.note;
 
                 var barGraph = $('<div>');
-                barGraph.addClass('timelineItem timeline-log');
+                barGraph.addClass('timelineItem timeline-log drag-container');
                 barGraph.attr("data-logId", log.id);
+                barGraph.attr("data-logid", log.id);
                 barGraph.prop('title', title);
 
                 if (log.tags?.length == 0) {
@@ -2147,7 +2155,7 @@ function popup() {
                 }
 
                 if (!ratioValid) {
-                    badgeType = 'badge-warning';
+                    badgeType = 'badge-danger';
                 }
 
 
@@ -2181,7 +2189,19 @@ function popup() {
     }
 
     function intervalToString(startTime, endTime, durationMinutes, description = undefined) {
-        let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
+
+        startTime = new Date(startTime);
+        endTime = new Date(endTime);
+
+        const formatter = new Intl.DateTimeFormat('sl-SI', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: false, // Adjust for 24-hour format if needed
+          });
+          
+        let interval = formatter.format(startTime) + " - " + formatter.format(endTime);
+
+        //let interval = moment(startTime).format('LT') + " - " + moment(endTime).format('LT');
         return interval + (durationMinutes != undefined ? ' (' + minutesToString(durationMinutes) + 'h )' : '') + (description ? ' -- ' + description : '');
     }
 
