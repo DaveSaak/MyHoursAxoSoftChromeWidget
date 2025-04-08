@@ -1,0 +1,17 @@
+{
+
+    "platforms": {
+        "devops" : {
+            "enabled": true
+        },
+        "myHours": {
+            "defaultProjectId": 1870755,
+            "defaultTaskId": 10465248,
+            "defaultTagIds" : [77593],
+            "codeReviewTagIds": [135145]
+        },
+        "allHours": {
+            
+        }
+    }
+}

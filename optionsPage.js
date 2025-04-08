@@ -11,9 +11,9 @@ $(function () {
     _this.options = new Options();
 
 
-    $('#useDevOps').click(_ => {
-        toggleAxoSection();
-    })
+    // $('#useDevOps').click(_ => {
+    //     toggleAxoSection();
+    // })
 
       kofiWidgetOverlay.draw('davidsakelsek', {
         'type': 'floating-chat',
@@ -25,13 +25,13 @@ $(function () {
     _this.options
         .load()
         .then(function () {
-            $('#useDevOps').prop( "checked", _this.options.useDevOps);
+            // $('#useDevOps').prop( "checked", _this.options.useDevOps);
             
             $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
-            $('#developmentTaskName').val(_this.options.developmentTaskName);
-            $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
+            // $('#developmentTaskName').val(_this.options.developmentTaskName);
+            // $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
             
-            $('#ahUrl').val(_this.options.allHoursUrl);
+            // $('#ahUrl').val(_this.options.allHoursUrl);
             $('#ahUserName').val(_this.options.allHoursUserName);
             
             $('#isSecret').val(_this.options.isSecret);
@@ -51,13 +51,24 @@ $(function () {
 
             $('#reloadMyHoursDistractionsTasksButton').click(_ => { populateMyHoursDistractionTasks() });
 
-            $('#extraTravelReimbursementDistance').val(_this.options.travelReimbursement.distance);
-            $('#extraTravelReimbursementKmCost').val(_this.options.travelReimbursement.kmCost);
+            // $('#extraTravelReimbursementDistance').val(_this.options.travelReimbursement.distance);
+            // $('#extraTravelReimbursementKmCost').val(_this.options.travelReimbursement.kmCost);
 
             $('#extraShowGaps').prop('checked', _this.options.gaps.showGaps);
             $('#extraGapsMinLength').val(_this.options.gaps.minLength);
 
             $('#kaboomDefinitions').val(JSON.stringify(_this.options.kaboomDefinitions, null, 2));
+
+
+            fetch(chrome.runtime.getURL("settings.json"))
+                .then(response => response.json())
+                .then(data => {
+                    console.log("JSON Data:", data);
+                    $('#settingsOverview').val(JSON.stringify(data, null, 2));
+                })
+                .catch(error => console.error("Error loading JSON:", error));
+
+            
 
 
 
@@ -86,16 +97,16 @@ $(function () {
             _this.currentUser.load(x => {
                 $('#mhUserName').val(_this.currentUser.email);
 
-                _this.myHoursApi.getTags().then(function (tags) {
-                    var select = $("#mhDefaultTagId");
-                    $(tags).each(function (i, tag) {
-                        select.append($("<option>", {
-                            value: tag.id,
-                            html: tag.name
-                        }));
-                    });
-                    select.val(_this.options.myHoursDefaultTagId);                
-                });
+                // _this.myHoursApi.getTags().then(function (tags) {
+                //     var select = $("#mhDefaultTagId");
+                //     $(tags).each(function (i, tag) {
+                //         select.append($("<option>", {
+                //             value: tag.id,
+                //             html: tag.name
+                //         }));
+                //     });
+                //     select.val(_this.options.myHoursDefaultTagId);                
+                // });
 
                 _this.myHoursApi.getProjectsAsync().then(projects => {
                     var select = $("#myHoursCommonProjectId");
@@ -127,6 +138,8 @@ $(function () {
 
             });
 
+            toggleAxoSection();
+
             console.group('all hours token');
             console.log(_this.options.allHoursAccessTokenValidTill)
             console.groupEnd();
@@ -152,7 +165,7 @@ $(function () {
     });
 
     $('.saveButton').click(function () {
-        _this.options.allHoursUrl = $('#ahUrl').val();
+        // _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
         saveOptions().then(
@@ -166,7 +179,7 @@ $(function () {
     });
 
     $('#saveGeneral').click(function () {
-        _this.options.useDevOps = $('#useDevOps').prop('checked');
+        // _this.options.useDevOps = $('#useDevOps').prop('checked');
         _this.options.notificationsBadRatio = $('#notificationsBadRatio').prop( "checked");
         _this.options.recentItemsBubbleChartHiddenItemsIds = $('#recentItemsBubbleChartHiddenItemsIds').val();
         saveOptions().then(
@@ -180,7 +193,7 @@ $(function () {
     });      
 
     $('#saveAllHoursButton').click(function () {
-        _this.options.allHoursUrl = $('#ahUrl').val();
+        // _this.options.allHoursUrl = $('#ahUrl').val();
         _this.options.allHoursUserName = $('#ahUserName').val();
         _this.options.isSecret = $('#isSecret').val();
         saveOptions().then(
@@ -194,7 +207,7 @@ $(function () {
     });    
     
     $('#saveMhButton').click(function () {
-        _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
+        // _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
         _this.options.myHoursCommonProjectId = $('#myHoursCommonProjectId').val();
         _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         _this.options.myHoursDistractionTaskId = $('#myHoursDistractionTaskId').val();
@@ -241,8 +254,8 @@ $(function () {
 
 
     $('#saveExtrasButton').click(function () {
-        _this.options.travelReimbursement.distance = $('#extraTravelReimbursementDistance').val();
-        _this.options.travelReimbursement.kmCost = $('#extraTravelReimbursementKmCost').val();
+        // _this.options.travelReimbursement.distance = $('#extraTravelReimbursementDistance').val();
+        // _this.options.travelReimbursement.kmCost = $('#extraTravelReimbursementKmCost').val();
         
         _this.options.gaps.showGaps = $('#extraShowGaps').prop('checked');
         _this.options.gaps.minLength = $('#extraGapsMinLength').val();
@@ -371,11 +384,11 @@ $(function () {
     }
 
     function toggleAxoSection(){
-        if ($('#useDevOps').prop('checked')) {
-            $('#axo-section').hide();
+        if (this.options.platforms.devops.enabled) {
+            // $('#axo-section').hide();
             $('#devops-section').show();
         } else {
-            $('#axo-section').show();
+            // $('#axo-section').show();
             $('#devops-section').hide();
         }
     }

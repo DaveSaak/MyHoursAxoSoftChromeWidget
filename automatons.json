@@ -1,4 +1,5 @@
-[
+{
+    "kaboomDefinitions": [
     {
       "actions": [
         {
@@ -300,7 +301,45 @@
             "taskId": 12164692
           },
           "text": ""
-        }
+        },
+        {
+            "actionIndex": 3,
+            "backgroundColor": "#d31b64",
+            "color": "white",
+            "description": "MH joins the Club - coordination",
+            "icon": "comments",
+            "index": 3,
+            "kaboomIndex": 2,
+            "myHours": {
+              "action": "start-log",
+              "description": "MH joins the Club - coordination",
+              "projectId": 1879991,
+              "tagIds": [
+                77593
+              ],
+              "taskId": 16607961
+            },
+            "text": ""
+          },
+          {
+            "actionIndex": 4,
+            "backgroundColor": "#d31b64",
+            "color": "white",
+            "description": "MH joins the Club - Project management",
+            "icon": "crown",
+            "index": 4,
+            "kaboomIndex": 2,
+            "myHours": {
+              "action": "start-log",
+              "description": "MH joins the Club - Project management",
+              "projectId": 1879991,
+              "tagIds": [
+                77593
+              ],
+              "taskId": 16607970
+            },
+            "text": ""
+          }
       ],
       "backgroundColor": "#d31b64",
       "color": "white"
@@ -375,3 +414,4 @@
       "color": "white"
     }
   ]
+}

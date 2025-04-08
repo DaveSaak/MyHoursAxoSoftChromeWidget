@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "author": "Dave",
     "action": {
         "default_popup": "popup.html",
@@ -33,14 +33,21 @@
                 "https://dev.azure.com/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
-            "css": ["axo.css","devops-content-script.css"]
+            "css": ["axo.css","devops-content-script.css"],
+            "run_at": "document_idle"
         },
         {
             "matches": [
                 "https://dev.azure.com/*"
             ],
-            "js": ["jquery-3.3.1.min.js","content-script-devops.js"]
-        }      
+            "js": ["jquery-3.3.1.min.js","./content-scripts/content-script-devops.js"]
+        },
+        {
+            "matches": [
+                "https://app.myhours.com/*"
+            ],
+            "js": ["jquery-3.3.1.min.js","./content-scripts/content-script-mh.js"]
+        }       
     ],
     "icons": {
         "16": "./images/TS-badge16.png",
@@ -66,7 +73,9 @@
         "webRequest",
         "contextMenus",
         "clipboardWrite",
-        "scripting",
+        "scripting"
+    ],
+    "host_permissions": [
         "https://app.myhours.com/*",
         "https://legacy.myhours.com/*",
         "https://api.myhours.com/*",

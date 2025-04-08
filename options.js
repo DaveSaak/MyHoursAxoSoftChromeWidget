@@ -1,28 +1,39 @@
 function Options() {
     'use strict';
 
-    const storageKeys = ['gaps', 'options', 'travelReimbursement', 'kaboomDefinitions'];
+    const storageKeys = [
+        'gaps', 
+        'options', 
+        'travelReimbursement', 
+        // 'kaboomDefinitions'
+    ];
 
     var _this = this;
 
-    _this.useDevOps = false;
+    // _this.useDevOps = false;
 
     _this.contentSwitchProjectId = 0;
-    _this.developmentTaskName = 'development';
-    _this.contentSwitchZoneReEnterTime = 10;
+    // _this.developmentTaskName = 'development';
+    // _this.contentSwitchZoneReEnterTime = 10;
 
     _this.allHoursAccessToken = '';
     _this.allHoursRefreshToken = '';
     _this.allHoursAccessTokenValidTill = '';
-    _this.allHoursUrl = '';
+    // _this.allHoursUrl = '';
     _this.allHoursUserName = '';
     _this.isSecret = '';
 
-    _this.myHoursDefaultTagId = '';
+    // _this.myHoursDefaultTagId = '';
     _this.myHoursCommonProjectId = '';
-    _this.myHoursCommonDescriptions = '';
-    _this.myHoursDistractionTaskId = '';
-    _this.myHoursDistractionComment = '';
+    // _this.myHoursCommonDescriptions = '';
+    // _this.myHoursDistractionTaskId = '';
+    // _this.myHoursDistractionComment = '';
+
+    _this.myHours = {
+        defaultProjectId: undefined,
+        defaultTaskId: undefined,
+        defaultTagIds: []
+    }
 
     _this.notificationsBadRatio = true;
 
@@ -44,10 +55,10 @@ function Options() {
         minLength: 15
     }
 
-    _this.travelReimbursement = {
-        distance: 0,
-        kmCost: 0
-    }
+    // _this.travelReimbursement = {
+    //     distance: 0,
+    //     kmCost: 0
+    // }
 
     _this.kaboomDefinitions = [];
 
@@ -64,10 +75,13 @@ function Options() {
                     reject();
                 } else {
 
-                    const {gaps, travelReimbursement, kaboomDefinitions, ...mainOptions} = _this;
-// console.log(gaps);
-// console.log(travelReimbursement);
-// console.log(mainOptions);
+                    const { gaps, 
+                        travelReimbursement, 
+                        // kaboomDefinitions, 
+                        ...mainOptions } = _this;
+                    // console.log(gaps);
+                    // console.log(travelReimbursement);
+                    // console.log(mainOptions);
 
                     // const subset = {c, d};
 
@@ -75,7 +89,7 @@ function Options() {
                         options: mainOptions,
                         gaps: gaps,
                         travelReimbursement: travelReimbursement,
-                        kaboomDefinitions: kaboomDefinitions
+                        // kaboomDefinitions: kaboomDefinitions
                     }
 
                     // console.info("saving options to the chrome store");
@@ -108,6 +122,8 @@ function Options() {
                 } else {
                     // console.info("loading options from the chrome store");
 
+
+                    /*
                     chrome.storage.sync.get(storageKeys, function (items) {
                         if (items.options) {
                             // console.info("found saved options");
@@ -161,6 +177,75 @@ function Options() {
 
                         resolve();
                     });
+
+                    // load settings from local json
+                    fetch(chrome.runtime.getURL("settings.json"))
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("JSON Data:", data);
+
+                            _this = {..._this, ...data};
+
+                            
+                            
+                            // _this.myHours.defaultProjectId = data.myHours.defaultProjectId;
+                            // _this.myHours.defaultTaskId = data.myHours.defaultTaskId;
+                            // _this.myHours.defaultTagId = data.myHours.defaultTagId;
+
+                        })
+                        .catch(error => console.error("Error loading JSON:", error));
+*/
+
+                    const storagePromise = new Promise((resolveStorage) => {
+                        chrome.storage.sync.get(storageKeys, function (items) {
+                            if (items.options) {
+                                Object.assign(_this, items.options);
+                            }
+
+                            if (items.gaps) {
+                                _this.gaps = items.gaps;
+                            }
+
+                            if (items.travelReimbursement) {
+                                _this.travelReimbursement = items.travelReimbursement;
+                            }
+
+                            // if (items.kaboomDefinitions) {
+                            //     _this.kaboomDefinitions = items.kaboomDefinitions;
+                            // }
+
+                            resolveStorage();
+                        });
+                    });
+
+                    const settingsPromise = fetch(chrome.runtime.getURL("settings.json"))
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("JSON Data:", data);
+                            Object.assign(_this, data);
+                        })
+                        .catch(error => {
+                            console.error("Error loading settings:", error);
+                            // If fetch fails, we still want to continue
+                        });
+
+                    const automatonsPromise = fetch(chrome.runtime.getURL("automatons.json"))
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("JSON Data:", data);
+                            Object.assign(_this, data);
+                        })
+                        .catch(error => {
+                            console.error("Error loading automatons:", error);
+                            // If fetch fails, we still want to continue
+                        });                        
+
+                    Promise.all([storagePromise, settingsPromise, automatonsPromise])
+                        .then(() => resolve())
+                        .catch(err => reject(err));
+
+
+
                 }
             }
         )

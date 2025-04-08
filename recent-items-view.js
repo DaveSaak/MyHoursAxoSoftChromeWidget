@@ -9,6 +9,7 @@ function RecentItemsView(myHoursApi, options, viewContainer){
     _this.myHoursApi = myHoursApi;
 
     _this.workLogTypeIds = [77055, 77593, 77594, 77595, 77596, 77597, 77598, 77599];
+    _this.axoItemColors = ['#F44336', '#E91E63', "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#4CAF50", "#FFC107"];
 
     _this.show = function() {
         
@@ -17,7 +18,7 @@ function RecentItemsView(myHoursApi, options, viewContainer){
         // const tenDaysAgo = new Date(today.getDate()) -10;
         const tenDaysAgo = moment(today).add(-10, 'day');
 
-        if(options.useDevOps){
+        if(options.platforms.devops.enabled){
             //DEVOPS
             _this.myHoursApi.getActivity(tenDaysAgo, today).then(activityLogs => {
                 $('#recentItemsWorkLogsCount').text(activityLogs.length);

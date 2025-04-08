@@ -152,7 +152,7 @@ function popup() {
 
 
             // PLATFORM UI MODS
-            if (_this.options.useDevOps) {
+            if (_this.options.platforms.devops.enabled) {
                 $('#copyDevOpsButton').show();
                 $('.statistics-sm.axo').hide();
 
@@ -337,9 +337,9 @@ function popup() {
             _this.ratioView.show();
         });
 
-        $('#trackDistraction').click(function () {
-            trackDistraction();
-        });
+        // $('#trackDistraction').click(function () {
+        //     trackDistraction();
+        // });
 
         $('#copyCommitMessagesButton').click(function () {
             copyCommitMessagesForAllLogs();
@@ -378,9 +378,10 @@ function popup() {
                     _this.myHoursApi.addLogWithTime(
                         gap.start, gap.end,
                         "fill the gap",
-                        _this.options.myHoursCommonProjectId,
-                        undefined,
-                        _this.options.myHoursDefaultTagId)
+                        _this.options.platforms.myHours.defaultProjectId,
+                        _this.options.platforms.myHours.defaultTaskId,
+                        _this.options.platforms.myHours.defaultTagIds
+                    )
                         .then(
                             function (data) {
                                 // console.log(data);
@@ -402,35 +403,35 @@ function popup() {
             $('#timeline').toggleClass("show-gaps", false);
         });
 
-        $('#startLunchBreakButton').click(function () {
+        // $('#startLunchBreakButton').click(function () {
 
-            _this.allHoursApi.getCurrentUserId().then(userId => {
-                _this.allHoursApi.startLunchBreak(userId).then(
-                    function (data) {
-                        // start lunch break in MH
+        //     _this.allHoursApi.getCurrentUserId().then(userId => {
+        //         _this.allHoursApi.startLunchBreak(userId).then(
+        //             function (data) {
+        //                 // start lunch break in MH
 
-                        _this.myHoursApi.startLog('lunch break', _this.options.myHoursCommonProjectId, _this.myHoursLunchProjectTaskId).then(
-                            function (data) {
-                                getLogs();
-                                toastr.success(`You are ready to have lunch! All Hours clocking added. My Hours Log started.`);
+        //                 _this.myHoursApi.startLog('lunch break', _this.options.myHoursCommonProjectId, [_this.myHoursLunchProjectTaskId]).then(
+        //                     function (data) {
+        //                         getLogs();
+        //                         toastr.success(`You are ready to have lunch! All Hours clocking added. My Hours Log started.`);
 
-                            },
-                            function (error) {
-                                toastr.error(`There was error starting Lunch task in My Hours.`);
-                                console.error('Cannot star Lunch in MH:', error);
-                            }
-                        )
-                    },
-                    function (error) {
-                        toastr.error(`There was error adding Lunch clocking in All Hours.`);
-                        console.error('Error adding lunch clocking:', error);
-                    }
-                );
-            });
+        //                     },
+        //                     function (error) {
+        //                         toastr.error(`There was error starting Lunch task in My Hours.`);
+        //                         console.error('Cannot star Lunch in MH:', error);
+        //                     }
+        //                 )
+        //             },
+        //             function (error) {
+        //                 toastr.error(`There was error adding Lunch clocking in All Hours.`);
+        //                 console.error('Error adding lunch clocking:', error);
+        //             }
+        //         );
+        //     });
 
 
 
-        })
+        // })
 
 
 
@@ -1339,7 +1340,7 @@ function popup() {
         logsContainer.empty();
 
 
-        if (_this.options.useDevOps) {
+        if (_this.options.platforms.devops.enabled) {
             _this.getProjectTracks();
             getAllHoursData(fetchLogsId);
             return;
@@ -1453,20 +1454,20 @@ function popup() {
     }
 
 
-    function trackDistraction() {
-        _this.myHoursApi.startLog(
-            _this.options.myHoursDistractionComment ?? 'Distraction!',
-            _this.options.myHoursCommonProjectId,
-            _this.options.myHoursDistractionTaskId,
-            undefined
-        ).then(x => {
-            toastr.success('Tracking distraction.');
-            getLogsForToday();
-        }).catch(e => {
-            toastr.error(`Tracking distraction failed: ${e.message}`);
-            getLogsForToday();
-        })
-    }
+    // function trackDistraction() {
+    //     _this.myHoursApi.startLog(
+    //         _this.options.myHoursDistractionComment ?? 'Distraction!',
+    //         _this.options.myHoursCommonProjectId,
+    //         [_this.options.myHoursDistractionTaskId],
+    //         undefined
+    //     ).then(x => {
+    //         toastr.success('Tracking distraction.');
+    //         getLogsForToday();
+    //     }).catch(e => {
+    //         toastr.error(`Tracking distraction failed: ${e.message}`);
+    //         getLogsForToday();
+    //     })
+    // }
 
     function getActionsDropDown(data) {
         let buttonGroup = $('<div>').addClass('btn-group ml-auto');
@@ -1804,7 +1805,7 @@ function popup() {
                 event.preventDefault();
                 let itemId = item.id.toString();
 
-                _this.myHoursApi.startLogFromId(itemId, _this.options.myHoursDefaultTagId)
+                _this.myHoursApi.startLogFromId(itemId, _this.options.platforms.myHours.defaultTagIds)
                     .then(
                         (data) => {
                             if (data.logStarted) {
@@ -1985,7 +1986,7 @@ function popup() {
                             //actions
                             var actionsCell = $('<div>')
                                 .addClass('log-actions');
-                            actionsCell.append(getDevOpsItemsActions(devOpsItem));
+                            // actionsCell.append(getDevOpsItemsActions(devOpsItem));
                             myItemContainer.append(actionsCell);
 
 
@@ -2138,7 +2139,7 @@ function popup() {
             // let cardText = 'Ratio: ' + (timeRatio.ratio * 100).toFixed(0) + '%';
             let cardText = '' + (timeRatio.ratio * 100).toFixed(0) + '%';
             let badgeType = 'badge-secondary';
-            if (!ratioValid || _this.options.useDevOps) {
+            if (!ratioValid || _this.options.platforms.devops.enabled) {
                 let diffMinutes = timeRatio.mhTotalTime - timeRatio.ahAttendance;
                 if (diffMinutes > 0) {
                     const tooMuchMinutes = Math.abs(timeRatio.ahAttendance - timeRatio.ahAttendance * timeRatio.ratio);
@@ -2443,7 +2444,7 @@ function popup() {
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
                     kaboomDefinition.myHours.taskId, 
-                    kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
+                    kaboomDefinition.myHours.tagIds).then(
                     function (data) {
                         toastr.success(`My Hours Log started.`);
                         refreshToday(1000);
@@ -2476,7 +2477,7 @@ function popup() {
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
                     kaboomDefinition.myHours.taskId, 
-                    kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds[0]: undefined).then(
+                    kaboomDefinition.myHours.tagIds).then(
                     function (data) {
                         toastr.success(`My Hours Log added.`);
 

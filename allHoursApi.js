@@ -4,6 +4,7 @@ function AllHoursApi(
     'use strict';
 
     var baseName = 'AH API';
+    var baseUrl = 'https://api4.allhours.com/api/v1/';
 
     var _this = this;
     _this.options = options;
@@ -28,7 +29,7 @@ function AllHoursApi(
                 };
 
                 $.ajax({
-                    url: _this.options.allHoursUrl + "tokens",
+                    url: baseUrl + "tokens",
                     contentType: "application/json",
                     type: "POST",
                     data: JSON.stringify(loginData),
@@ -143,7 +144,7 @@ function AllHoursApi(
         let promiseFunction = function (resolve, reject) {
             // console.info(baseName + ": getting logged-in user");
             $.ajax({
-                url: _this.options.allHoursUrl + "UserInfo",
+                url: baseUrl + "UserInfo",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                 },
@@ -165,7 +166,7 @@ function AllHoursApi(
         let promiseFunction = function (resolve, reject) {
             // console.info(baseName + ": getting logged-in user");
             $.ajax({
-                url: _this.options.allHoursUrl + "UserInfo",
+                url: baseUrl + "UserInfo",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                 },
@@ -215,7 +216,7 @@ function AllHoursApi(
             let dateString = moment().startOf('day').format('YYYY-MM-DD') + 'T00:00:00';
 
             // $.ajax({
-            //     url: `${_this.options.allHoursUrl}UserCalculations/${userId}/balance?dateTime=${dateString}`,
+            //     url: `${baseUrl}UserCalculations/${userId}/balance?dateTime=${dateString}`,
             //     headers: {
             //         "Authorization": "Bearer " + _this.options.allHoursAccessToken,
             //         "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
@@ -233,7 +234,7 @@ function AllHoursApi(
 
 
             $.ajax({
-                url: _this.options.allHoursUrl + "presence/" + userId,
+                url: baseUrl + "presence/" + userId,
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                     "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
@@ -256,7 +257,7 @@ function AllHoursApi(
 
     _this.startLunchBreak = async function (userId) {
 
-        const url = _this.options.allHoursUrl + "/Clockings/Authentic";
+        const url = baseUrl + "/Clockings/Authentic";
         const headers = {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + _this.options.allHoursAccessToken,
@@ -279,7 +280,7 @@ function AllHoursApi(
 
     _this.addClocking = async function (userId, clockingDefinitionId) {
 
-        const url = _this.options.allHoursUrl + "/Clockings/Authentic";
+        const url = baseUrl + "/Clockings/Authentic";
         const headers = {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + _this.options.allHoursAccessToken,
@@ -312,7 +313,7 @@ function AllHoursApi(
             // console.info(baseName + ": getting calculation");
 
             $.ajax({
-                url: _this.options.allHoursUrl + "usercalculations/" + userId +
+                url: baseUrl + "usercalculations/" + userId +
                     "?dateFrom=" + dateFromString +
                     "&dateTo=" + dateToString,
                 headers: {
@@ -345,7 +346,7 @@ function AllHoursApi(
             // console.info(baseName + ": getting clockings");
 
             $.ajax({
-                url: _this.options.allHoursUrl + "clockings/getclockings" +
+                url: baseUrl + "clockings/getclockings" +
                     "?dateFrom=" + dateFromString +
                     "&dateTo=" + dateToString,
                 headers: {
@@ -375,7 +376,7 @@ function AllHoursApi(
             // console.info(baseName + ": getting calculation");
 
             $.ajax({
-                url: _this.options.allHoursUrl + "clocks/web",
+                url: baseUrl + "clocks/web",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                     "X-Timezone-Offset": moment().startOf('day').toDate().getTimezoneOffset()

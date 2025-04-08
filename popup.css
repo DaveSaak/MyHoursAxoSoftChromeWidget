@@ -933,13 +933,13 @@ div.logContainer:hover {
     text-align: center;
 }
 
-#trackDistraction:hover {
+/* #trackDistraction:hover {
     transform: scale(1.5);
 }
 
 #trackDistraction:hover > i {
     color: #ff5959 !important;
-}
+} */
 
 .pull-request {
     border-radius: 4px;

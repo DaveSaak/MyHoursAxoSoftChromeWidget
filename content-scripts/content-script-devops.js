@@ -1,5 +1,5 @@
-var requestData = { "action": "createContextMenuItemStartLog" };
-chrome.extension.sendRequest(requestData);
+// var requestData = { "action": "createContextMenuItemStartLog" };
+// chrome.extension.sendRequest(requestData);
 
 console.log('>> devops content script: hello');
 
@@ -241,19 +241,82 @@ function addCopyBranchNameButton(){
             navigator.clipboard.writeText(branchName);
             // chrome.runtime.sendMessage({ type: 'copy', text: fullBranchName });
         });
-
-
-        
-
-
     }
-
-
-    
-
-
 }
 
+function addStartTimerButtonToTaskItem() {
+
+
+    //get open dialog
+    $('.bolt-dialog-focus-element[aria-label^="Task"]').each(function() {
+        var ariaLabel = $(this).attr('aria-label'); // e.g., "Task 43070 Code Review"
+        var match = ariaLabel.match(/^Task\s+(\d+)/); // Captures the number after "Task"
+        if (match) {
+          var taskNumber = match[1];
+          //console.log(taskNumber); // Logs "43070"
+
+          
+        }
+      });
+
+
+
+    // const workItemFormDivs = $("div:not(.dialog) > .work-item-form");
+    const workItemFormDivs = $(".work-item-form");
+    
+    Array.from(workItemFormDivs).forEach((element, index) => {
+        const workItemFormDiv = $(element);
+        const workItemIdSpan = workItemFormDiv.find('[aria-label="ID Field"]');
+        if (workItemIdSpan.length > 0) {
+            // only for tasks
+            const workItemTypeIcon = workItemFormDiv.find('.workitem-header-bar')
+            const workItemTypeTask = workItemTypeIcon.find('[aria-label="Task"]');
+
+            if (workItemTypeTask.length > 0) {
+                const workItemId = workItemIdSpan.text();
+                const toolbarUl = workItemFormDiv.find('.work-item-form-toolbar-container .workitem-tool-bar .menu-bar');
+                if (toolbarUl.length > 0) {
+                    // check if we already have button
+                    const startMhTrackButton = toolbarUl.find('.chrome-extension-start-mh-track');
+                    if (startMhTrackButton.length == 0) {
+
+                        const button = $('<li>');
+                        button.addClass('menu-item chrome-extension-start-mh-track my-hours-track-button');
+                        button.css({
+                            "margin-right": "4px", 
+                            "background-color": "#2db67e26"
+                        });
+                        button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
+                        const buttonTextSpan = $('<span>').addClass('text');
+                        buttonTextSpan.text(`Start log (${workItemId})`);
+                        button.append($(buttonTextSpan));
+                        toolbarUl.prepend(button);
+
+                        button.click(_ => {
+                            buttonTextSpan.text('starting...');
+                            chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
+                            setTimeout( 
+                                _ => { buttonTextSpan.text(`Start log (${workItemId})`); }, 
+                                3000, 
+                                this
+                            );
+                        })
+
+                        button.mouseenter(x => {
+                            button.css({"background-color": "#2db67e60"});
+                        });
+
+                        button.mouseleave(x => {
+                            button.css({"background-color": "#2db67e26"});
+                        });    
+                        
+
+                    }
+                }
+            }
+        }
+      });
+}
 
 function addStartTrackButtonToLinkedTasks(){
 
@@ -267,34 +330,50 @@ function addStartTrackButtonToLinkedTasks(){
 
         //const workItemId = $(taskItem).find('.la-primary-data .la-primary-data-id').html().replace('&nbsp;','');
         const workItemId = $(taskItem).find('.artifact-link-id').text();
+        const workItemTitle = $(taskItem).find('.artifact-link-link').text();
 
         if (workItemId.length > 0) {
 
-            const buttonContainer = $(taskItem); //.parent(); //$(taskItem);
-            // const buttonContainer = $(taskItem).parent('.artifact-link-container').find('.remove-item-button-container'); //$(taskItem);
+
+
+            // const buttonContainer =  $(taskItem); //.parent(); //$(taskItem);
+            const buttonContainer = $(taskItem).parent('.artifact-link-container').parent('.removable-item-container').find('.remove-item-button-container'); //$(taskItem);
+            buttonContainer.css({
+                "display": "flex",
+            });
 
             buttonContainer.remove('.mh-timer-link');
 
-            const button = $('<a>').addClass('mh-timer-link artifact-link-link h-scroll-hidden text-ellipsis bolt-link no-underline-link');
+            // const button = $('<a>').addClass('mh-timer-link artifact-link-link h-scroll-hidden text-ellipsis bolt-link no-underline-link');
+
+            const button = $('<button title="Start timer">').addClass('remove-item-button bolt-button bolt-icon-button enabled subtle icon-only bolt-focus-treatment');
             // const button = $('<a>').addClass('mh-timer-link artifact-link-link h-scroll-hidden text-ellipsis bolt-header-command-item-button bolt-button bolt-icon-button no-underline-link');
             
 
             button.css({
                 // "margin-left": "auto", 
-                "margin-left": "1rem", 
+                // "margin-left": "1rem", 
             });
             button.append($('<span>').addClass('menu-item-icon bowtie-icon bowtie-play'));
-            const buttonTextSpan = $('<span>').addClass('text');
-            buttonTextSpan.text(`start timer`);
+            // const buttonTextSpan = $('<span>').addClass('text');
+            // buttonTextSpan.text(`start timer`);
             // buttonTextSpan.text(`start timer (${workItemId})`);
-            button.append($(buttonTextSpan));
-            buttonContainer.append(button);
+            // button.append($(buttonTextSpan));
+            buttonContainer.prepend(button);
 
             button.on('click', function() {
-                buttonTextSpan.text('starting...');
-                chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: workItemId });
+                // buttonTextSpan.text('starting...');
+                chrome.runtime.sendMessage(
+                    { 
+                        type: 'start-myhours-log', 
+                        itemId: workItemId,
+                        itemTitle: workItemTitle
+                    });
+
                 setTimeout( 
-                    _ => { buttonTextSpan.text('Start MH log'); }, 
+                    _ => { 
+                        // buttonTextSpan.text('Start MH log'); 
+                    }, 
                     3000, 
                     this
                 );

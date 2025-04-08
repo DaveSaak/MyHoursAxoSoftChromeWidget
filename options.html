@@ -58,7 +58,27 @@
                 <h1 class="title text-center">Time&Space Chrome Extension</h1>
             </div>
 
+
+
             <div class="d-flex flex-column justify-content-center">
+
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">Settings file</h3>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <!-- <label>Definitions</label> -->
+                            <textarea
+                                rows="20"
+                                class="form-control"
+                                id="settingsOverview" >
+                            </textarea>
+                        </div>
+   
+                    </div>
+                </div>
+
+                <hr/>
+
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">General</h3>
 
@@ -206,7 +226,7 @@
                     </div>
                 </div>
 
-                <div class="settings-section d-none">
+                <!-- <div class="settings-section d-none">
                     <h3 class="settings-header text-primary">Content switching</h3>
                     <div class="settings-data">
                         <div class="form-group">
@@ -234,7 +254,7 @@
                     </div>
 
                     <button class="btn btn-danger saveButton">Save</button>
-                </div>
+                </div> -->
 
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">All Hours</h3>
@@ -295,7 +315,7 @@
                     </div>
                 </div>
 
-                <div class="settings-section">
+                <!-- <div class="settings-section">
                     <h3 class="settings-header text-primary">Automatons</h3>
                     <div class="settings-data">
                         <div class="form-group">
@@ -316,7 +336,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div> -->
 
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">My Hours</h3>
@@ -341,18 +361,17 @@
                                 id="myHoursCommonProjectId"></select>
                         </div>
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>Common descriptions (used as favs in context menu)</label>
                             <input
                                 class="form-control"
                                 type="text"
                                 id="mhCommonDescriptions" />
-                        </div>
+                        </div> -->
 
-                        <div class="settings-sub-section">
+                        <!-- <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Distractions</div>
                             <div class="form-group">
-                                <!-- <label class="label">Task</label> -->
                                 <p>
                                     To track the time spent while being distracted select the task that will be started
                                     from the list
@@ -385,7 +404,7 @@
                                     Save
                                 </button>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Login</div>
@@ -473,7 +492,7 @@
                                 id="extraGapsMinLength" />
                         </div>
 
-                        <div class="settings-sub-section-header">Just for fun</div>
+                        <!-- <div class="settings-sub-section-header">Just for fun</div>
                         Daily travel cost reimbursement
                         <div class="form-group">
                             <label>Cost per km </label>
@@ -489,7 +508,7 @@
                                 class="form-control w-25"
                                 type="text"
                                 id="extraTravelReimbursementDistance" />
-                        </div>
+                        </div> -->
 
                         <div class="d-flex">
                             <button
