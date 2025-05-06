@@ -27,21 +27,21 @@ $(function () {
         .then(function () {
             // $('#useDevOps').prop( "checked", _this.options.useDevOps);
             
-            $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
+            // $('#contentSwitchProjectId').val(_this.options.contentSwitchProjectId);
             // $('#developmentTaskName').val(_this.options.developmentTaskName);
             // $('#contentSwitchZoneReEnterTime').val(_this.options.contentSwitchZoneReEnterTime);
             
             // $('#ahUrl').val(_this.options.allHoursUrl);
-            $('#ahUserName').val(_this.options.allHoursUserName);
+            // $('#ahUserName').val(_this.options.allHoursUserName);
             
-            $('#isSecret').val(_this.options.isSecret);
+            // $('#isSecret').val(_this.options.isSecret);
             
-            $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
-            $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
-            $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
-            $('#devOpsUserId').val(_this.options.devOpsUserId);
-            $('#devOpsPullRequestRepos').val(_this.options.devOpsPullRequestRepos);
-            $('#devOpsPullRequestMyReviewerGroups').val(_this.options.devOpsPullRequestMyReviewerGroups);
+            // $('#devOpsInstanceUrl').val(_this.options.devOpsInstanceUrl);
+            // $('#devOpsPersonalAccessToken').val(_this.options.devOpsPersonalAccessToken);
+            // $('#devOpsAuthorName').val(_this.options.devOpsAuthorName);
+            // $('#devOpsUserId').val(_this.options.devOpsUserId);
+            // $('#devOpsPullRequestRepos').val(_this.options.devOpsPullRequestRepos);
+            // $('#devOpsPullRequestMyReviewerGroups').val(_this.options.devOpsPullRequestMyReviewerGroups);
             
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             $('#myHoursDistractionComment').val(_this.options.myHoursDistractionComment);
@@ -51,11 +51,6 @@ $(function () {
 
             $('#reloadMyHoursDistractionsTasksButton').click(_ => { populateMyHoursDistractionTasks() });
 
-            // $('#extraTravelReimbursementDistance').val(_this.options.travelReimbursement.distance);
-            // $('#extraTravelReimbursementKmCost').val(_this.options.travelReimbursement.kmCost);
-
-            $('#extraShowGaps').prop('checked', _this.options.gaps.showGaps);
-            $('#extraGapsMinLength').val(_this.options.gaps.minLength);
 
             $('#kaboomDefinitions').val(JSON.stringify(_this.options.kaboomDefinitions, null, 2));
 
@@ -65,6 +60,7 @@ $(function () {
                 .then(data => {
                     console.log("JSON Data:", data);
                     $('#settingsOverview').val(JSON.stringify(data, null, 2));
+                    $('#ahUserName').val(_this.options.platforms.allHours.userName);
                 })
                 .catch(error => console.error("Error loading JSON:", error));
 
@@ -96,46 +92,6 @@ $(function () {
             // MH 
             _this.currentUser.load(x => {
                 $('#mhUserName').val(_this.currentUser.email);
-
-                // _this.myHoursApi.getTags().then(function (tags) {
-                //     var select = $("#mhDefaultTagId");
-                //     $(tags).each(function (i, tag) {
-                //         select.append($("<option>", {
-                //             value: tag.id,
-                //             html: tag.name
-                //         }));
-                //     });
-                //     select.val(_this.options.myHoursDefaultTagId);                
-                // });
-
-                _this.myHoursApi.getProjectsAsync().then(projects => {
-                    var select = $("#myHoursCommonProjectId");
-                    projects.forEach(project => {
-                        select.append($("<option>", {
-                            value: project.id,
-                            html: project.name
-                        }));
-                    });
-                    select.val(_this.options.myHoursCommonProjectId); 
-                    populateMyHoursDistractionTasks();
-                });
-
-
-                
-
-                // if (_this.options.myHoursCommonProjectId) {
-                //     _this.myHoursApi.getProjectTaskList(_this.options.myHoursCommonProjectId).then(projectTasks => {
-                //         var select = $("#myHoursDistractionTaskId");
-                //         projectTasks.forEach(projectTask => {
-                //             select.append($("<option>", {
-                //                 value: projectTask.taskId,
-                //                 html: projectTask.projectName + ' / ' + projectTask.taskName
-                //             }));
-                //         });
-                //         select.val(_this.options.myHoursDistractionTaskId);                     
-                //     })
-                // }
-
             });
 
             toggleAxoSection();
@@ -166,8 +122,8 @@ $(function () {
 
     $('.saveButton').click(function () {
         // _this.options.allHoursUrl = $('#ahUrl').val();
-        _this.options.allHoursUserName = $('#ahUserName').val();
-        _this.options.isSecret = $('#isSecret').val();
+        // _this.options.allHoursUserName = $('#ahUserName').val();
+        // _this.options.isSecret = $('#isSecret').val();
         saveOptions().then(
             function(x){
                 toastr.success('Settings saved');
@@ -194,8 +150,8 @@ $(function () {
 
     $('#saveAllHoursButton').click(function () {
         // _this.options.allHoursUrl = $('#ahUrl').val();
-        _this.options.allHoursUserName = $('#ahUserName').val();
-        _this.options.isSecret = $('#isSecret').val();
+        // _this.options.allHoursUserName = $('#ahUserName').val();
+        // _this.options.isSecret = $('#isSecret').val();
         saveOptions().then(
             function(x){
                 toastr.success('All Hours settings saved');
@@ -208,7 +164,6 @@ $(function () {
     
     $('#saveMhButton').click(function () {
         // _this.options.myHoursDefaultTagId = $('#mhDefaultTagId').val();
-        _this.options.myHoursCommonProjectId = $('#myHoursCommonProjectId').val();
         _this.options.myHoursCommonDescriptions = $('#mhCommonDescriptions').val();
         _this.options.myHoursDistractionTaskId = $('#myHoursDistractionTaskId').val();
         _this.options.myHoursDistractionComment = $('#myHoursDistractionComment').val();
@@ -223,12 +178,12 @@ $(function () {
     });     
 
     $('#saveDevOpsButton').click(function () {
-        _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
-        _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
-        _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
-        _this.options.devOpsUserId = $('#devOpsUserId').val();
-        _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
-        _this.options.devOpsPullRequestMyReviewerGroups = $('#devOpsPullRequestMyReviewerGroups').val();
+        // _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
+        // _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
+        // _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
+        // _this.options.devOpsUserId = $('#devOpsUserId').val();
+        // _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
+        // _this.options.devOpsPullRequestMyReviewerGroups = $('#devOpsPullRequestMyReviewerGroups').val();
         saveOptions().then(
             function(x){
                 toastr.success('DevOps settings saved');
@@ -251,24 +206,6 @@ $(function () {
         );
     });
 
-
-
-    $('#saveExtrasButton').click(function () {
-        // _this.options.travelReimbursement.distance = $('#extraTravelReimbursementDistance').val();
-        // _this.options.travelReimbursement.kmCost = $('#extraTravelReimbursementKmCost').val();
-        
-        _this.options.gaps.showGaps = $('#extraShowGaps').prop('checked');
-        _this.options.gaps.minLength = $('#extraGapsMinLength').val();
-        saveOptions().then(
-            function(x){
-                toastr.success('Extra settings saved');
-            },
-            function(err){
-                toastr.error('Error saving Extra settings.');
-            }
-        );
-        
-    });   
 
     $('#clearUserButton').click(x => {
         let currentUser = new CurrentUser();
@@ -312,31 +249,10 @@ $(function () {
         )
     })
 
-    function populateMyHoursDistractionTasks(){
-        const project = $("#myHoursCommonProjectId").val();
-
-        if (project) {
-            // if (_this.options.myHoursCommonProjectId) {
-                _this.myHoursApi.getProjectTaskList(project).then(projectTasks => {
-                    var select = $("#myHoursDistractionTaskId");
-                    select.empty();
-
-                    projectTasks[0].incompletedTasks.forEach(projectTask => {
-                        select.append($("<option>", {
-                            value: projectTask.id,
-                            html: projectTask.name
-                        }));
-                    });
-                    select.val(_this.options.myHoursDistractionTaskId);                     
-                })
-            // }  
-        }      
-    }
-
 
     function loginToAllHours() {
         _this.allHoursApi.getAccessToken(
-            $('#ahUserName').val(),
+            _this.options.platforms.allHours.userName,
             $('#ahPassword').val()
         ).then(function (data) {
             console.log(data);
@@ -368,23 +284,23 @@ $(function () {
         );
     }
 
-    // function saveOptions() {
-    //     _this.options.save().then(function (x) {
-    //         console.log(x);
-
-    //     });
-    // }
-
     function saveOptions() {
-        return _this.options.save();
+        _this.options.save().then(function (x) {
+            console.log(x);
+
+        });
     }
+
+    // function saveOptions() {
+    //     return _this.options.save();
+    // }
 
     function setAllHoursAccessTokenStyle(style) {
         return $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
     }
 
     function toggleAxoSection(){
-        if (this.options.platforms.devops.enabled) {
+        if (_this.options?.platforms?.devops?.enabled) {
             // $('#axo-section').hide();
             $('#devops-section').show();
         } else {

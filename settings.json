@@ -2,16 +2,30 @@
 
     "platforms": {
         "devops" : {
-            "enabled": true
+            "enabled": true,
+            "uri": "https://dev.azure.com/Spica-International",
+            "pat": "FtKx2rNZmp5YGjl6asKy6MQzhaOaNyxvH4UPGYIVg15vpZOHgvcCJQQJ99BEACAAAAAiXuTxAAASAZDO2EiM",
+            "repo": {
+                "authorName": "Dave",
+                "userId": "123",
+                "pullRequestRepos": "1,2,3",
+                "pullRequestMyReviewerGroups": ""
+            }
         },
         "myHours": {
+            "generalProjectId": 1870755,
             "defaultProjectId": 1870755,
             "defaultTaskId": 10465248,
             "defaultTagIds" : [77593],
-            "codeReviewTagIds": [135145]
+            "codeReviewTagIds": [135145],
+            "fillGaps": {
+                "enabled": true,
+                "minLength": 17
+            }
         },
         "allHours": {
-            
+            "iisSecret": "qz16y7vh12dbet6rac2gqqr1wxby3i",
+            "userName": "david.sakelsek@spica.com"            
         }
     }
 }

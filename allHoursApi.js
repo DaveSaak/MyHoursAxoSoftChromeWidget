@@ -64,7 +64,7 @@ function AllHoursApi(
                     password: password,
                     client_id: "ro_client",
                     scope: "api profile offline_access openid",
-                    client_secret: _this.options.isSecret
+                    client_secret: _this.options.platforms.allHours.iisSecret
                 };
 
                 // Convert the project to a x-form-urlencoded string
@@ -103,7 +103,7 @@ function AllHoursApi(
 
                 var refreshData = {
                     client_id: "ro_client",
-                    client_secret: _this.options.isSecret,
+                    client_secret: _this.options.platforms.allHours.iisSecret,
                     grant_type: "refresh_token",
                     refresh_token: _this.options.allHoursRefreshToken,
                 }

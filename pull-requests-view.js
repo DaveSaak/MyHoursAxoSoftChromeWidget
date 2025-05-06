@@ -32,7 +32,7 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
             myPullRequestsUi.empty();
 
             //split into mine and others
-            const devOpsPullRequestMyReviewerGroups = _this.options.devOpsPullRequestMyReviewerGroups?.split(',');
+            const devOpsPullRequestMyReviewerGroups = _this.options.platforms.devops.repo.pullRequestMyReviewerGroups.split(',');
 
             const partition = (array, callback) => {
                 const matches = []
@@ -43,7 +43,7 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
 
             const [myPullRequests, otherPullRequests] = 
                 partition(pullRequests, pullRequest => pullRequest.reviewers?.filter(
-                    x => x.id === _this.options.devOpsUserId || devOpsPullRequestMyReviewerGroups.filter(g => x.id == g).length > 0
+                    x => x.id === _this.options.platforms.devops.repo.userId || devOpsPullRequestMyReviewerGroups.filter(g => x.id == g).length > 0
                 ).length > 0);
 
 
@@ -58,7 +58,7 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
                 .filter(x => 
                     (+(new Date(x.creationDate)) > threeDaysAgo) && 
                     x.reviewers?.filter(
-                        r => (r.id === _this.options.devOpsUserId || devOpsPullRequestMyReviewerGroups.filter(
+                        r => (r.id === _this.options.platforms.devops.repo.userId || devOpsPullRequestMyReviewerGroups.filter(
                             g => r.id == g
                             ).length > 0
                             ) && r.vote == 0)

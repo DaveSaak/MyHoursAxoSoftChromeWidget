@@ -55,7 +55,7 @@
             <div
                 class="pt-3 pb-2"
                 id="settings-title">
-                <h1 class="title text-center">Time&Space Chrome Extension</h1>
+                <h1 class="title text-center">Spica Workforce Chrome Extension</h1>
             </div>
 
 
@@ -63,27 +63,10 @@
             <div class="d-flex flex-column justify-content-center">
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">Settings file</h3>
-                    <div class="settings-data">
-                        <div class="form-group">
-                            <!-- <label>Definitions</label> -->
-                            <textarea
-                                rows="20"
-                                class="form-control"
-                                id="settingsOverview" >
-                            </textarea>
-                        </div>
-   
-                    </div>
-                </div>
-
-                <hr/>
-
-                <div class="settings-section">
                     <h3 class="settings-header text-primary">General</h3>
 
                     <div class="settings-data">
-                        <div class="settings-sub-section">
+                        <!-- <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Platforms</div>
                             <p>
                                 Item numbers will be matched with entities on the selected project management platform.
@@ -100,7 +83,7 @@
                                     >Use DevOps as project management platform</label
                                 >
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Notifications</div>
@@ -148,146 +131,31 @@
                     </div>
                 </div>
 
-                <div id="devops-section">
-                    <div class="settings-section">
-                        <h3 class="settings-header text-primary">DevOps</h3>
-                        <div class="settings-data">
-                            <div class="form-group">
-                                <label>Instance (url with account name)</label>
-                                <input
-                                    class="form-control"
-                                    id="devOpsInstanceUrl" />
-                            </div>
-                            <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
-                            <div class="form-group">
-                                <label>Personal access token (PAT)</label>
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="devOpsPersonalAccessToken" />
-                            </div>
-                            <!-- <div class="form-group">
-                            <label>Default Worklog type</label>
-                            <p>Default worklog type is used when you start new log from the context menu.</p>
-                            <input class="form-control" id='devOpsDefaultWorklogType' />
-                        </div> -->
-
-                            <div class="form-group">
-                                <label>Repositories</label>
-                                <p>
-                                    You can copy commit messages from your repos to the my hours logs. Super nice since
-                                    you don't have to type same description twice. This action must be triggered
-                                    manually from the daily log list.
-                                </p>
-                                <p>Listed below are the repos that your personal access token has access to.</p>
-                                <div class="ml-3 devops-repos-container">
-                                    <ol id="devops-repos"></ol>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Git author name</label>
-                                <input
-                                    class="form-control"
-                                    id="devOpsAuthorName" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>User id</label>
-                                <input
-                                    class="form-control"
-                                    id="devOpsUserId" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>Show pull requests from following repos</label>
-                                <p>Enter repo names, delimit with comma.</p>
-                                <input
-                                    class="form-control"
-                                    id="devOpsPullRequestRepos" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>Show pull requests from following reviewer groups as mine</label>
-                                <p>Enter ids, delimit with comma.</p>
-                                <input
-                                    class="form-control"
-                                    id="devOpsPullRequestMyReviewerGroups" />
-                            </div>
-
-                            <div class="d-flex">
-                                <button
-                                    id="saveDevOpsButton"
-                                    class="btn btn-primary">
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- <div class="settings-section d-none">
-                    <h3 class="settings-header text-primary">Content switching</h3>
-                    <div class="settings-data">
-                        <div class="form-group">
-                            <label>Content switch project id</label>
-                            <input
-                                class="form-control"
-                                type="number"
-                                id="contentSwitchProjectId" />
-                        </div>
-
-                        <div class="form-group">
-                            <label>Zone re-enter time</label>
-                            <input
-                                class="form-control"
-                                type="number"
-                                id="contentSwitchZoneReEnterTime" />minutes
-                        </div>
-
-                        <div class="form-group">
-                            <label>Development task name</label>
-                            <input
-                                class="form-control"
-                                id="developmentTaskName" />
-                        </div>
-                    </div>
-
-                    <button class="btn btn-danger saveButton">Save</button>
-                </div> -->
-
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">All Hours</h3>
                     <div class="settings-data">
-                        <div class="form-group">
-                            <label>All Hours API Address</label>
-                            <input
-                                class="form-control"
-                                type="url"
-                                id="ahUrl" />
-                        </div>
-
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>Identity server secret</label>
                             <input
                                 class="form-control"
                                 id="isSecret" />
-                        </div>
+                        </div> -->
 
                         <div class="form-group">
                             <label>Username</label>
                             <input
+                                disabled
                                 class="form-control"
                                 id="ahUserName" />
                         </div>
 
-                        <div class="d-flex">
+                        <!-- <div class="d-flex">
                             <button
                                 id="saveAllHoursButton"
                                 class="btn btn-primary mb-4">
                                 Save
                             </button>
-                        </div>
+                        </div> -->
 
                         <div class="form-group">
                             <label>Password</label>
@@ -315,29 +183,6 @@
                     </div>
                 </div>
 
-                <!-- <div class="settings-section">
-                    <h3 class="settings-header text-primary">Automatons</h3>
-                    <div class="settings-data">
-                        <div class="form-group">
-                            <label>Definitions</label>
-                            <textarea
-                                rows="10"
-                                class="form-control"
-                                id="kaboomDefinitions" >
-                            </textarea>
-                        </div>
-
-                        <div class="d-flex">
-                            <button
-                                id="saveKaboomButton"
-                                class="btn btn-primary mb-4">
-                                Save
-                            </button>
-                        </div>
-
-                    </div>
-                </div> -->
-
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">My Hours</h3>
                     <div class="settings-data">
@@ -349,7 +194,7 @@
                                 id="mhDefaultTagId"></select>
                         </div>
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="label">Common project</label>
                             <p>
                                 Common project tasks have no items in the DevOps. Time logged on these projects will be
@@ -359,51 +204,6 @@
                                 class="form-control"
                                 style="width: 50%"
                                 id="myHoursCommonProjectId"></select>
-                        </div>
-
-                        <!-- <div class="form-group">
-                            <label>Common descriptions (used as favs in context menu)</label>
-                            <input
-                                class="form-control"
-                                type="text"
-                                id="mhCommonDescriptions" />
-                        </div> -->
-
-                        <!-- <div class="settings-sub-section">
-                            <div class="settings-sub-section-header">Distractions</div>
-                            <div class="form-group">
-                                <p>
-                                    To track the time spent while being distracted select the task that will be started
-                                    from the list
-                                </p>
-                                <div class="d-flex">
-                                    <select
-                                        class="form-control"
-                                        style="width: 50%"
-                                        id="myHoursDistractionTaskId"></select>
-                                    <button
-                                        id="reloadMyHoursDistractionsTasksButton"
-                                        class="btn btn-secondary ml-2">
-                                        reload
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Distraction default description</label>
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    id="myHoursDistractionComment" />
-                            </div>
-
-                            <div class="d-flex">
-                                <button
-                                    id="saveMhButton"
-                                    class="btn btn-primary mb-4">
-                                    Save
-                                </button>
-                            </div>
                         </div> -->
 
                         <div class="settings-sub-section">
@@ -437,88 +237,104 @@
                     </div>
                 </div>
 
-                <!-- <div class="settings-section">
-                <h3 class="settings-header text-primary">Notifications</h3>
-                <div class="settings-data">
-                    <div class="form-group">
-                        <label>Bad ratio</label>
-                        <div>
-                            <input type="checkbox" id="notificationsBadRatio" name="notificationsBadRatio">
-                            <span>Show notification every full hour or so if my yesterdays' ratio is bad.</span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex">
-                        <button id="saveNotificationsButton" class="btn btn-primary">Save</button>
-                    </div>                    
-                </div>
-            </div>             -->
-
-                <div class="settings-section">
-                    <h3 class="settings-header text-primary">Extras</h3>
-                    <div class="settings-data">
-                        <!-- <p>Clear all user specific login data.</p> -->
-
-                        <div class="settings-sub-section-header">Gaps</div>
-                        <p>
-                            Show gaps between All Hours segments and Time logs. This allows you to fill the gaps with
-                            single click.
-                        </p>
-                        <div class="mb-4">
-                            <div class="custom-control custom-switch">
+                <div id="devops-section">
+                    <div class="settings-section">
+                        <h3 class="settings-header text-primary">DevOps</h3>
+                        <div class="settings-data">
+                            <!-- <div class="form-group">
+                                <label>Instance (url with account name)</label>
                                 <input
-                                    type="checkbox"
-                                    class="custom-control-input"
-                                    id="extraShowGaps" />
-                                <label
-                                    class="custom-control-label"
-                                    for="extraShowGaps"
-                                    >Enable gaps management</label
-                                >
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Minimal gap length in minutes</label>
-                            <p>
-                                Set the minimum length of the gap. This will filter out short gaps between tasks
-                                that are not worth filling.
-                            </p>
-                            <input
-                                class="form-control w-25"
-                                type="number"
-                                min="10"
-                                max="180"
-                                id="extraGapsMinLength" />
-                        </div>
-
-                        <!-- <div class="settings-sub-section-header">Just for fun</div>
-                        Daily travel cost reimbursement
-                        <div class="form-group">
-                            <label>Cost per km </label>
-                            <input
-                                class="form-control w-25"
-                                type="text"
-                                id="extraTravelReimbursementKmCost" />
-                        </div>
-
-                        <div class="form-group">
-                            <label>Distance one way </label>
-                            <input
-                                class="form-control w-25"
-                                type="text"
-                                id="extraTravelReimbursementDistance" />
+                                    class="form-control"
+                                    id="devOpsInstanceUrl" />
+                            </div> -->
+                            <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
+                            <!-- <div class="form-group">
+                                <label>Personal access token (PAT)</label>
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="devOpsPersonalAccessToken" />
+                            </div> -->
+                            <!-- <div class="form-group">
+                            <label>Default Worklog type</label>
+                            <p>Default worklog type is used when you start new log from the context menu.</p>
+                            <input class="form-control" id='devOpsDefaultWorklogType' />
                         </div> -->
 
-                        <div class="d-flex">
-                            <button
-                                id="saveExtrasButton"
-                                class="btn btn-primary">
-                                Save
-                            </button>
+                            <div class="form-group">
+                                <label>Repositories</label>
+                                <p>
+                                    You can copy commit messages from your repos to the my hours logs. Super nice since
+                                    you don't have to type same description twice. This action must be triggered
+                                    manually from the daily log list.
+                                </p>
+                                <p>Listed below are the repos that your personal access token has access to.</p>
+                                <div class="ml-3 devops-repos-container">
+                                    <ol id="devops-repos"></ol>
+                                </div>
+                            </div>
+
+                            <!-- <div class="form-group">
+                                <label>Git author name</label>
+                                <input
+                                    class="form-control"
+                                    id="devOpsAuthorName" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>User id</label>
+                                <input
+                                    class="form-control"
+                                    id="devOpsUserId" />
+                            </div> -->
+
+                            <div class="form-group">
+                                <label>Show pull requests from following repos</label>
+                                <p>Enter repo names, delimit with comma.</p>
+                                <input
+                                    class="form-control"
+                                    id="devOpsPullRequestRepos" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Show pull requests from following reviewer groups as mine</label>
+                                <p>Enter ids, delimit with comma.</p>
+                                <input
+                                    class="form-control"
+                                    id="devOpsPullRequestMyReviewerGroups" />
+                            </div>
+
+                            <div class="d-flex">
+                                <button
+                                    id="saveDevOpsButton"
+                                    class="btn btn-primary">
+                                    Save
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+
+                <hr/>
+
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">Settings file</h3>
+                    <div class="settings-data">
+                        <div class="form-group">
+                            <label>Review contents. Edit file in local editor.</label>
+                            <textarea
+                                rows="20"
+                                class="form-control"
+                                id="settingsOverview" >
+                            </textarea>
+                        </div>
+   
+                    </div>
+                </div>
+
+                <hr/>
+
 
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">Advanced</h3>

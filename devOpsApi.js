@@ -5,19 +5,19 @@ function DevOpsApi(options) {
     _this.options = options;
     _this.ajaxHeaders = {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + btoa(":" + _this.options.devOpsPersonalAccessToken)
+        'Authorization': 'Basic ' + btoa(":" + _this.options.platforms.devops.pat)
     };
     _this.ajaxHeadersPatch = {
         'Content-Type': 'application/json-patch+json',
-        'Authorization': 'Basic ' + btoa(":" + _this.options.devOpsPersonalAccessToken)
+        'Authorization': 'Basic ' + btoa(":" + _this.options.platforms.devops.pat)
     };
 
     _this.getPullRequestPortalLink = function (projectName, repositoryName, codeReviewId) {
-        return `${_this.options.devOpsInstanceUrl}${encodeURIComponent(projectName)}/_git/${encodeURIComponent(repositoryName)}/pullrequest/${codeReviewId}`;
+        return `${_this.options.platforms.devops.uri}${encodeURIComponent(projectName)}/_git/${encodeURIComponent(repositoryName)}/pullrequest/${codeReviewId}`;
     }
 
     _this.getMyItemsIdsAsync = async function () {
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/wiql?api-version=4.1";
+        const url = _this.options.platforms.devops.uri + "/_apis/wit/wiql?api-version=4.1";
         const queryData =
         {
             query:
@@ -37,7 +37,7 @@ function DevOpsApi(options) {
     }
 
     _this.getItemsAsync = async function (ids) {
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,System.Tags,Microsoft.VSTS.Scheduling.CompletedWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
+        const url = _this.options.platforms.devops.uri + "/_apis/wit/workitems?ids=" + ids + "&fields=System.Id,System.Title,System.WorkItemType,System.State,System.TeamProject,System.Tags,Microsoft.VSTS.Scheduling.CompletedWork,Microsoft.VSTS.Scheduling.OriginalEstimate,Microsoft.VSTS.Scheduling.RemainingWork&api-version=6.0";
         const response = await fetch(url, {
             headers: _this.ajaxHeaders
         });
@@ -45,7 +45,7 @@ function DevOpsApi(options) {
     }
 
     _this.getItemAsync = async function (id) {
-        const url = `${_this.options.devOpsInstanceUrl}/_apis/wit/workitems/${id}?$expand=relations`
+        const url = `${_this.options.platforms.devops.uri}/_apis/wit/workitems/${id}?$expand=relations`
         const response = await fetch(url, {
             headers: _this.ajaxHeaders,
         });
@@ -60,7 +60,7 @@ function DevOpsApi(options) {
     }
 
     _this.getItemUpdatesAsync = async function (id) {
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + id + "/updates?$top={100}&&api-version=5.1";
+        const url = _this.options.platforms.devops.uri + "/_apis/wit/workitems/" + id + "/updates?$top={100}&&api-version=5.1";
         const response = await fetch(url, {
             headers: _this.ajaxHeaders,
         });
@@ -137,7 +137,7 @@ function DevOpsApi(options) {
             )
         }
 
-        const url = _this.options.devOpsInstanceUrl + "/_apis/wit/workitems/" + devOpsItem.id + "?api-version=6.0";
+        const url = _this.options.platforms.devops.uri + "/_apis/wit/workitems/" + devOpsItem.id + "?api-version=6.0";
         const response = await fetch(url, {
             headers: _this.ajaxHeadersPatch,
             method: 'PATCH',
@@ -148,7 +148,7 @@ function DevOpsApi(options) {
     };
 
     _this.getMyRepositoriesAsync = async function () {
-        const url = _this.options.devOpsInstanceUrl + `/_apis/git/repositories?api-version=6.0`;
+        const url = _this.options.platforms.devops.uri + `/_apis/git/repositories?api-version=6.0`;
         const response = await fetch(url, {
             headers: _this.ajaxHeaders
         });
@@ -159,9 +159,9 @@ function DevOpsApi(options) {
         let commitPromises = [];
         const repos = await this.getMyRepositoriesAsync();
         repos.value.forEach(repo => {
-            const url = _this.options.devOpsInstanceUrl +
+            const url = _this.options.platforms.devops.uri +
                 `/_apis/git/repositories/${repo.id}/commits?api-version=6.0` +
-                `&searchCriteria.author=${_this.options.devOpsAuthorName}` +
+                `&searchCriteria.author=${_this.options.platforms.devops.repo.authorName}` +
                 `&searchCriteria.fromDate=${from.toISOString()}` +
                 `&searchCriteria.toDate=${to.toISOString()}`;
 
@@ -186,10 +186,10 @@ function DevOpsApi(options) {
         let pullRequestPromises = [];
         const repos = await this.getMyRepositoriesAsync();
 
-        const selectedPullRequestRepos = _this.options.devOpsPullRequestRepos?.split(',');
+        const selectedPullRequestRepos = _this.options.platforms.devops.repo.pullRequestRepos?.split(',');
         repos.value.forEach(repo => {
             if (!selectedPullRequestRepos || selectedPullRequestRepos.length === 0 || selectedPullRequestRepos.find(x => x === repo.name)) {
-                const url = _this.options.devOpsInstanceUrl +
+                const url = _this.options.platforms.devops.uri +
                     `/_apis/git/repositories/${repo.id}/pullrequests?api-version=7.0` +
                     `&searchCriteria.status=active`;
 

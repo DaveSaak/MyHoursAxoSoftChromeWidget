@@ -1,64 +1,16 @@
 function Options() {
     'use strict';
 
-    const storageKeys = [
-        'gaps', 
-        'options', 
-        'travelReimbursement', 
-        // 'kaboomDefinitions'
-    ];
 
     var _this = this;
-
-    // _this.useDevOps = false;
-
-    _this.contentSwitchProjectId = 0;
-    // _this.developmentTaskName = 'development';
-    // _this.contentSwitchZoneReEnterTime = 10;
 
     _this.allHoursAccessToken = '';
     _this.allHoursRefreshToken = '';
     _this.allHoursAccessTokenValidTill = '';
-    // _this.allHoursUrl = '';
-    _this.allHoursUserName = '';
-    _this.isSecret = '';
-
-    // _this.myHoursDefaultTagId = '';
-    _this.myHoursCommonProjectId = '';
-    // _this.myHoursCommonDescriptions = '';
-    // _this.myHoursDistractionTaskId = '';
-    // _this.myHoursDistractionComment = '';
-
-    _this.myHours = {
-        defaultProjectId: undefined,
-        defaultTaskId: undefined,
-        defaultTagIds: []
-    }
-
     _this.notificationsBadRatio = true;
-
-    _this.devOpsAuthorName = '';
-    _this.devOpsUserId = '';
-    _this.devOpsPullRequestRepos = '';
-    _this.devOpsPullRequestMyReviewerGroups = '';
-
     _this.recentItemsBubbleChartHiddenItemsIds = '';
 
-    // _this.kaboomDefinitions = '';
 
-
-    // _this.extraShowGaps = false;
-    // _this.extraGapsMinLength = 15;
-
-    _this.gaps = {
-        showGaps: false,
-        minLength: 15
-    }
-
-    // _this.travelReimbursement = {
-    //     distance: 0,
-    //     kmCost: 0
-    // }
 
     _this.kaboomDefinitions = [];
 
@@ -75,24 +27,16 @@ function Options() {
                     reject();
                 } else {
 
-                    const { gaps, 
-                        travelReimbursement, 
-                        // kaboomDefinitions, 
-                        ...mainOptions } = _this;
-                    // console.log(gaps);
-                    // console.log(travelReimbursement);
-                    // console.log(mainOptions);
-
-                    // const subset = {c, d};
-
                     const items = {
-                        options: mainOptions,
-                        gaps: gaps,
-                        travelReimbursement: travelReimbursement,
-                        // kaboomDefinitions: kaboomDefinitions
+                        options: {
+                            allHoursAccessToken: _this.allHoursAccessToken,
+                            allHoursRefreshToken: _this.allHoursRefreshToken,
+                            allHoursAccessTokenValidTill: _this.allHoursAccessTokenValidTill,
+                            notificationsBadRatio: _this.notificationsBadRatio,
+                            recentItemsBubbleChartHiddenItemsIds: _this.recentItemsBubbleChartHiddenItemsIds,
+                        }
                     }
 
-                    // console.info("saving options to the chrome store");
                     chrome.storage.sync.set(items, function () {
                         // Callback function to handle the completion of the storage operation
                         if (chrome.runtime.lastError) {
@@ -194,26 +138,15 @@ function Options() {
 
                         })
                         .catch(error => console.error("Error loading JSON:", error));
-*/
+
+                        */
+
 
                     const storagePromise = new Promise((resolveStorage) => {
-                        chrome.storage.sync.get(storageKeys, function (items) {
+                        chrome.storage.sync.get('options', function (items) {
                             if (items.options) {
                                 Object.assign(_this, items.options);
                             }
-
-                            if (items.gaps) {
-                                _this.gaps = items.gaps;
-                            }
-
-                            if (items.travelReimbursement) {
-                                _this.travelReimbursement = items.travelReimbursement;
-                            }
-
-                            // if (items.kaboomDefinitions) {
-                            //     _this.kaboomDefinitions = items.kaboomDefinitions;
-                            // }
-
                             resolveStorage();
                         });
                     });
@@ -240,7 +173,11 @@ function Options() {
                             // If fetch fails, we still want to continue
                         });                        
 
-                    Promise.all([storagePromise, settingsPromise, automatonsPromise])
+                    Promise.all([
+                        storagePromise, 
+                        settingsPromise, 
+                        automatonsPromise
+                    ])
                         .then(() => resolve())
                         .catch(err => reject(err));
 

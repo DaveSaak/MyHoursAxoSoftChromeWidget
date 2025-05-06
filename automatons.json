@@ -408,7 +408,17 @@
             "action": "open-app"
           },
           "text": "Mh"
-        }
+        },
+        {
+            "actionIndex": 2,
+            "backgroundColor": "#3b8fc2",
+            "color": "white",
+            "description": "open DevOps",
+            "index": 1,
+            "kaboomIndex": 4,
+            "link": "https://dev.azure.com/Spica-International/All%20Hours/_boards",
+            "text": "DO"
+          }
       ],
       "backgroundColor": "#3b8fc2",
       "color": "white"

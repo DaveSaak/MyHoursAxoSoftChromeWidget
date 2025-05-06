@@ -25,7 +25,7 @@ function popup() {
     _this.options = new Options();
 
     _this.myHoursApi = new MyHoursApi(_this.currentUser);
-    _this.devOpsApi = new DevOpsApi(_this.options);
+    // _this.devOpsApi = new DevOpsApi(_this.options);
 
     _this.timeRatio = new TimeRatio(showRatio);
     _this.timeRatioAllHourAxo = new TimeRatio(showRatioAllHoursAxo);
@@ -71,13 +71,28 @@ function popup() {
 
     _this.options.load().then(
         function () {
+            console.info('options loaded');
+            console.log(_this.options);
+
             _this.allHoursApi = new AllHoursApi(_this.options);
+            _this.devOpsApi = new DevOpsApi(_this.options);
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
             _this.recentItemsView = new RecentItemsView(_this.myHoursApi, _this.options, _this.axoItemColors);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, $('#calendarContainer'));
             _this.ratioView = new RatioView(_this.allHoursApi, _this.options);
             _this.pullRequestsView = new PullRequestsView(_this.options, _this.devOpsApi, $('#pullRequestsContainer'));
             _this.dashboardView = new DashboardView(_this.options, _this.allHoursApi, $('#dashboardContainer'));
+
+
+            // PLATFORM UI MODS
+            if (_this.options.platforms.devops.enabled) {
+                $('#copyDevOpsButton').show();
+                $('.statistics-sm.axo').hide();
+
+                $('#nav-ratio').remove();
+                // $('#nav-recent-items').remove();
+                // $('#nav-calendar').remove();
+            }
 
             // KABOOMS
 
@@ -109,67 +124,12 @@ function popup() {
             });
             activateDraggableKabooms();
             
-            
 
-/*
-            _this.options.kaboomDefinitions.forEach((kaboomDefinition, index) => {
-                if (kaboomDefinition.actions) {
-                    //group definition
-                    let group = $('<div>').addClass('dropdown');
-                    //console.log(group.pullRight);
-                    // if (kaboomDefinition.pullRight) {
-                    //     group.css('margin-left', 'auto');
-                    // }
-                    toolbar.append(group);
-
-                    group.append(
-                        $(' <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="dropdown' + index + '" aria-expanded="false">Open</button>')
-                    );
-
-                    
-                    let menu = $('<ul class="dropdown-menu" aria-labelledby="dropdown' + index +'">');
-                    group.append(menu);
-
-
-                
-
-                    kaboomDefinition.actions.forEach(action => {   
-                        action.backgroundColor = kaboomDefinition.backgroundColor;
-                        action.color = kaboomDefinition.color;
-
-                        let item = $('<li class="dropdown-item">');
-                        let kaboomButton = getKaboomButton(action);
-                        item.append(kaboomButton);
-                        menu.append(item);
-                     });
-                } 
-                // else {
-                //     let kaboomButton = getKaboomButton(kaboomDefinition);
-                //     toolbar.append(kaboomButton);
-                // }
-            });
-            */
-
-
-            // PLATFORM UI MODS
-            if (_this.options.platforms.devops.enabled) {
-                $('#copyDevOpsButton').show();
-                $('.statistics-sm.axo').hide();
-
-                $('#nav-ratio').remove();
-                // $('#nav-recent-items').remove();
-                // $('#nav-calendar').remove();
-            }
-
-
-
-            if (_this.options.gaps.showGaps) {
+            if (_this.options.platforms.myHours.fillGaps.enabled) {
                 $('#fillGapsButton').show();
             } else {
                 $('#fillGapsButton').hide();
             }
-
-
 
             _this.currentUser.load(function () {
                 // console.info(_this.currentUser);
@@ -207,7 +167,9 @@ function popup() {
                         showMainPage();
                     }
                 }
-            })
+            });
+
+            initInterface();
         }
     );
 
@@ -403,54 +365,8 @@ function popup() {
             $('#timeline').toggleClass("show-gaps", false);
         });
 
-        // $('#startLunchBreakButton').click(function () {
-
-        //     _this.allHoursApi.getCurrentUserId().then(userId => {
-        //         _this.allHoursApi.startLunchBreak(userId).then(
-        //             function (data) {
-        //                 // start lunch break in MH
-
-        //                 _this.myHoursApi.startLog('lunch break', _this.options.myHoursCommonProjectId, [_this.myHoursLunchProjectTaskId]).then(
-        //                     function (data) {
-        //                         getLogs();
-        //                         toastr.success(`You are ready to have lunch! All Hours clocking added. My Hours Log started.`);
-
-        //                     },
-        //                     function (error) {
-        //                         toastr.error(`There was error starting Lunch task in My Hours.`);
-        //                         console.error('Cannot star Lunch in MH:', error);
-        //                     }
-        //                 )
-        //             },
-        //             function (error) {
-        //                 toastr.error(`There was error adding Lunch clocking in All Hours.`);
-        //                 console.error('Error adding lunch clocking:', error);
-        //             }
-        //         );
-        //     });
 
 
-
-        // })
-
-
-
-        // $('#switchContentButton').click(function () {
-        //     _this.myHoursApi.addLog(_this.options.contentSwitchProjectId, "content switch", _this.options.contentSwitchZoneReEnterTime)
-        //         .then(
-        //             function (data) {
-        //                 var notificationOptions = {
-        //                     type: 'basic',
-        //                     iconUrl: './images/TS-badge.png',
-        //                     title: 'Content Switch',
-        //                     message: 'Content Switch was recorded.'
-        //                 };
-        //                 chrome.notifications.create('optionsSaved', notificationOptions, function () { });
-        //             },
-        //             function (error) {
-        //                 console.log(error);
-        //             });
-        // });
 
         document.onkeyup = function (event) {
             // if (event.keyCode === 37) {
@@ -716,9 +632,9 @@ function popup() {
         var totalMinsWithTag = 0;
         _this.myHoursLogs?.forEach(log => {
 
-            if (log.projectId == _this.options.myHoursCommonProjectId) {
+            if (log.projectId == _this.options.platforms.myHours.generalProjectId) {
                 log.color = '#bbc9f3';
-                if (log.projectId == _this.options.myHoursCommonProjectId && log.taskId == _this.myHoursLunchProjectTaskId) {
+                if (log.projectId == _this.options.platforms.myHours.generalProjectId && log.taskId == _this.myHoursLunchProjectTaskId) {
                     log.icon = "fas fa-coffee";
                 }
                 else if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
@@ -1000,7 +916,7 @@ function popup() {
                 .click(function (event) {
                     event.preventDefault();
                     _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
-                        const editUrl = encodeURI(`${_this.options.devOpsInstanceUrl}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${log.devOpsItemId}`);
+                        const editUrl = encodeURI(`${_this.options.platforms.devops.uri}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${log.devOpsItemId}`);
                         window.open(editUrl, '_devops');
                     });
                 });
@@ -1137,32 +1053,8 @@ function popup() {
 
 
             } else {
-                // log.color = 'lightgray';
-                // logTitle.text('DevOps item not found');
                 openDevOpsItemButton.hide();
                 copyWorklogButton.hide();
-
-                // if (log.projectId == _this.options.myHoursCommonProjectId) {
-                //     log.color = '#bbc9f3';
-                // }
-
-                /*
-                if (log.projectId == _this.options.myHoursCommonProjectId) {
-                    log.color = '#bbc9f3';
-                    if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
-                        log.icon = "fas fa-bomb";
-                        // barGraph.append('<i class="fas fa-bomb ml-2" aria-hidden="true"></i>');
-                    } else {
-                        log.icon = "fas fa-crown";
-                        // barGraph.append('<i class="fas fa-crown ml-2" aria-hidden="true"></i>');
-                    }
-                } else {
-                // if (!log.devOpsItemId) {
-                    log.icon = "fas fa-skull";
-                    // barGraph.append('<i class="fas fa-skull ml-2" aria-hidden="true"></i>');
-                }
-                */
-
             }
 
             if (!log.taskId) {
@@ -1193,17 +1085,7 @@ function popup() {
                     barGraph.addClass('no-tags');
                 }
 
-                /*
-                if (log.projectId == _this.options.myHoursCommonProjectId) {
-                    if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
-                        barGraph.append('<i class="fas fa-bomb ml-2" aria-hidden="true"></i>');
-                    } else {
-                        barGraph.append('<i class="fas fa-crown ml-2" aria-hidden="true"></i>');
-                    }
-                } else if (!log.devOpsItemId) {
-                    barGraph.append('<i class="fas fa-skull ml-2" aria-hidden="true"></i>');
-                }
-                */
+
                 if (log.icon) {
                     barGraph.append(`<i class="${log.icon} ml-2" aria-hidden="true"></i>`);
                 }
@@ -1421,7 +1303,7 @@ function popup() {
             }
         });
 
-        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.gaps.minLength * 60 * 1000);
+        _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.platforms.myHours.fillGaps.minLength * 60 * 1000);
 
         console.log('gaps', _this.gaps);
 
@@ -1453,21 +1335,6 @@ function popup() {
         });
     }
 
-
-    // function trackDistraction() {
-    //     _this.myHoursApi.startLog(
-    //         _this.options.myHoursDistractionComment ?? 'Distraction!',
-    //         _this.options.myHoursCommonProjectId,
-    //         [_this.options.myHoursDistractionTaskId],
-    //         undefined
-    //     ).then(x => {
-    //         toastr.success('Tracking distraction.');
-    //         getLogsForToday();
-    //     }).catch(e => {
-    //         toastr.error(`Tracking distraction failed: ${e.message}`);
-    //         getLogsForToday();
-    //     })
-    // }
 
     function getActionsDropDown(data) {
         let buttonGroup = $('<div>').addClass('btn-group ml-auto');
@@ -1765,7 +1632,7 @@ function popup() {
 
                                 }
 
-                                if (_this.options.gaps.showGaps) {
+                                if (_this.options.platforms.myHours.fillGaps.enabled) {
                                     getGaps();
                                 }
                             },
@@ -1847,7 +1714,7 @@ function popup() {
             .click(function (event) {
                 event.preventDefault();
                 _this.devOpsApi.getItemAsync(item.id).then(devOpsItem => {
-                    const editUrl = encodeURI(`${_this.options.devOpsInstanceUrl}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${item.id}`);
+                    const editUrl = encodeURI(`${_this.options.platforms.devops.uri}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${item.id}`);
                     window.open(editUrl, '_devops');
                 });
             });
@@ -2090,13 +1957,17 @@ function popup() {
     function openAllHoursTimeline() {
         _this.allHoursApi.getCurrentUserId().then(userId => {
             const allHoursUrl = encodeURI(`https://pro.allhours.com/employee-day?Employee=${userId}&Date=${_this.currentDate.format('YYYY-MM-DD')}`);
-            window.open(allHoursUrl, '_allHours');
+            openLink(allHoursUrl, '_allHours');
         });
     }
 
     function openMyHoursTracking() {
         const myHoursUrl = encodeURI(`https://app.myhours.com/#/track`);
-        window.open(myHoursUrl, '_myHours');
+        openLink(myHoursUrl, '_myHours');
+    }
+
+    function openLink(link, target = undefined) {
+        window.open(link, target);
     }
 
 
@@ -2507,6 +2378,11 @@ function popup() {
         if (kaboomDefinition.myHours?.action === 'open-app') {
             openMyHoursTracking();
         }
+
+
+        if (kaboomDefinition.link) {
+            openLink(kaboomDefinition.link);
+        }    
         
 
         // if (kaboomDefinition.myHours?.stopRunningLog) {
@@ -2521,6 +2397,4 @@ function popup() {
         //     )
         // }
     }
-
-    initInterface();
 }
