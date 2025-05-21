@@ -102,7 +102,13 @@ chrome.webRequest.onCompleted.addListener(
                                 console.error(error);
                                 chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
                             })
-                    });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
+                        })                    
+                    
+                    ;
             });
         });
 }

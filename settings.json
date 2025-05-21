@@ -16,11 +16,11 @@
             "generalProjectId": 1870755,
             "defaultProjectId": 1870755,
             "defaultTaskId": 10465248,
-            "defaultTagIds" : [77593],
+            "defaultTagIds" : [77055],
             "codeReviewTagIds": [135145],
             "fillGaps": {
                 "enabled": true,
-                "minLength": 17
+                "minLength": 15
             }
         },
         "allHours": {

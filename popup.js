@@ -823,22 +823,41 @@ function popup() {
             var columnTime = $('<div>').addClass('log-time');
             logContainerGrid.append(columnTime);
 
-            if (log.duration != null) {
-                var durationInfo = $('<i class="fas fa-circle-notch fa-spin"></i>');
-                if (!log.running) {
+            if (!log.running) {
+                if (log.duration != null) {
                     var duration = minutesToString(log.duration / 60);
                     durationInfo = $('<span>').text(duration);
                     durationInfo.append($('<span class="small"> h</span>'));
+                    columnTime.append(durationInfo);
+
+                    if (log.times?.length > 0) {
+                        const timesInfo = $('<small style="font-size:0.75rem">').addClass('times-info');
+                        timesInfo.text(intervalToString(log.times[0].startTime, log.times[0].endTime));
+                        columnTime.append(timesInfo);
+
+                    }
                 }
+            } else {
+                var durationInfo = $('<span>').text('running...');
                 columnTime.append(durationInfo);
+            }
 
-                if (log.times?.length > 0) {
-                    const timesInfo = $('<small style="font-size:0.75rem">').addClass('times-info');
-                    timesInfo.text(intervalToString(log.times[0].startTime, log.times[0].endTime));
-                    columnTime.append(timesInfo);
+            // if (log.duration != null) {
+            //     var durationInfo = $('<i class="fas fa-circle-notch fa-spin"></i>');
+            //     if (!log.running) {
+            //         var duration = minutesToString(log.duration / 60);
+            //         durationInfo = $('<span>').text(duration);
+            //         durationInfo.append($('<span class="small"> h</span>'));
+            //     }
+            //     columnTime.append(durationInfo);
 
-                }
-            };
+            //     if (log.times?.length > 0) {
+            //         const timesInfo = $('<small style="font-size:0.75rem">').addClass('times-info');
+            //         timesInfo.text(intervalToString(log.times[0].startTime, log.times[0].endTime));
+            //         columnTime.append(timesInfo);
+
+            //     }
+            // };
 
 
 
@@ -889,8 +908,10 @@ function popup() {
                     event.preventDefault();
                     _this.myHoursApi.startFromExisting(log.id).then(
                         function () {
+                            refreshToday();
+
                             // console.info('worklog started');
-                            getLogsForToday();
+                            // getLogsForToday();
                         }
                     )
                         .catch(
