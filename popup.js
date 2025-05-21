@@ -636,6 +636,7 @@ function popup() {
                 log.color = '#bbc9f3';
                 if (log.projectId == _this.options.platforms.myHours.generalProjectId && log.taskId == _this.myHoursLunchProjectTaskId) {
                     log.icon = "fas fa-coffee";
+                    log.color = "#86c49a";
                 }
                 else if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
                     log.icon = "fas fa-bomb";
