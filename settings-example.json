@@ -1,0 +1,32 @@
+{
+    "platforms": {
+        "devops" : {
+            "enabled": true,
+            "uri": "https://dev.azure.com/Spica-International",
+            "pat": "xxxx",
+            "repo": {
+                "authorName": "Dave",
+                "userId": "123",
+                "pullRequestRepos": "1,2,3",
+                "pullRequestMyReviewerGroups": ""
+            }
+        },
+        "myHours": {
+            "generalProjectId": 1870755,
+            "defaultProjectId": 1870755,
+            "defaultTaskId": 10465248,
+            "defaultTagIds" : [77055],
+            "codeReviewTagIds": [135145],
+            "fillGaps": {
+                "enabled": true,
+                "minLength": 15
+            }
+        },
+        "allHours": {
+            "iisSecret": "xxxx"
+        },
+        "spica": {
+            "userName": "email" 
+        }
+    }
+}
