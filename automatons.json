@@ -82,17 +82,17 @@
           "allHours": {
             "action": "add-clocking",
             "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
-            "comment": "lunch"
+            "comment": "break"
           },
           "backgroundColor": "#3d348b",
           "color": "white",
-          "description": "start lunch",
+          "description": "start break",
           "icon": "coffee",
           "index": 4,
           "kaboomIndex": 0,
           "myHours": {
             "action": "start-log",
-            "description": "out for lunch",
+            "description": "taking short break",
             "projectId": 1870755,
             "tagIds": [
               140445

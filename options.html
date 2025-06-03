@@ -132,14 +132,53 @@
                 </div>
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">All Hours</h3>
+                    <h3 class="settings-header text-primary">Spica Workforce</h3>
                     <div class="settings-data">
-                        <!-- <div class="form-group">
-                            <label>Identity server secret</label>
+
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input
+                                disabled
+                                class="form-control"
+                                id="spicaUserName" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
                             <input
                                 class="form-control"
-                                id="isSecret" />
-                        </div> -->
+                                type="password"
+                                id="spicaPassword" />
+                        </div>
+
+                        <div class="d-flex">
+                            <button
+                                id="authorizeSpica"
+                                class="btn btn-primary">
+                                Authorize
+                            </button>
+                        </div>
+
+                        <div class="form-group mt-5">
+                            <div
+                                id="ahAccessToken"
+                                class="alert alert-primary">
+                                hit get access token to obtain access to your attendance data.
+                            </div>
+
+                            <div
+                                id="mhAccessToken"
+                                class="alert alert-primary">
+                                hit get access token to obtain access to your project tracking data.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>                
+
+                <!-- <div class="settings-section">
+                    <h3 class="settings-header text-primary">All Hours</h3>
+                    <div class="settings-data">
 
                         <div class="form-group">
                             <label>Username</label>
@@ -149,14 +188,6 @@
                                 id="ahUserName" />
                         </div>
 
-                        <!-- <div class="d-flex">
-                            <button
-                                id="saveAllHoursButton"
-                                class="btn btn-primary mb-4">
-                                Save
-                            </button>
-                        </div> -->
-
                         <div class="form-group">
                             <label>Password</label>
                             <input
@@ -165,13 +196,6 @@
                                 id="ahPassword" />
                         </div>
 
-                        <div class="form-group">
-                            <div
-                                id="ahAccessToken"
-                                class="alert alert-primary">
-                                hit get access token to obtain access to your attendance data.
-                            </div>
-                        </div>
 
                         <div class="d-flex">
                             <button
@@ -181,9 +205,9 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="settings-section">
+                <!-- <div class="settings-section">
                     <h3 class="settings-header text-primary">My Hours</h3>
                     <div class="settings-data">
                         <div class="form-group">
@@ -193,18 +217,6 @@
                                 style="width: 50%"
                                 id="mhDefaultTagId"></select>
                         </div>
-
-                        <!-- <div class="form-group">
-                            <label class="label">Common project</label>
-                            <p>
-                                Common project tasks have no items in the DevOps. Time logged on these projects will be
-                                marked with pale color and a crown icon.
-                            </p>
-                            <select
-                                class="form-control"
-                                style="width: 50%"
-                                id="myHoursCommonProjectId"></select>
-                        </div> -->
 
                         <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Login</div>
@@ -235,7 +247,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div id="devops-section">
                     <div class="settings-section">

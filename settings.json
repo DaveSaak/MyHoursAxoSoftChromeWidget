@@ -4,7 +4,7 @@
         "devops" : {
             "enabled": true,
             "uri": "https://dev.azure.com/Spica-International",
-            "pat": "FtKx2rNZmp5YGjl6asKy6MQzhaOaNyxvH4UPGYIVg15vpZOHgvcCJQQJ99BEACAAAAAiXuTxAAASAZDO2EiM",
+            "pat": "xxxx",
             "repo": {
                 "authorName": "Dave",
                 "userId": "123",
@@ -24,8 +24,10 @@
             }
         },
         "allHours": {
-            "iisSecret": "qz16y7vh12dbet6rac2gqqr1wxby3i",
-            "userName": "david.sakelsek@spica.com"            
+            "iisSecret": "xxxx"
+        },
+        "spica": {
+            "userName": "email" 
         }
     }
 }

@@ -61,6 +61,8 @@ $(function () {
                     console.log("JSON Data:", data);
                     $('#settingsOverview').val(JSON.stringify(data, null, 2));
                     $('#ahUserName').val(_this.options.platforms.allHours.userName);
+
+                    $('#spicaUserName').val(_this.options.platforms.spica.userName);
                 })
                 .catch(error => console.error("Error loading JSON:", error));
 
@@ -116,7 +118,7 @@ $(function () {
 
     $('input#ahPassword').keyup(function (e) {
         if (e.keyCode == 13) {
-            loginToAllHours();
+            loginToAllHours($('#ahPassword').val());
         }
     });
 
@@ -213,29 +215,44 @@ $(function () {
         toastr.success('User data was cleared. You will need to login.');
     });
 
+    $('#authorizeSpica').click(function () {
+        loginToAllHours(_this.options.platforms.spica.userName, $('#spicaPassword').val());
+        loginToHyHours(_this.options.platforms.spica.userName, $('#spicaPassword').val());
+    });
+
     $('#loginToAllHours').click(function () {
-        loginToAllHours();
+        loginToAllHours($('#ahPassword').val());
     });
 
     $('#loginToMyHours').click(function () {
+        loginToHyHours($('#mhUserName').val(), $('#mhPassword').val());
+    })
+
+    function loginToHyHours(username, password) {
         let loginToMyHoursInfo = $('#loginToMyHoursInfo');
         loginToMyHoursInfo.text('logging in...');
 
-        let email = $('#mhUserName').val();
-        let password = $('#mhPassword').val();
+        let email = username;
+
         _this.myHoursApi.getAccessToken(email, password).then(
             function (token) {
                 _this.currentUser.email = email;
                 _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
                 _this.currentUser.save();
 
+                console.log('expires in (seconds): ' + token.expiresIn);
+                const validTill = moment().add(token.expiresIn, 'seconds');
+                console.log('mh token alid till: ' + validTill.toString());
+
                 _this.myHoursApi.getUser().then(function (user) {
                     _this.currentUser.setUserData(user.id, user.name);
                     _this.currentUser.save();
-                    toastr.success('You are now logged into your My Hours account.');
+                    toastr.success('You obtained My Hours token.');
+                    setMyHoursAccessTokenStyle('alert-success').text("Hi " + user.name + ". Your My Hours access token will expire at " + validTill.format('LLL'));
                 }, function (err) {
                     console.info('error while geeting the user data');
                     toastr.error('Error while getting the user data.');
+                    setMyHoursAccessTokenStyle('alert-danger').text(err.message);
                 });
 
                 loginToMyHoursInfo.text('success');
@@ -245,15 +262,16 @@ $(function () {
                 console.info('error while geeting the access token');
                 toastr.error('Error logging in.');
                 loginToMyHoursInfo.text('fail');
+                setMyHoursAccessTokenStyle('alert-danger').text(error.message);
             }
         )
-    })
+    }
 
 
-    function loginToAllHours() {
+    function loginToAllHours(username, password) {
         _this.allHoursApi.getAccessToken(
-            _this.options.platforms.allHours.userName,
-            $('#ahPassword').val()
+            username,
+            password
         ).then(function (data) {
             console.log(data);
             setAllHoursAccessTokenStyle().addClass('alert-success').text("All Good. Token retrieved.");
@@ -269,8 +287,9 @@ $(function () {
             _this.allHoursApi.setAccessToken(data.access_token);
             _this.allHoursApi.getCurrentUserName().then(
                 function (data) {
+                    toastr.success('You  have obtained All Hours token.');
                     console.log(data);
-                    setAllHoursAccessTokenStyle('alert-success').text("Hi " + data + ". Your access token will expire at " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL'));
+                    setAllHoursAccessTokenStyle('alert-success').text("Hi " + data + ". Your All Hours access token will expire at " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL'));
                     saveOptions();
                 },
                 function (err) { }
@@ -298,6 +317,10 @@ $(function () {
     function setAllHoursAccessTokenStyle(style) {
         return $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
     }
+
+    function setMyHoursAccessTokenStyle(style) {
+        return $('#mhAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
+    }    
 
     function toggleAxoSection(){
         if (_this.options?.platforms?.devops?.enabled) {
