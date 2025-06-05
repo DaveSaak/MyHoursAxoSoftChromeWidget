@@ -6,7 +6,7 @@ importScripts('moment.js');
 
 
 
-chrome.runtime.onStartup.addListener( () => {
+chrome.runtime.onStartup.addListener(() => {
     console.log(`onStartup()`);
 });
 
@@ -32,38 +32,69 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (message.type === 'get-allhours-calculation') {
-    
+
     }
 });
 
 chrome.webRequest.onCompleted.addListener(
     (details) => {
         const parsedUrl = new URL(details.url);
-        if (details.method === "POST" 
-            && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch") 
-            ) 
-            {
-                console.log('sending message to cointent script', details);
-                chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
-                console.log('background script message sent: work-item-fetched');
-            }        
+        if (details.method === "POST"
+            && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch")
+        ) {
+            console.log('sending message to cointent script', details);
+            chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
+            console.log('background script message sent: work-item-fetched');
+        }
     },
     { urls: ["*://dev.azure.com/*"] } // filter only requests to dev.azure.com
-  );
+);
 
 
-  chrome.webRequest.onCompleted.addListener(
+chrome.webRequest.onCompleted.addListener(
     (details) => {
         const parsedUrl = new URL(details.url);
         if (details.method === "GET" && parsedUrl.pathname.includes("/api/logs")) {
             console.log('sending message to cointent script', parsedUrl);
             chrome.tabs.sendMessage(details.tabId, { type: 'mh-logs-fetched', date: parsedUrl.searchParams.get('date') });
-        }        
+        }
     },
     { urls: ["*://api2.myhours.com/*"] } // filter only requests to mh
-  );
+);
 
-  function startTrackingTimeDevOps(info, tab) {
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.contextMenus.create({
+        id: "azureDevMenu",
+        title: "Start MyHours log for: %s",
+        contexts: ["selection"],
+        documentUrlPatterns: ["https://dev.azure.com/*"]
+    });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === "azureDevMenu" && info.selectionText) {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            args: [info.selectionText],
+            func: (selectedText) => {
+                console.log("Selected text: " + selectedText);
+                chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: selectedText });
+
+            }
+        });
+    }
+});
+
+
+
+function startTrackingTimeDevOps(info, tab) {
+
+    const notificationId = getRandomString();
+
+    // chrome.notifications.create('', getNotificationOptions(`Starting log ${data.projectTask.name}. Please wait a bit.`), function () { });
+
+    chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info.selectionText}`, 10));
+
 
     let currentUser = new CurrentUser();
     let options = new Options();
@@ -71,10 +102,15 @@ chrome.webRequest.onCompleted.addListener(
 
     options.load().then(
         function () {
+            // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Options loaded`, `ready to fetch MH token`, 20));
+
             currentUser.load(function () {
+                // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Current user loaded`, 30));
 
                 myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                     function (token) {
+                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Ready for MH`, 'token fetched', 50));
+
                         console.info('got refresh token. token: ');
                         console.info(token);
 
@@ -84,7 +120,7 @@ chrome.webRequest.onCompleted.addListener(
                         let tagIds = options.platforms.myHours.defaultTagIds;
                         if (info.itemTitle?.includes('Code Review')) {
                             tagIds = options.platforms.myHours.codeReviewTagIds;
-                        
+
                         }
 
                         myHoursApi.startLogFromId(info.selectionText.trim(), tagIds)
@@ -92,35 +128,64 @@ chrome.webRequest.onCompleted.addListener(
                                 (data) => {
                                     if (data.logStarted) {
                                         refreshMyHoursPage();
-                                        chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
+                                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log ${info.selectionText}. Please wait a bit.`, 10));
+                                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started: ${data.projectTask.name}`, 90));
+                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started.`, 'success', 100));
+
+
+                                        // chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
                                     } else {
-                                        chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
+                                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 99));
+                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 'Failed to start log.', 100));
+
+                                        // chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
                                     }
                                 }
                             )
                             .catch((error) => {
                                 console.error(error);
-                                chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
+
+                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100));
+
+                                // chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
                             })
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
-                        })                    
-                    
+                    })
+                    .catch((error) => {
+                        console.error(error);
+
+                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`, 'Failed to start log', 100));
+
+                        // chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
+                    })
+
                     ;
             });
         });
 }
 
 function getNotificationOptions(message) {
-    return {
+    return {        
         type: 'basic',
         iconUrl: './images/ts-badge128.png',
         title: 'Spica extension',
+        silent: true,
         message
     };
 }
+
+function getProgressNotificationOptions(message, title, progress) {
+    return {        
+        type: 'progress',
+        iconUrl: './images/ts-badge128.png',
+        title: 'Spica extension',
+        silent: true,
+        message,
+        title,
+        progress: progress || 0
+    };    
+}
+
+
 
 function refreshMyHoursPage() {
 
@@ -142,4 +207,14 @@ function refreshMyHoursPage() {
         });
     });
 
+}
+
+
+function getRandomString(length = 10) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
 }
