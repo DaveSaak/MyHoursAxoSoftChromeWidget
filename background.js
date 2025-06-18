@@ -34,6 +34,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'get-allhours-calculation') {
 
     }
+
 });
 
 chrome.webRequest.onCompleted.addListener(
@@ -69,6 +70,13 @@ chrome.runtime.onInstalled.addListener(() => {
         contexts: ["selection"],
         documentUrlPatterns: ["https://dev.azure.com/*"]
     });
+
+    chrome.contextMenus.create({
+        id: "copyBranchNameToClipboard",
+        title: "Generate branch name out of %s",
+        contexts: ["selection"],
+        documentUrlPatterns: ["https://dev.azure.com/*"]
+    });    
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -83,6 +91,33 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             }
         });
     }
+    if (info.menuItemId === "copyBranchNameToClipboard" && info.selectionText) {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            args: [info.selectionText],
+            func: (selectedText) => {
+                
+                const branchName = selectedText
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+                    .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+                    .replace(/ /g, "-");     //replace spaces with dashes
+
+                navigator.clipboard.writeText(branchName)
+                    .then(() => {
+                        console.log('Branch name copied to clipboard successfully.');
+                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), function () { });
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy branch name: ', err);
+                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), function () { });
+                    });
+
+
+            }
+        });
+    }    
 });
 
 
