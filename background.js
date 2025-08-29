@@ -66,14 +66,14 @@ chrome.webRequest.onCompleted.addListener(
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "azureDevMenu",
-        title: "Start MyHours log for: %s",
+        title: "Start timer for %s",
         contexts: ["selection"],
         documentUrlPatterns: ["https://dev.azure.com/*"]
     });
 
     chrome.contextMenus.create({
         id: "copyBranchNameToClipboard",
-        title: "Generate branch name out of %s",
+        title: "Copy branch name to clipboard",
         contexts: ["selection"],
         documentUrlPatterns: ["https://dev.azure.com/*"]
     });    
@@ -107,11 +107,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 navigator.clipboard.writeText(branchName)
                     .then(() => {
                         console.log('Branch name copied to clipboard successfully.');
-                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), function () { });
+                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), () => {resolve();});
                     })
                     .catch(err => {
                         console.error('Failed to copy branch name: ', err);
-                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), function () { });
+                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), () => {resolve();});
                     });
 
 
@@ -144,7 +144,7 @@ function startTrackingTimeDevOps(info, tab) {
 
                 myHoursApi.getRefreshToken(currentUser.refreshToken).then(
                     function (token) {
-                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Ready for MH`, 'token fetched', 50));
+                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Ready for MH`, 'token fetched', 50));
 
                         console.info('got refresh token. token: ');
                         console.info(token);
@@ -153,25 +153,41 @@ function startTrackingTimeDevOps(info, tab) {
                         currentUser.save();
 
                         let tagIds = options.platforms.myHours.defaultTagIds;
-                        if (info.itemTitle?.includes('Code Review')) {
-                            tagIds = options.platforms.myHours.codeReviewTagIds;
+                        const splitInfo = splitNumberAndText(info.selectionText.trim());
 
+                        const itemTitle = splitInfo.text || info.itemTitle;
+                        if (itemTitle) {
+                            switch (true) {
+                                case itemTitle.toLowerCase().includes('code review'):
+                                    tagIds = options.platforms.myHours.codeReviewTagIds;
+                                    break;
+                                case itemTitle.toLowerCase().includes('documentation'):
+                                    tagIds = options.platforms.myHours.documentationTagIds;
+                                    break;
+                                case itemTitle.toLowerCase().includes('testing'):
+                                    tagIds = options.platforms.myHours.testTagIds;
+                                    break;                                    
+                                default:
+                                    // tagIds remains as defaultTagIds
+                                    break;
+                            }
                         }
 
-                        myHoursApi.startLogFromId(info.selectionText.trim(), tagIds)
+                        // myHoursApi.startLogFromId(info.selectionText.trim(), tagIds)
+                        myHoursApi.startLogFromId(splitInfo.itemId, tagIds)
                             .then(
                                 (data) => {
                                     if (data.logStarted) {
                                         refreshMyHoursPage();
                                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log ${info.selectionText}. Please wait a bit.`, 10));
                                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started: ${data.projectTask.name}`, 90));
-                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started.`, 'success', 100));
+                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started.`, 'success', 100), () => {resolve();});
 
 
                                         // chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
                                     } else {
                                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 99));
-                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 'Failed to start log.', 100));
+                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 'Failed to start log.', 100), () => {resolve();});
 
                                         // chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
                                     }
@@ -180,7 +196,7 @@ function startTrackingTimeDevOps(info, tab) {
                             .catch((error) => {
                                 console.error(error);
 
-                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100));
+                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100), () => {resolve();});
 
                                 // chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
                             })
@@ -188,7 +204,7 @@ function startTrackingTimeDevOps(info, tab) {
                     .catch((error) => {
                         console.error(error);
 
-                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`, 'Failed to start log', 100));
+                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`, 'Failed to start log', 100), () => {resolve();});
 
                         // chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
                     })
@@ -206,6 +222,23 @@ function getNotificationOptions(message) {
         silent: true,
         message
     };
+}
+
+function splitNumberAndText(input) {
+
+    const trimmed = input.trim();
+
+    // Regex: ^(\d+) = one or more digits at start, (.*) = rest of the text
+    const match = trimmed.match(/^(\d+)\s*(.*)$/);
+
+    if (match) {
+        return {
+            itemId: match[1],
+            text: match[2]
+        };
+    } else {
+        return null;
+    }
 }
 
 function getProgressNotificationOptions(message, title, progress) {
