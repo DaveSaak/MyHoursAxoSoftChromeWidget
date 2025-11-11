@@ -133,24 +133,24 @@ function startTrackingTimeDevOps(info, tab) {
 
     let currentUser = new CurrentUser();
     let options = new Options();
-    let myHoursApi = new MyHoursApi(currentUser);
 
     options.load().then(
         function () {
+            let myHoursApi = new MyHoursApi(currentUser, options.platforms.myHours.apiUri, options.platforms.myHours.pat);
             // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Options loaded`, `ready to fetch MH token`, 20));
 
             currentUser.load(function () {
                 // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Current user loaded`, 30));
 
-                myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-                    function (token) {
+                // myHoursApi.getRefreshToken(currentUser.refreshToken).then(
+                    // function (token) {
                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Ready for MH`, 'token fetched', 50));
 
-                        console.info('got refresh token. token: ');
-                        console.info(token);
+                        // console.info('got refresh token. token: ');
+                        // console.info(token);
 
-                        currentUser.setTokenData(token.accessToken, token.refreshToken);
-                        currentUser.save();
+                        // currentUser.setTokenData(token.accessToken, token.refreshToken);
+                        // currentUser.save();
 
                         let tagIds = options.platforms.myHours.defaultTagIds;
                         const splitInfo = splitNumberAndText(info.selectionText.trim());
@@ -200,14 +200,14 @@ function startTrackingTimeDevOps(info, tab) {
 
                                 // chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
                             })
-                    })
-                    .catch((error) => {
-                        console.error(error);
+                    // })
+                    // .catch((error) => {
+                    //     // console.error(error);
 
-                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`, 'Failed to start log', 100), () => {resolve();});
+                    //     // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`, 'Failed to start log', 100), () => {resolve();});
 
-                        // chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
-                    })
+                    //     // chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
+                    // })
 
                     ;
             });

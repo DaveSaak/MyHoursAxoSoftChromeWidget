@@ -72,7 +72,7 @@ $(function () {
 
             _this.currentUser = new CurrentUser();
             _this.allHoursApi = new AllHoursApi(_this.options);
-            _this.myHoursApi = new MyHoursApi(_this.currentUser);
+            _this.myHoursApi = new MyHoursApi(_this.currentUser, _this.options.platforms.myHours.apiUri, _this.options.platforms.myHours.pat);
             _this.devOpsApi = new DevOpsApi(_this.options);
 
             _this.devOpsApi.getMyRepositoriesAsync().then(repos => {
@@ -110,7 +110,7 @@ $(function () {
                     setAllHoursAccessTokenStyle('alert-danger').text("Sign in. Your access token expired on " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL') + ".");
                 }
                 else {
-                    setAllHoursAccessTokenStyle('alert-primary').text("Your access will expire on " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL'));
+                    setAllHoursAccessTokenStyle('alert-primary').text("Your AH api access will expire on " + moment(_this.options.allHoursAccessTokenValidTill).format('LLL') + ". It will autorenew in the background thile the refresh token is valid.");
                 }
             }
 
@@ -217,55 +217,11 @@ $(function () {
 
     $('#authorizeSpica').click(function () {
         loginToAllHours(_this.options.platforms.spica.userName, $('#spicaPassword').val());
-        loginToHyHours(_this.options.platforms.spica.userName, $('#spicaPassword').val());
     });
 
     $('#loginToAllHours').click(function () {
         loginToAllHours($('#ahPassword').val());
     });
-
-    $('#loginToMyHours').click(function () {
-        loginToHyHours($('#mhUserName').val(), $('#mhPassword').val());
-    })
-
-    function loginToHyHours(username, password) {
-        let loginToMyHoursInfo = $('#loginToMyHoursInfo');
-        loginToMyHoursInfo.text('logging in...');
-
-        let email = username;
-
-        _this.myHoursApi.getAccessToken(email, password).then(
-            function (token) {
-                _this.currentUser.email = email;
-                _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
-                _this.currentUser.save();
-
-                console.log('expires in (seconds): ' + token.expiresIn);
-                const validTill = moment().add(token.expiresIn, 'seconds');
-                console.log('mh token alid till: ' + validTill.toString());
-
-                _this.myHoursApi.getUser().then(function (user) {
-                    _this.currentUser.setUserData(user.id, user.name);
-                    _this.currentUser.save();
-                    toastr.success('You obtained My Hours token.');
-                    setMyHoursAccessTokenStyle('alert-success').text("Hi " + user.name + ". Your My Hours access token will expire at " + validTill.format('LLL'));
-                }, function (err) {
-                    console.info('error while geeting the user data');
-                    toastr.error('Error while getting the user data.');
-                    setMyHoursAccessTokenStyle('alert-danger').text(err.message);
-                });
-
-                loginToMyHoursInfo.text('success');
-
-            },
-            function (error) {
-                console.info('error while geeting the access token');
-                toastr.error('Error logging in.');
-                loginToMyHoursInfo.text('fail');
-                setMyHoursAccessTokenStyle('alert-danger').text(error.message);
-            }
-        )
-    }
 
 
     function loginToAllHours(username, password) {
@@ -318,9 +274,6 @@ $(function () {
         return $('#ahAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
     }
 
-    function setMyHoursAccessTokenStyle(style) {
-        return $('#mhAccessToken').removeClass('alert-primary').removeClass('alert-danger').addClass(style);
-    }    
 
     function toggleAxoSection(){
         if (_this.options?.platforms?.devops?.enabled) {

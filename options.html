@@ -132,7 +132,7 @@
                 </div>
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">Spica Workforce</h3>
+                    <h3 class="settings-header text-primary">All Hours</h3>
                     <div class="settings-data">
 
                         <div class="form-group">
@@ -165,16 +165,28 @@
                                 class="alert alert-primary">
                                 hit get access token to obtain access to your attendance data.
                             </div>
-
-                            <div
-                                id="mhAccessToken"
-                                class="alert alert-primary">
-                                hit get access token to obtain access to your project tracking data.
-                            </div>
                         </div>
 
                     </div>
-                </div>                
+                </div>   
+                
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">My Hours</h3>
+                    <div class="settings-data">
+                        <div
+                            id="mhAccessToken"
+                            class="alert alert-success">
+                            <p>
+
+                                To access My Hours data, you need to set up API access in My Hours first. 
+                                Then copy the API to setting file under the "myHours" -> "pat" field. 
+                            </p>
+                            <a href="https://app.myhours.com/account/integrations" target="_blank" rel="noopener">
+                                https://app.myhours.com/account/integrations
+                            </a>
+                        </div>
+                    </div>
+                </div>                  
 
                 <!-- <div class="settings-section">
                     <h3 class="settings-header text-primary">All Hours</h3>

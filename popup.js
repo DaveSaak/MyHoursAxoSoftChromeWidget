@@ -24,9 +24,6 @@ function popup() {
     _this.currentUser = new CurrentUser();
     _this.options = new Options();
 
-    _this.myHoursApi = new MyHoursApi(_this.currentUser);
-    // _this.devOpsApi = new DevOpsApi(_this.options);
-
     _this.timeRatio = new TimeRatio(showRatio);
     _this.timeRatioAllHourAxo = new TimeRatio(showRatioAllHoursAxo);
 
@@ -75,6 +72,7 @@ function popup() {
             console.log(_this.options);
 
             _this.allHoursApi = new AllHoursApi(_this.options);
+            _this.myHoursApi = new MyHoursApi(_this.currentUser, _this.options.platforms.myHours.apiUri, _this.options.platforms.myHours.pat);
             _this.devOpsApi = new DevOpsApi(_this.options);
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
             _this.recentItemsView = new RecentItemsView(_this.myHoursApi, _this.options, _this.axoItemColors);
@@ -147,6 +145,9 @@ function popup() {
                     if (_this.currentUser.refreshToken != undefined) {
                         // console.info('refresh token found. lets use it.');
                         showLoadingPage();
+                        showMainPage();
+                        
+                        /*
                         _this.myHoursApi.getRefreshToken(_this.currentUser.refreshToken).then(
                             function (token) {
                                 // console.info('got refresh token. token: ');
@@ -162,6 +163,9 @@ function popup() {
                                 // showLoginPage();
 
                             });
+
+                            */
+                            
                     }
                     else {
                         showMainPage();
@@ -908,7 +912,8 @@ function popup() {
                 .click(function (event) {
                     event.preventDefault();
                     _this.myHoursApi.startFromExisting(log.id).then(
-                        function () {
+                        function (x) {
+                            console.info(x);
                             refreshToday();
 
                             // console.info('worklog started');
@@ -1373,8 +1378,8 @@ function popup() {
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
-                    function () {
-                        // console.info('worklog started');
+                    function (x) {
+                        console.info(x);
                         getLogsForToday();
                     }
                 )
@@ -1430,8 +1435,8 @@ function popup() {
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
-                    function () {
-                        // console.info('worklog started');
+                    function (x) {
+                        console.info(x);
                         getLogsForToday();
                     }
                 )
@@ -2337,12 +2342,13 @@ function popup() {
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
                     kaboomDefinition.myHours.taskId, 
-                    kaboomDefinition.myHours.tagIds).then(
-                    function (data) {
+                    kaboomDefinition.myHours.tagIds).then( x =>
+                    {
+                        console.info(x);
                         toastr.success(`My Hours Log started.`);
                         refreshToday(1000);
                     },
-                    function (error) {
+                    error => {
                         toastr.error(`There was error starting My Hours log.`);
                         console.error('There was error starting My Hours log:', error);
                     }

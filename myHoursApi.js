@@ -1,17 +1,29 @@
-function MyHoursApi(currentUser) {
+function MyHoursApi(currentUser, apiUrl, apiKey) {
     'use strict';
 
-    var baseUrl = 'https://api2.myhours.com/api/';
+    var baseUrl = apiUrl || 'https://api2.myhours.com/api/';
+    //var baseUrl
     var _this = this;
 
     _this.currentUser = currentUser;
+    _this.apiKey = apiKey;
 
     _this.getAjaxHeaders = function () {
         return {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + _this.currentUser.accessToken
+            //'Authorization': 'Bearer ' + _this.currentUser.accessToken
+            'Authorization': 'ApiKey ' + _this.apiKey,
+            'Accept': 'application/json',
+            'User-Agent': 'PostmanRuntime/7.49.1', // Try mimicking Postman
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+            // _this.getAuthorizationHeader()
         };
     };
+
+    // _this.getAuthorizationHeader = function() {
+    //     return 'Authorization': 'ApiKey ' + _this.apiKey;
+    // }
 
     // -------------------------------------------------------------------------
     // GET USER
@@ -20,9 +32,10 @@ function MyHoursApi(currentUser) {
         return new Promise((resolve, reject) => {
             fetch(baseUrl + 'users', {
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + _this.currentUser.accessToken
-                }
+                // headers: {
+                //     'Authorization': 'Bearer ' + _this.currentUser.accessToken
+                // }
+                headers: _this.getAjaxHeaders()
             })
             .then(response => {
                 if (!response.ok) throw response;
@@ -108,9 +121,10 @@ function MyHoursApi(currentUser) {
         return new Promise((resolve, reject) => {
             fetch(baseUrl + 'logs?' + query, {
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + _this.currentUser.accessToken
-                }
+                // headers: {
+                //     'Authorization': 'Bearer ' + _this.currentUser.accessToken
+                // }
+                headers: _this.getAjaxHeaders()
             })
             .then(response => {
                 if (!response.ok) throw response;
@@ -149,9 +163,10 @@ function MyHoursApi(currentUser) {
         return new Promise((resolve, reject) => {
             fetch(baseUrl + 'times/' + logId, {
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + _this.currentUser.accessToken
-                }
+                // headers: {
+                //     'Authorization': 'Bearer ' + _this.currentUser.accessToken
+                // }
+                headers: _this.getAjaxHeaders()
             })
             .then(response => {
                 if (!response.ok) throw response;
@@ -178,9 +193,10 @@ function MyHoursApi(currentUser) {
         return new Promise((resolve, reject) => {
             fetch(baseUrl + 'reports/activity?' + query, {
                 method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + _this.currentUser.accessToken
-                }
+                // headers: {
+                //     'Authorization': 'Bearer ' + _this.currentUser.accessToken
+                // }
+                headers: _this.getAjaxHeaders()
             })
             .then(response => {
                 if (!response.ok) throw response;
@@ -266,36 +282,121 @@ function MyHoursApi(currentUser) {
     // -------------------------------------------------------------------------
     // START LOG (timer)
     // -------------------------------------------------------------------------
-    _this.startLog = function (comment, projectId, taskId, tagIds) {
+    _this.startLogOld = function (comment, projectId, taskId, tagIds) {
         return new Promise((resolve, reject) => {
             var currentTime = moment().millisecond(0);
             var newLogData = {
                 note: comment,
                 date: currentTime.format('YYYY-MM-DD'),
-                start: currentTime.toISOString(true),
-                end: null
+                // start: currentTime.toISOString(true),
+                start: currentTime.format('YYYY-MM-DD HH:mm:ssZ'),
+                // end: null,
+                originType: 10,
+                attachments: [],
+                billable: true,
+                duration: null,
+                customField1: null,
+                customField2: null,
+                customField3: null
             };
 
             if (taskId) newLogData.taskId = taskId;
             if (projectId) newLogData.projectId = projectId;
             if (tagIds) newLogData.tagIds = tagIds;
 
-            fetch(baseUrl + 'logs/startNewLog', {
+            
+            var localDateStr = currentTime.startOf('day').format('YYYY-MM-DDTHH:mm:ssZ');
+            // Only encode the + sign as %2B, leave colons unencoded
+            var encodedLocalDate = localDateStr.replace('+', '%2B');
+
+            fetch(baseUrl + 'logs/startNewLog?localDate=' + encodedLocalDate, {
                 method: 'POST',
                 headers: _this.getAjaxHeaders(),
                 body: JSON.stringify(newLogData)
             })
             .then(response => {
                 if (!response.ok) throw response;
-                return response.json();
+                resolve(true); //response.json();
             })
-            .then(data => resolve(data))
+            // .then(data => resolve(data))
             .catch(error => {
                 console.error(error);
                 reject(error);
             });
         });
     };
+
+
+    _this.startLog = function (comment, projectId, taskId, tagIds) {
+
+// const payload = {
+//   "note": "research",
+//   "date": "2025-11-10",
+//   "start": "2025-11-10 23:27:28+01:00",
+//   "taskId": 10481563,
+//   "projectId": 1870755,
+//   "tagIds": [77594]
+// };
+
+// fetch('https://mh-prod-weu-app-api.azurewebsites.net/api/logs/startNewLog', {
+//   method: 'POST',
+//   credentials: 'omit',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     'Authorization': 'ApiKey q9l2EQymL9gJHalE7HOlv8FWHkt3iQsj+rvLERJZ/SQ=',
+//     'Accept': 'application/json'
+//   },
+//   body: JSON.stringify(payload)
+// })
+// .then(response => {
+//   console.log('Status:', response.status);
+//   console.log('Headers:', response.headers);
+//   return response.text(); // Use .text() first to see raw response
+// })
+// .then(data => {
+//   console.log('Response:', data);
+// })
+// .catch(error => {
+//   console.error('Error:', error);
+// });
+
+         
+        var currentTime = moment().millisecond(0);
+        var newLogData = {
+            note: comment,
+            date: currentTime.format('YYYY-MM-DD'),
+            start: currentTime.format('YYYY-MM-DD HH:mm:ssZ'),
+        };
+
+        if (taskId) newLogData.taskId = taskId;
+        if (projectId) newLogData.projectId = projectId;
+        if (tagIds) newLogData.tagIds = tagIds;
+
+        
+        var localDateStr = currentTime.startOf('day').format('YYYY-MM-DDTHH:mm:ssZ');
+        // Only encode the + sign as %2B, leave colons unencoded
+        var encodedLocalDate = localDateStr.replace('+', '%2B');
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: _this.getAjaxHeaders(),
+            body: JSON.stringify(newLogData),
+            // cache: 'no-store', // Add this to prevent caching
+            // credentials: 'omit' // Omit credentials
+        };
+
+        console.log('Starting log with data:', fetchOptions);
+
+        return fetch(baseUrl + 'logs/startNewLog?localDate=' + encodedLocalDate, fetchOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })    
+            
+    };
+
 
     // -------------------------------------------------------------------------
     // START LOG FROM TASK NAME
@@ -347,9 +448,10 @@ function MyHoursApi(currentUser) {
             })
             .then(response => {
                 if (!response.ok) throw response;
-                return response.json();
+                resolve(true);
+                //return response.json();
             })
-            .then(data => resolve(data))
+            // .then(data => resolve(data))
             .catch(error => {
                 console.error(error);
                 reject(error);
@@ -383,7 +485,8 @@ function MyHoursApi(currentUser) {
                     })
                     .then(response => {
                         if (!response.ok) throw response;
-                        return response.json();
+                        return true;
+                        //return response.json();
                     })
                     .then(data => resolve(data))
                     .catch(error => {
@@ -424,7 +527,8 @@ function MyHoursApi(currentUser) {
                             })
                             .then(response => {
                                 if (!response.ok) throw response;
-                                return response.json();
+                                return true;
+                                // return response.json();
                             })
                             .then(data => resolve(data))
                             .catch(error => {
@@ -463,7 +567,8 @@ function MyHoursApi(currentUser) {
                     })
                     .then(response => {
                         if (!response.ok) throw response;
-                        return response.json();
+                        return true;
+                        // return response.json();
                     })
                     .then(data => resolve(data))
                     .catch(error => {
@@ -484,7 +589,8 @@ function MyHoursApi(currentUser) {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + _this.currentUser.accessToken
+                'Authorization': 'ApiKey ' + _this.apiKey
+                // "Authorization": "Bearer " + _this.currentUser.accessToken
             }
         })
         .then(response => {
@@ -552,7 +658,8 @@ function MyHoursApi(currentUser) {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + _this.currentUser.accessToken
+                    'Authorization': 'ApiKey ' + _this.apiKey
+                    // "Authorization": "Bearer " + _this.currentUser.accessToken
                 },
                 body: JSON.stringify(log)
             })

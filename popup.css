@@ -975,7 +975,7 @@ div.logContainer:hover {
     flex-direction: row;
     gap: 0.5rem;
     align-items: center;
-    margin-left: -0.5rem;
+    margin-left: -0.55rem;
 }
 
 .btn.kaboom-button i {
@@ -994,7 +994,7 @@ div.logContainer:hover {
 .kaboom-toolbar {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 0.7rem;
     align-items: center;
     flex-wrap: wrap;
 }
