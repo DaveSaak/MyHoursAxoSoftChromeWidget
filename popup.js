@@ -146,26 +146,6 @@ function popup() {
                         // console.info('refresh token found. lets use it.');
                         showLoadingPage();
                         showMainPage();
-                        
-                        /*
-                        _this.myHoursApi.getRefreshToken(_this.currentUser.refreshToken).then(
-                            function (token) {
-                                // console.info('got refresh token. token: ');
-                                // console.info(token);
-
-                                _this.currentUser.setTokenData(token.accessToken, token.refreshToken);
-                                _this.currentUser.save();
-                                showMainPage();
-                            }
-                        )
-                            .catch(error => {
-                                console.error('error: ' + error);
-                                // showLoginPage();
-
-                            });
-
-                            */
-                            
                     }
                     else {
                         showMainPage();
