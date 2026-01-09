@@ -50,63 +50,6 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
     };
 
     // -------------------------------------------------------------------------
-    // GET ACCESS TOKEN
-    // -------------------------------------------------------------------------
-    _this.getAccessToken = function (email, password) {
-        return new Promise((resolve, reject) => {
-            const loginData = {
-                clientId: '3d6bdd0e-5ee2-4654-ac53-00e440eed057',
-                email,
-                grantType: 'password',
-                password
-            };
-
-            fetch(baseUrl + 'tokens/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(loginData)
-            })
-            .then(response => {
-                if (!response.ok) throw response;
-                return response.json();
-            })
-            .then(data => resolve(data))
-            .catch(error => {
-                console.log(error);
-                reject(error);
-            });
-        });
-    };
-
-    // -------------------------------------------------------------------------
-    // GET REFRESH TOKEN
-    // -------------------------------------------------------------------------
-    _this.getRefreshToken = function (refreshToken) {
-        return new Promise((resolve, reject) => {
-            const refreshData = {
-                grantType: 'refresh_token',
-                clientId: '3d6bdd0e-5ee2-4654-ac53-00e440eed057',
-                refreshToken: refreshToken
-            };
-
-            fetch(baseUrl + 'tokens/refresh', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(refreshData)
-            })
-            .then(response => {
-                if (!response.ok) throw response;
-                return response.json();
-            })
-            .then(data => resolve(data))
-            .catch(error => {
-                console.log(error);
-                reject(error);
-            });
-        });
-    };
-
-    // -------------------------------------------------------------------------
     // GET LOGS
     // -------------------------------------------------------------------------
     _this.getLogs = function (date) {
