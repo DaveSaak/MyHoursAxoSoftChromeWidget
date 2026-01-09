@@ -28,7 +28,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (message.type === 'start-myhours-log') {
-        startTrackingTimeDevOps({ selectionText: message.itemId, itemTitle: message.itemTitle }, undefined);
+        // startTrackingTimeDevOps({ 
+        //     selectionText: message.itemId, 
+        //     itemTitle: message.itemTitle,
+        //     tagId: message.tagId,
+        //     tagName: message.tagName
+        //  }, undefined);
+        startTrackingTimeDevOps( 
+            message.itemId, 
+            message.tabId,
+            message.tagId
+         );
     }
 
     if (message.type === 'get-allhours-calculation') {
@@ -64,12 +74,74 @@ chrome.webRequest.onCompleted.addListener(
 );
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
-        id: "azureDevMenu",
-        title: "Start timer for %s",
-        contexts: ["selection"],
-        documentUrlPatterns: ["https://dev.azure.com/*"]
-    });
+
+
+    options = new Options();
+    options.load().then(
+        x=>{
+
+            
+            chrome.contextMenus.create({
+                id: "contextMenuDivider",
+                type: "separator",
+                contexts: ["selection"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            });
+
+            chrome.contextMenus.create({
+                id: "azureDevMenu",
+                title: "Track %s",
+                contexts: ["selection"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            });  
+            
+            if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
+                // chrome.contextMenus.create({
+                //     id: "azureDevMenuRoot",
+                //     title: "Track [%s]",
+                //     contexts: ["selection"],
+                //     documentUrlPatterns: ["https://dev.azure.com/*"]
+                // }); 
+
+                options.platforms.myHours.contextMenuTags.forEach(tagConfig => {
+                    chrome.contextMenus.create({
+                        id: `azureDevMenuTag_${tagConfig.id}`,
+                        title: `Track %s / ${tagConfig.name}`,
+                        contexts: ["selection"],
+                        documentUrlPatterns: ["https://dev.azure.com/*"]
+                    });
+                });
+            }
+
+            chrome.contextMenus.create({
+                id: "copyBranchNameToClipboard",
+                title: "Copy branch name to clipboard",
+                contexts: ["selection"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            }); 
+     
+
+            // if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
+            //     chrome.contextMenus.create({
+            //         id: "azureDevMenuRoot",
+            //         title: "Track %s",
+            //         contexts: ["selection"],
+            //         documentUrlPatterns: ["https://dev.azure.com/*"]
+            //     }); 
+
+            //     options.platforms.myHours.contextMenuTags.forEach(tagConfig => {
+            //         chrome.contextMenus.create({
+            //             id: `azureDevMenuTag_${tagConfig.id}`,
+            //             parentId: "azureDevMenuRoot",
+            //             title: `${tagConfig.name}`,
+            //             contexts: ["selection"],
+            //             documentUrlPatterns: ["https://dev.azure.com/*"]
+            //         });
+            //     });
+            // }
+        }
+    );
+
 
     chrome.contextMenus.create({
         id: "copyBranchNameToClipboard",
@@ -81,15 +153,11 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "azureDevMenu" && info.selectionText) {
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            args: [info.selectionText],
-            func: (selectedText) => {
-                console.log("Selected text: " + selectedText);
-                chrome.runtime.sendMessage({ type: 'start-myhours-log', itemId: selectedText });
-
-            }
-        });
+        startTrackingTimeDevOps(info.selectionText, tab, null);
+    }
+    if (info.menuItemId.startsWith("azureDevMenuTag_") && info.selectionText) {
+        const tagId = info.menuItemId.replace("azureDevMenuTag_", "");
+        startTrackingTimeDevOps(info.selectionText, tab, tagId);
     }
     if (info.menuItemId === "copyBranchNameToClipboard" && info.selectionText) {
         chrome.scripting.executeScript({
@@ -122,13 +190,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 
 
-function startTrackingTimeDevOps(info, tab) {
+function startTrackingTimeDevOps(info, tab, tagId) {
 
     const notificationId = getRandomString();
 
     // chrome.notifications.create('', getNotificationOptions(`Starting log ${data.projectTask.name}. Please wait a bit.`), function () { });
 
-    chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info.selectionText}`, 10));
+    chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info}`, 10));
 
 
     let currentUser = new CurrentUser();
@@ -137,41 +205,37 @@ function startTrackingTimeDevOps(info, tab) {
     options.load().then(
         function () {
             let myHoursApi = new MyHoursApi(currentUser, options.platforms.myHours.apiUri, options.platforms.myHours.pat);
-            // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Options loaded`, `ready to fetch MH token`, 20));
 
             currentUser.load(function () {
                 // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Current user loaded`, 30));
 
-                // myHoursApi.getRefreshToken(currentUser.refreshToken).then(
-                    // function (token) {
-                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Ready for MH`, 'token fetched', 50));
-
-                        // console.info('got refresh token. token: ');
-                        // console.info(token);
-
-                        // currentUser.setTokenData(token.accessToken, token.refreshToken);
-                        // currentUser.save();
 
                         let tagIds = options.platforms.myHours.defaultTagIds;
-                        const splitInfo = splitNumberAndText(info.selectionText.trim());
+                        const splitInfo = splitNumberAndText(info.trim());
 
-                        const itemTitle = splitInfo.text || info.itemTitle;
-                        if (itemTitle) {
-                            switch (true) {
-                                case itemTitle.toLowerCase().includes('code review'):
-                                    tagIds = options.platforms.myHours.codeReviewTagIds;
-                                    break;
-                                case itemTitle.toLowerCase().includes('documentation'):
-                                    tagIds = options.platforms.myHours.documentationTagIds;
-                                    break;
-                                case itemTitle.toLowerCase().includes('testing'):
-                                    tagIds = options.platforms.myHours.testTagIds;
-                                    break;                                    
-                                default:
-                                    // tagIds remains as defaultTagIds
-                                    break;
-                            }
+                        // const itemTitle = splitInfo.text || info.itemTitle;
+                        tagName = '';
+                        if (tagId) {
+                            tagIds = [tagId];
+                            tagName = options.platforms.myHours.contextMenuTags.find(t=>t.id==tagId)?.name || '';
                         }
+
+                        // if (itemTitle) {
+                        //     switch (true) {
+                        //         case itemTitle.toLowerCase().includes('code review'):
+                        //             tagIds = options.platforms.myHours.codeReviewTagIds;
+                        //             break;
+                        //         case itemTitle.toLowerCase().includes('documentation'):
+                        //             tagIds = options.platforms.myHours.documentationTagIds;
+                        //             break;
+                        //         case itemTitle.toLowerCase().includes('testing'):
+                        //             tagIds = options.platforms.myHours.testTagIds;
+                        //             break;                                    
+                        //         default:
+                        //             // tagIds remains as defaultTagIds
+                        //             break;
+                        //     }
+                        // }
 
                         // myHoursApi.startLogFromId(info.selectionText.trim(), tagIds)
                         myHoursApi.startLogFromId(splitInfo.itemId, tagIds)
@@ -181,13 +245,13 @@ function startTrackingTimeDevOps(info, tab) {
                                         refreshMyHoursPage();
                                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log ${info.selectionText}. Please wait a bit.`, 10));
                                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started: ${data.projectTask.name}`, 90));
-                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started.`, 'success', 100), () => {resolve();});
+                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started ${splitInfo.itemId} ${tagName}`, 'success', 100), () => {resolve();});
 
 
                                         // chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
                                     } else {
                                         // chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 99));
-                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 'Failed to start log.', 100), () => {resolve();});
+                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${splitInfo.itemId}`, 'Failed to start log.', 100), () => {resolve();});
 
                                         // chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
                                     }
@@ -199,17 +263,7 @@ function startTrackingTimeDevOps(info, tab) {
                                 chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100), () => {resolve();});
 
                                 // chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
-                            })
-                    // })
-                    // .catch((error) => {
-                    //     // console.error(error);
-
-                    //     // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`, 'Failed to start log', 100), () => {resolve();});
-
-                    //     // chrome.notifications.create('', getNotificationOptions(`Counld not refresh MH token. Please go to settings and login.`), function () { });
-                    // })
-
-                    ;
+                            });
             });
         });
 }
