@@ -99,8 +99,6 @@ function AllHoursApi(
     _this.refreshAccessToken = function () {
         return new Promise(
             function (resolve, reject) {
-                // console.info(baseName + ": refreshing token");
-
                 var refreshData = {
                     client_id: "ro_client",
                     client_secret: _this.options.platforms.allHours.iisSecret,
@@ -108,9 +106,7 @@ function AllHoursApi(
                     refresh_token: _this.options.allHoursRefreshToken,
                 }
 
-                // Convert the project to a x-form-urlencoded string
                 var urlencoded = Object.keys(refreshData).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(refreshData[key])).join('&');
-
 
                 $.ajax({
                     url: "https://login.spica.com/connect/token",
@@ -122,12 +118,11 @@ function AllHoursApi(
                     success: function (data) {
                         _this.options.allHoursAccessToken = data.access_token;
                         _this.options.allHoursRefreshToken = data.refresh_token;
-                        _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString();
+                        
+                        // IMPORTANT: Store as ISO string, not moment's toString()
+                        _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toISOString();
+                        
                         _this.options.save();
-
-                        // console.group('all hours token - referesh');
-                        // console.table(data);
-                        // console.groupEnd();
 
                         return resolve(data);
                     },
@@ -408,22 +403,42 @@ function AllHoursApi(
     // }
 
     function checkTokenAndExecutePromise(promiseFunction) {
-        const treshold = 5 * 60;
-        let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
-        if (allHoursTokenIsExpired) {
-            // console.log('ah token expired');
-            _this.refreshAccessToken().then(
-                function (x) {
-                    // console.log('ah token refreshed');
-                    return new Promise(promiseFunction);
-                }
-            )
-
-        }
-        else {
-            return new Promise(promiseFunction);
-        }
+    const treshold = 5 * 60;
+    
+    // Check if token expiry date exists and is valid
+    if (!_this.options.allHoursAccessTokenValidTill) {
+        console.warn('All Hours token expiry date not set, forcing refresh');
+        return _this.refreshAccessToken().then(
+            function () {
+                return new Promise(promiseFunction);
+            }
+        );
     }
+    
+    const tokenExpiryDate = moment(_this.options.allHoursAccessTokenValidTill);
+    
+    // Validate the parsed date
+    if (!tokenExpiryDate.isValid()) {
+        console.warn('Invalid All Hours token expiry date, forcing refresh');
+        return _this.refreshAccessToken().then(
+            function () {
+                return new Promise(promiseFunction);
+            }
+        );
+    }
+    
+    let allHoursTokenIsExpired = moment().isAfter(tokenExpiryDate.add(-treshold, 'seconds'));
+    
+    if (allHoursTokenIsExpired) {
+        return _this.refreshAccessToken().then(
+            function () {
+                return new Promise(promiseFunction);
+            }
+        );
+    } else {
+        return new Promise(promiseFunction);
+    }
+}
 
 
 };
