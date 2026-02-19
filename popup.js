@@ -1249,6 +1249,10 @@ function popup() {
             return;
         }
 
+        if (!_this.myHoursLogs || _this.myHoursLogs.length == 0) {
+            return;
+        }
+
         const segments = _this.allHoursSegments
             .filter(segment => segment.Type === 4)
             .map(segment => {

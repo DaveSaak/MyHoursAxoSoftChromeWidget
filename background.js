@@ -65,7 +65,7 @@ chrome.webRequest.onCompleted.addListener(
 chrome.webRequest.onCompleted.addListener(
     (details) => {
         const parsedUrl = new URL(details.url);
-        if (details.method === "GET" && parsedUrl.pathname.includes("/api/logs")) {
+        if (details.tabId != -1 && details.method === "GET" && parsedUrl.pathname.includes("/api/logs")) {
             console.log('sending message to cointent script', parsedUrl);
             chrome.tabs.sendMessage(details.tabId, { type: 'mh-logs-fetched', date: parsedUrl.searchParams.get('date') });
         }
@@ -113,12 +113,12 @@ chrome.runtime.onInstalled.addListener(() => {
                 });
             }
 
-            chrome.contextMenus.create({
-                id: "copyBranchNameToClipboard",
-                title: "Copy branch name to clipboard",
-                contexts: ["selection"],
-                documentUrlPatterns: ["https://dev.azure.com/*"]
-            }); 
+            // chrome.contextMenus.create({
+            //     id: "copyBranchNameToClipboard",
+            //     title: "Copy branch name to clipboard",
+            //     contexts: ["selection"],
+            //     documentUrlPatterns: ["https://dev.azure.com/*"]
+            // }); 
      
 
             // if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
