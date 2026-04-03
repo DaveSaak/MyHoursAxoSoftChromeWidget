@@ -352,6 +352,8 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
                     let logStarted = false;
 
                     for (const taskList of taskLists) {
+                        if (!taskList.incompletedTasks) continue;
+
                         const projectTask = taskList.incompletedTasks.find(x => x.name.startsWith(text + ' '));
                         if (projectTask) {
                             projectTaskFound = true;
@@ -583,12 +585,14 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
         let projectsTaskLists = [];
         const responses = await Promise.all(projectTaskListPromises);
         responses.forEach((response, index) => {
-            projectsTaskLists.push(
-                {
-                    ...(response[0]), 
+            response.forEach(item => {
+                if (!item.incompletedTasks) return;
+                projectsTaskLists.push({
+                    ...item,
                     projectId: projects[index].id,
-                    projectName: projects[index].name}
-            );
+                    projectName: projects[index].name
+                });
+            });
         });
 
         return projectsTaskLists;        
