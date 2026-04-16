@@ -88,50 +88,19 @@
 </head>
 
 <body
-    class="narrow"
+    class="narrow d-flex flex-row"
     style="font-family: 'Inter script=latin rev=2', 'Nunito Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"
 >
 
-    <div
-        id='loginContainer'
-        style="display: none"
-    >
-        <div class="m-5 d-flex flex-column align-self-center">
-
-            <h3 class="mb-4 text-uppercase text-center">Login to My Hours</h3>
-            <div class="field">
-                <input
-                    class="input "
-                    type="email"
-                    placeholder="email"
-                    id='email'
-                >
-            </div>
-            <div class="field">
-                <input
-                    class="input "
-                    type="password"
-                    placeholder="Password"
-                    id='password'
-                >
-            </div>
-            <button
-                id='loginButton'
-                class="btn btn-toggle btn-darkX shadowX my-2"
-            >Login</button>
-        </div>
-    </div>
-
-
     <ul
-        class="nav nav-pills py-1 px-3 mb-3x"
+        class="nav nav-pills pt-4 pl-2 pr-3 d-flex flex-column main-nav"
         id="pills-tab"
         role="tablist"
     >
-        <li class="nav-item d-flex align-items-center">
+        <!-- <li class="nav-item d-flex align-items-center">
 
             <a
-                class="nav-link px-1"
+                class="nav-link px-1 w-100"
                 id="pills-dashboard-tab"
                 data-toggle="pill"
                 href="#pills-dashboard"
@@ -150,13 +119,13 @@
                     >
                         <path
                             d="M704 352C704 282.379 683.354 214.321 644.674 156.434C605.993 98.5467 551.015 53.43 486.692 26.7895C422.37 0.149035 351.592 -6.81867 283.309 6.76759C215.026 20.3538 152.306 53.8838 103.08 103.117C53.8539 152.351 20.3334 215.076 6.75732 283.361C-6.81873 351.645 0.159554 422.422 26.8097 486.741C53.4598 551.06 98.5847 606.031 156.478 644.703C214.371 683.375 282.431 704.01 352.053 704C398.277 704.007 444.051 694.907 486.758 677.219C529.464 659.531 568.268 633.602 600.951 600.914C633.634 568.226 659.557 529.418 677.239 486.709C694.92 443.999 704.014 398.225 704 352ZM352.053 78.55C375.484 78.5461 398.821 81.5361 421.495 87.4473L378.587 188.478C307.776 162.154 238.808 147.097 181.37 145.833H172.736C222.371 102.401 286.099 78.4893 352.053 78.55ZM352.053 625.45C328.458 625.518 304.954 622.51 282.137 616.5L313.725 542.057C301.617 537.564 289.473 532.738 277.294 527.579C265.079 522.314 253.128 517.049 241.493 511.416L209.905 585.754C171.874 562.556 140.068 530.441 117.236 492.19C94.4039 453.938 81.2342 410.7 78.8658 366.215L85.0782 372.585C132.935 419.968 205.167 465.56 288.56 500.939C371.953 536.318 454.978 556.693 522.314 558.167H531.633C481.975 601.735 418.113 625.662 352.053 625.45ZM445.081 304.302C493.253 329.783 534.055 358.37 563.326 387.379C596.968 420.757 607.34 447.765 602.707 458.663C598.074 469.561 571.434 480.881 524.052 479.722C466.455 478.459 393.749 460.401 319.306 428.76C244.863 397.119 181.317 357.475 140.305 316.884C106.664 283.453 96.3447 256.498 100.978 245.6C105.611 234.702 132.145 223.383 179.58 224.541C227.015 225.699 286.349 238.44 348.052 261.026L294.878 386.273C294.707 386.5 294.565 386.748 294.457 387.011C306.039 392.591 317.99 398.066 330.204 403.279C342.418 408.491 354.632 413.229 366.741 417.704L420.178 291.35L450.872 219.013L493.885 118.088C512.655 129.494 529.993 143.103 545.532 158.627C593.485 206.39 621.874 270.34 625.134 337.943C623.028 335.732 620.87 333.574 618.606 331.257C582.859 295.825 533.423 261.394 475.827 231.49L445.081 304.302Z"
-                            fill="white"
+                            fill="#2589BF"
                         />
                     </svg>
                 </div>
             </a>
 
-        </li>
+        </li> -->
 
         <li class="nav-item d-flex align-items-center">
             <a
@@ -167,7 +136,7 @@
                 role="tab"
                 aria-controls="pills-home"
                 aria-selected="true"
-            >Time</a>
+            ><i class="fa-solid fa-fw fa-lightbulb"></i> Time</a>
         </li>
         <li
             id="nav-ratio"
@@ -195,7 +164,7 @@
                 role="tab"
                 aria-controls="pills-balance"
                 aria-selected="false"
-            >Balance</a>
+            ><i class="fa-solid fa-fw fa-arrow-trend-up"></i> Balance</a>
         </li>
         <li
             id="nav-recent-items"
@@ -209,7 +178,7 @@
                 role="tab"
                 aria-controls="pills-axo"
                 aria-selected="false"
-            >Recent</a>
+            ><i class="fa-solid fa-fw fa-meteor"></i> Recent</a>
         </li>
 
         <li class="nav-item d-flex align-items-center">
@@ -221,7 +190,7 @@
                 role="tab"
                 aria-controls="pills-worklogtypes"
                 aria-selected="false"
-            >Work types</a>
+            ><i class="fa-solid fa-fw fa-bucket"></i> Activities</a>
         </li>
 
         <li class="nav-item d-flex align-items-center">
@@ -233,10 +202,10 @@
                 role="tab"
                 aria-controls="pills-pull-requests"
                 aria-selected="false"
-            >PRs</a>
+            ><i class="fa-solid fa-fw fa-code-branch"></i> PRs</a>
         </li>        
 
-        <li
+        <!-- <li
             id="nav-calendar"
             class="nav-item d-flex align-items-center"
         >
@@ -248,10 +217,10 @@
                 role="tab"
                 aria-controls="pills-calendar"
                 aria-selected="false"
-            >Calendar</a>
-        </li>
+            ><i class="fa-solid fa-fw fa-calendar"></i> Calendar</a>
+        </li> -->
 
-        <li
+        <!-- <li
             id="nav-devops"
             class="nav-item d-flex align-items-center"
         >
@@ -264,47 +233,22 @@
                 aria-controls="pills-devops-assignments"
                 aria-selected="false"
             >My items</a>
-        </li>
+        </li> -->
 
-        <li class="nav-item d-flex align-items-center ml-auto mr-1">   
-            <!-- <a
-                id='trackDistraction'
-                class="nav-link px-2"
-                title="Track distraction"
-            >
-                <i class="fa-solid fa-bomb fa-fw"></i>
-            </a> -->
-
-
-            <a
-                id='fillGapsButton'
-                class="nav-link px-2"
-                title="Fill gaps"
-            >
-                <i class="fa-solid fa-fill-drip fa-fw"></i>
-            </a>
-        </li>
-
-
-        <li class="nav-item d-flex align-items-center ">
+        <li class="nav-item d-flex align-items-center mt-auto ml-3">
             <a
                 id='optionsButton'
-                class="nav-link"
-                id="pills-settings-tab"
-                data-toggle="pill"
-                href="#pills-settings"
-                role="tab"
-                aria-controls="pills-settings"
-                aria-selected="false"
+
             >
                 <!-- Settings -->
-                <i class="fa-solid fa-gear"></i>
+                Settings
             </a>
         </li>
 
     </ul>
+
     <div
-        class="tab-content"
+        class="tab-content main-container"
         id="pills-tabContent"
     >
         <div
@@ -315,7 +259,7 @@
         >
             <div
                 id='mainContainer'
-                class="mx-3a mb-3a"
+                class="d-flex flex-column h-100"
             >
                 <div class="headerBar mx-3">
                     <div class="statistics-sm all-hours">
@@ -348,7 +292,7 @@
                         <button
                             id="today"
                             class="btn btn-light"
-                            style='width:150px'
+                            style='width:120px'
                         >
                             <span
                                 id='current-date'
@@ -384,6 +328,14 @@
                         >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
+
+                        <button
+                            id='fillGapsButton'
+                            class="btn btn-light"
+                            title="Fill gaps"
+                        >
+                            <i class="fa-solid fa-fill-drip fa-fw"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -416,85 +368,33 @@
                     </div>
                 </div>
 
-                <div class="mt-3 mx-3">
-                    <div class="hero-footQ my-2">
-                        <div
-                            id="topContainer"
-                            class="container is-fluid customScroller p-0"
-                            style="margin-left:0px;margin-right:0px; max-width: 780px;"
-                        >
-                            <div id='timelineContainer'>
-                                <div id='timeline'>
-                                </div>
+                <!-- <div class="mt-3 mx-3"> -->
+                    <div
+                        id="topContainer"
+                        style="position: relative; width:600px"
+                        class="customScroller p-0 my-auto mt-3 mx-3"
+                    >
+                        <div id='timelineContainer'>
+                            <div id='timeline'>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- <div class="headerBar mx-3">
-                    <button
-                        id='copyCommitMessagesButton'
-                        class="mr-2 btn btn-secondary"
-                        type="button"
-                        hint="Update DevOps Effort for all items"
-                    >
-                        <i class="fa-solid fa-code-merge"></i>
-                        Copy commit messages
-                    </button>                    
-
-                    <button
-                        id='openAllHoursTimeline'
-                        class="ml-1 btn btn-light"
-                        type="button"
-                        title="Open All Hours Timeline"
-                    >
-                        Open All Hours
-                    </button>    
-                    
-                    <button
-                        id='openMyHoursTracking'
-                        class="ml-1 btn btn-light"
-                        type="button"
-                        title="Open My Hours Tracking"
-                    >
-                        Open My Hours
-                    </button>    
-                    
-                    <button
-                        id='fillGapsButton'
-                        class="ml-auto btn btn-light"
-                        type="button"
-                        title="Fill gaps"
-                    >
-                        <i class="fa-solid fa-fill-drip"></i>
-                        Fill gaps
-                    </button>  
-
-                    <button
-                        id='startLunchBreakButton'
-                        class="ml-1 btn btn-light"
-                        type="button"
-                        title="start lunch"
-                    >
-                        <i class="fa-solid fa-coffee"></i>
-                        Start lunch
-                    </button>                      
-                </div> -->
+                <!-- </div> -->
 
                 <div class="mx-3 kaboom-toolbar"></div>
 
-                <section
-                    class="customScroller mt-3 mr-2 mb-2"
-                    style="overflow: auto; max-height: 350px;"
-                >
+                <!-- <section
+                    class="customScroller mt-1 pt-1 mr-1 ml-1 pb-1 mb-1"
+                    style="overflow: auto; background-color: rgb(250, 250, 250);"
+                > -->
                     <div
-                        class=""
+                        class="customScroller mt-2 main-content"
                         id="logsContainer"
                     >
                         <div id='logs'>
                         </div>
                     </div>
-                </section>
+                <!-- </section> -->
             </div>
 
         </div>
@@ -507,7 +407,8 @@
         >
             <div
                 id="ratioContainer"
-                class="mx-3 mb-3"
+                class="d-flex flex-column"
+                
             >
                 <div class="headerBar">
                     <div class="statistics-sm">
@@ -552,7 +453,7 @@
         >
             <div
                 id="balanceContainer"
-                class="mx-3 mb-3"
+                class="d-flex flex-column"
             >
                 <div class="headerBar">
                     <div class="statistics-sm">
@@ -659,7 +560,7 @@
                     <canvas
                         id="recentItemsChart"
                         width="600"
-                        height="360"
+                        height="480"
                     ></canvas>
                 </div>
 
@@ -739,8 +640,8 @@
                     <div class="m-4">
                         <canvas
                             id="worklogTypeChart"
-                            width="500"
-                            height="400"
+                            width="400"
+                            height="450"
                         ></canvas>
                     </div>
                 </div>

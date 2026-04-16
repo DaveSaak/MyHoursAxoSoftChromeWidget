@@ -68,8 +68,8 @@ function popup() {
 
     _this.options.load().then(
         function () {
-            console.info('options loaded');
-            console.log(_this.options);
+            // console.info('options loaded');
+            // console.log(_this.options);
 
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser, _this.options.platforms.myHours.apiUri, _this.options.platforms.myHours.pat);
@@ -326,7 +326,8 @@ function popup() {
                         "fill the gap",
                         _this.options.platforms.myHours.defaultProjectId,
                         _this.options.platforms.myHours.defaultTaskId,
-                        _this.options.platforms.myHours.defaultTagIds
+                        undefined
+                        // _this.options.platforms.myHours.defaultTagIds
                     )
                         .then(
                             function (data) {
@@ -350,43 +351,12 @@ function popup() {
         });
 
 
-
-
-        document.onkeyup = function (event) {
-            // if (event.keyCode === 37) {
-            //     setCurrentDate(_this.currentDate.clone().add(-1, 'days'));
-            //     // _this.currentDate = _this.currentDate.add(-1, 'days');
-            //     getLogs();
-            // }
-            // else if (event.keyCode === 39) {
-            //     setCurrentDate(_this.currentDate.clone().add(1, 'days'));
-            //     // _this.currentDate = _this.currentDate.add(1, 'days');
-            //     getLogs();
-            // }
-            // else if (event.keyCode === 32) {
-            //     if (!event.ctrlKey) {
-            //         getLogsForToday();
-            //     }
-            //     else {
-            //         getLogs();
-            //     }
-            // }
-            // else if (event.keyCode === 32) {
-            //     getLogsForToday();
-            // }            
-        };
-
-        // chrome.storage.sync.get({
-        //     'ui-date-value': date.toISOString(),
-        //     'ui-date-timestamp': new Date().toISOString()
-        // });
-
         chrome.storage.sync.get([
             'uiDateValue',
             'uiDateTimestamp',
         ], function (uiDateOptions) {
-            console.log(uiDateOptions.uiDateValue);
-            console.log(uiDateOptions.uiDateTimestamp);
+            // console.log(uiDateOptions.uiDateValue);
+            // console.log(uiDateOptions.uiDateTimestamp);
 
             const dateSaved = moment(uiDateOptions.uiDateTimestamp);
             if (dateSaved.isSame(moment(), 'day') && uiDateOptions.uiDateValue) {
@@ -414,19 +384,6 @@ function popup() {
         _this.getProjectTracks();
     }
 
-    // function showLoginPage() {
-    //     $('body').addClass('narrow');
-    //     $('body').removeClass('wide');
-
-    //     $('#loginContainer').show();
-
-    //     if (_this.currentUser.email != undefined) {
-    //         $('input#email').val(_this.currentUser.email);
-    //     }
-
-    //     $('#password').focus();
-
-    // }
 
     function showOptionsPage() {
         chrome.runtime.openOptionsPage();
@@ -502,7 +459,7 @@ function popup() {
                 tick.css({
                     left: timeToPixel(moment(), _this.timeLineWidth) + 'px',
                 });
-                console.log('tick');
+                // console.log('tick');
             }, 60 * 1000);
         }
     }
@@ -577,18 +534,6 @@ function popup() {
 
                     }
                 }
-
-                // GET TIMES
-                // promises.push(new Promise(function (resolve, reject) {
-                //     _this.myHoursApi.getTimes(log.id).then(times => {
-                //         log.times = times;
-                //         resolve();
-                //     })
-                //         .catch((error) => {
-                //             console.error('Error fetching MY HOURS times:', error);
-                //             reject();
-                //         });
-                // }));
             });
 
         })
@@ -599,7 +544,10 @@ function popup() {
 
         await Promise.all(promises);
         await Promise.all(parentItemPromises);
-        // console.log(_this.myHoursLogs);
+
+        const uniqueProjectIds = [...new Set(_this.myHoursLogs.map(log => log.projectId))];
+        const taskListsByProject = [];
+
 
 
         // now we can show the data on the screen
@@ -616,6 +564,9 @@ function popup() {
         var totalMinsWithTag = 0;
         _this.myHoursLogs?.forEach(log => {
 
+            const taskInfo = undefined; //findTaskInProjectTaskLists(taskListsByProject, log.projectId, log.taskId);
+            console.log('taskInfo', taskInfo);
+
             if (log.projectId == _this.options.platforms.myHours.generalProjectId) {
                 log.color = '#bbc9f3';
                 if (log.projectId == _this.options.platforms.myHours.generalProjectId && log.taskId == _this.myHoursLunchProjectTaskId) {
@@ -628,23 +579,19 @@ function popup() {
                     log.icon = "fas fa-crown";
                 }
             } else if (!log.devOpsItemId) {
-                log.icon = "fas fa-skull";
+                log.icon = "fas fa-crown";
                 log.color = "coral";
             }
 
 
             totalMins = totalMins + (log.duration / 60);
-            if (log.tags?.length > 0) {
-                totalMinsWithTag = totalMinsWithTag + (log.duration / 60);
-            }
+            totalMinsWithTag = totalMinsWithTag + (log.duration / 60);
+            
 
             var logContainer = $('<div>')
                 .attr("data-logId", log.id)
                 .attr("data-taskId", log.taskId)
                 .addClass("logContainer  align-items-center drag-container");
-            if (log.tags?.length == 0) {
-                logContainer.addClass('no-tags');
-            }
 
             logContainer.mouseenter(function () {
                 $('#timeline .timeline-log[data-logId="' + log.id + '"]').toggleClass("active", true);
@@ -667,26 +614,15 @@ function popup() {
             //TAGS 
             var tagsCell = $('<div>').addClass('log-tags');
             logContainerGrid.append(tagsCell);
+            const projectName = log.clientName + ' / ' + log.projectName;  //log.devOpsItem.parents[0].fields['System.TeamProject'];
+            let parentInfo = $("<div class='log-sub-title'>").append($("<span>").text(`${projectName}`))
+            tagsCell.append(parentInfo);
 
-            // var tagsCell = $('<div>').addClass('log-tags');
-            // logContainerGrid.append(tagsCell);
-            // var worklogTypeInfo = $('<div>').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
-            // tagsCell.append(worklogTypeInfo);            
-
-
-            // EFFORT
-            // var effortCell = $('<div class="tags">').addClass('log-effort');
-            // logContainerGrid.append(effortCell);
-            // var worklogTypeInfo = $('<div>')
-            //     .text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : '-not set: worklog type-');
-            // effortCell.append(worklogTypeInfo);            
-
+          
 
             // TITLE
             var logTitle = $('<div>').addClass('log-title text-truncate');
             const devOpsItemState = log.devOpsItem?.fields['System.State'];
-            // logTitle.append('<i class="fas fa-skull" aria-hidden="true"></i>');
-            // logTitle.append('<span>').text(`${log.taskName ?? '-not set: task-'}`);
 
 
             if (log.icon) {
@@ -703,36 +639,21 @@ function popup() {
             }
 
             logTitle.append($('<span>').text(`${log.taskName ?? '-not set: task-'}`));
-
-            log.devOpsItem?.parents[0]?.fields['System.Tags']?.split(',').forEach(tag => {
-                logTitle.append($('<span class="badge badge-secondary ml-2">').text(`${tag}`));
-            })
-
             logContainerGrid.append(logTitle);
 
-            var worklogTypeInfo = $('<div class="tags">').text(log.tags?.length > 0 ? log.tags.map(x => x.name).join(', ') : 'worklog type not set');
-            if (log.tags?.length == 0) {
-                worklogTypeInfo.addClass('no-tags');
-            }
-            logTitle.append(worklogTypeInfo);
+
 
 
             // COMMENT
             var logComment = $('<div>').addClass('log-comment');
             if (log.note || true) {
-                // logComment.append($('<div>').text('Log comment'));
 
                 const editCommentContainer = $('<div>').addClass('edit-comment-container').hide();
                 const editTextArea = $('<textarea rows="4">').addClass('edit-comment form-control mb-1').text(log.note);
-                // editTextArea.keydown(function(e) {
-                //     if (e.ctrlKey && e.keyCode === 13) {
-                //         //save 
-                //     }
-                // });
 
                 editCommentContainer.append(editTextArea);
                 let saveCommentButton = $('<button>')
-                    .addClass("btn btn-transparent mr-1")
+                    .addClass("btn btn-transparent")
                     .attr("title", "Save")
                     .append('<i class="fa-solid fa-save mr-1"></i> Save')
                     .click(function (event) {
@@ -775,31 +696,8 @@ function popup() {
                 });
                 const readOnlyComment = $('<span>').addClass('read-only-comment').text(log.note);
                 readOnlyCommentContainer.append(readOnlyComment);
-                // let editCommentButton = $('<button>')
-                //     .addClass("btn btn-transparent btn-sm ml-1 text-gray edit-comment-button")
-                //     .attr("title", "Edit comment")
-                //     .append('<i class="fa-solid fa-pencil"></i>')
-                //     .click(function (event) {
-                //         event.preventDefault();
-                //         logContainer.addClass('edit-mode shadow');
-                //         editTextArea.val(log.note);
-                //         readOnlyCommentContainer.hide();
-                //         editCommentContainer.show();
-                //     });
-                // readOnlyCommentContainer.append(editCommentButton);
 
                 logComment.append(readOnlyCommentContainer);
-
-
-
-
-                
-
-                // readOnlyComment.ondblclick = function () {
-                //     editTextArea.show();
-                //     readOnlyComment.hide();
-                
-                // }
 
             }
             logContainerGrid.append(logComment);
@@ -827,51 +725,15 @@ function popup() {
                 columnTime.append(durationInfo);
             }
 
-            // if (log.duration != null) {
-            //     var durationInfo = $('<i class="fas fa-circle-notch fa-spin"></i>');
-            //     if (!log.running) {
-            //         var duration = minutesToString(log.duration / 60);
-            //         durationInfo = $('<span>').text(duration);
-            //         durationInfo.append($('<span class="small"> h</span>'));
-            //     }
-            //     columnTime.append(durationInfo);
-
-            //     if (log.times?.length > 0) {
-            //         const timesInfo = $('<small style="font-size:0.75rem">').addClass('times-info');
-            //         timesInfo.text(intervalToString(log.times[0].startTime, log.times[0].endTime));
-            //         columnTime.append(timesInfo);
-
-            //     }
-            // };
-
-
-
-
-            // // EFFORT
-            // var effortCell = $('<div>').addClass('log-effort');
-            // logContainerGrid.append(effortCell);
-
             // ACTIONS COLUMN
             var columnActions = $('<div>').addClass('log-actions');
             logContainer.append(columnActions);
 
 
-            // let editCommentButton = $('<button>')
-            //     .addClass("btn btn-transparent mr-1")
-            //     .attr("title", "Edit comment")
-            //     .append('<i class="fa-solid fa-pencil"></i>')
-            //     .click(function (event) {
-            //         event.preventDefault();
-                    
-            //         $('.logContainer[data-logId="' + log.id + '"] .edit-comment').show();
-            //         $('.logContainer[data-logId="' + log.id + '"] .read-only-comment').hide();
-
-            //     });
-
             let editCommentButton = $('<button>')
-                .addClass("btn btn-transparent btn-sm ml-1")
+                .addClass("btn btn-transparent btn-sm")
                 .attr("title", "Edit comment")
-                .append('<i class="fa-solid fa-pencil"></i>')
+                .append('<i class="fa-solid fa-pencil fa-fw"></i>')
                 .click(function (event) {
                     event.preventDefault();
                     logContainer.addClass('edit-mode shadow');
@@ -886,18 +748,15 @@ function popup() {
 
 
             let startTrackingTimeShortcut = $('<button>')
-                .addClass("btn btn-transparent mr-1")
+                .addClass("btn btn-transparent")
                 .attr("title", "Start tracking time")
-                .append($('<i class="fa-regular fa-circle-play">'))
+                .append($('<i class="fa-regular fa-circle-play fa-fw">'))
                 .click(function (event) {
                     event.preventDefault();
                     _this.myHoursApi.startFromExisting(log.id).then(
                         function (x) {
                             console.info(x);
                             refreshToday();
-
-                            // console.info('worklog started');
-                            // getLogsForToday();
                         }
                     )
                         .catch(
@@ -908,18 +767,18 @@ function popup() {
                 });
 
             let copyCommitMessagesButton = $('<button>')
-                .addClass("btn btn-transparent mr-1")
+                .addClass("btn btn-transparent")
                 .attr("title", "Copy commit message to description")
-                .append('<i class="fa-solid fa-code-merge"></i>')
+                .append('<i class="fa-solid fa-code-merge fa-fw"></i>')
                 .click(function (event) {
                     event.preventDefault();
                     copyCommitMessage(log, true);
                 });
 
             let openDevOpsItemButton = $('<button>')
-                .addClass("btn btn-transparent mr-1")
+                .addClass("btn btn-transparent")
                 .attr("title", "Open item in DevOps portal")
-                .append($('<i class="fa-solid fa-arrow-up-right-from-square"></i>'))
+                .append($('<i class="fa-solid fa-arrow-up-right-from-square fa-fw"></i>'))
                 .click(function (event) {
                     event.preventDefault();
                     _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
@@ -929,9 +788,9 @@ function popup() {
                 });
 
             let copyWorklogButton = $('<button>')
-                .addClass("btn btn-transparent mr-1")
+                .addClass("btn btn-transparent")
                 .attr("title", "Update DevOps Effort")
-                .append($('<i class="fa-solid fa-upload"></i>'))
+                .append($('<i class="fa-solid fa-upload fa-fw"></i>'))
                 .click(function (event) {
                     event.preventDefault();
                     let logDurationInHours = log.duration / 60 / 60;
@@ -939,9 +798,9 @@ function popup() {
                 });
 
             let stopRunningLogButton = $('<button>')
-                .addClass("btn btn-transparent mr-1")
+                .addClass("btn btn-transparent")
                 .attr("title", "Stop running log")
-                .append($('<i class="fa-solid fa-stop"></i>'))
+                .append($('<i class="fa-solid fa-stop fa-fw"></i>'))
                 .click(function (event) {
                     event.preventDefault();
                     _this.myHoursApi.stopTimer().then(
@@ -969,9 +828,7 @@ function popup() {
             columnActions.append(buttons);
 
             if (log.devOpsItem) {
-                // log.color = _this.axoItemColors[numberToIndex(log.devOpsItemId, 8)];
                 log.color = _this.axoItemColors[numberToIndex(log.taskId, 8)];
-
 
                 var remainingMins = (log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60;
                 // logTitle.append($('<div style="font-size:0.85rem; font-weight:500">')
@@ -981,29 +838,19 @@ function popup() {
 
                 let remainingInfo = $('<div class="effort-info d-flex align-items-center mt-2" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem; font-style:normal">');
                 logComment.append(remainingInfo);
-                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString(remainingMins)}`));
-                remainingInfo.append($('<div>').text(`h`));
-                remainingInfo.append($('<div>').addClass('ml-1').text(`remaining`));
 
-                // if (log.devOpsItemUpdates?.count > 0) {
-                //     const effortUpdates = log.devOpsItemUpdates.value
-                //         .filter(x => x.fields && x.fields['Microsoft.VSTS.Scheduling.RemainingWork'])
-                //         .sort((a, b) => b.rev - a.rev);
 
-                //     if (effortUpdates.length > 0) {
-                //         const lastEffortUpdate = effortUpdates[0];
-                //         if (lastEffortUpdate.revisedBy._links?.avatar?.href) {
-                //             remainingInfo.append($('<img src="' + lastEffortUpdate.revisedBy._links.avatar.href + '" style="border-radius: 100%;width: 13px; padding-bottom: 2px" class="ml-1">'));
-                //         }
-                //         remainingInfo.append($('<div class="ml-1">').text(`${lastEffortUpdate.revisedBy.displayName}`));
-                //         remainingInfo.append($('<div class="ml-1">').text(` ${moment(lastEffortUpdate.fields['System.ChangedDate']?.newValue).fromNow()}`));
-                //     }
-                // }
+                let fontWeight = remainingMins < 30 ? '600' : '500';
+                let fontColor = remainingMins < 30 ? '#f20d4e' : 'black';
+
+                remainingInfo.append($(`<div class="ml-1" style="font-weight:${fontWeight}; color:${fontColor}">`).text(`${minutesToString(remainingMins)}h remaining`));
                 remainingInfo.append($('<div>').addClass("mx-2").text('|'));
-                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h completed`));
 
-                remainingInfo.append($('<div>').addClass("mx-2").text('|'));
-                remainingInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h estimated`));
+                remainingInfo.append($('<div class="ml-1x" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}`));
+
+                remainingInfo.append($('<div>').addClass("mx-1").text('/'));
+                remainingInfo.append($('<div class="ml-1x" style="font-weight:500">').text(`${minutesToString((log.devOpsItem?.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)} done`));
+
 
 
                 if (log.devOpsItemUpdates?.count > 0) {
@@ -1031,34 +878,6 @@ function popup() {
 
                     }
                 }
-
-                if (log.devOpsItem.parents?.length > 0) {
-                    const parentName = log.devOpsItem.parents[0].fields['System.Title'];
-                    const projectName = log.devOpsItem.parents[0].fields['System.TeamProject'];
-                    // const state = log.devOpsItem.fields['System.State'];
-
-                    let parentInfo = $("<div class='log-sub-title'>")
-                        .append($("<span>")
-                            .text(`${projectName}`))
-                        .append($("<span>")
-                            .text(` - `))
-                        .append($("<span>")
-                            // .addClass('ml-2')
-                            .text(`${parentName}`))
-                    // .append($("<span>")
-                    //     .addClass('badge')
-                    //     .addClass(state === "Closed" ? 'badge-success' : state === "Active" ? 'badge-primary' : state === "Resolved" ? 'badge-warning' : 'badge-secondary')
-                    //     .text(`${state}`));
-
-                    tagsCell.append(parentInfo);
-
-                    // tagsCell.append($('<div class="log-sub-title">').text(`${projectName} - ${parentName}`));
-
-                }
-
-
-
-
             } else {
                 openDevOpsItemButton.hide();
                 copyWorklogButton.hide();
@@ -1087,11 +906,6 @@ function popup() {
                 barGraph.attr("data-logId", log.id);
                 barGraph.attr("data-logid", log.id);
                 barGraph.prop('title', title);
-
-                if (log.tags?.length == 0) {
-                    barGraph.addClass('no-tags');
-                }
-
 
                 if (log.icon) {
                     barGraph.append(`<i class="${log.icon} ml-2" aria-hidden="true"></i>`);
@@ -1210,10 +1024,10 @@ function popup() {
         $('.date').text(_this.currentDate.startOf('day').calendar(today, {
             sameDay: '[Today]',
             nextDay: '[Tomorrow]',
-            nextWeek: 'dddd, DD.',
+            nextWeek: 'ddd, DD.',
             lastDay: '[Yesterday]',
-            lastWeek: 'dddd, DD.',
-            sameElse: 'dddd, DD.MMM'
+            lastWeek: 'ddd, DD.',
+            sameElse: 'ddd, DD.MMM'
         }));
 
         $('#ahAttendance').text(_this.noTimeDataText);
@@ -1316,7 +1130,7 @@ function popup() {
 
         _this.gaps = leftOvers.filter(leftOver => leftOver.end - leftOver.start > _this.options.platforms.myHours.fillGaps.minLength * 60 * 1000);
 
-        console.log('gaps', _this.gaps);
+        // console.log('gaps', _this.gaps);
 
         if (_this.gaps.length > 0) {
             $('#fillGapsButton').prop('disabled', false);//addClass('btn-primary');
@@ -1350,15 +1164,14 @@ function popup() {
     function getActionsDropDown(data) {
         let buttonGroup = $('<div>').addClass('btn-group ml-auto');
         buttonGroup.append($('<button type="button" class="btn btn-transparent dropdown-toggleX" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">')
-            .append($('<i class="fa-solid fa-ellipsis-vertical"></i>'))
-            //.text('Actions')
+            .append($('<i class="fa-solid fa-fw fa-ellipsis-vertical"></i>'))
         );
 
         let dropdownMenu = $('<div>').addClass('dropdown-menu');
 
 
         let startTrackingTime = $('<a class="dropdown-item" href="#">');
-        startTrackingTime.append('<i class="fa-regular fa-circle-play"></i> <span class="ml-1">Start tracing time</span>')
+        startTrackingTime.append('<i class="fa-regular fa-fw fa-circle-play"></i> <span class="ml-1">Start tracing time</span>')
             .click(function (event) {
                 event.preventDefault();
                 _this.myHoursApi.startFromExisting(data.id).then(
@@ -1375,23 +1188,23 @@ function popup() {
             });
         dropdownMenu.append(startTrackingTime);
 
-        if (true) {
-            dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="fa-solid fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
-                .click(function (event) {
-                    event.preventDefault();
-                    copyCommitMessage(data, true);
-                }));
-        }
-
+        
         if (data.projectId) {
             dropdownMenu.append($('<a class="dropdown-item" href="#">')
-                .append('<i class="fa-solid fa-arrow-up-right-from-square"></i><span class="ml-1">Open My Hours project</span>')
+                .append('<i class="fa-solid fa-fw fa-arrow-up-right-from-square"></i><span class="ml-1">Open My Hours project</span>')
                 .click(function (event) {
                     event.preventDefault();
                     window.open(`https://app.myhours.com/#/projects/${data.projectId}/overview`, '_blank');
                 }));
         }
+
+
+        dropdownMenu.append($('<a class="dropdown-item" href="#">')
+            .append('<i class="fa-solid fa-fw fa-code-merge"></i><span class="ml-1">Copy commit message to description</span>')
+            .click(function (event) {
+                event.preventDefault();
+                copyCommitMessage(data, true);
+            }));
 
 
 
@@ -1438,57 +1251,55 @@ function popup() {
         return buttons;
     }
 
-    function getTimes(data, timeline) {
-        _this.myHoursApi.getTimes(data.id).then(
-            function (times) {
-                data.times = times;
-                $.each(times, function (index, time) {
-                    var left = timeToPixel(time.startTime, _this.timeLineWidth);
-                    var right = timeToPixel(time.endTime, _this.timeLineWidth);
-                    //var timePeriod = intervalToString(time.startTime, time.endTime, time.duration);//minutesToString(time.duration / 60) + "h (" + moment(time.startTime).format('LT') + " - " + moment(time.endTime).format('LT') + ")";
-                    // var title = intervalToString(time.startTime, time.endTime, time.duration) + ' // ' + data.projectName + ' // ' + data.taskName;
-                    var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + data.note;
+    // function getTimes(data, timeline) {
+    //     _this.myHoursApi.getTimes(data.id).then(
+    //         function (times) {
+    //             data.times = times;
+    //             $.each(times, function (index, time) {
+    //                 var left = timeToPixel(time.startTime, _this.timeLineWidth);
+    //                 var right = timeToPixel(time.endTime, _this.timeLineWidth);
+    //                 var title = intervalToString(time.startTime, time.endTime, time.duration) + ' -- ' + data.note;
 
-                    var barGraph = $('<div>');
-                    barGraph.addClass('timelineItem timeline-log');
-                    barGraph.attr("data-logId", data.id);
-                    barGraph.prop('title', title);
+    //                 var barGraph = $('<div>');
+    //                 barGraph.addClass('timelineItem timeline-log');
+    //                 barGraph.attr("data-logId", data.id);
+    //                 barGraph.prop('title', title);
 
-                    if (!data.axoId) {
-                        barGraph.append('<i class="far fa-skull-crossbones ml-2" aria-hidden="true"></i>');
-                    }
+    //                 if (!data.axoId) {
+    //                     barGraph.append('<i class="far fa-skull-crossbones ml-2" aria-hidden="true"></i>');
+    //                 }
 
-                    if (data.running) {
-                        barGraph.css({
-                            left: left + 'px',
-                            width: '20px',
-                            "background-image": '-webkit-gradient(linear, left top, right top, from(' + data.color + '), to(rgba(0, 0, 0, 0)))'
-                        });
-                    }
-                    else {
-                        barGraph.css({
-                            left: left + 'px',
-                            width: right - left + 'px',
-                            "background-color": data.color,
-                        });
-                    }
+    //                 if (data.running) {
+    //                     barGraph.css({
+    //                         left: left + 'px',
+    //                         width: '20px',
+    //                         "background-image": '-webkit-gradient(linear, left top, right top, from(' + data.color + '), to(rgba(0, 0, 0, 0)))'
+    //                     });
+    //                 }
+    //                 else {
+    //                     barGraph.css({
+    //                         left: left + 'px',
+    //                         width: right - left + 'px',
+    //                         "background-color": data.color,
+    //                     });
+    //                 }
 
-                    barGraph.mouseenter(function () {
-                        $('.logContainer[data-logId="' + data.id + '"]')[0].scrollIntoViewIfNeeded();
-                        $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
-                        hiLiteMyHoursLog(data.id);
-                    });
-                    barGraph.mouseleave(function () {
-                        $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
-                        hiLiteMyHoursLog();
-                    });
+    //                 barGraph.mouseenter(function () {
+    //                     $('.logContainer[data-logId="' + data.id + '"]')[0].scrollIntoViewIfNeeded();
+    //                     $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", true);
+    //                     hiLiteMyHoursLog(data.id);
+    //                 });
+    //                 barGraph.mouseleave(function () {
+    //                     $('.logContainer[data-logId="' + data.id + '"]').toggleClass("active", false);
+    //                     hiLiteMyHoursLog();
+    //                 });
 
-                    timeline.append(barGraph);
-                    //barGraph.tooltip();
-                });
-            }
-        );
-    }
+    //                 timeline.append(barGraph);
+    //                 //barGraph.tooltip();
+    //             });
+    //         }
+    //     );
+    // }
 
     function getAllHoursData(fetchLogsId) {
         let currentUserPromise = _this.allHoursApi.getCurrentUserId();
@@ -1510,7 +1321,7 @@ function popup() {
 
 
                         if (_this.currentDate.isSame(moment(), 'day')) {
-                            console.log('it is today');
+                            // console.log('it is today');
 
                             _this.allHoursApi.getCurrentBalance(data).then(
                                 function (data) {
@@ -1854,12 +1665,18 @@ function popup() {
                             let effortInfo = $('<div class="effort-info d-flex align-items-center" style="font-size:0.85rem; font-weight:500; line-height: 1.5rem; font-style:normal">');
                             commentCell.append(effortInfo);
 
-
                             effortInfo.append($('<div class="" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0) * 60)}h remaining`));
                             effortInfo.append($('<div>').addClass("mx-2").text('|'));
-                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h completed`));
-                            effortInfo.append($('<div>').addClass("mx-2").text('|'));
-                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h estimated`));
+                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h `));
+                            effortInfo.append($('<div>').addClass("mx-1").text('/'));
+                            effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h `));
+
+
+                            // effortInfo.append($('<div class="" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.RemainingWork'] ?? 0) * 60)}h remaining`));
+                            // effortInfo.append($('<div>').addClass("mx-2").text('|'));
+                            // effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.CompletedWork'] ?? 0) * 60)}h completed`));
+                            // effortInfo.append($('<div>').addClass("mx-2").text('|'));
+                            // effortInfo.append($('<div class="ml-1" style="font-weight:500">').text(`${minutesToString((devOpsItem.fields['Microsoft.VSTS.Scheduling.OriginalEstimate'] ?? 0) * 60)}h estimated`));
 
                             //actions
                             var actionsCell = $('<div>')
@@ -2169,7 +1986,7 @@ function popup() {
                 e.dataTransfer.setData('application/json', JSON.stringify(dataObj));
 
                 const bgColor = window.getComputedStyle(e.target).backgroundColor;
-                console.log(bgColor);
+                // console.log(bgColor);
                 updateCSSClass("drag-over", { backgroundColor: rgbToHex(bgColor, 0.1) });
 
 

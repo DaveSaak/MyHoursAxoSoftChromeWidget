@@ -328,7 +328,7 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
             // credentials: 'omit' // Omit credentials
         };
 
-        console.log('Starting log with data:', fetchOptions);
+        // console.log('Starting log with data:', fetchOptions);
 
         return fetch(baseUrl + 'logs/startNewLog?localDate=' + encodedLocalDate, fetchOptions)
         .then(response => {
@@ -562,6 +562,14 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
 
     _this.getProjectTaskList = async function(projectId) {
         const url = `${baseUrl}projects/${projectId}/tasklist?localDate=${(new Date()).toISOString}`;
+        const response = await fetch(url, {
+            headers: _this.getAjaxHeaders()
+        });
+        return response.json(); 
+    }
+
+    _this.getTask = async function(taskId) {
+        const url = `${baseUrl}tasks/${taskId}`;
         const response = await fetch(url, {
             headers: _this.getAjaxHeaders()
         });

@@ -26,34 +26,71 @@ function RecentItemsView(myHoursApi, options, viewContainer){
                 let totalWorked = activityLogs.reduce((accumulator, log) => accumulator + log.logDuration / 60, 0);
                 $('.recentItemsTotal').text(minutesToString(totalWorked));
                 
+                // let recentWorkTypes = activityLogs.reduce(function (accumulator, log) {
+                //     if (log.tagsData && log.tagsData.length > 0) {
+                //         log.tagsData.forEach(tag => {
+                //             let key = tag.id;
+                //             if (key in accumulator) {
+                //                 accumulator[key].count = accumulator[key].count + 1;
+                //                 accumulator[key].workDone = accumulator[key].workDone + log.logDuration / 60;
+                //             }
+                //             else {
+                //                 if (_this.workLogTypeIds.find(id => id == tag.id)) {
+                //                     accumulator[key] = {
+                //                         workLogTypeId: tag.id,
+                //                         workLogTypeName: tag.name,
+                //                         count: 1,
+                //                         workDone: log.logDuration / 60,
+                //                     }
+                //                 }
+                //             }
+                //             return accumulator;
+                //         });
+                //     }
+                //     return accumulator;
+                // }, {});
+
+
                 let recentWorkTypes = activityLogs.reduce(function (accumulator, log) {
-                    if (log.tagsData && log.tagsData.length > 0) {
-                        log.tagsData.forEach(tag => {
-                            let key = tag.id;
+                    if (log.taskCustomFieldValues && log.taskCustomFieldValues.length > 0) {
+                        let activity = log.taskCustomFieldValues.find(x => x.id == 'b5b96cdf-68b0-45cc-84a2-92b11398d0c7');
+                        if (activity) {
+                        
+                        
+                            let key = activity.value;
                             if (key in accumulator) {
                                 accumulator[key].count = accumulator[key].count + 1;
                                 accumulator[key].workDone = accumulator[key].workDone + log.logDuration / 60;
                             }
                             else {
-                                if (_this.workLogTypeIds.find(id => id == tag.id)) {
+                                // if (_this.workLogTypeIds.find(id => id == activity.id)) {
                                     accumulator[key] = {
-                                        workLogTypeId: tag.id,
-                                        workLogTypeName: tag.name,
+                                        workLogTypeId: activity.value,
+                                        workLogTypeName: activity.value,
                                         count: 1,
                                         workDone: log.logDuration / 60,
                                     }
-                                }
+                                // }
                             }
                             return accumulator;
-                        });
+                        
+                        }
                     }
                     return accumulator;
                 }, {});
+
+                // console.log(recentWorkTypes);
+
+                // "b5b96cdf-68b0-45cc-84a2-92b11398d0c7"
+// taskCustomFieldValues
+
 
                 recentWorkTypes = Object.entries(recentWorkTypes).map(x => x[1]);
                 recentWorkTypes.map(x => x.workLogTypeName);
                 recentWorkTypes.map(x => x.workDone);
                 console.log(recentWorkTypes);
+
+                
 
                 const totalWorkedWithWorkType = recentWorkTypes.reduce((accumulator, recentWorkLogType) => accumulator + recentWorkLogType.workDone, 0);
                 $('#recentItemsUnassigned').text(minutesToString(totalWorked - totalWorkedWithWorkType));
@@ -63,8 +100,10 @@ function RecentItemsView(myHoursApi, options, viewContainer){
                 let workTypesPercentsBar = $('#worklogTypesSubHeader');
                 workTypesPercentsBar.empty();
 
+                let recentWorkTypesStatistics = [...recentWorkTypes];
+                recentWorkTypesStatistics.sort((a, b) => b.workDone - a.workDone);
                 if (totalWorked > 0) {
-                    recentWorkTypes.forEach(recentWorkType => {
+                    recentWorkTypesStatistics.forEach(recentWorkType => {
                         const percentage = Math.round(recentWorkType.workDone / totalWorked * 100);
                         let statistics = $('<div>').addClass('statistics-xs');
                         statistics.append($('<div>').text(percentage + '%'));

@@ -7,7 +7,7 @@ chrome.webRequest.onCompleted.addListener(function (details) {
             (details.method === "GET" && parsedUrl.pathname === "/api/logs") ||
             (details.method === "PUT" && parsedUrl.pathname === "/api/logs")) {
             chrome.tabs.sendMessage(details.tabId, { type: 'logs-changed' });
-            console.log('background script message sent: logs-changed');
+            // console.log('background script message sent: logs-changed');
         }
     }
 },
@@ -29,7 +29,7 @@ chrome.webRequest.onCompleted.addListener(function (details) {
             parsedUrl.pathname.includes("/OnTime/api/v6/features") &&
             parsedUrl.pathname.includes("template/view")) {
             chrome.tabs.sendMessage(details.tabId, { type: 'axo-item-loaded' });
-            console.log('background script message sent: axo-item-loaded');
+            // console.log('background script message sent: axo-item-loaded');
         }
     }
 },

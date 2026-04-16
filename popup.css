@@ -18,15 +18,66 @@ html {
     height: 599px !important;
 }
 
+body {
+    background-color: #F6F5F4 !important;
+}
+
+.main-nav {
+    flex: 0 0 130px;
+}
+
+.main-container {
+    background-color: #FEFDFC; 
+    border-radius: 0.5rem;
+    /* border-top-left-radius: 1rem; */
+    /* height: calc(100% - 1rem); */
+    /* height: calc(100%); */
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
+    /* padding-bottom: 1 rem; */
+
+    border-color: #dfddde;
+    border-style: solid;
+    border-width: 1px;
+
+    border-bottom: none;
+    border-right: none;
+    border-top: none;
+    padding: 0.75rem;
+
+    box-shadow: -4px -4px 16px #00000017;
+
+    /* margin: 1rem; */
+    
+}
+
+.tab-content {
+    flex: 1 1 auto;
+    flex-direction: column;
+    display: flex;
+}
+
+.tab-pane {
+    height: 100%;
+}
+
+.main-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
 .narrow {
     width: 400px;
 }
 
 .wide {
     /* width: 800px; */
-    width: 760px;
+    width: 800px;
     /* 760px; */
-    background: transparent;
+    /* background: transparent; */
 
     /* background: linear-gradient(-30deg, #cf215bE5, #cf215bE5 45%, #cf215b 45%) #fff; */
 }
@@ -96,7 +147,7 @@ div#logs li .column {
 #topContainer {
     overflow-x: scroll;
     /* overflow-y: hidden; */
-    height: 71px;
+    min-height: 70px;
 }
 
 .customScroller::-webkit-scrollbar {
@@ -152,7 +203,7 @@ div#logs li .column {
 .timeline-tick {
     width: 1px;
     top: 0px;
-    height: 42px;
+    height: 36px;
     position: absolute;
 }
 
@@ -182,7 +233,7 @@ div#logs li .column {
 
 .timeline-time {
     width: 20px;
-    top: 45px;
+    top: 38px;
     height: 20px;
     position: absolute;
     font-size: 10px;
@@ -193,7 +244,7 @@ div#logs li .column {
     top: 4px;
     height: 24px;
     position: absolute;
-    border-radius: 1px;
+    border-radius: 4px;
     opacity: 0.75;
     z-index: 1;
 }
@@ -259,7 +310,7 @@ div#logs li .column {
 }
 
 #timelineContainer {
-    height: 65px;
+    height: 58px;
     width: 1320px;
 }
 
@@ -386,18 +437,18 @@ div#logs div:hover .tag.tag-button {
 div.logContainer {
     border-radius: 0.25rem;
     position: relative;
-    border-color: transparent;
+    /* border-color: transparent; */
 }
 
 div.logContainer.active,
 div.logContainer:hover {
-    /* box-shadow: 0 0 3px 0px #6d8396; */
+    box-shadow: 0 0.3rem 0.45rem rgb(0 0 0 / 20%);
 
-    background-color: #f1f1f19e;
+    background-color: #f1f1f157;
     /* font-weight: 800; */
     /* color: black; */
 
-    /* transform: scale(1.1) translate(17px, 0px); */
+    /* transform: scale(1.01); */
     /* transition: all 0.2s; */
 }
 
@@ -639,11 +690,12 @@ div.logContainer:hover {
     align-items: center;
     flex-wrap: wrap;
     margin-top: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .axoItemName {
     font-weight: 650;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 
 .btn-clock-in {
@@ -663,33 +715,54 @@ div.logContainer:hover {
 }
 
 #pills-tab {
+
+    .nav-link {
+        padding: 0.5rem 0.5rem;
+        width: 100%;
+        border-radius: 0.5rem !important;
+        margin-bottom: 0.5rem;
+
+        i {
+            margin-right: 0.25rem;
+        }
+    }
+
+    &.nav-pills .nav-link.active, 
+    &.nav-pills .show > .nav-link {
+        color: #2589BF;
+        font-weight: 700;
+        background-color: white; 
+        /* #FEFDFC; */
+    }
+
     /* background-image: -webkit-gradient(linear, left top, right bottom, from(#3b8fc2), to(#DD203E)); */
 
     /* background-image: linear-gradient(90deg, #3c5081, #b82f4e); */
-    background-image: linear-gradient(80deg, #384674, #2b3864);
+    /* background-image: linear-gradient(80deg, #384674, #2b3864); */
 }
 
-#pills-tab a.nav-link:not(.active),
+/* #pills-tab a.nav-link:not(.active),
 #pills-tab a.nav-link:hover:not(.active) {
     color: white !important;
-}
+} */
 
-#pills-tab a.nav-link.active {
-    /* border-bottom: rgb(102, 153, 204) 2px solid; */
+/* #pills-tab a.nav-link.active {
+    border-bottom: rgb(102, 153, 204) 2px solid;
     font-size: 1.5em;
     background-color: transparent !important;
-}
+} */
 
 .btn-transparent {
     color: #212529;
     background-color: transparent;
     border-color: transparent;
+    border-radius: 0.75rem;
 }
 
 .btn-transparent:hover {
     color: #212529;
-    background-color: #e2e7ec;
-    border-color: #dae1e7;
+    background-color: #e9e7e7;
+    border-color: #e9e7e7;
 }
 
 .btn-group button.btn-transparent:first-child {
@@ -754,11 +827,14 @@ div.logContainer:hover {
 
     border-radius: 0.25rem;
     border-style: solid;
-    border-color: transparent;
-    border-width: 2px;
+    border-color: rgb(228, 228, 228);
+    border-width: 1px;
+
+    background-color: white;
 
     /* box-shadow:0 0.5rem 1rem rgb(0 0 0 / 15%); */
-    /* box-shadow:0 0.35rem 0.75rem rgb(0 0 0 / 15%); */
+    /* box-shadow: 0 0.3rem 0.45rem rgb(0 0 0 / 8%); */
+     
     /* border: rgba(211, 211, 211, 0.521) 1px solid; */
     /* margin: 1rem; */
 }
@@ -769,16 +845,17 @@ div.logContainer:hover {
 
 .logContainer.edit-mode,
 .logContainer:hover.edit-mode {
+    box-shadow: 0 0.3rem 0.45rem rgb(0 0 0 / 16%);
     /* background-color: #DEE2E6; */
-    background-color: #f6f6f6;
+    /* background-color: #f6f6f6; */
 }
 
 .logContainer .logContainerGrid {
     display: grid;
     grid-template-columns: 1rem auto auto 8rem;
-    grid-template-rows: auto 3rem auto;
+    grid-template-rows: auto auto auto;
     grid-template-areas:
-        'log-color-bar log-tags log-tags log-tags'
+        'log-color-bar log-tags log-tags log-time'
         'log-color-bar log-title log-title log-time'
         'log-color-bar log-sub-title log-sub-title log-sub-title'
         'log-color-bar log-comment log-comment log-comment';
@@ -849,10 +926,12 @@ div.logContainer:hover {
     display: none;
 
     position: absolute;
-    right: 0;
-    top: 0;
-    background: #f6f6f6;
-    padding: 1rem 1rem 1rem 1rem;
+    right: 5px;
+    bottom: 5px;
+    background-color: #ffffff;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d7d0d0;
 }
 
 .logContainer:hover .log-actions {
@@ -963,8 +1042,8 @@ div.logContainer:hover {
 
 
 .btn.kaboom-button {
-    min-height: 2.9rem;
-    min-width: 2.89em;
+    min-height: 2.7rem;
+    min-width: 2.7rem;
     /* transform: scale(1.5); */
     border-radius: 3rem;
     border-width: 0.25rem;
@@ -975,11 +1054,11 @@ div.logContainer:hover {
     flex-direction: row;
     gap: 0.5rem;
     align-items: center;
-    margin-left: -0.55rem;
+    margin-left: -0.8rem;
 }
 
 .btn.kaboom-button i {
-    font-size: 0.85em;
+    font-size: 0.8em;
 }
 
 .btn.kaboom-button:hover {
@@ -997,6 +1076,8 @@ div.logContainer:hover {
     gap: 0.7rem;
     align-items: center;
     flex-wrap: wrap;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .kaboom-group {

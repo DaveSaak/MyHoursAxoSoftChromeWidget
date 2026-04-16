@@ -5,19 +5,109 @@ importScripts('allHoursApi.js');
 importScripts('moment.js');
 
 
+const TASK_LISTS_CACHE_KEY = 'taskListsCache';
 
-chrome.runtime.onStartup.addListener(() => {
+backgroundData = {
+    taskLists: undefined,
+    myHoursApi: undefined,
+    options: undefined,
+    currentUser: undefined
+}
+
+
+async function setupEnvironment() {
+    console.log('setup environment');
+
+    if (!this.backgroundData.options ) {
+        const options = new Options();
+        await options.load();
+        this.backgroundData.options = options;
+    }
+
+    if (!this.backgroundData.currentUser) {
+        const currentUser = new CurrentUser();
+        await currentUser.load();
+        this.backgroundData.currentUser = currentUser;
+    }
+
+    if (!this.backgroundData.myHoursApi) {
+        this.backgroundData.myHoursApi = new MyHoursApi(this.backgroundData.currentUser, this.backgroundData.options.platforms.myHours.apiUri, this.backgroundData.options.platforms.myHours.pat);
+    }
+}
+
+async function fetchAndStoreTaskLists() {
+    try {
+        let taskLists = await this.backgroundData.myHoursApi.getTaskLists();
+
+        this.backgroundData.taskLists = taskLists
+            .map(list => {
+                if (!list.incompletedTasks) return null;
+
+                const filteredTasks = list.incompletedTasks
+                    .filter(task => /^\d/.test(task.name))
+                    .map(task => ({ id: task.id, name: task.name }));
+
+                if (filteredTasks.length === 0) return null;
+
+                return {
+                    projectId: list.projectId,
+                    incompletedTasks: filteredTasks
+                };
+            })
+            .filter(list => list !== null);
+
+        console.log(this.backgroundData.taskLists);
+
+        await chrome.storage.local.set({
+            [TASK_LISTS_CACHE_KEY]: { data: this.backgroundData.taskLists, cachedAt: Date.now() }
+        });
+        console.log('Task lists data stored successfully');
+
+        const bytes = await chrome.storage.local.getBytesInUse(TASK_LISTS_CACHE_KEY);
+        console.log(`Task lists data: ${bytes} bytes (${(bytes / 1024).toFixed(2)} KB)`);
+    }
+    catch (err) {
+        console.error('Task lists fetch failed, keeping stale data:', err);
+    }
+}
+
+async function getTaskLists() {
+    const cacheEntry = await chrome.storage.local.get(TASK_LISTS_CACHE_KEY);
+    if (cacheEntry[TASK_LISTS_CACHE_KEY]) {
+        const cacheData = cacheEntry[TASK_LISTS_CACHE_KEY];
+        const cacheAge = Date.now() - cacheData.cachedAt;
+        if (cacheAge < 24 * 60 * 60 * 1000 && cacheData.data !== undefined) { // 24 hours cache validity
+            console.log('Using cached task lists data');
+            return cacheData.data;
+        } else {
+            console.log('Cached task lists data is stale, fetching new data');
+            await fetchAndStoreTaskLists();
+            return this.backgroundData.taskLists;
+        }
+    } else {
+        console.log('No cached task lists data, fetching new data');
+        await fetchAndStoreTaskLists();
+        return this.backgroundData.taskLists;
+    }
+}
+
+chrome.runtime.onStartup.addListener(async () => {
     console.log(`onStartup()`);
+    await setupEnvironment();
+    await getTaskLists();
 });
 
-// chrome.webNavigation.onCompleted.addListener((details) => {
-//     console.log(details);
-//     if (details.url.includes("dev.azure.com") && details.url.includes("pullrequest")) {
-//         chrome.tabs.sendMessage(details.tabId, { action: "addPresetComments" });
-//         // chrome.tabs.sendMessage(details.tabId, { action: "highlightCode" });
-//         // chrome.tabs.sendMessage(details.tabId, { action: "logDetails" });
-//     }
-// }, { url: [{ hostContains: "dev.azure.com" }] });
+
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+    console.log(`onInstalled()`);
+    if (this.backgroundData.options == undefined) {
+        console.log('setting up the environment for the first time');
+        await setupEnvironment();
+        await getTaskLists();
+    }
+
+});
+
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log('background script - got message: ' + message.type);
@@ -28,17 +118,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (message.type === 'start-myhours-log') {
-        // startTrackingTimeDevOps({ 
-        //     selectionText: message.itemId, 
-        //     itemTitle: message.itemTitle,
-        //     tagId: message.tagId,
-        //     tagName: message.tagName
-        //  }, undefined);
-        startTrackingTimeDevOps( 
-            message.itemId, 
+        startTrackingTimeDevOps(
+            message.itemId,
             message.tabId,
             message.tagId
-         );
+        );
     }
 
     if (message.type === 'get-allhours-calculation') {
@@ -78,9 +162,9 @@ chrome.runtime.onInstalled.addListener(() => {
 
     options = new Options();
     options.load().then(
-        x=>{
+        x => {
 
-            
+
             chrome.contextMenus.create({
                 id: "contextMenuDivider",
                 type: "separator",
@@ -93,9 +177,9 @@ chrome.runtime.onInstalled.addListener(() => {
                 title: "Track %s",
                 contexts: ["selection"],
                 documentUrlPatterns: ["https://dev.azure.com/*"]
-            });  
-            
-            if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
+            });
+
+            if (options.platforms.myHours.contextMenuTags != undefined && options.platforms.myHours.contextMenuTags.length > 0) {
                 // chrome.contextMenus.create({
                 //     id: "azureDevMenuRoot",
                 //     title: "Track [%s]",
@@ -119,7 +203,7 @@ chrome.runtime.onInstalled.addListener(() => {
             //     contexts: ["selection"],
             //     documentUrlPatterns: ["https://dev.azure.com/*"]
             // }); 
-     
+
 
             // if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
             //     chrome.contextMenus.create({
@@ -142,13 +226,30 @@ chrome.runtime.onInstalled.addListener(() => {
         }
     );
 
+    /*
+
+
+    chrome.contextMenus.create({
+        id: "azureDevMenu",
+        title: "Track %s",
+        contexts: ["selection"],
+        documentUrlPatterns: ["https://dev.azure.com/*"]
+    });  
+
+    chrome.contextMenus.create({
+        id: "contextMenuDivider",
+        type: "separator",
+        contexts: ["selection"],
+        documentUrlPatterns: ["https://dev.azure.com/*"]
+    });
+    */
 
     chrome.contextMenus.create({
         id: "copyBranchNameToClipboard",
         title: "Copy branch name to clipboard",
         contexts: ["selection"],
         documentUrlPatterns: ["https://dev.azure.com/*"]
-    });    
+    });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -164,7 +265,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             target: { tabId: tab.id },
             args: [info.selectionText],
             func: (selectedText) => {
-                
+
                 const branchName = selectedText
                     .toLowerCase()
                     .trim()
@@ -175,29 +276,85 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 navigator.clipboard.writeText(branchName)
                     .then(() => {
                         console.log('Branch name copied to clipboard successfully.');
-                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), () => {resolve();});
+                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), () => { resolve(); });
                     })
                     .catch(err => {
                         console.error('Failed to copy branch name: ', err);
-                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), () => {resolve();});
+                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), () => { resolve(); });
                     });
-
-
             }
         });
-    }    
+    }
 });
 
 
-
-function startTrackingTimeDevOps(info, tab, tagId) {
+async function startTrackingTimeDevOps(info, tab, tagId) {
+    await setupEnvironment();
 
     const notificationId = getRandomString();
+    // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info}`, 10));
 
-    // chrome.notifications.create('', getNotificationOptions(`Starting log ${data.projectTask.name}. Please wait a bit.`), function () { });
+    let tagIds = this.backgroundData.options.platforms.myHours.defaultTagIds;
+    const splitInfo = splitNumberAndText(info.trim());
 
+    tagName = '';
+    if (tagId) {
+        tagIds = [tagId];
+        tagName = this.backgroundData.options.platforms.myHours.contextMenuTags.find(t => t.id == tagId)?.name || '';
+    }
+
+    let taskInfo = findTaskInTaskLists(this.backgroundData.taskLists, splitInfo.itemId);
+    if (taskInfo == null) {
+        chrome.notifications.create(notificationId, getProgressNotificationOptions(
+            `Fetching task info...`, '⏳ Please wait', 30));
+        // try to fetch new task lists and find the task again, in case there is a new task that is not in the cache.
+        await fetchAndStoreTaskLists();
+        taskInfo = findTaskInTaskLists(this.backgroundData.taskLists, splitInfo.itemId);
+    }
+
+    if (taskInfo) {
+        this.backgroundData.myHoursApi.startLog('', taskInfo.projectId, taskInfo.taskId, tagIds)
+            .then(data => {
+                refreshMyHoursPage();
+                chrome.notifications.create(notificationId, getProgressNotificationOptions(
+                    `Log started: ${taskInfo.taskName}`, '👍 success', 100));
+            })
+            .catch(error => {
+                console.log(error);
+                chrome.notifications.create(notificationId, getProgressNotificationOptions(
+                    `There was an error. See console.`, '💥 Failed to start log.', 100));
+            });
+    } else {
+        chrome.notifications.create(notificationId, getProgressNotificationOptions(
+            `No incompleted task ${splitInfo.itemId}`, '😮 MH task not found.', 100));
+    }
+}
+
+
+function findTaskInTaskLists(taskLists, text) {
+
+    if (taskLists == undefined) {
+        console.warn('Task lists data is undefined');
+        return null;
+    }
+
+
+    for (const taskList of taskLists) {
+        if (!taskList.incompletedTasks) continue;
+
+        const projectTask = taskList.incompletedTasks.find(x => x.name.startsWith(text + ' '));
+        if (projectTask) {
+            return { projectId: taskList.projectId, taskId: projectTask.id, taskName: projectTask.name };
+        }
+    }
+    return null;
+}
+
+
+function startTrackingTimeDevOps_old(info, tab, tagId) {
+
+    const notificationId = getRandomString();
     chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info}`, 10));
-
 
     let currentUser = new CurrentUser();
     let options = new Options();
@@ -207,69 +364,37 @@ function startTrackingTimeDevOps(info, tab, tagId) {
             let myHoursApi = new MyHoursApi(currentUser, options.platforms.myHours.apiUri, options.platforms.myHours.pat);
 
             currentUser.load(function () {
-                // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Current user loaded`, 30));
 
+                let tagIds = options.platforms.myHours.defaultTagIds;
+                const splitInfo = splitNumberAndText(info.trim());
 
-                        let tagIds = options.platforms.myHours.defaultTagIds;
-                        const splitInfo = splitNumberAndText(info.trim());
+                tagName = '';
+                if (tagId) {
+                    tagIds = [tagId];
+                    tagName = options.platforms.myHours.contextMenuTags.find(t => t.id == tagId)?.name || '';
+                }
 
-                        // const itemTitle = splitInfo.text || info.itemTitle;
-                        tagName = '';
-                        if (tagId) {
-                            tagIds = [tagId];
-                            tagName = options.platforms.myHours.contextMenuTags.find(t=>t.id==tagId)?.name || '';
+                myHoursApi.startLogFromId(splitInfo.itemId, tagIds)
+                    .then(
+                        (data) => {
+                            if (data.logStarted) {
+                                refreshMyHoursPage();
+                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`${splitInfo.itemId} ${tagName}`, 'Log started', 100), () => { resolve(); });
+                            } else {
+                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${splitInfo.itemId}`, 'Failed to start log.', 100), () => { resolve(); });
+                            }
                         }
-
-                        // if (itemTitle) {
-                        //     switch (true) {
-                        //         case itemTitle.toLowerCase().includes('code review'):
-                        //             tagIds = options.platforms.myHours.codeReviewTagIds;
-                        //             break;
-                        //         case itemTitle.toLowerCase().includes('documentation'):
-                        //             tagIds = options.platforms.myHours.documentationTagIds;
-                        //             break;
-                        //         case itemTitle.toLowerCase().includes('testing'):
-                        //             tagIds = options.platforms.myHours.testTagIds;
-                        //             break;                                    
-                        //         default:
-                        //             // tagIds remains as defaultTagIds
-                        //             break;
-                        //     }
-                        // }
-
-                        // myHoursApi.startLogFromId(info.selectionText.trim(), tagIds)
-                        myHoursApi.startLogFromId(splitInfo.itemId, tagIds)
-                            .then(
-                                (data) => {
-                                    if (data.logStarted) {
-                                        refreshMyHoursPage();
-                                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log ${info.selectionText}. Please wait a bit.`, 10));
-                                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started: ${data.projectTask.name}`, 90));
-                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`Log started ${splitInfo.itemId} ${tagName}`, 'success', 100), () => {resolve();});
-
-
-                                        // chrome.notifications.create('', getNotificationOptions(`Log started: ${data.projectTask.name}`), function () { });
-                                    } else {
-                                        // chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`, 99));
-                                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${splitInfo.itemId}`, 'Failed to start log.', 100), () => {resolve();});
-
-                                        // chrome.notifications.create('', getNotificationOptions(`There is no incompleted no task with id ${info.selectionText}`), function () { });
-                                    }
-                                }
-                            )
-                            .catch((error) => {
-                                console.error(error);
-
-                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100), () => {resolve();});
-
-                                // chrome.notifications.create('', getNotificationOptions(`There was an error. See console.`), function () { });
-                            });
+                    )
+                    .catch((error) => {
+                        console.error(error);
+                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100), () => { resolve(); });
+                    });
             });
         });
 }
 
 function getNotificationOptions(message) {
-    return {        
+    return {
         type: 'basic',
         iconUrl: './images/ts-badge128.png',
         title: 'Spica extension',
@@ -296,15 +421,14 @@ function splitNumberAndText(input) {
 }
 
 function getProgressNotificationOptions(message, title, progress) {
-    return {        
+    return {
         type: 'progress',
         iconUrl: './images/ts-badge128.png',
-        title: 'Spica extension',
         silent: true,
-        message,
-        title,
+        title: message,
+        message: title,
         progress: progress || 0
-    };    
+    };
 }
 
 
@@ -320,23 +444,23 @@ function refreshMyHoursPage() {
         });
     });
 
-    chrome.tabs.query({ url: 'https://legacy.myhours.com/*' }, function (foundTabs) {
-        foundTabs.forEach(myHoursTab => {
-            console.info('refreshing myhours tabs');
-            chrome.tabs.reload(
-                myHoursTab.id
-            );
-        });
-    });
+    // chrome.tabs.query({ url: 'https://legacy.myhours.com/*' }, function (foundTabs) {
+    //     foundTabs.forEach(myHoursTab => {
+    //         console.info('refreshing myhours tabs');
+    //         chrome.tabs.reload(
+    //             myHoursTab.id
+    //         );
+    //     });
+    // });
 
 }
 
 
 function getRandomString(length = 10) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
 }
