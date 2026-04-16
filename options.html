@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title>Time&Space Chrome Extension</title>
 
         <script src="jquery-3.3.1.min.js"></script>
@@ -15,6 +16,8 @@
         <script src="devopsApi.js"></script>
         <script src="currentUser.js"></script>
 
+        <script src="healthCheck.js"></script>
+
         <script src="toastr.min.js"></script>
         <link
             href="toastr.min.css"
@@ -22,7 +25,6 @@
 
         <script src="ko-fi-overlay-widget.js"></script>
 
-        <!-- <link rel="stylesheet" type="text/css" href="bulma.css" media="screen" /> -->
         <link
             rel="stylesheet"
             type="text/css"
@@ -38,15 +40,7 @@
             type="text/css"
             href="css/nuito.css"
             media="screen" />
-        <!-- <link
-            rel="stylesheet"
-            type="text/css"
-            href="css/inter.css"
-            media="screen" /> -->
 
-        <!-- <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-reboot.min.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="bootstrap-grid.min.css" media="screen" /> -->
     </head>
 
     <body
@@ -58,32 +52,12 @@
                 <h1 class="title text-center">Spica Workforce Chrome Extension</h1>
             </div>
 
-
-
             <div class="d-flex flex-column justify-content-center">
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">General</h3>
+                    <h3 class="settings-header text-primary d-none">General</h3>
 
-                    <div class="settings-data">
-                        <!-- <div class="settings-sub-section">
-                            <div class="settings-sub-section-header">Platforms</div>
-                            <p>
-                                Item numbers will be matched with entities on the selected project management platform.
-                            </p>
-
-                            <div class="custom-control custom-switch">
-                                <input
-                                    type="checkbox"
-                                    class="custom-control-input"
-                                    id="useDevOps" />
-                                <label
-                                    class="custom-control-label"
-                                    for="useDevOps"
-                                    >Use DevOps as project management platform</label
-                                >
-                            </div>
-                        </div> -->
+                    <div class="settings-data d-none">
 
                         <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Notifications</div>
@@ -130,6 +104,20 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="settings-section">
+                    <h3 class="settings-header text-primary">Connection health</h3>
+                    <div class="settings-data">
+                        <p>Run a live check of all API connections.</p>
+                        <button id="runHealthChecksBtn" class="btn btn-primary">
+                            Run checks
+                        </button>
+                        <div id="healthConsole" class="health-console mt-3"></div>
+                        <div id="healthSummary" class="d-flex flex-wrap mt-2" style="gap: 8px;"></div>
+                    </div>
+                </div>
+                
+                <hr/>
 
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">All Hours</h3>
@@ -188,102 +176,10 @@
                     </div>
                 </div>                  
 
-                <!-- <div class="settings-section">
-                    <h3 class="settings-header text-primary">All Hours</h3>
-                    <div class="settings-data">
-
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input
-                                disabled
-                                class="form-control"
-                                id="ahUserName" />
-                        </div>
-
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input
-                                class="form-control"
-                                type="password"
-                                id="ahPassword" />
-                        </div>
-
-
-                        <div class="d-flex">
-                            <button
-                                id="loginToAllHours"
-                                class="btn btn-primary">
-                                Login
-                            </button>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- <div class="settings-section">
-                    <h3 class="settings-header text-primary">My Hours</h3>
-                    <div class="settings-data">
-                        <div class="form-group">
-                            <label class="label">Default tag</label>
-                            <select
-                                class="form-control"
-                                style="width: 50%"
-                                id="mhDefaultTagId"></select>
-                        </div>
-
-                        <div class="settings-sub-section">
-                            <div class="settings-sub-section-header">Login</div>
-                            <div class="form-group">
-                                <label>Username</label>
-                                <input
-                                    class="form-control"
-                                    id="mhUserName" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input
-                                    class="form-control"
-                                    type="password"
-                                    id="mhPassword" />
-                            </div>
-
-                            <div class="d-flex align-items-center mb-3">
-                                <button
-                                    id="loginToMyHours"
-                                    class="btn btn-primary">
-                                    Login
-                                </button>
-                                <div
-                                    class="ml-2"
-                                    id="loginToMyHoursInfo"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
                 <div id="devops-section">
                     <div class="settings-section">
                         <h3 class="settings-header text-primary">DevOps</h3>
                         <div class="settings-data">
-                            <!-- <div class="form-group">
-                                <label>Instance (url with account name)</label>
-                                <input
-                                    class="form-control"
-                                    id="devOpsInstanceUrl" />
-                            </div> -->
-                            <!-- lptwfdn5qyhg65il64vuzuiyvvxw7p2cvnwnsmlralmhzusxotmq -->
-                            <!-- <div class="form-group">
-                                <label>Personal access token (PAT)</label>
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="devOpsPersonalAccessToken" />
-                            </div> -->
-                            <!-- <div class="form-group">
-                            <label>Default Worklog type</label>
-                            <p>Default worklog type is used when you start new log from the context menu.</p>
-                            <input class="form-control" id='devOpsDefaultWorklogType' />
-                        </div> -->
 
                             <div class="form-group">
                                 <label>Repositories</label>
@@ -297,20 +193,6 @@
                                     <ol id="devops-repos"></ol>
                                 </div>
                             </div>
-
-                            <!-- <div class="form-group">
-                                <label>Git author name</label>
-                                <input
-                                    class="form-control"
-                                    id="devOpsAuthorName" />
-                            </div>
-
-                            <div class="form-group">
-                                <label>User id</label>
-                                <input
-                                    class="form-control"
-                                    id="devOpsUserId" />
-                            </div> -->
 
                             <div class="form-group">
                                 <label>Show pull requests from following repos</label>
@@ -339,7 +221,6 @@
                     </div>
                 </div>
 
-
                 <hr/>
 
                 <div class="settings-section">
@@ -359,7 +240,6 @@
 
                 <hr/>
 
-
                 <div class="settings-section">
                     <h3 class="settings-header text-primary">Advanced</h3>
                     <div class="settings-data">
@@ -373,6 +253,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </body>

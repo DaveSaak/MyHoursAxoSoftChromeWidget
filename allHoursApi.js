@@ -178,7 +178,6 @@ function AllHoursApi(
         return checkTokenAndExecutePromise(promiseFunction);
     };
 
-
     _this.getAttendance = function (userId, date) {
         date = date.startOf('day');
         let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
@@ -200,12 +199,7 @@ function AllHoursApi(
         };
         return checkTokenAndExecutePromise(promiseFunction);
     }
-    
-
-
- 
-
-    
+        
     _this.getCurrentBalance = function (userId) {
         let promiseFunction = function (resolve, reject) {
             let dateString = moment().startOf('day').format('YYYY-MM-DD') + 'T00:00:00';
@@ -295,7 +289,6 @@ function AllHoursApi(
         });
         return response;
     }
-
 
     _this.getUserCalculations = function (userId, dateFrom, dateTo) {
         dateFrom = dateFrom.clone().startOf('day');

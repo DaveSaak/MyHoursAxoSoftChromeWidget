@@ -47,3 +47,26 @@
 li:hover .show-on-hover{
     display: block;
 }
+
+.health-console {
+    background: #1e1e2e;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    min-height: 60px;
+    max-height: 320px;
+    overflow-y: auto;
+    color: #cdd6f4;
+    display: none;
+}
+.health-console.active { display: block; }
+.hc-info  { color: #89b4fa; }
+.hc-ok    { color: #a6e3a1; }
+.hc-warn  { color: #f9e2af; }
+.hc-error { color: #f38ba8; }
+.hc-dim   { color: #585b70; }
+.hc-head  { color: #cba6f7; font-weight: 500; }
+
+
