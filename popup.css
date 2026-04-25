@@ -53,8 +53,8 @@ body {
     /* height: calc(100%); */
     margin: 1rem;
     /* margin-top: 1rem; */
-    margin-bottom: 0.5rem;
-    margin-right: 0.5rem;
+    /* margin-bottom: 0.75rem; */
+    /* margin-right: 0.75rem; */
     /* padding-bottom: 1 rem; */
 
     /* border-color: #dfddde;
@@ -167,12 +167,12 @@ div#logs li .column {
 #topContainer {
     overflow-x: scroll;
     overflow-y: hidden;
-    min-height: 60px;
+    min-height: 62px;
 }
 
 .customScroller::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 .customScroller::-webkit-scrollbar-track {
@@ -265,8 +265,18 @@ div#logs li .column {
     height: 24px;
     position: absolute;
     border-radius: 4px;
-    opacity: 0.75;
+    opacity: 0.90;
     z-index: 1;
+    border-width: 1px;
+    border-style: solid;
+    background: var(--log-color);
+    /* border-color: var(--log-color); */
+    border-color: color-mix(in srgb, var(--log-color) 44.25%, #000000 21.34%);
+
+    /* &.non-product-log {
+        background-image: repeating-linear-gradient(65deg, rgba(0, 0, 0, 0.08) 0px, rgba(0, 0, 0, 0.08) 4px, transparent 4px, transparent 8px);
+    } */
+
 }
 
 .timeline-log.no-tags {

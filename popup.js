@@ -430,18 +430,40 @@ function popup() {
 
             var tick = $('<div>').css({
                 left: (i * 60) / 1440 * _this.timeLineWidth + 'px',
-                "background-color": tickColor,
+                "background-color": "lightgray",
             });
             tick.addClass('timeline-tick');
             tick.prop('title', i);
             timelineContainer.append(tick);
 
+            // Hour label
             var time = $('<div>').css({
                 left: ((i * 60) / 1440 * _this.timeLineWidth) - 10 + 'px',
             });
-            time.addClass('timeline-time')
+            time.addClass('timeline-time');
             time.text(i);
             timelineContainer.append(time);
+
+            /*
+            if (i < 24) {
+                var halfLeft = ((i * 60 + 30) / 1440 * _this.timeLineWidth);
+
+                var halfTick = $('<div>').css({
+                    left: halfLeft + 'px',
+                    "background-color": "lightgray",
+                });
+                halfTick.addClass('timeline-tick timeline-tick--half');
+                // halfTick.prop('title', i + ':30');
+                timelineContainer.append(halfTick);
+
+                // var halfTime = $('<div>').css({
+                //     left: (halfLeft - 3) + 'px',
+                // });
+                // halfTime.addClass('timeline-time timeline-time--half');
+                // halfTime.text('·');
+                // timelineContainer.append(halfTime);
+            }
+                */
         }
     }
 
@@ -570,17 +592,21 @@ function popup() {
             if (log.projectId == _this.options.platforms.myHours.generalProjectId) {
                 log.color = '#bbc9f3';
                 if (log.projectId == _this.options.platforms.myHours.generalProjectId && log.taskId == _this.myHoursLunchProjectTaskId) {
-                    log.icon = "fas fa-coffee";
-                    log.color = "#86c49a";
+                    log.icon = "fas fa-coffeex fa-apple-whole";
+                    // log.color = "#86c49a";
+                    log.color = "#c7eed4";
                 }
-                else if (log.note && log.note.startsWith(_this.options.myHoursDistractionComment)) {
-                    log.icon = "fas fa-bomb";
+                else if (log.projectId == _this.options.platforms.myHours.generalProjectId) {
+                    log.icon = "fas fa-chess-knight";
+                    // log.color = "#c5aadb";
+                    log.color = "#f2e9f8";   
                 } else {
                     log.icon = "fas fa-crown";
                 }
             } else if (!log.devOpsItemId) {
                 log.icon = "fas fa-crown";
-                log.color = "coral";
+                // log.color = 'coral';  
+                log.color = '#ffe2e2';  
             }
 
 
@@ -906,9 +932,11 @@ function popup() {
                 barGraph.attr("data-logId", log.id);
                 barGraph.attr("data-logid", log.id);
                 barGraph.prop('title', title);
+                barGraph.css( "--log-color", log.color );
 
                 if (log.icon) {
                     barGraph.append(`<i class="${log.icon} ml-2" aria-hidden="true"></i>`);
+                    barGraph.addClass('non-product-log');
                 }
 
 
@@ -923,7 +951,8 @@ function popup() {
                     barGraph.css({
                         left: left + 'px',
                         width: right - left + 'px',
-                        "background-color": log.color,
+                        // "background-color": log.color,
+                        // "border-color": log.color,
                         // "border-color": log.color,
 
                     });
@@ -1011,7 +1040,7 @@ function popup() {
         //hideAlert();
 
         var topContainer = $('#topContainer');
-        topContainer.scrollLeft(300);
+        topContainer.scrollLeft(340);
 
         var timeline = $('#timeline');
         timeline.empty();
