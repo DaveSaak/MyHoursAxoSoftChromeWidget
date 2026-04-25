@@ -45,12 +45,25 @@ function DevOpsApi(options) {
     }
 
     _this.getItemAsync = async function (id) {
-        const url = `${_this.options.platforms.devops.uri}/_apis/wit/workitems/${id}?$expand=relations`
+        const url = `${_this.options.platforms.devops.uri}/_apis/wit/workitems/${id}?$expand=relations&api-version=6.0`;
         const response = await fetch(url, {
             headers: _this.ajaxHeaders,
         });
+        if (!response.ok) {
+            const body = await response.text();
+            console.error(`getItemAsync HTTP ${response.status}`, body);
+            throw new Error(`HTTP ${response.status}: ${body}`);
+        }
         return response.json();
     }
+
+    // _this.getItemAsync = async function (id) {
+    //     const url = `${_this.options.platforms.devops.uri}/_apis/wit/workitems/${id}?$expand=relations`
+    //     const response = await fetch(url, {
+    //         headers: _this.ajaxHeaders,
+    //     });
+    //     return response.json();
+    // }
 
     _this.getItemByUrlAsync = async function (url) {
         const response = await fetch(url, {

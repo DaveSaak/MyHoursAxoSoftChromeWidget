@@ -93,7 +93,7 @@
 >
 
     <ul
-        class="nav nav-pills pt-4 pl-2 pr-3 d-flex flex-column main-nav"
+        class="nav nav-pills mt-3 pt-2 pb-1 pl-2 d-flex flex-column main-nav"
         id="pills-tab"
         role="tablist"
     >
@@ -127,7 +127,7 @@
 
         </li> -->
 
-        <li class="nav-item d-flex align-items-center">
+        <li class="nav-item">
             <a
                 class="nav-link active"
                 id="pills-home-tab"
@@ -136,11 +136,16 @@
                 role="tab"
                 aria-controls="pills-home"
                 aria-selected="true"
-            ><i class="fa-solid fa-fw fa-lightbulb"></i> Time</a>
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-regular fa-fw fa-lightbulb"></i> 
+                </div>
+                Tracker
+            </a>
         </li>
         <li
             id="nav-ratio"
-            class="nav-item d-flex align-items-center"
+            class="nav-item"
         >
             <a
                 class="nav-link"
@@ -154,7 +159,7 @@
         </li>
         <li
             id="nav-balance"
-            class="nav-item d-flex align-items-center"
+            class="nav-item"
         >
             <a
                 class="nav-link"
@@ -164,11 +169,16 @@
                 role="tab"
                 aria-controls="pills-balance"
                 aria-selected="false"
-            ><i class="fa-solid fa-fw fa-arrow-trend-up"></i> Balance</a>
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-solid fa-fw fa-arrow-trend-up"></i> 
+                </div>
+                Balance
+            </a>
         </li>
         <li
             id="nav-recent-items"
-            class="nav-item d-flex align-items-center"
+            class="nav-item"
         >
             <a
                 class="nav-link"
@@ -178,10 +188,15 @@
                 role="tab"
                 aria-controls="pills-axo"
                 aria-selected="false"
-            ><i class="fa-solid fa-fw fa-meteor"></i> Recent</a>
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-regular fa-fw fa-meteorx fa-clock"></i> 
+                </div>
+                Recent
+            </a>
         </li>
 
-        <li class="nav-item d-flex align-items-center">
+        <li class="nav-item">
             <a
                 class="nav-link"
                 id="pills-worklogtypes-tab"
@@ -190,10 +205,15 @@
                 role="tab"
                 aria-controls="pills-worklogtypes"
                 aria-selected="false"
-            ><i class="fa-solid fa-fw fa-bucket"></i> Activities</a>
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-regular fa-fw fa-bucketx fa-chess-king"></i> 
+                </div>
+                Activities
+            </a>
         </li>
 
-        <li class="nav-item d-flex align-items-center">
+        <li class="nav-item">
             <a
                 class="nav-link"
                 id="pills-pull-requests-tab"
@@ -202,12 +222,17 @@
                 role="tab"
                 aria-controls="pills-pull-requests"
                 aria-selected="false"
-            ><i class="fa-solid fa-fw fa-code-branch"></i> PRs</a>
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-solid fa-fw fa-code-branch"></i> 
+                </div>
+                PRs
+            </a>
         </li>        
 
         <!-- <li
             id="nav-calendar"
-            class="nav-item d-flex align-items-center"
+            class="nav-item"
         >
             <a
                 class="nav-link"
@@ -217,12 +242,17 @@
                 role="tab"
                 aria-controls="pills-calendar"
                 aria-selected="false"
-            ><i class="fa-solid fa-fw fa-calendar"></i> Calendar</a>
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-solid fa-fw fa-calendar"></i> 
+                </div>
+                Calendar</a>
+            
         </li> -->
 
         <!-- <li
             id="nav-devops"
-            class="nav-item d-flex align-items-center"
+            class="nav-item"
         >
             <a
                 class="nav-link"
@@ -235,12 +265,17 @@
             >My items</a>
         </li> -->
 
-        <li class="nav-item d-flex align-items-center mt-auto ml-3">
+        <!-- class="nav-item mt-auto ml-3" -->
+        <li class="nav-item mt-auto">
             <a
+                class="nav-link"
                 id='optionsButton'
 
             >
                 <!-- Settings -->
+                <!-- <div class="nav-item-icon-container">
+                    <i class="fa-solid fa-fw fa-cog"></i>
+                </div> -->
                 Settings
             </a>
         </li>
@@ -291,7 +326,7 @@
                     <div class="ml-auto">
                         <button
                             id="today"
-                            class="btn btn-light"
+                            class="btn btn-light btn-sm"
                             style='width:120px'
                         >
                             <span
@@ -303,35 +338,35 @@
 
                         <button
                             id="previousDay"
-                            class="btn btn-light"
+                            class="btn btn-light btn-sm"
                         >
                             <i class="fa-solid fa-angle-left"></i>
                         </button>
 
                         <button
                             id="nextDay"
-                            class="btn btn-light"
+                            class="btn btn-light btn-sm"
                         >
                             <i class="fa-solid fa-angle-right"></i>
                         </button>
 
                         <button
                             id="goToToday"
-                            class="btn btn-light"
+                            class="btn btn-light btn-sm"
                         >
                             <i class="fa-solid fa-house"></i>
                         </button>                        
 
                         <button
                             id="reloadDay"
-                            class="btn btn-light"
+                            class="btn btn-light btn-sm"
                         >
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </button>
 
                         <button
                             id='fillGapsButton'
-                            class="btn btn-light"
+                            class="btn btn-light btn-sm"
                             title="Fill gaps"
                         >
                             <i class="fa-solid fa-fill-drip fa-fw"></i>
@@ -388,10 +423,10 @@
                     style="overflow: auto; background-color: rgb(250, 250, 250);"
                 > -->
                     <div
-                        class="customScroller mt-2 main-content"
+                        class="customScroller main-content"
                         id="logsContainer"
                     >
-                        <div id='logs'>
+                        <div id='logs' class="mt-3">
                         </div>
                     </div>
                 <!-- </section> -->
@@ -660,7 +695,7 @@
                 class="mx-1 mb-3"
             >
 
-                <div class="headerBar mx-3">
+                <div class="headerBar mx-2">
                 </div>
 
                 <div class="pull-requests-list customScroller mt-3 mx-2" style="overflow: auto; max-height: 400px;">

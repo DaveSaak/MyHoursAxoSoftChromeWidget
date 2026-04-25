@@ -731,7 +731,7 @@ function popup() {
 
 
             let editCommentButton = $('<button>')
-                .addClass("btn btn-transparent btn-sm")
+                .addClass("btn btn-transparent btn-sm action-button")
                 .attr("title", "Edit comment")
                 .append('<i class="fa-solid fa-pencil fa-fw"></i>')
                 .click(function (event) {
@@ -748,7 +748,7 @@ function popup() {
 
 
             let startTrackingTimeShortcut = $('<button>')
-                .addClass("btn btn-transparent")
+                .addClass("btn btn-transparent btn-sm action-button")
                 .attr("title", "Start tracking time")
                 .append($('<i class="fa-regular fa-circle-play fa-fw">'))
                 .click(function (event) {
@@ -767,7 +767,7 @@ function popup() {
                 });
 
             let copyCommitMessagesButton = $('<button>')
-                .addClass("btn btn-transparent")
+                .addClass("btn btn-transparent btn-sm action-button")
                 .attr("title", "Copy commit message to description")
                 .append('<i class="fa-solid fa-code-merge fa-fw"></i>')
                 .click(function (event) {
@@ -776,7 +776,7 @@ function popup() {
                 });
 
             let openDevOpsItemButton = $('<button>')
-                .addClass("btn btn-transparent")
+                .addClass("btn btn-transparent btn-sm action-button")
                 .attr("title", "Open item in DevOps portal")
                 .append($('<i class="fa-solid fa-arrow-up-right-from-square fa-fw"></i>'))
                 .click(function (event) {
@@ -788,7 +788,7 @@ function popup() {
                 });
 
             let copyWorklogButton = $('<button>')
-                .addClass("btn btn-transparent")
+                .addClass("btn btn-transparent btn-sm action-button")
                 .attr("title", "Update DevOps Effort")
                 .append($('<i class="fa-solid fa-upload fa-fw"></i>'))
                 .click(function (event) {
@@ -798,7 +798,7 @@ function popup() {
                 });
 
             let stopRunningLogButton = $('<button>')
-                .addClass("btn btn-transparent")
+                .addClass("btn btn-transparent btn-sm action-button")
                 .attr("title", "Stop running log")
                 .append($('<i class="fa-solid fa-stop fa-fw"></i>'))
                 .click(function (event) {
