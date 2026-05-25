@@ -107,7 +107,7 @@ function popup() {
                     toolbar.append(group);
 
                     kaboomDefinition.actions.forEach((action, actionIndex) => {   
-                        action.backgroundColor = kaboomDefinition.backgroundColor;
+                        action.backgroundColor = action.backgroundColor || kaboomDefinition.backgroundColor;
                         action.color = kaboomDefinition.color;
                         action.kaboomIndex = kaboomIndex;
                         action.actionIndex = actionIndex;
@@ -808,7 +808,7 @@ function popup() {
                 .click(function (event) {
                     event.preventDefault();
                     _this.devOpsApi.getItemAsync(log.devOpsItemId).then(devOpsItem => {
-                        const editUrl = encodeURI(`${_this.options.platforms.devops.uri}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${log.devOpsItemId}`);
+                        const editUrl = encodeURI(`${_this.options.platforms.devops.uri}/_workitems/edit/${log.devOpsItemId}`);
                         window.open(editUrl, '_devops');
                     });
                 });
@@ -1565,7 +1565,7 @@ function popup() {
             .click(function (event) {
                 event.preventDefault();
                 _this.devOpsApi.getItemAsync(item.id).then(devOpsItem => {
-                    const editUrl = encodeURI(`${_this.options.platforms.devops.uri}/${devOpsItem.fields['System.AreaPath']}/_workitems/edit/${item.id}`);
+                    const editUrl = encodeURI(`${_this.options.platforms.devops.uri}/_workitems/edit/${item.id}`);
                     window.open(editUrl, '_devops');
                 });
             });

@@ -1136,8 +1136,8 @@ div.logContainer:hover {
     min-width: 2.7rem;
     /* transform: scale(1.5); */
     border-radius: 3rem;
-    border-width: 0.25rem;
-    border-color: #ffffffa8;
+    border-width: 2px;
+    border-color: #ffffff7a;
     background-color: #cc65ff;
     /* color: white; */
     display: flex;
@@ -1163,7 +1163,7 @@ div.logContainer:hover {
 .kaboom-toolbar {
     display: flex;
     flex-direction: row;
-    gap: 0.7rem;
+    gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
     margin-top: 0.5rem;
