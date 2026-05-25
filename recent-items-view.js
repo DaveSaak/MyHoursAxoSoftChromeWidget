@@ -348,13 +348,20 @@ function RecentItemsView(myHoursApi, options, viewContainer){
                 tooltips: {
                     displayColors: false,
                     callbacks: {
-                        // title: function (tooltipItem, data) {
-                        //     return data.labels[tooltipItem[0].index];
+                        title: function (tooltipItems, data) {
+                            if (!tooltipItems || tooltipItems.length === 0) {
+                                return '';
+                            }
 
-                        // },
+                            const item = tooltipItems[0];
+                            return data.labels[item.index] || '';
+                        },
                         label: function (tooltipItem, data) {
                             let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            return minutesToString(value, true);
+                            const allValues = data.datasets[tooltipItem.datasetIndex].data || [];
+                            const total = allValues.reduce((sum, current) => sum + (current || 0), 0);
+                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                            return [percentage + '%', minutesToString(value)];
                         }
                     }
                 }

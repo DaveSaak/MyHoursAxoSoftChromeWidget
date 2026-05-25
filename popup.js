@@ -76,6 +76,7 @@ function popup() {
             _this.devOpsApi = new DevOpsApi(_this.options);
             _this.balanceView = new BalanceView(_this.allHoursApi, $('#balanceContainer'));
             _this.recentItemsView = new RecentItemsView(_this.myHoursApi, _this.options, _this.axoItemColors);
+            _this.projectsView = new ProjectsView(_this.myHoursApi, _this.options);
             _this.calendarView = new CalendarView(_this.myHoursApi, _this.allHoursApi, $('#calendarContainer'));
             _this.ratioView = new RatioView(_this.allHoursApi, _this.options);
             _this.pullRequestsView = new PullRequestsView(_this.options, _this.devOpsApi, $('#pullRequestsContainer'));
@@ -247,6 +248,10 @@ function popup() {
             getMyDevOpsItems();
         });
 
+        $('#refreshProjects').click(function () {
+            _this.projectsView.show();
+        });
+
         $('#refreshCalendar').click(function () {
             _this.calendarView.show();
         });
@@ -257,6 +262,10 @@ function popup() {
 
         $('#pills-axo-tab').click(function () {
             getRecentAxoItems();
+        });
+
+        $('#pills-projects-tab').click(function () {
+            _this.projectsView.show();
         });
 
         $('#pills-calendar-tab').click(function () {

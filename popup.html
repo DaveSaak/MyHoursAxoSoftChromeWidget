@@ -29,6 +29,7 @@
     <script src="time-logs-view.js"></script>
     <script src="balance-view.js"></script>
     <script src="recent-items-view.js"></script>
+    <script src="projects-view.js"></script>
     <script src="calendar-view.js"></script>
     <script src="ratio-view.js"></script>
     <script src="pull-requests-view.js"></script>
@@ -190,7 +191,7 @@
                 aria-selected="false"
             >
                 <div class="nav-item-icon-container">
-                    <i class="fa-regular fa-fw fa-meteorx fa-clock"></i> 
+                    <i class="fa-regular fa-fw fa-clock"></i> 
                 </div>
                 Recent
             </a>
@@ -207,9 +208,26 @@
                 aria-selected="false"
             >
                 <div class="nav-item-icon-container">
-                    <i class="fa-regular fa-fw fa-bucketx fa-chess-king"></i> 
+                    <i class="fa-regular fa-fw fa-chess-king"></i> 
                 </div>
                 Activities
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a
+                class="nav-link"
+                id="pills-projects-tab"
+                data-toggle="pill"
+                href="#pills-projects"
+                role="tab"
+                aria-controls="pills-projects"
+                aria-selected="false"
+            >
+                <div class="nav-item-icon-container">
+                    <i class="fa-regular fa-fw fa-flag"></i>
+                </div>
+                Projects
             </a>
         </li>
 
@@ -706,6 +724,66 @@
                     <div class="other-pull-requests"></div>
 
                 </div>
+            </div>
+        </div>
+
+        <div
+            class="tab-pane fade"
+            id="pills-projects"
+            role="tabpanel"
+            aria-labelledby="pills-projects-tab"
+        >
+            <div
+                id="projectsContainer"
+                class="mx-3 mb-3"
+            >
+
+                <div class="headerBar">
+                    <div class="statistics-sm">
+                        <div class="projectsItemsTotal">-</div>
+                        <div>work hrs</div>
+                    </div>
+
+                    <div class="statistics-sm">
+                        <div id="projectsUnassigned">-</div>
+                        <div>unassigned</div>
+                    </div>
+
+                    <div class="statistics-sm ml-auto">
+                        <div>10</div>
+                        <div>days period</div>
+                    </div>
+
+                    <div class="ml-autoX">
+                        <button
+                            id='refreshProjects'
+                            class="btn btn-light"
+                            type="button"
+                            title='back'
+                        >
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="d-flex">
+                    <div
+                        class="d-flex flex-column mt-4"
+                        id="projectsSubHeader"
+                        style="flex: auto"
+                    >
+                    </div>
+
+                    <div class="m-4">
+                        <canvas
+                            id="projectsChart"
+                            width="400"
+                            height="450"
+                        ></canvas>
+                    </div>
+                </div>
+
             </div>
         </div>
 
