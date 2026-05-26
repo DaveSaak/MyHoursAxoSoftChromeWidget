@@ -9,6 +9,7 @@ function Options() {
     _this.allHoursAccessTokenValidTill = '';
     _this.notificationsBadRatio = true;
     _this.recentItemsBubbleChartHiddenItemsIds = '';
+    _this.theme = 'spica';
 
 
 
@@ -34,6 +35,7 @@ function Options() {
                             allHoursAccessTokenValidTill: _this.allHoursAccessTokenValidTill,
                             notificationsBadRatio: _this.notificationsBadRatio,
                             recentItemsBubbleChartHiddenItemsIds: _this.recentItemsBubbleChartHiddenItemsIds,
+                            theme: _this.theme,
                         }
                     }
 

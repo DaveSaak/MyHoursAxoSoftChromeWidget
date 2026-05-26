@@ -62,6 +62,16 @@ function popup() {
 
     chrome.runtime.sendMessage({ type: 'refreshBadge' });
 
+    function applyPopupTheme() {
+        const configuredTheme = (_this.options && _this.options.theme) || (_this.options && _this.options.platforms && _this.options.platforms.spica && _this.options.platforms.spica.theme) || 'spica';
+        const normalizedTheme = String(configuredTheme).toLowerCase();
+        const supportedThemes = ['spica', 'desert', 'frost', 'forrest', 'bloom', 'cave', 'meadow', 'aurora'];
+        const activeTheme = supportedThemes.includes(normalizedTheme) ? normalizedTheme : 'spica';
+
+        $('body').removeClass('theme-spica theme-desert theme-frost theme-forrest theme-bloom');
+        $('body').addClass(`theme-${activeTheme}`);
+    }
+
     // $(function () {
     //     $('[data-toggle="tooltip"]').tooltip()
     //   })
@@ -70,6 +80,8 @@ function popup() {
         function () {
             // console.info('options loaded');
             // console.log(_this.options);
+
+            applyPopupTheme();
 
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser, _this.options.platforms.myHours.apiUri, _this.options.platforms.myHours.pat);

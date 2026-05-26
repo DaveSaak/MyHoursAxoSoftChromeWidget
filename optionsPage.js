@@ -43,6 +43,10 @@ $(function () {
             // $('#devOpsPullRequestRepos').val(_this.options.devOpsPullRequestRepos);
             // $('#devOpsPullRequestMyReviewerGroups').val(_this.options.devOpsPullRequestMyReviewerGroups);
             
+            // Set active theme tile
+            $('.theme-tile').removeClass('active');
+            $(`.theme-tile[data-theme="${_this.options.theme}"]`).addClass('active');
+            
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             $('#myHoursDistractionComment').val(_this.options.myHoursDistractionComment);
             
@@ -115,6 +119,29 @@ $(function () {
             }
 
         });
+
+    // Theme tile selection
+    $('.theme-tile').click(function () {
+        const selectedTheme = $(this).attr('data-theme');
+        const selectedThemeName = $(this).find('.theme-tile-label').text().trim() || selectedTheme;
+
+        if (_this.options.theme === selectedTheme) {
+            return;
+        }
+
+        $('.theme-tile').removeClass('active');
+        $(this).addClass('active');
+
+        _this.options.theme = selectedTheme;
+        saveOptions().then(
+            function () {
+                toastr.success(`Theme saved: ${selectedThemeName}`);
+            },
+            function () {
+                toastr.error('Error saving Theme.');
+            }
+        );
+    });
 
     $('input#ahPassword').keyup(function (e) {
         if (e.keyCode == 13) {
@@ -260,8 +287,9 @@ $(function () {
     }
 
     function saveOptions() {
-        _this.options.save().then(function (x) {
+        return _this.options.save().then(function (x) {
             console.log(x);
+            return x;
 
         });
     }
