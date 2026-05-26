@@ -4,6 +4,10 @@
             "enabled": true,
             "uri": "https://dev.azure.com/Spica-International",
             "pat": "xxxx",
+            "pullRequests": {
+                "repoNames": ["RepoA", "RepoB"],
+                "myReviewerGroupIds": ["group-id-1", "group-id-2"]
+            },
             "repo": {
                 "authorName": "Dave",
                 "userId": "123",

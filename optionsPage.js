@@ -204,23 +204,6 @@ $(function () {
         );
     });     
 
-    $('#saveDevOpsButton').click(function () {
-        // _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
-        // _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
-        // _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
-        // _this.options.devOpsUserId = $('#devOpsUserId').val();
-        // _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
-        // _this.options.devOpsPullRequestMyReviewerGroups = $('#devOpsPullRequestMyReviewerGroups').val();
-        saveOptions().then(
-            function(x){
-                toastr.success('DevOps settings saved');
-            },
-            function(err){
-                toastr.error('Error saving DevOps settings.');
-            }
-        );
-    });    
-
     $('#saveKaboomButton').click(function () {
         _this.options.kaboomDefinitions = JSON.parse($('#kaboomDefinitions').val());
         saveOptions().then(
