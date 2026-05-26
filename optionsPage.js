@@ -63,10 +63,6 @@ $(function () {
                 .then(response => response.json())
                 .then(data => {
                     console.log("JSON Data:", data);
-                    $('#settingsOverview').val(JSON.stringify(data, null, 2));
-                    $('#ahUserName').val(_this.options.platforms.allHours.userName);
-
-                    $('#spicaUserName').val(_this.options.platforms.spica.userName);
                 })
                 .catch(error => console.error("Error loading JSON:", error));
 
