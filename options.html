@@ -33,6 +33,11 @@
         <link
             rel="stylesheet"
             type="text/css"
+            href="css/forge.css"
+            media="screen" />
+        <link
+            rel="stylesheet"
+            type="text/css"
             href="optionsPage.css"
             media="screen" />
         <link
@@ -43,19 +48,17 @@
 
     </head>
 
-    <body
-        style="font-family: 'Inter script=latin rev=2', 'Nunito Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
-        <div class="mt-3">
-            <div
-                class="theme-header-spica pt-3 pb-2"
-                id="settings-title">
-                <h1 class="title text-center">Spica Workforce Chrome Extension</h1>
-            </div>
+    <body>
+        <div
+            class="theme-header-spica"
+            id="settings-title">
+            <h1 class="forge-page-title text-center">Spica Workforce Chrome Extension</h1>
+        </div>
 
-            <div class="d-flex flex-column justify-content-center">
+        <div class="ops-layout">
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">Appearance</h3>
+                    <h3 class="settings-header forge-section-title">Appearance</h3>
                     <div class="settings-data">
                         <div class="settings-sub-section">
                             <!-- <div class="settings-sub-section-header">Theme</div> -->
@@ -89,10 +92,10 @@
                     </div>
                 </div>
 
-                <div class="settings-section">
-                    <h3 class="settings-header text-primary d-none">General</h3>
+                <div class="settings-section d-none">
+                    <h3 class="settings-header forge-section-title d-none">General</h3>
 
-                    <div class="settings-data d-none">
+                    <div class="settings-data forge-stack d-none">
 
                         <div class="settings-sub-section">
                             <div class="settings-sub-section-header">Notifications</div>
@@ -129,10 +132,10 @@
                                     id="recentItemsBubbleChartHiddenItemsIds" />
                             </div>
 
-                            <div class="d-flex mt-3">
+                            <div class="forge-cluster forge-mt-3">
                                 <button
                                     id="saveGeneral"
-                                    class="btn btn-primary">
+                                    class="forge-button forge-button--primary">
                                     Save
                                 </button>
                             </div>
@@ -141,68 +144,67 @@
                 </div>
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">Connection check</h3>
-                    <div class="settings-data">
+                    <h3 class="settings-header forge-section-title">Connection check</h3>
+                    <div class="settings-data forge-stack">
                         <p>Run a live check of all API connections.</p>
-                        <button id="runHealthChecksBtn" class="btn btn-primary">
-                            Run checks
-                        </button>
-                        <div id="healthConsole" class="health-console mt-3"></div>
-                        <div id="healthSummary" class="d-flex flex-wrap mt-2" style="gap: 8px;"></div>
+                        <div>
+                            <button id="runHealthChecksBtn" class="forge-button forge-button--primary">
+                                Run checks
+                            </button>
+                        </div>
+                        <div id="healthConsole" class="health-console"></div>
+                        <div id="healthSummary" class="forge-cluster"></div>
                     </div>
                 </div>
                 
                 <hr/>
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">All Hours</h3>
-                    <div class="settings-data">
+                    <h3 class="settings-header forge-section-title">All Hours</h3>
+                    <div class="settings-data forge-stack">
 
-                        <div class="form-group">
+                        <div class="forge-field">
                             <label>Username</label>
                             <input
                                 disabled
-                                class="form-control"
+                                class="forge-input"
                                 id="spicaUserName" />
                         </div>
 
-                        <div class="form-group">
+                        <div class="forge-field">
                             <label>Password</label>
                             <input
-                                class="form-control"
+                                class="forge-input"
                                 type="password"
                                 id="spicaPassword" />
                         </div>
 
-                        <div class="d-flex">
+                        <div>
                             <button
                                 id="authorizeSpica"
-                                class="btn btn-primary">
+                                class="forge-button forge-button--primary">
                                 Authorize
                             </button>
                         </div>
 
-                        <div class="form-group mt-5">
-                            <div
-                                id="ahAccessToken"
-                                class="alert alert-primary">
-                                hit get access token to obtain access to your attendance data.
-                            </div>
+                        <div
+                            id="ahAccessToken"
+                            class="forge-notice forge-notice--info">
+                            hit get access token to obtain access to your attendance data.
                         </div>
 
                     </div>
                 </div>   
                 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">My Hours</h3>
+                    <h3 class="settings-header forge-section-title">My Hours</h3>
                     <div class="settings-data">
                         <div
                             id="mhAccessToken"
-                            class="alert alert-success">
+                            class="forge-notice forge-notice--success">
                             <p>
-
-                                To access My Hours data, you need to set up API access in My Hours first. 
-                                Then copy the API to setting file under the "myHours" -> "pat" field. 
+                                To access My Hours data, you need to set up API access in My Hours first.
+                                Then copy the API key to the settings file under the <strong>myHours → pat</strong> field.
                             </p>
                             <a href="https://app.myhours.com/account/integrations" target="_blank" rel="noopener">
                                 https://app.myhours.com/account/integrations
@@ -213,22 +215,21 @@
 
                 <div id="devops-section">
                     <div class="settings-section">
-                        <h3 class="settings-header text-primary">DevOps</h3>
-                        <div class="settings-data">
-
-                            <div class="form-group">
+                        <h3 class="settings-header forge-section-title">DevOps</h3>
+                        <div class="settings-data forge-stack">
+                            <div class="forge-field">
                                 <label>Repositories</label>
                                 <p>
-                                    You can copy commit messages from your repos to the my hours logs. Super nice since
-                                    you don't have to type same description twice. This action must be triggered
+                                    You can copy commit messages from your repos to the My Hours logs. Super nice since
+                                    you don't have to type the same description twice. This action must be triggered
                                     manually from the daily log list.
                                 </p>
                                 <p>Listed below are the repos that your personal access token has access to.</p>
-                                <div class="ml-3 devops-repos-container">
+                                <div class="devops-repos-container">
                                     <ol id="devops-repos"></ol>
                                 </div>
                             </div>
-                            <p class="text-muted mt-3">
+                            <p class="ops-muted">
                                 Pull request filtering settings are now configured in <strong>settings.json</strong> under
                                 <strong>platforms.devops.pullRequests</strong>.
                             </p>
@@ -239,20 +240,19 @@
                 <hr/>
 
                 <div class="settings-section">
-                    <h3 class="settings-header text-primary">Advanced</h3>
-                    <div class="settings-data">
+                    <h3 class="settings-header forge-section-title">Advanced</h3>
+                    <div class="settings-data forge-stack">
                         <p>Clear all user specific login data.</p>
-                        <div class="d-flex">
+                        <div>
                             <button
                                 id="clearUserButton"
-                                class="btn btn-danger">
+                                class="forge-button forge-button--danger">
                                 Clear user data
                             </button>
                         </div>
                     </div>
                 </div>
 
-            </div>
         </div>
     </body>
 </html>

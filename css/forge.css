@@ -1,0 +1,669 @@
+/* ============================================================
+   FORGE DESIGN SYSTEM — COMPLETE CSS
+   Calm SaaS UI (Linear × Stripe × Intercom × Notion)
+============================================================ */
+
+
+/* One important note on in oklch vs in srgb: use oklch for perceptually 
+uniform mixing (avoids the muddy gray you get when mixing complementary 
+colors in sRGB), but srgb for alpha/transparency blends since 
+color-mix(in oklch, blue 30%, transparent) can produce unexpected hue shifts. 
+color-mix(in srgb, #2589bf 30%, transparent) will produce a more intuitive result 
+when used for hover/active states.
+*/
+
+@layer forge-reset, forge-tokens, forge-theme, forge-base, forge-layout, forge-components, forge-utilities, forge-dx-hacks;
+
+
+/* ============================================================
+   RESET LAYER
+   Rules:
+   - Normalize browser behavior
+   - Preserve semantics
+============================================================ */
+
+@layer forge-reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body,
+  h1, h2, h3, h4,
+  p,
+  figure,
+  blockquote {
+    margin: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--forge-bg-canvas);
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    background: none;
+    border: none;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+
+/* ============================================================
+   TOKENS LAYER
+   Rules:
+   - Variables only
+   - No styling
+============================================================ */
+
+@layer forge-tokens {
+  :root {
+    /* -------------------- COLOR SEEDS -------------------- */
+    --forge-hue: 80;
+    --forge-chroma: 0.002;
+    --forge-brand-hue: 238;  
+
+    /* -------------------- SURFACES -------------------- */
+    --forge-bg-canvas: oklch(0.97 var(--forge-chroma) var(--forge-hue));
+    --forge-bg-surface: oklch(0.995 var(--forge-chroma) var(--forge-hue)); 
+    --forge-bg-surface-subtle: oklch(0.98 var(--forge-chroma) var(--forge-hue)); 
+
+    /* -------------------- TEXT -------------------- */
+    --forge-text-primary: oklch(0.2 var(--forge-chroma) var(--forge-hue));
+    --forge-text-secondary: oklch(0.5 var(--forge-chroma) var(--forge-hue));
+    --forge-text-tertiary: oklch(0.62 var(--forge-chroma) var(--forge-hue));
+
+    /* -------------------- BORDERS & RADII -------------------- */
+    --forge-border: oklch(0.9 var(--forge-chroma) var(--forge-hue));
+    --forge-radius-sm: 4px;
+    --forge-radius-md: 8px;
+    --forge-radius-lg: 12px;
+    --forge-radius-full: 9999px;
+
+    /* -------------------- SHADOWS -------------------- */
+    --forge-shadow-rest:
+      0 1px 2px oklch(0.1 var(--forge-chroma) var(--forge-hue) / 0.04),
+      0 0 0 1px oklch(0.9 var(--forge-chroma) var(--forge-hue));
+
+
+    --forge-shadow-hover:
+      0 4px 8px oklch(0.1 var(--forge-chroma) var(--forge-hue) / 0.08),
+      0 0 0 1px oklch(0.88 var(--forge-chroma) var(--forge-hue));
+
+    --forge-shadow-overlay:
+      0 12px 24px oklch(0.1 var(--forge-chroma) var(--forge-hue) / 0.12),
+      0 0 0 1px oklch(0.85 var(--forge-chroma) var(--forge-hue));
+
+    /* -------------------- TYPOGRAPHY -------------------- */
+    --forge-font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    --forge-font-weight-medium: 500;
+    --forge-font-weight-bold: 600;
+    --forge-letter-spacing-tight: -0.02em;
+
+    --forge-size-xs: 0.75rem;
+    --forge-size-sm: 0.875rem;
+    --forge-size-base: 1rem;
+
+    --forge-h1: 1.5rem;
+    --forge-h2: 1.25rem;
+    --forge-h3: 1rem;
+    --forge-h4: 0.875rem;
+
+    /* -------------------- CONTENT TYPOGRAPHY -------------------- */
+    --forge-content-base: 1rem;
+    --forge-content-line-height: 1.6;
+
+    /* -------------------- SPACING -------------------- */
+    --forge-space-1: 0.25rem;
+    --forge-space-2: 0.5rem;
+    --forge-space-3: 0.75rem;
+    --forge-space-4: 1rem;
+
+    /* -------------------- INTENT COLORS -------------------- */
+    --forge-brand: oklch(0.6 0.12 var(--forge-brand-hue));
+    --forge-danger: oklch(0.66 0.15 31.05); 
+    --forge-success: oklch(0.65 0.14 145);
+    --forge-info: oklch(0.6  0.13 250);
+    --forge-warning: oklch(0.85 0.16 81.95);
+
+    /* -------------------- INTERACTION COLORS -------------------- */
+    --forge-hover-bg: oklch(0.94 var(--forge-chroma) var(--forge-hue));
+    --forge-active-bg: oklch(0.9 var(--forge-chroma) var(--forge-hue));
+
+    --forge-brand-hover: oklch(0.56 0.13 var(--forge-brand-hue));
+    --forge-brand-active: oklch(0.52 0.14 var(--forge-brand-hue));
+
+    --forge-danger-hover: oklch(0.62 0.16 31.05);
+    --forge-danger-active: oklch(0.58 0.17 31.05);
+
+    --forge-focus-ring: oklch(0.72 0.11 var(--forge-brand-hue) / 0.45);
+    --forge-focus-ring-strong: oklch(0.68 0.14 var(--forge-brand-hue) / 0.6);
+
+    /* -------------------- MOTION -------------------- */
+    --forge-motion-fast: 120ms;
+    --forge-motion-base: 180ms;
+    --forge-motion-slow: 240ms;
+
+    --forge-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --forge-ease-linear: linear;
+
+    --forge-motion-distance-sm: 4px;
+    --forge-motion-distance-md: 8px;
+
+    /* -------------------- SKELETON TOKENS -------------------- */
+    --forge-skeleton-bg: oklch(0.9 var(--forge-chroma) var(--forge-hue));
+    --forge-skeleton-fg: oklch(0.94 var(--forge-chroma) var(--forge-hue));
+    --forge-skeleton-radius: var(--forge-radius-sm);
+    --forge-skeleton-shimmer-duration: 1.2s;
+
+  }
+}
+
+
+/* ============================================================
+   DARK MODE (TOKEN OVERRIDES ONLY)
+============================================================ */
+
+@layer forge-theme {
+
+  /* ---- Dark mode ---- */
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --forge-bg-canvas: oklch(0.16 var(--forge-chroma) var(--forge-hue));
+    --forge-bg-surface: oklch(0.20 var(--forge-chroma) var(--forge-hue));
+    --forge-bg-surface-subtle: oklch(0.24 var(--forge-chroma) var(--forge-hue));
+
+    --forge-text-primary: oklch(0.92 var(--forge-chroma) var(--forge-hue));
+    --forge-text-secondary: oklch(0.72 var(--forge-chroma) var(--forge-hue));
+    --forge-text-tertiary: oklch(0.60 var(--forge-chroma) var(--forge-hue));
+
+    --forge-border: oklch(0.30 var(--forge-chroma) var(--forge-hue));
+
+    /* -------------------- SKELETON TOKENS -------------------- */
+    --forge-skeleton-bg: oklch(0.26 var(--forge-chroma) var(--forge-hue));
+    --forge-skeleton-fg: oklch(0.32 var(--forge-chroma) var(--forge-hue));
+
+
+    /* -------------------- INTERACTION COLORS -------------------- */
+    --forge-hover-bg: oklch(0.26 var(--forge-chroma) var(--forge-hue));
+    --forge-active-bg: oklch(0.30 var(--forge-chroma) var(--forge-hue));
+
+    --forge-brand-hover: oklch(0.66 0.13 var(--forge-brand-hue));
+    --forge-brand-active: oklch(0.72 0.14 var(--forge-brand-hue));
+
+    --forge-danger-hover: oklch(0.71 0.16 31.05);
+    --forge-danger-active: oklch(0.76 0.17 31.05);
+
+    --forge-focus-ring: oklch(0.74 0.12 var(--forge-brand-hue) / 0.50);
+    --forge-focus-ring-strong: oklch(0.80 0.14 var(--forge-brand-hue) / 0.65);
+
+  }
+
+  :root[data-theme="light"],
+  :root:not([data-theme]) {
+    color-scheme: light;
+  }
+
+  /* ---- Density ---- */
+  [data-density="compact"] {
+    --forge-space-1: 0.125rem;
+    --forge-space-2: 0.375rem;
+    --forge-space-3: 0.5rem;
+    --forge-space-4: 0.75rem;
+  }
+}
+
+
+/* ============================================================
+   BASE LAYER
+============================================================ */
+
+@layer forge-base {
+  body {
+    font-family: var(--forge-font) !important;
+    font-size: var(--forge-size-sm) !important;
+    color: var(--forge-text-primary) !important;
+    background-color: var(--forge-bg-canvas) !important;
+    line-height: 1.5 !important;
+  }
+
+
+
+  h1, h2, h3, h4 {
+    font-weight: var(--forge-font-weight-bold) !important;
+    letter-spacing: var(--forge-letter-spacing-tight) !important;
+  }
+
+  h1 { font-size: var(--forge-h1) !important; }
+  h2 { font-size: var(--forge-h2) !important; }
+  h3 { font-size: var(--forge-h3) !important; }
+  h4 { font-size: var(--forge-h4) !important; }
+
+
+  .forge-page-title,
+  .forge-section-title,
+  .forge-subsection-title,
+  .forge-eyebrow {
+    font-weight: var(--forge-font-weight-bold) !important;
+    letter-spacing: var(--forge-letter-spacing-tight) !important;
+    margin: 0 !important;
+  }
+
+  .forge-page-title      { font-size: var(--forge-h1) !important; }
+  .forge-section-title   { font-size: var(--forge-h2) !important; }
+  .forge-subsection-title{ font-size: var(--forge-h3) !important; }
+  .forge-eyebrow         { font-size: var(--forge-h4) !important; }
+
+
+
+  p {
+    font-size: var(--forge-content-base);
+    line-height: var(--forge-content-line-height);
+  }
+
+  label {
+    font-size: var(--forge-size-sm);
+    color: var(--forge-text-secondary);
+  }
+
+  small {
+    font-size: var(--forge-size-xs);
+    color: var(--forge-text-tertiary);
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    /* transition:
+      background-color var(--forge-motion-fast) var(--forge-ease-out),
+      border-color var(--forge-motion-fast) var(--forge-ease-out),
+      box-shadow var(--forge-motion-fast) var(--forge-ease-out),
+      transform var(--forge-motion-fast) var(--forge-ease-out); */
+  }
+}
+
+
+/* LAYOUT */
+@layer forge-layout {
+
+    .forge-body {
+        height: 100%;
+        width:  100%;
+        display: flex;
+        flex-direction: column;
+
+        .forge-application {
+            display: flex;
+            flex-grow: 1;
+            flex-shrink: 1;
+            width: 100%;
+            min-height: 0;
+
+            .forge-application-frame {
+                display: flex;
+                flex-direction: row;
+                /* flex-grow: 1; */
+                /* flex-shrink: 1; */
+                width: 100%;
+                height: 100%;
+
+                .forge-page {
+                    flex: 1 1 auto;
+                    min-height: 0;
+                    overflow: auto;
+                    /* margin-left: 0;
+                    margin-right: auto; */
+                    /* overflow-y: auto; */
+                    padding: var(--forge-space-4) var(--forge-space-3);
+
+                    .forge-page-content {
+                        display: flex;
+                        flex-direction: column;
+                    }
+
+                    .forge-page-content-center {
+                        margin-left: auto;
+                        margin-right: auto;
+                        max-width: 800px;
+                    }
+
+                    .forge-page-content-start {
+                        margin-left: 0;
+                        margin-right: auto;
+                        max-width: 800px;
+                    }
+                }
+            }
+        }
+
+
+
+        /* display: flex;
+        height: 100%;
+        width: 100vw; */
+
+
+
+
+
+    }
+}
+
+
+
+
+
+/* ============================================================
+   COMPONENTS LAYER
+   Some props are marked with !important to ensure they are not overridden by the bootstrap. 
+   This is a temporary solution until we can remove bootstrap from the projects.
+============================================================ */
+
+@layer forge-components {
+
+  /* -------------------- BUTTON -------------------- */
+  .forge-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--forge-space-2);
+
+    font-size: var(--forge-size-sm) !important;
+    padding: calc(var(--forge-space-1) * 1.5) var(--forge-space-3) !important;
+
+    border-radius: var(--forge-radius-sm) !important;
+    border: 1px solid transparent !important;
+
+    cursor: pointer !important;
+  }
+
+  .forge-button:active {
+    /* transform: translateY(1px); */
+    transform: scale(0.98);
+  }
+
+  .forge-button:focus-visible {
+    outline: 2px solid var(--forge-focus-ring) !important;
+    outline-offset: 2px !important;
+  }
+
+  .forge-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+  }
+
+  .forge-button--primary {
+    background: var(--forge-brand);
+    color: white;
+  }
+
+  .forge-button--primary:hover:not(:disabled) {
+    background: var(--forge-brand-hover) !important;
+  }
+
+  .forge-button--secondary {
+    background: var(--forge-bg-surface);
+    border-color: var(--forge-border) !important;
+  }
+
+  .forge-button--secondary:hover:not(:disabled) {
+    background: var(--forge-bg-surface-subtle) !important;
+  }
+
+  .forge-button--ghost:hover:not(:disabled) {
+    background: var(--forge-bg-surface-subtle) !important;
+  }
+
+
+  /* -------------------- INPUT -------------------- */
+  .forge-input {
+    width: 100%;
+    font-size: var(--forge-size-sm) !important;
+    padding: var(--forge-space-2) var(--forge-space-3) !important;
+
+    background: var(--forge-bg-surface) !important;
+    border: 1px solid var(--forge-border) !important;
+    border-radius: var(--forge-radius-md) !important;
+
+    font-size: var(--forge-size-sm) !important;
+  }
+
+  .forge-input::placeholder {
+    color: var(--forge-text-tertiary) !important;
+  }
+
+  .forge-input:focus {
+    border-color: var(--forge-brand) !important;
+    box-shadow: 0 0 0 1px var(--forge-brand) !important;
+  }
+
+  .forge-input:focus-visible {
+    border-color: var(--forge-brand) !important;
+    box-shadow: 0 0 0 1px var(--forge-brand) !important;
+    outline: none !important;
+}
+
+
+    /* -------------------- CONTENT -------------------- */
+
+.forge-content {
+  font-size: var(--forge-size-base);
+  line-height: 1.6;
+}
+
+
+  /* -------------------- SKELETON -------------------- */
+  .forge-skeleton {
+    display: block;
+    background: linear-gradient(
+      90deg,
+      var(--forge-skeleton-bg),
+      var(--forge-skeleton-fg),
+      var(--forge-skeleton-bg)
+    );
+    background-size: 200% 100%;
+    border-radius: var(--forge-skeleton-radius);
+    pointer-events: none;
+  }
+
+  .forge-skeleton--animated {
+    animation: forge-skeleton-shimmer
+      var(--forge-skeleton-shimmer-duration)
+      var(--forge-ease-linear)
+      infinite;
+  }
+
+  .forge-skeleton--text {
+    height: 1em;
+    width: 100%;
+  }
+
+  .forge-skeleton--heading {
+    height: 1.25em;
+    width: 60%;
+  }
+
+  .forge-skeleton--avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--forge-radius-full);
+  }
+
+  .forge-skeleton--button {
+    width: 96px;
+    height: 32px;
+    border-radius: var(--forge-radius-md);
+  }
+}
+
+/* POPUPS */
+
+.forge-overlay-content {
+    border-radius: var(--forge-radius-md) !important;
+    border-color: var(--forge-border) !important;
+    padding: 0rem !important;
+    background-color: var(--forge-bg-surface);
+    border-style: solid;
+    border-width: 1px;
+}
+
+
+/* ============================================================
+   UTILITIES
+============================================================ */
+
+@layer forge-utilities {
+
+  /* -------------------- SPACING -------------------- */
+  .forge-m-1 { margin: var(--forge-space-1); }
+  .forge-m-2 { margin: var(--forge-space-2); }
+  .forge-m-3 { margin: var(--forge-space-3); }
+  .forge-m-4 { margin: var(--forge-space-4); }
+
+  .forge-mt-1 { margin-top: var(--forge-space-1); }
+  .forge-mt-2 { margin-top: var(--forge-space-2); }
+  .forge-mt-3 { margin-top: var(--forge-space-3); }
+  .forge-mt-4 { margin-top: var(--forge-space-4); }
+
+  .forge-mb-1 { margin-bottom: var(--forge-space-1); }
+  .forge-mb-2 { margin-bottom: var(--forge-space-2); }
+  .forge-mb-3 { margin-bottom: var(--forge-space-3); }
+  .forge-mb-4 { margin-bottom: var(--forge-space-4); }
+
+  .forge-p-1 { padding: var(--forge-space-1); }
+  .forge-p-2 { padding: var(--forge-space-2); }
+  .forge-p-3 { padding: var(--forge-space-3); }
+  .forge-p-4 { padding: var(--forge-space-4); }
+
+  .forge-gap-1 { gap: var(--forge-space-1); }
+  .forge-gap-2 { gap: var(--forge-space-2); }
+  .forge-gap-3 { gap: var(--forge-space-3); }
+  .forge-gap-4 { gap: var(--forge-space-4); }
+
+
+  /* -------------------- FLEX -------------------- */
+  .forge-flex { display: flex; }
+  .forge-flex-col { flex-direction: column; }
+  .forge-items-center { align-items: center; }
+  .forge-justify-between { justify-content: space-between; }
+
+
+  /* -------------------- GRID -------------------- */
+  .forge-grid {
+    display: grid;
+    gap: var(--forge-space-4);
+  }
+
+  .forge-grid--2 { grid-template-columns: repeat(2, 1fr); }
+  .forge-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .forge-grid--auto {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+
+  /* -------------------- CONTAINERS -------------------- */
+  .forge-container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--forge-space-3);
+    max-width: 1120px;
+  }
+
+
+  /* -------------------- PATTERNS -------------------- */
+  .forge-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--forge-space-3);
+  }
+
+  .forge-cluster {
+    display: flex;
+    gap: var(--forge-space-2);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .forge-center {
+    display: grid;
+    place-items: center;
+  }
+}
+
+
+/* ============================================================
+   DEV EXTREME CSS HACKS
+============================================================ */
+
+@layer forge-dx-hacks {
+
+    /* POPUP */
+    .forge-dx-popup-no-arrow .dx-popover-arrow {
+        display: none;
+    }
+
+    .forge-dx-popup {
+        .dx-overlay-content {
+            border-radius: var(--forge-radius-md) !important;
+            border-color: var(--forge-border) !important;
+
+            .dx-popup-content {
+                padding: 0rem !important;
+                background-color: var(--forge-bg-surface);
+                border-radius: var(--forge-radius-md) !important;
+            }
+        }
+    }
+    
+    
+
+
+
+
+}
+
+
+/* ============================================================
+   ACCESSIBILITY — REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@keyframes forge-skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}

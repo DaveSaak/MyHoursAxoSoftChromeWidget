@@ -1,35 +1,117 @@
-.settings-section {
-    /* border-bottom: 1px solid blue; */
-    margin: 2rem;
-    padding-bottom: 1.5rem;
-    margin-left: auto;
-    margin-right: auto;
+/* ---- Layout ---- */
+
+.ops-layout {
     display: flex;
+    flex-direction: column;
+    padding-bottom: 3rem;
+}
+
+.settings-section {
+    margin: 0 auto;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--forge-border);
+    display: flex;
+    gap: 2rem;
     width: 800px;
-} 
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--forge-border);
+    width: 800px;
+    margin: 0 auto;
+}
 
 .settings-sub-section:not(:first-child) {
     margin-top: 2rem;
-    padding-top: 1rem;;
-    border-top: solid 1px lightgrey;
+    padding-top: 1rem;
+    border-top: 1px solid var(--forge-border);
 }
 
 .settings-sub-section-header {
-    font-size: 1.2rem;
-    font-weight: 500;
-    padding-bottom: 0.5rem;
+    font-size: var(--forge-size-base);
+    font-weight: var(--forge-font-weight-medium);
+    color: var(--forge-text-primary);
+    padding-bottom: var(--forge-space-2);
 }
 
 .settings-header {
-    width: 250px;
+    width: 220px;
+    flex-shrink: 0;
+    color: var(--forge-text-primary);
+    padding-top: var(--forge-space-1);
 }
 
 .settings-data {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ---- Field wrapper ---- */
+.forge-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--forge-space-1);
+}
+
+/* ---- Notice / Alert boxes ---- */
+.forge-notice {
+    padding: var(--forge-space-3);
+    border-radius: var(--forge-radius-md);
+    border: 1px solid var(--forge-border);
+    font-size: var(--forge-size-sm);
+    line-height: 1.6;
+}
+
+.forge-notice p {
+    font-size: var(--forge-size-sm);
+    margin-bottom: var(--forge-space-2);
+}
+
+.forge-notice a {
+    color: var(--forge-brand);
+}
+
+.forge-notice--info {
+    background-color: color-mix(in srgb, var(--forge-brand) 6%, var(--forge-bg-surface));
+    border-color: color-mix(in srgb, var(--forge-brand) 22%, var(--forge-border));
+    color: var(--forge-text-primary);
+}
+
+.forge-notice--success {
+    background-color: color-mix(in srgb, var(--forge-success) 6%, var(--forge-bg-surface));
+    border-color: color-mix(in srgb, var(--forge-success) 22%, var(--forge-border));
+    color: var(--forge-text-primary);
+}
+
+/* ---- Danger button (not in forge.css base) ---- */
+.forge-button--danger {
+    background: var(--forge-danger);
+    color: white;
+}
+
+.forge-button--danger:hover:not(:disabled) {
+    background: var(--forge-danger-hover) !important;
+}
+
+.forge-button--danger:active {
+    background: var(--forge-danger-active) !important;
+}
+
+/* ---- Muted text ---- */
+.ops-muted {
+    font-size: var(--forge-size-sm);
+    color: var(--forge-text-tertiary);
 }
 
 #settings-title {
-    color: #111;
+    color: var(--forge-text-primary);
+    padding: 1.5rem var(--forge-space-4);
+    text-align: center;
     transition: background-image 0.2s ease, background-color 0.2s ease;
 }
 
@@ -90,11 +172,15 @@
 }
 
 .devops-repos-container {
-    margin-left: 1rem;
-    
+    margin-left: var(--forge-space-3);
     max-height: 10rem;
     overflow: auto;
-} 
+    border: 1px solid var(--forge-border);
+    border-radius: var(--forge-radius-md);
+    padding: var(--forge-space-2) var(--forge-space-3);
+    background: var(--forge-bg-surface-subtle);
+    font-size: var(--forge-size-sm);
+}
 
 .show-on-hover{
     display: none;
