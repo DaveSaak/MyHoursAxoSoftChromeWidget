@@ -11,7 +11,8 @@
     padding: 2rem 0;
     border-bottom: 1px solid var(--forge-border);
     display: flex;
-    gap: 2rem;
+    flex-direction: column;
+    gap: var(--forge-space-3);
     width: 800px;
 }
 
@@ -40,10 +41,8 @@ hr {
 }
 
 .settings-header {
-    width: 220px;
-    flex-shrink: 0;
     color: var(--forge-text-primary);
-    padding-top: var(--forge-space-1);
+    padding-top: 0;
 }
 
 .settings-data {
