@@ -38,6 +38,11 @@
         <link
             rel="stylesheet"
             type="text/css"
+            href="themes.css"
+            media="screen" />
+        <link
+            rel="stylesheet"
+            type="text/css"
             href="optionsPage.css"
             media="screen" />
         <link
@@ -49,26 +54,20 @@
     </head>
 
     <body>
-        <div
-            class="theme-header-spica"
+        <!-- <div
             id="settings-title">
-            <h1 class="forge-page-title text-center">Spica Workforce Chrome Extension</h1>
-        </div>
+            <h1 class="forge-page-title">Settings</h1>
+            <p style="color: var(--forge-text-secondary); margin-top: var(--forge-space-2); font-size: var(--forge-size-sm);">Spica Workforce Chrome Extension</p>
+        </div> -->
 
         <div class="ops-layout">
 
                 <div class="settings-section">
-                    <h3 class="settings-header forge-section-title">Appearance</h3>
+                    <h3 class="settings-header">Appearance</h3>
                     <div class="settings-data">
                         <div class="settings-sub-section">
                             <!-- <div class="settings-sub-section-header">Theme</div> -->
                             <div class="theme-tiles-container d-flex flex-wrap">
-                                <div class="theme-tile" data-theme="spica" title="Spica">
-                                    <div class="theme-tile-label">Spica</div>
-                                </div>
-                                <div class="theme-tile" data-theme="desert" title="Desert">
-                                    <div class="theme-tile-label">Desert</div>
-                                </div>
                                 <div class="theme-tile" data-theme="frost" title="Frost">
                                     <div class="theme-tile-label">Frost</div>
                                 </div>
@@ -78,8 +77,8 @@
                                 <div class="theme-tile" data-theme="bloom" title="Bloom">
                                     <div class="theme-tile-label">Bloom</div>
                                 </div>
-                                <div class="theme-tile" data-theme="cave" title="Cave">
-                                    <div class="theme-tile-label">Cave</div>
+                                <div class="theme-tile" data-theme="desert" title="Desert">
+                                    <div class="theme-tile-label">Desert</div>
                                 </div>
                                 <div class="theme-tile" data-theme="meadow" title="Meadow">
                                     <div class="theme-tile-label">Meadow</div>
@@ -93,7 +92,7 @@
                 </div>
 
                 <div class="settings-section d-none">
-                    <h3 class="settings-header forge-section-title d-none">General</h3>
+                    <h3 class="settings-header d-none">General</h3>
 
                     <div class="settings-data forge-stack d-none">
 
@@ -144,7 +143,7 @@
                 </div>
 
                 <div class="settings-section">
-                    <h3 class="settings-header forge-section-title">Connection check</h3>
+                    <h3 class="settings-header">Connection check</h3>
                     <div class="settings-data forge-stack">
                         <p>Run a live check of all API connections.</p>
                         <div>
@@ -160,19 +159,11 @@
                 <hr/>
 
                 <div class="settings-section">
-                    <h3 class="settings-header forge-section-title">All Hours</h3>
+                    <h3 class="settings-header">All Hours</h3>
                     <div class="settings-data forge-stack">
 
                         <div class="forge-field">
-                            <label>Username</label>
-                            <input
-                                disabled
-                                class="forge-input"
-                                id="spicaUserName" />
-                        </div>
-
-                        <div class="forge-field">
-                            <label>Password</label>
+                            <label id="spicaPasswordLabel">Password</label>
                             <input
                                 class="forge-input"
                                 type="password"
@@ -197,7 +188,7 @@
                 </div>   
                 
                 <div class="settings-section">
-                    <h3 class="settings-header forge-section-title">My Hours</h3>
+                    <h3 class="settings-header">My Hours</h3>
                     <div class="settings-data">
                         <div
                             id="mhAccessToken"
@@ -213,9 +204,9 @@
                     </div>
                 </div>                  
 
-                <div id="devops-section">
+                <div id="devops-section" class="d-none">
                     <div class="settings-section">
-                        <h3 class="settings-header forge-section-title">DevOps</h3>
+                        <h3 class="settings-header">DevOps</h3>
                         <div class="settings-data forge-stack">
                             <div class="forge-field">
                                 <label>Repositories</label>
@@ -240,7 +231,7 @@
                 <hr/>
 
                 <div class="settings-section">
-                    <h3 class="settings-header forge-section-title">Advanced</h3>
+                    <h3 class="settings-header">Advanced</h3>
                     <div class="settings-data forge-stack">
                         <p>Clear all user specific login data.</p>
                         <div>

@@ -1,19 +1,40 @@
 /* ---- Layout ---- */
 
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--popup-bg) !important;
+    background-image:
+        radial-gradient(1200px 540px at -12% -18%, color-mix(in srgb, var(--theme-primary) 22%, transparent) 0%, color-mix(in srgb, var(--theme-primary) 12%, transparent) 42%, color-mix(in srgb, var(--theme-primary) 3%, transparent) 60%, transparent 78%),
+        radial-gradient(860px 460px at 110% -12%, color-mix(in srgb, var(--theme-secondary) 18%, transparent) 0%, color-mix(in srgb, var(--theme-secondary) 8%, transparent) 46%, transparent 72%),
+        linear-gradient(160deg, color-mix(in srgb, var(--popup-bg) 50%, white) 0%, var(--popup-bg) 44%, color-mix(in srgb, var(--popup-bg) 85%, #888) 100%);
+    background-attachment: fixed !important;
+    transition: background 0.3s ease;
+}
+
+
+
 .ops-layout {
     display: flex;
     flex-direction: column;
-    padding-bottom: 3rem;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 860px;
+    margin: 0 auto;
 }
 
 .settings-section {
-    margin: 0 auto;
-    padding: 2rem 0;
-    border-bottom: 1px solid var(--forge-border);
+    background: var(--forge-bg-surface);
+    border-radius: var(--forge-radius-lg);
+    box-shadow: -4px -4px 16px #00000017;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: var(--forge-space-3);
-    width: 800px;
+    width: auto;
 }
 
 .settings-section:last-child {
@@ -21,10 +42,7 @@
 }
 
 hr {
-    border: none;
-    border-top: 1px solid var(--forge-border);
-    width: 800px;
-    margin: 0 auto;
+    display: none;
 }
 
 .settings-sub-section:not(:first-child) {
@@ -41,8 +59,12 @@ hr {
 }
 
 .settings-header {
-    color: var(--forge-text-primary);
-    padding-top: 0;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    color: var(--forge-text-secondary) !important;
+    margin-bottom: var(--forge-space-1);
 }
 
 .settings-data {
@@ -109,12 +131,11 @@ hr {
 
 #settings-title {
     color: var(--forge-text-primary);
-    padding: 1.5rem var(--forge-space-4);
-    text-align: center;
+    padding: 2.5rem 2rem 2rem;
     transition: background-image 0.2s ease, background-color 0.2s ease;
 }
 
-#settings-title.theme-header-spica {
+/* #settings-title.theme-header-spica {
     background-color: #ecf3fa;
     background-image:
         radial-gradient(400px 200px at 20% 30%, rgba(47, 111, 179, 0.3) 0%, transparent 60%),
@@ -157,10 +178,11 @@ hr {
 }
 
 #settings-title.theme-header-meadow {
-    background-color: #f5f9e9;
+    background-color: #f5f9e9 !important;
     background-image:
         radial-gradient(400px 200px at 20% 30%, rgba(107, 142, 35, 0.3) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(154, 205, 50, 0.3) 0%, transparent 70%);
+        radial-gradient(300px 200px at 120% 0%, rgba(154, 205, 50, 0.3) 0%, transparent 70%) !important;
+    background-attachment: auto !important;
 }
 
 #settings-title.theme-header-aurora {
@@ -168,7 +190,7 @@ hr {
     background-image:
         radial-gradient(400px 200px at 20% 30%, rgba(110, 127, 214, 0.32) 0%, transparent 60%),
         radial-gradient(300px 200px at 120% 0%, rgba(100, 205, 219, 0.28) 0%, transparent 70%);
-}
+} */
 
 .devops-repos-container {
     margin-left: var(--forge-space-3);
@@ -225,74 +247,23 @@ li:hover .show-on-hover{
     border: 1px solid #989595;
     border-radius: 12px;
     transition: all 0.2s ease;
-    width: 110px;
+    width: 95px;
     height: 110px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    color: var(--theme-ink);
+    background-color: var(--popup-bg);
+    background-image:
+        /* radial-gradient(400px 200px at 20% 30%, color-mix(in srgb, var(--theme-primary) 32%, transparent) 0%, transparent 60%),
+        radial-gradient(300px 200px at 120% 0%, color-mix(in srgb, var(--theme-secondary) 28%, transparent) 0%, transparent 70%); */
+
+        radial-gradient(400px 200px at -12% -18%, color-mix(in srgb, var(--theme-primary) 22%, transparent) 0%, color-mix(in srgb, var(--theme-primary) 12%, transparent) 42%, color-mix(in srgb, var(--theme-primary) 3%, transparent) 60%, transparent 78%),
+        radial-gradient(300px 200px at 110% -12%, color-mix(in srgb, var(--theme-secondary) 18%, transparent) 0%, color-mix(in srgb, var(--theme-secondary) 8%, transparent) 46%, transparent 72%),
+        linear-gradient(160deg, color-mix(in srgb, var(--popup-bg) 50%, white) 0%, var(--popup-bg) 44%, color-mix(in srgb, var(--popup-bg) 85%, #888) 100%);
+
 }
 
-.theme-tile[data-theme="spica"] {
-    background-color: #ecf3fa;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(47, 111, 179, 0.3) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(217, 71, 101, 0.25) 0%, transparent 70%);
-    color: #1f2a37;
-}
 
-.theme-tile[data-theme="desert"] {
-    background-color: #f8eddc;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(183, 114, 62, 0.35) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(212, 151, 89, 0.3) 0%, transparent 70%);
-    color: #3f2d1d;
-}
 
-.theme-tile[data-theme="frost"] {
-    background-color: #edf6fd;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(95, 144, 188, 0.3) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(160, 198, 226, 0.35) 0%, transparent 70%);
-    color: #1f3a56;
-}
-
-.theme-tile[data-theme="forrest"] {
-    background-color: #eaf3ec;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(71, 129, 92, 0.3) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(128, 171, 113, 0.3) 0%, transparent 70%);
-    color: #1f3a2a;
-}
-
-.theme-tile[data-theme="bloom"] {
-    background-color: #fff1f7;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(219, 95, 146, 0.3) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(248, 163, 193, 0.3) 0%, transparent 70%);
-    color: #5c2340;
-}
-
-.theme-tile[data-theme="cave"] {
-    background-color: #f5efe6;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(139, 115, 93, 0.34) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(194, 173, 150, 0.32) 0%, transparent 70%);
-    color: #3f3328;
-}
-
-.theme-tile[data-theme="meadow"] {
-    background-color: #f5f9e9;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(107, 142, 35, 0.3) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(154, 205, 50, 0.3) 0%, transparent 70%);
-    color: #2f3b16;
-}
-
-.theme-tile[data-theme="aurora"] {
-    background-color: #f3f6ff;
-    background-image:
-        radial-gradient(400px 200px at 20% 30%, rgba(110, 127, 214, 0.32) 0%, transparent 60%),
-        radial-gradient(300px 200px at 120% 0%, rgba(100, 205, 219, 0.28) 0%, transparent 70%);
-    color: #22324c;
-}
 
 .theme-tile:hover {
     border-color: #999;

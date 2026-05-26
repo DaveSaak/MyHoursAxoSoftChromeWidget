@@ -75,6 +75,7 @@ $(function () {
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser, _this.options.platforms.myHours.apiUri, _this.options.platforms.myHours.pat);
             _this.devOpsApi = new DevOpsApi(_this.options);
+            updateSpicaPasswordLabel(_this.options?.platforms?.spica?.userName);
 
             _this.devOpsApi.getMyRepositoriesAsync().then(repos => {
                 repos.value.forEach(repo => {
@@ -294,6 +295,11 @@ $(function () {
         }
     }
 
+    function updateSpicaPasswordLabel(email) {
+        const labelText = email ? `Password for ${email}` : 'Password';
+        $('#spicaPasswordLabel').text(labelText);
+    }
+
     function applyHeaderTheme(theme) {
         const knownThemes = [
             'spica',
@@ -310,8 +316,11 @@ $(function () {
             .map(x => `theme-header-${x}`)
             .join(' ');
 
-        $('#settings-title')
-            .removeClass(headerThemeClasses)
-            .addClass(`theme-header-${resolvedTheme}`);
+        // $('#settings-title')
+        //     .removeClass(headerThemeClasses)
+        //     .addClass(`theme-header-${resolvedTheme}`);
+
+        // Apply theme to body for gradient background
+        $('body').attr('data-theme', resolvedTheme);
     }
 });
