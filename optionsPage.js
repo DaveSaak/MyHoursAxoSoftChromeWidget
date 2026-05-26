@@ -46,6 +46,7 @@ $(function () {
             // Set active theme tile
             $('.theme-tile').removeClass('active');
             $(`.theme-tile[data-theme="${_this.options.theme}"]`).addClass('active');
+            applyHeaderTheme(_this.options.theme);
             
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             $('#myHoursDistractionComment').val(_this.options.myHoursDistractionComment);
@@ -129,6 +130,7 @@ $(function () {
         $(this).addClass('active');
 
         _this.options.theme = selectedTheme;
+        applyHeaderTheme(selectedTheme);
         saveOptions().then(
             function () {
                 toastr.success(`Theme saved: ${selectedThemeName}`);
@@ -307,5 +309,26 @@ $(function () {
             // $('#axo-section').show();
             $('#devops-section').hide();
         }
+    }
+
+    function applyHeaderTheme(theme) {
+        const knownThemes = [
+            'spica',
+            'desert',
+            'frost',
+            'forrest',
+            'bloom',
+            'cave',
+            'meadow',
+            'aurora'
+        ];
+        const resolvedTheme = knownThemes.includes(theme) ? theme : 'spica';
+        const headerThemeClasses = knownThemes
+            .map(x => `theme-header-${x}`)
+            .join(' ');
+
+        $('#settings-title')
+            .removeClass(headerThemeClasses)
+            .addClass(`theme-header-${resolvedTheme}`);
     }
 });
