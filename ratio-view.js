@@ -1,10 +1,10 @@
 'use strict'
 
-function RatioView(allHoursApi, axoSoftApi, viewContainer) {
+function RatioView(allHoursApi, options, viewContainer) {
 
     var _this = this;
     _this.allHoursApi = allHoursApi;
-    _this.axoSoftApi = axoSoftApi;
+    _this.options = options;
     _this.viewContainer = viewContainer;
 
     _this.show = function () {
@@ -16,6 +16,7 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
         let currentUserPromise = _this.allHoursApi.getCurrentUserId();
         currentUserPromise.then(
             function (userId) {
+                /*
                 _this.axoSoftApi.getWorkLogsWithinLastTenDays(twoWeeksAgo, today).then(response => {
                     let worklogs = response.data;
                     _this.allHoursApi.getUserCalculations(userId, twoWeeksAgo, today).then(calculations => {
@@ -146,7 +147,10 @@ function RatioView(allHoursApi, axoSoftApi, viewContainer) {
 
 
                     });
-                })
+                    
+                }
+                )
+                */
             }
         )
 

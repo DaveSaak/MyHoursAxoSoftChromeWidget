@@ -1,0 +1,328 @@
+{
+    "kaboomDefinitions": [
+        {
+            "actions": [
+                {
+                    "actionIndex": 0,
+                    "allHours": {
+                        "action": "add-clocking",
+                        "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
+                        "comment": "clock in remote"
+                    },
+                    "backgroundColor": "#3d348b",
+                    "color": "white",
+                    "description": "start remote work",
+                    "icon": "play",
+                    "index": 0,
+                    "kaboomIndex": 0,
+                    "myHours": {
+                        "action": "stop-running-log"
+                    }
+                },
+                {
+                    "actionIndex": 1,
+                    "backgroundColor": "#3d348b",
+                    "color": "white",
+                    "description": "cross team meeting",
+                    "icon": "comments",
+                    "id": "",
+                    "index": 1,
+                    "kaboomIndex": 0,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "cross team meeting",
+                        "projectId": 1870755,
+                        "taskId": 10465248
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 1,
+                    "backgroundColor": "#3d348b",
+                    "color": "white",
+                    "description": "mentoring",
+                    "icon": "brain",
+                    "id": "",
+                    "index": 1,
+                    "kaboomIndex": 0,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "mentoring",
+                        "projectId": 1870755,
+                        "taskId": 10481557
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 2,
+                    "allHours": {
+                        "action": "add-clocking",
+                        "clockingDefinitionId": "0085e8de-9b0a-4004-bd36-2252b5ab5aa6",
+                        "comment": "break"
+                    },
+                    "backgroundColor": "#3d348b",
+                    "color": "white",
+                    "description": "start break",
+                    "icon": "coffee",
+                    "index": 2,
+                    "kaboomIndex": 0,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "taking short break",
+                        "projectId": 1870755,
+                        "taskId": 12738329
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 3,
+                    "allHours": {
+                        "action": "add-clocking",
+                        "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
+                        "comment": "clock out"
+                    },
+                    "backgroundColor": "#3d348b",
+                    "color": "white",
+                    "description": "clock out",
+                    "icon": "stop",
+                    "index": 3,
+                    "kaboomIndex": 0,
+                    "myHours": {
+                        "action": "stop-running-log"
+                    }
+                }
+            ],
+            "backgroundColor": "#3d348b",
+            "color": "white"
+        },
+        {
+            "description": "all hours", 
+            "backgroundColor": "#0090be",
+            "color": "white",
+            "actions": [
+  
+                {
+                    "actionIndex": 0,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "All Hours - Scrum",
+                    "icon": "chalkboard-teacher",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "sync / planning / retro",
+                        "projectId": 1870722,
+                        "taskId": 20755041
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 1,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "All Hours - Research",
+                    "icon": "flask",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "research",
+                        "projectId": 1870722,
+                        "taskId": 20755040
+                    },
+                    "text": ""
+                }
+            ]
+        },
+        {
+            "description": "my hours", 
+            "backgroundColor": "#009964",
+            "color": "white",
+            "actions": [
+  
+                {
+                    "actionIndex": 0,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "My Hours - Knowledge transfer",
+                    "icon": "brain",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "knowledge transfer",
+                        "projectId": 1870743,
+                        "taskId": 20822669
+                    },
+                    "text": ""
+                }
+            ]
+        },
+        {
+            "description": "platform", 
+            "backgroundColor": "#d31b64",
+            "color": "white",
+            "actions": [
+  
+                {
+                    "actionIndex": 0,
+                    "backgroundColor": "#d31b64",
+                    "color": "white", 
+                    "description": "Forge - Scrum",
+                    "icon": "chalkboard-teacher",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "update items",
+                        "projectId": 18709991,
+                        "taskId": 20755102
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 1,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "Forge - Research",
+                    "icon": "flask",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "research",
+                        "projectId": 18709991,
+                        "taskId": 20414402
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 2,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "Forge - Docs",
+                    "icon": "book",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "docs",
+                        "projectId": 18709991,
+                        "taskId": 20755097
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 3,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "Forge - Devops",
+                    "icon": "robot",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "devops",
+                        "projectId": 18709991,
+                        "taskId": 20755096
+                    },
+                    "text": ""
+                }
+            ]
+        },
+
+
+        {
+            "backgroundColor": "#d31b64",
+            "color": "white",
+            "actions": [
+                {
+                    "actionIndex": 0,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "Cloud Spine Automation - development",
+                    "icon": "laptop-code",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "cloud spine development",
+                        "projectId": 2171615,
+                        "taskId": 12164707
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 2,
+                    "backgroundColor": "#d31b64",
+                    "color": "white",
+                    "description": "Cloud Spine Automation - forenzics",
+                    "icon": "microscope",
+                    "index": 2,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "accounting forenzics",
+                        "projectId": 2171615,
+                        "taskId": 12164692
+                    },
+                    "text": ""
+                }
+            ]
+        },
+        {
+            "actions": [
+                {
+                    "actionIndex": 0,
+                    "backgroundColor": "#9d57ef",
+                    "color": "white",
+                    "description": "distraction",
+                    "icon": "bomb",
+                    "id": "",
+                    "index": 0,
+                    "kaboomIndex": 3,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "distraction",
+                        "projectId": 1870755,
+                        "taskId": 10465248
+                    },
+                    "text": ""
+                }
+            ],
+            "backgroundColor": "#9d57ef",
+            "color": "white"
+        },
+        {
+            "actions": [
+                {
+                    "actionIndex": 0,
+                    "allHours": {
+                        "action": "open-app"
+                    },
+                    "backgroundColor": "#3b8fc2",
+                    "color": "white",
+                    "description": "open AH",
+                    "index": 0,
+                    "kaboomIndex": 4,
+                    "text": "Ah"
+                },
+                {
+                    "actionIndex": 1,
+                    "backgroundColor": "#3b8fc2",
+                    "color": "white",
+                    "description": "open MH",
+                    "index": 1,
+                    "kaboomIndex": 4,
+                    "myHours": {
+                        "action": "open-app"
+                    },
+                    "text": "Mh"
+                }
+            ],
+            "backgroundColor": "#3b8fc2",
+            "color": "white"
+        }
+    ]
+}

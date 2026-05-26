@@ -1,21 +1,28 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "MyHoursToAxoSoft",
     "description": "will add today's time logs to your worklog",
-    "version": "3.2.0",
+    "version": "5.0.1",
     "author": "Dave",
-    "browser_action": {
+    "action": {
         "default_popup": "popup.html",
-        "default_icon": "./images/TS-badge.png"
+        "default_icon": "./images/TS-badge128.png"
     },
     "options_page": "options.html",
     "background": {
-        "page": "background.html",
-        "persistent": true
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
-            "matches": ["https://app.myhours.com/*"],
+            "matches": ["*://localhost/*"],
+            "js": ["content-script-dx.js"]
+        },
+        {
+            "matches": ["*://*/*"],
+            "js": ["content-script-context-menu.js"]
+        },
+        {
+            "matches": ["https://legacy.myhours.com/*"],
             "js": ["jquery-3.3.1.min.js", "content-script.js"],
             "css": ["myhours.css"]
         },
@@ -26,25 +33,37 @@
                 "https://dev.azure.com/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
-            "css": ["axo.css"]
+            "css": ["axo.css","devops-content-script.css"],
+            "run_at": "document_idle"
         },
         {
             "matches": [
-                "https://dev.azure.com/Spica-International/*"
+                "https://dev.azure.com/*"
             ],
-            "js": ["jquery-3.3.1.min.js","content-script-devops.js"]
-        }        
+            "js": ["jquery-3.3.1.min.js","./content-scripts/content-script-devops.js"]
+        },
+        {
+            "matches": [
+                "https://app.myhours.com/*"
+            ],
+            "js": ["jquery-3.3.1.min.js","./content-scripts/content-script-mh.js"]
+        }       
     ],
     "icons": {
         "16": "./images/TS-badge16.png",
         "48": "./images/TS-badge48.png",
         "128": "./images/TS-badge128.png"
-      },
-      "web_accessible_resources": [
-        "fonts/*.ttf",
-        "css/*.css",
-        "webfonts/*" 
-      ],      
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "fonts/*.ttf",
+                "css/*.css",
+                "webfonts/*"
+            ],
+            "matches": ["<all_urls>"]
+        }
+    ],
     "permissions": [
         "alarms",
         "storage",
@@ -54,17 +73,17 @@
         "webRequest",
         "contextMenus",
         "clipboardWrite",
+        "scripting"
+    ],
+    "host_permissions": [
         "https://app.myhours.com/*",
+        "https://legacy.myhours.com/*",
         "https://api.myhours.com/*",
         "https://api2.myhours.com/*",
         "https://myhoursproduction-api.azurewebsites.net/api/*",
-        "http://despacito.spica.si/OnTime/api/*",
-        "http://despacito.spica.si/OnTime/*",
-        "https://ontime.spica.com:442/OnTime/*",
-        "https://ontime.spica.com:442/OnTime/api/*",
         "https://ahdevelopment-api.azurewebsites.net/*",
         "https://allhoursproduction-api.azurewebsites.net/*",
         "https://kit.fontawesome.com/*",
-        "https://dev.azure.com/*"        
+        "https://dev.azure.com/*"
     ]
 }

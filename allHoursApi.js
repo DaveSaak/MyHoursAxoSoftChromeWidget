@@ -4,6 +4,7 @@ function AllHoursApi(
     'use strict';
 
     var baseName = 'AH API';
+    var baseUrl = 'https://api4.allhours.com/api/v1/';
 
     var _this = this;
     _this.options = options;
@@ -19,7 +20,7 @@ function AllHoursApi(
     _this.getAccessTokenOld = function (email, password) {
         return new Promise(
             function (resolve, reject) {
-                console.info(baseName + ": getting token");
+                // console.info(baseName + ": getting token");
 
                 var loginData = {
                     username: email,
@@ -28,7 +29,7 @@ function AllHoursApi(
                 };
 
                 $.ajax({
-                    url: _this.options.allHoursUrl + "tokens",
+                    url: baseUrl + "tokens",
                     contentType: "application/json",
                     type: "POST",
                     data: JSON.stringify(loginData),
@@ -55,7 +56,7 @@ function AllHoursApi(
     _this.getAccessToken = function (email, password) {
         return new Promise(
             function (resolve, reject) {
-                console.info(baseName + ": getting token");
+                // console.info(baseName + ": getting token");
 
                 var loginData = {
                     username: email,
@@ -63,14 +64,14 @@ function AllHoursApi(
                     password: password,
                     client_id: "ro_client",
                     scope: "api profile offline_access openid",
-                    client_secret: _this.options.isSecret
+                    client_secret: _this.options.platforms.allHours.iisSecret
                 };
 
                 // Convert the project to a x-form-urlencoded string
                 var urlencoded = Object.keys(loginData).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(loginData[key])).join('&');
 
                 $.ajax({
-                    url: "https://login.allhours.com/connect/token",
+                    url: "https://login.spica.com/connect/token",
                     dataType: 'json',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
@@ -98,21 +99,17 @@ function AllHoursApi(
     _this.refreshAccessToken = function () {
         return new Promise(
             function (resolve, reject) {
-                console.info(baseName + ": refreshing token");
-
                 var refreshData = {
                     client_id: "ro_client",
-                    client_secret: _this.options.isSecret,
+                    client_secret: _this.options.platforms.allHours.iisSecret,
                     grant_type: "refresh_token",
                     refresh_token: _this.options.allHoursRefreshToken,
                 }
 
-                // Convert the project to a x-form-urlencoded string
                 var urlencoded = Object.keys(refreshData).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(refreshData[key])).join('&');
 
-
                 $.ajax({
-                    url: "https://login.allhours.com/connect/token",
+                    url: "https://login.spica.com/connect/token",
                     dataType: 'json',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
@@ -121,12 +118,11 @@ function AllHoursApi(
                     success: function (data) {
                         _this.options.allHoursAccessToken = data.access_token;
                         _this.options.allHoursRefreshToken = data.refresh_token;
-                        _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toString();
+                        
+                        // IMPORTANT: Store as ISO string, not moment's toString()
+                        _this.options.allHoursAccessTokenValidTill = moment().add(data.expires_in, 'seconds').toISOString();
+                        
                         _this.options.save();
-
-                        console.group('all hours token - referesh');
-                        console.table(data);
-                        console.groupEnd();
 
                         return resolve(data);
                     },
@@ -141,9 +137,9 @@ function AllHoursApi(
 
     _this.getCurrentUserId = function () {
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting logged-in user");
+            // console.info(baseName + ": getting logged-in user");
             $.ajax({
-                url: _this.options.allHoursUrl + "UserInfo",
+                url: baseUrl + "UserInfo",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                 },
@@ -163,9 +159,9 @@ function AllHoursApi(
 
     _this.getCurrentUserName = function () {
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting logged-in user");
+            // console.info(baseName + ": getting logged-in user");
             $.ajax({
-                url: _this.options.allHoursUrl + "UserInfo",
+                url: baseUrl + "UserInfo",
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                 },
@@ -182,50 +178,52 @@ function AllHoursApi(
         return checkTokenAndExecutePromise(promiseFunction);
     };
 
-
     _this.getAttendance = function (userId, date) {
         date = date.startOf('day');
         let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting calculation");
+            // console.info(baseName + ": getting calculation");
 
-            $.ajax({
-                url: _this.options.allHoursUrl + "usercalculations/" + userId + "/CalculationValues/" +
-                    "?date=" + dateString +
-                    "&calculationResultTypeCode=33" +
-                    "&timeEventIds=",
-                //"?userId=" + userId,
-                headers: {
-                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
-                    "X-Timezone-Offset": date.toDate().getTimezoneOffset()
-                },
-                type: "GET",
-                success: function (data) {
-                    //can contain other dates. filter them out
-                    resolve(data);
-                },
-                error: function (data) {
-                    console.error(data);
-                    reject(Error());
+
+            _this.getUserCalculations(userId, date, date).then(
+                function(userCalculation){
+                    const workAttendance = userCalculation.DailyCalculations[0].Accruals.find(x => x.Id=="407d91af-458d-426f-a6bc-aa8b009eed92");
+                    if (workAttendance) {
+                        resolve(workAttendance.Value);
+                    } else {
+                        resolve(0);
+                    }
                 }
-            });
-
-        }
-
+            )
+        };
         return checkTokenAndExecutePromise(promiseFunction);
     }
-
-    
+        
     _this.getCurrentBalance = function (userId) {
-
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting current balance");
+            let dateString = moment().startOf('day').format('YYYY-MM-DD') + 'T00:00:00';
+
+            // $.ajax({
+            //     url: `${baseUrl}UserCalculations/${userId}/balance?dateTime=${dateString}`,
+            //     headers: {
+            //         "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+            //         "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+            //     },
+            //     type: "GET",
+            //     success: function (data) {
+            //         //can contain other dates. filter them out
+            //         resolve(data);
+            //     },
+            //     error: function (data) {
+            //         console.error(data);
+            //         reject(Error());
+            //     }
+            // });
+
 
             $.ajax({
-                url: _this.options.allHoursUrl + "presence/" + userId + 
-                    "?provideCurrentBalance=true",
-                //"?userId=" + userId,
+                url: baseUrl + "presence/" + userId,
                 headers: {
                     "Authorization": "Bearer " + _this.options.allHoursAccessToken,
                     "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
@@ -246,6 +244,51 @@ function AllHoursApi(
         return checkTokenAndExecutePromise(promiseFunction);
     }
 
+    _this.startLunchBreak = async function (userId) {
+
+        const url = baseUrl + "/Clockings/Authentic";
+        const headers = {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+            "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+        };
+        const data =
+        {
+            UserId: userId,
+            ClockingDefinitionId: '0085e8de-9b0a-4004-bd36-2252b5ab5aa6',
+            Authentic: true,
+            Origin: 2
+        };
+        const response = await fetch(url, {
+            headers,
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        return response;
+    }
+
+    _this.addClocking = async function (userId, clockingDefinitionId) {
+
+        const url = baseUrl + "/Clockings/Authentic";
+        const headers = {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+            "X-Timezone-Offset": moment().toDate().getTimezoneOffset()
+        };
+        const data =
+        {
+            UserId: userId,
+            ClockingDefinitionId: clockingDefinitionId,
+            Authentic: true,
+            Origin: 2
+        };
+        const response = await fetch(url, {
+            headers,
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        return response;
+    }
 
     _this.getUserCalculations = function (userId, dateFrom, dateTo) {
         dateFrom = dateFrom.clone().startOf('day');
@@ -255,10 +298,10 @@ function AllHoursApi(
         let dateToString = dateTo.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting calculation");
+            // console.info(baseName + ": getting calculation");
 
             $.ajax({
-                url: _this.options.allHoursUrl + "usercalculations/" + userId +
+                url: baseUrl + "usercalculations/" + userId +
                     "?dateFrom=" + dateFromString +
                     "&dateTo=" + dateToString,
                 headers: {
@@ -288,10 +331,10 @@ function AllHoursApi(
         let dateToString = dateTo.format('YYYY-MM-DD') + 'T00:00:00';
 
         let promiseFunction = function (resolve, reject) {
-            console.info(baseName + ": getting clockings");
+            // console.info(baseName + ": getting clockings");
 
             $.ajax({
-                url: _this.options.allHoursUrl + "clockings/getclockings" +
+                url: baseUrl + "clockings/getclockings" +
                     "?dateFrom=" + dateFromString +
                     "&dateTo=" + dateToString,
                 headers: {
@@ -311,7 +354,34 @@ function AllHoursApi(
 
         };
         return checkTokenAndExecutePromise(promiseFunction);
-    }    
+    }   
+    
+    _this.getButtonsAndStatus = function () {
+        // const date = ;
+        // let dateString = date.format('YYYY-MM-DD') + 'T00:00:00';
+
+        let promiseFunction = function (resolve, reject) {
+            // console.info(baseName + ": getting calculation");
+
+            $.ajax({
+                url: baseUrl + "clocks/web",
+                headers: {
+                    "Authorization": "Bearer " + _this.options.allHoursAccessToken,
+                    "X-Timezone-Offset": moment().startOf('day').toDate().getTimezoneOffset()
+                },
+                type: "GET",
+                success: function (data) {
+                    //can contain other dates. filter them out
+                    resolve(data);
+                },
+                error: function (data) {
+                    console.error(data);
+                    reject(Error());
+                }
+            });
+        };
+        return checkTokenAndExecutePromise(promiseFunction);
+    }
 
     // function checkTokenAndExecutePromise(promiseFunction) {
     //     const treshold = 5* 60;
@@ -326,22 +396,42 @@ function AllHoursApi(
     // }
 
     function checkTokenAndExecutePromise(promiseFunction) {
-        const treshold = 5 * 60;
-        let allHoursTokenIsExpired = moment().isAfter(moment(_this.options.allHoursAccessTokenValidTill).add(-treshold, 'seconds'));
-        if (allHoursTokenIsExpired) {
-            console.log('ah token expired');
-            _this.refreshAccessToken().then(
-                function (x) {
-                    console.log('ah token refreshed');
-                    return new Promise(promiseFunction);
-                }
-            )
-
-        }
-        else {
-            return new Promise(promiseFunction);
-        }
+    const treshold = 5 * 60;
+    
+    // Check if token expiry date exists and is valid
+    if (!_this.options.allHoursAccessTokenValidTill) {
+        console.warn('All Hours token expiry date not set, forcing refresh');
+        return _this.refreshAccessToken().then(
+            function () {
+                return new Promise(promiseFunction);
+            }
+        );
     }
+    
+    const tokenExpiryDate = moment(_this.options.allHoursAccessTokenValidTill);
+    
+    // Validate the parsed date
+    if (!tokenExpiryDate.isValid()) {
+        console.warn('Invalid All Hours token expiry date, forcing refresh');
+        return _this.refreshAccessToken().then(
+            function () {
+                return new Promise(promiseFunction);
+            }
+        );
+    }
+    
+    let allHoursTokenIsExpired = moment().isAfter(tokenExpiryDate.add(-treshold, 'seconds'));
+    
+    if (allHoursTokenIsExpired) {
+        return _this.refreshAccessToken().then(
+            function () {
+                return new Promise(promiseFunction);
+            }
+        );
+    } else {
+        return new Promise(promiseFunction);
+    }
+}
 
 
 };

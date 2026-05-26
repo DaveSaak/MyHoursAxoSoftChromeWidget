@@ -1,0 +1,15 @@
+.my-hours-track-button {
+    background-color: #dff4eb !important;
+    color:rgb(53, 53, 53) !important;
+    cursor: pointer;
+    border-color: transparent !important;
+    min-width: 120px;
+}
+
+.my-hours-track-button:hover {
+    background-color: #bbe9d5 !important;
+}
+
+.my-hours-track-button.la-item-delete:hover .bowtie-icon {
+    color:rgb(53, 53, 53) !important;
+}

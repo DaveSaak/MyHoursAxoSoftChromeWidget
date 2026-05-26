@@ -18,8 +18,8 @@ function TimeRatio(callback) {
           },
 
     _this.reset = function(){
-        _this.ahAttendance = undefined;
-        _this.mhTotalTime = undefined;
+        _this.ahAttendance = 0; //undefined;
+        _this.mhTotalTime = 0; //undefined;
     },
 
     _this.calcRatio = function(){
@@ -30,7 +30,7 @@ function TimeRatio(callback) {
                 _this.ratio = Math.floor(_this.mhTotalTime * 100/_this.ahAttendance)/100;
             }
 
-            console.log("MH/AH time ratio:" + _this.ratio);
+            // console.log("MH/AH time ratio:" + _this.ratio);
             if (_this.callback){
                 _this.callback(_this);
             }
