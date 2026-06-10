@@ -383,7 +383,8 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
             var currentTime = moment();
             var newLogData = {
                 logId: logId,
-                startTime: currentTime.toISOString(true)
+                startTime: currentTime.toISOString(true),
+                originType: 10,
             };
 
             fetch(baseUrl + 'logs/insertAndStartFromExisting', {
