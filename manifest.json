@@ -18,10 +18,6 @@
             "js": ["content-script-dx.js"]
         },
         {
-            "matches": ["*://*/*"],
-            "js": ["content-script-context-menu.js"]
-        },
-        {
             "matches": ["https://legacy.myhours.com/*"],
             "js": ["jquery-3.3.1.min.js", "content-script.js"],
             "css": ["myhours.css"]
@@ -29,18 +25,11 @@
         {
             "matches": [
                 "http://despacito.spica.si/*",
-                "https://ontime.spica.com:442/OnTime/*",
-                "https://dev.azure.com/*"
+                "https://ontime.spica.com:442/OnTime/*"
             ],
             "js": ["jquery-3.3.1.min.js","content-script-axo.js"],
-            "css": ["axo.css","devops-content-script.css"],
+            "css": ["axo.css"],
             "run_at": "document_idle"
-        },
-        {
-            "matches": [
-                "https://dev.azure.com/*"
-            ],
-            "js": ["jquery-3.3.1.min.js","./content-scripts/content-script-devops.js"]
         },
         {
             "matches": [

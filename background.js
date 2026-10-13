@@ -117,34 +117,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ status: "Service worker is awake!" });
     }
 
-    if (message.type === 'start-myhours-log') {
-        startTrackingTimeDevOps(
-            message.itemId,
-            message.tabId,
-            message.tagId
-        );
-    }
 
     if (message.type === 'get-allhours-calculation') {
 
     }
 
 });
-
-chrome.webRequest.onCompleted.addListener(
-    (details) => {
-        const parsedUrl = new URL(details.url);
-        if (details.method === "POST"
-            && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch")
-        ) {
-            console.log('sending message to cointent script', details);
-            chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
-            console.log('background script message sent: work-item-fetched');
-        }
-    },
-    { urls: ["*://dev.azure.com/*"] } // filter only requests to dev.azure.com
-);
-
 
 chrome.webRequest.onCompleted.addListener(
     (details) => {
