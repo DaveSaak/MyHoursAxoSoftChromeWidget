@@ -1,6 +1,9 @@
 {
     "kaboomDefinitions": [
         {
+            "description": "cloking in/out", 
+            "backgroundColor": "#751854",
+            "color": "white",
             "actions": [
                 {
                     "actionIndex": 0,
@@ -9,7 +12,6 @@
                         "clockingDefinitionId": "4f0473a5-50bb-4b6e-abfb-aa8c00c9cb7f",
                         "comment": "clock in remote"
                     },
-                    "backgroundColor": "#3d348b",
                     "color": "white",
                     "description": "start remote work",
                     "icon": "play",
@@ -19,6 +21,31 @@
                         "action": "stop-running-log"
                     }
                 },
+
+                {
+                    "actionIndex": 3,
+                    "allHours": {
+                        "action": "add-clocking",
+                        "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
+                        "comment": "clock out"
+                    },
+                    "color": "white",
+                    "description": "clock out",
+                    "icon": "stop",
+                    "index": 3,
+                    "kaboomIndex": 0,
+                    "myHours": {
+                        "action": "stop-running-log"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "general", 
+            "backgroundColor": "#0090be",
+            "color": "white",
+            "actions": [
+
                 {
                     "actionIndex": 1,
                     "backgroundColor": "#3d348b",
@@ -32,7 +59,8 @@
                         "action": "start-log",
                         "description": "cross team meeting",
                         "projectId": 1870755,
-                        "taskId": 10465248
+                        "taskId": 10465248,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Scrum"}]
                     },
                     "text": ""
                 },
@@ -49,7 +77,8 @@
                         "action": "start-log",
                         "description": "mentoring",
                         "projectId": 1870755,
-                        "taskId": 10481557
+                        "taskId": 10481557,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Education"}]
                     },
                     "text": ""
                 },
@@ -70,30 +99,30 @@
                         "action": "start-log",
                         "description": "taking short break",
                         "projectId": 1870755,
-                        "taskId": 12738329
+                        "taskId": 12738329,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Lunch"}]
                     },
                     "text": ""
                 },
                 {
-                    "actionIndex": 3,
-                    "allHours": {
-                        "action": "add-clocking",
-                        "clockingDefinitionId": "51578866-4483-47fa-8f31-5602df2c47e1",
-                        "comment": "clock out"
-                    },
+                    "actionIndex": 2,
                     "backgroundColor": "#3d348b",
                     "color": "white",
-                    "description": "clock out",
-                    "icon": "stop",
-                    "index": 3,
+                    "description": "hw / sw stuff",
+                    "icon": "tools",
+                    "index": 2,
                     "kaboomIndex": 0,
                     "myHours": {
-                        "action": "stop-running-log"
-                    }
+                        "action": "start-log",
+                        "description": "hw / sw stuff",
+                        "projectId": 1870755,
+                        "taskId": 10596161,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Internal Work"}]
+                    },
+                    "text": ""
                 }
-            ],
-            "backgroundColor": "#3d348b",
-            "color": "white"
+
+            ]
         },
         {
             "description": "all hours", 
@@ -103,7 +132,7 @@
   
                 {
                     "actionIndex": 0,
-                    "backgroundColor": "#d31b64",
+                    "backgroundColor": "#0090be",
                     "color": "white",
                     "description": "All Hours - Scrum",
                     "icon": "chalkboard-teacher",
@@ -113,13 +142,14 @@
                         "action": "start-log",
                         "description": "sync / planning / retro",
                         "projectId": 1870722,
-                        "taskId": 20755041
+                        "taskId": 20755041,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Scrum"}]
                     },
                     "text": ""
                 },
                 {
                     "actionIndex": 1,
-                    "backgroundColor": "#d31b64",
+                    "backgroundColor": "#0090be",
                     "color": "white",
                     "description": "All Hours - Research",
                     "icon": "flask",
@@ -129,7 +159,47 @@
                         "action": "start-log",
                         "description": "research",
                         "projectId": 1870722,
-                        "taskId": 20755040
+                        "taskId": 20755040,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Research"}]
+                    },
+                    "text": ""
+                }
+            ]
+        },
+        {
+            "description": "time space", 
+            "backgroundColor": "#DE1F3F",
+            "color": "white",
+            "actions": [
+                                {
+                    "actionIndex": 0,
+                    "color": "white",
+                    "description": "Time🎈Space - Scrum",
+                    "icon": "chalkboard-teacher",
+                    "index": 0,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "sync / planning / retro",
+                        "projectId": 1878417,
+                        "taskId": 20755082,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Scrum"}]
+                    },
+                    "text": ""
+                },
+                {
+                    "actionIndex": 1,
+                    "color": "white",
+                    "description": "Time🎈Space - Knowledge transfer",
+                    "icon": "brain",
+                    "index": 1,
+                    "kaboomIndex": 2,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "knowledge transfer",
+                        "projectId": 1878417,
+                        "taskId": 20822736,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Education"}]
                     },
                     "text": ""
                 }
@@ -140,23 +210,49 @@
             "backgroundColor": "#009964",
             "color": "white",
             "actions": [
-  
                 {
                     "actionIndex": 0,
-                    "backgroundColor": "#d31b64",
+                    "backgroundColor": "#009964",
                     "color": "white",
                     "description": "My Hours - Knowledge transfer",
                     "icon": "brain",
                     "index": 0,
-                    "kaboomIndex": 2,
+                    "kaboomIndex": 1,
                     "myHours": {
                         "action": "start-log",
                         "description": "knowledge transfer",
                         "projectId": 1870743,
-                        "taskId": 20822669
+                        "taskId": 20822669,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Education"}]
                     },
                     "text": ""
                 }
+
+            ]
+        },
+        {
+            "description": "scheduling", 
+            "backgroundColor": "#673ab7",
+            "color": "white",
+            "actions": [
+                {
+                    "actionIndex": 0,
+                    "backgroundColor": "#673ab7",
+                    "color": "white",
+                    "description": "design",
+                    "icon": "brush",
+                    "index": 0,
+                    "kaboomIndex": 1,
+                    "myHours": {
+                        "action": "start-log",
+                        "description": "design",
+                        "projectId": 3182343,
+                        "taskId": 22671140,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Design"}]
+                    },
+                    "text": ""
+                }
+
             ]
         },
         {
@@ -175,9 +271,10 @@
                     "kaboomIndex": 2,
                     "myHours": {
                         "action": "start-log",
-                        "description": "update items",
-                        "projectId": 18709991,
-                        "taskId": 20755102
+                        "description": "scrum",
+                        "projectId": 1879991,
+                        "taskId": 20755102,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Scrum"}]
                     },
                     "text": ""
                 },
@@ -192,8 +289,9 @@
                     "myHours": {
                         "action": "start-log",
                         "description": "research",
-                        "projectId": 18709991,
-                        "taskId": 20414402
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Research"}],
+                        "projectId": 1879991,
+                        "taskId": 20755101
                     },
                     "text": ""
                 },
@@ -208,8 +306,9 @@
                     "myHours": {
                         "action": "start-log",
                         "description": "docs",
-                        "projectId": 18709991,
-                        "taskId": 20755097
+                        "projectId": 1879991,
+                        "taskId": 20755097,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Documentation"}]
                     },
                     "text": ""
                 },
@@ -217,18 +316,20 @@
                     "actionIndex": 3,
                     "backgroundColor": "#d31b64",
                     "color": "white",
-                    "description": "Forge - Devops",
-                    "icon": "robot",
+                    "description": "Forge - Release",
+                    "icon": "rocket",
                     "index": 0,
                     "kaboomIndex": 2,
                     "myHours": {
                         "action": "start-log",
-                        "description": "devops",
-                        "projectId": 18709991,
-                        "taskId": 20755096
+                        "description": "release",
+                        "projectId": 1879991,
+                        "taskId": 20755100,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Devops"}]
                     },
                     "text": ""
                 }
+
             ]
         },
 
@@ -249,7 +350,8 @@
                         "action": "start-log",
                         "description": "cloud spine development",
                         "projectId": 2171615,
-                        "taskId": 12164707
+                        "taskId": 12164707,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Development"}]
                     },
                     "text": ""
                 },
@@ -265,34 +367,12 @@
                         "action": "start-log",
                         "description": "accounting forenzics",
                         "projectId": 2171615,
-                        "taskId": 12164692
+                        "taskId": 12164692,
+                        "customFieldValues": [{"id": "9f4bd0c5-6519-4d5c-a483-e62ad6076418", "value": "Devops"}]
                     },
                     "text": ""
                 }
             ]
-        },
-        {
-            "actions": [
-                {
-                    "actionIndex": 0,
-                    "backgroundColor": "#9d57ef",
-                    "color": "white",
-                    "description": "distraction",
-                    "icon": "bomb",
-                    "id": "",
-                    "index": 0,
-                    "kaboomIndex": 3,
-                    "myHours": {
-                        "action": "start-log",
-                        "description": "distraction",
-                        "projectId": 1870755,
-                        "taskId": 10465248
-                    },
-                    "text": ""
-                }
-            ],
-            "backgroundColor": "#9d57ef",
-            "color": "white"
         },
         {
             "actions": [
@@ -306,11 +386,12 @@
                     "description": "open AH",
                     "index": 0,
                     "kaboomIndex": 4,
-                    "text": "Ah"
+                    "text": "",
+                    "icon": "meteor"
                 },
                 {
                     "actionIndex": 1,
-                    "backgroundColor": "#3b8fc2",
+                    "backgroundColor": "#009964",
                     "color": "white",
                     "description": "open MH",
                     "index": 1,
@@ -318,7 +399,19 @@
                     "myHours": {
                         "action": "open-app"
                     },
-                    "text": "Mh"
+                    "text": "",
+                    "icon": "virus"
+                },
+                {
+                    "actionIndex": 2,
+                    "backgroundColor": "#009964",
+                    "color": "white",
+                    "description": "open MH projects",
+                    "index": 2,
+                    "kaboomIndex": 4,
+                    "link": "https://app.myhours.com/projects/1870722/tasks",
+                    "text": "",
+                    "icon": "icicles"
                 }
             ],
             "backgroundColor": "#3b8fc2",

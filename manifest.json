@@ -73,6 +73,7 @@
         "webRequest",
         "contextMenus",
         "clipboardWrite",
+        "clipboardRead",
         "scripting"
     ],
     "host_permissions": [

@@ -165,44 +165,68 @@ chrome.runtime.onInstalled.addListener(() => {
         x => {
 
 
+            // chrome.contextMenus.create({
+            //     id: "contextMenuDivider",
+            //     type: "separator",
+            //     contexts: ["selection"],
+            //     documentUrlPatterns: ["https://dev.azure.com/*"]
+            // });
+
+
+
             chrome.contextMenus.create({
-                id: "contextMenuDivider",
+                id: "azureDevMenu",
+                title: "Track",
+                contexts: ["selection"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            });
+
+            chrome.contextMenus.create({
+                id: "contextMenuDivider1",
                 type: "separator",
                 contexts: ["selection"],
                 documentUrlPatterns: ["https://dev.azure.com/*"]
             });
 
-            chrome.contextMenus.create({
-                id: "azureDevMenu",
-                title: "Track %s",
-                contexts: ["selection"],
-                documentUrlPatterns: ["https://dev.azure.com/*"]
-            });
-
             if (options.platforms.myHours.contextMenuTags != undefined && options.platforms.myHours.contextMenuTags.length > 0) {
-                // chrome.contextMenus.create({
-                //     id: "azureDevMenuRoot",
-                //     title: "Track [%s]",
-                //     contexts: ["selection"],
-                //     documentUrlPatterns: ["https://dev.azure.com/*"]
-                // }); 
+                chrome.contextMenus.create({
+                    id: "azureDevMenuTagRoot",
+                    title: "Track and tag",
+                    contexts: ["selection"],
+                    documentUrlPatterns: ["https://dev.azure.com/*"]
+                });
 
                 options.platforms.myHours.contextMenuTags.forEach(tagConfig => {
                     chrome.contextMenus.create({
                         id: `azureDevMenuTag_${tagConfig.id}`,
-                        title: `Track %s / ${tagConfig.name}`,
+                        parentId: "azureDevMenuTagRoot",
+                        title: `${tagConfig.name}`,
                         contexts: ["selection"],
                         documentUrlPatterns: ["https://dev.azure.com/*"]
                     });
                 });
             }
 
-            // chrome.contextMenus.create({
-            //     id: "copyBranchNameToClipboard",
-            //     title: "Copy branch name to clipboard",
-            //     contexts: ["selection"],
-            //     documentUrlPatterns: ["https://dev.azure.com/*"]
-            // }); 
+            chrome.contextMenus.create({
+                id: "contextMenuDivider2",
+                type: "separator",
+                contexts: ["selection"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            });
+
+            chrome.contextMenus.create({
+                id: "transformTextToBranch",
+                title: "Transform to git branch",
+                contexts: ["selection", "editable"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            });
+
+            chrome.contextMenus.create({
+                id: "copyBranchNameToClipboard",
+                title: "Copy branch name to clipboard",
+                contexts: ["selection"],
+                documentUrlPatterns: ["https://dev.azure.com/*"]
+            }); 
 
 
             // if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
@@ -244,12 +268,12 @@ chrome.runtime.onInstalled.addListener(() => {
     });
     */
 
-    chrome.contextMenus.create({
-        id: "copyBranchNameToClipboard",
-        title: "Copy branch name to clipboard",
-        contexts: ["selection"],
-        documentUrlPatterns: ["https://dev.azure.com/*"]
-    });
+    // chrome.contextMenus.create({
+    //     id: "copyBranchNameToClipboard",
+    //     title: "Copy branch name to clipboard",
+    //     contexts: ["selection"],
+    //     documentUrlPatterns: ["https://dev.azure.com/*"]
+    // });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -276,12 +300,58 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 navigator.clipboard.writeText(branchName)
                     .then(() => {
                         console.log('Branch name copied to clipboard successfully.');
-                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), () => { resolve(); });
+                        chrome.notifications.create('', { type: 'basic', iconUrl: './images/ts-badge128.png', title: 'Spica extension', silent: true, message: `Copied ${branchName} to clipboard.` });
                     })
                     .catch(err => {
                         console.error('Failed to copy branch name: ', err);
-                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), () => { resolve(); });
+                        chrome.notifications.create('', { type: 'basic', iconUrl: './images/ts-badge128.png', title: 'Spica extension', silent: true, message: `Error generating branch name.` });
                     });
+            }
+        });
+    }
+    if (info.menuItemId === "transformTextToBranch") {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            args: [info.selectionText || null],
+            func: (selectedText) => {
+
+                const activeElement = document.activeElement;
+                if (!activeElement || (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA')) {
+                    console.error('No editable element is currently focused');
+                    chrome.notifications.create('', { type: 'basic', iconUrl: './images/ts-badge128.png', title: 'Spica extension', silent: true, message: `Error: No editable field focused.` });
+                    return;
+                }
+
+                // If there's selected text, transform just that. Otherwise transform the whole input value.
+                if (selectedText) {
+                    const branchName = selectedText
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+                        .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+                        .replace(/ /g, "-");     //replace spaces with dashes
+
+                    const start = activeElement.selectionStart;
+                    const end = activeElement.selectionEnd;
+                    const currentValue = activeElement.value;
+                    activeElement.value = currentValue.substring(0, start) + branchName + currentValue.substring(end);
+                    chrome.notifications.create('', { type: 'basic', iconUrl: './images/ts-badge128.png', title: 'Spica extension', silent: true, message: `Transformed to: ${branchName}` });
+                } else {
+                    // Transform the entire input value
+                    const branchName = activeElement.value
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+                        .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+                        .replace(/ /g, "-");     //replace spaces with dashes
+                    
+                    activeElement.value = branchName;
+                    chrome.notifications.create('', { type: 'basic', iconUrl: './images/ts-badge128.png', title: 'Spica extension', silent: true, message: `Transformed to: ${branchName}` });
+                }
+                
+                activeElement.dispatchEvent(new Event('input', { bubbles: true }));
+                activeElement.dispatchEvent(new Event('change', { bubbles: true }));
+                console.log('Text transformed to branch name and replaced successfully.');
             }
         });
     }
@@ -391,6 +461,15 @@ function startTrackingTimeDevOps_old(info, tab, tagId) {
                     });
             });
         });
+}
+
+function transformToBranchName(text) {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/[\W_]+/g, " ")  //remove all non alpha chars
+        .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
+        .replace(/ /g, "-");     //replace spaces with dashes
 }
 
 function getNotificationOptions(message) {
