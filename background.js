@@ -207,6 +207,27 @@ chrome.runtime.onInstalled.addListener(() => {
                 });
             }
 
+            options.platforms.myHours.contextMenuCustomFields?.forEach((fieldConfig, fieldIndex) => {
+                if (!fieldConfig.values?.length) return;
+
+                chrome.contextMenus.create({
+                    id: `azureDevMenuCFRoot_${fieldIndex}`,
+                    title: `Track with ${fieldConfig.name}`,
+                    contexts: ["selection"],
+                    documentUrlPatterns: ["https://dev.azure.com/*"]
+                });
+
+                fieldConfig.values.forEach((value, valueIndex) => {
+                    chrome.contextMenus.create({
+                        id: `azureDevMenuCF_${fieldIndex}_${valueIndex}`,
+                        parentId: `azureDevMenuCFRoot_${fieldIndex}`,
+                        title: value,
+                        contexts: ["selection"],
+                        documentUrlPatterns: ["https://dev.azure.com/*"]
+                    });
+                });
+            });
+
             chrome.contextMenus.create({
                 id: "contextMenuDivider2",
                 type: "separator",
@@ -284,6 +305,10 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         const tagId = info.menuItemId.replace("azureDevMenuTag_", "");
         startTrackingTimeDevOps(info.selectionText, tab, tagId);
     }
+    if (info.menuItemId.startsWith("azureDevMenuCF_") && info.selectionText) {
+        const [fieldIndex, valueIndex] = info.menuItemId.replace("azureDevMenuCF_", "").split("_").map(Number);
+        startTrackingTimeDevOpsWithCustomField(info.selectionText, tab, fieldIndex, valueIndex);
+    }
     if (info.menuItemId === "copyBranchNameToClipboard" && info.selectionText) {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
@@ -358,7 +383,20 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 
-async function startTrackingTimeDevOps(info, tab, tagId) {
+async function startTrackingTimeDevOpsWithCustomField(info, tab, fieldIndex, valueIndex) {
+    await setupEnvironment();
+
+    const fieldConfig = this.backgroundData.options.platforms.myHours.contextMenuCustomFields?.[fieldIndex];
+    const value = fieldConfig?.values?.[valueIndex];
+    if (!fieldConfig || value === undefined) {
+        console.warn('Custom field config not found', fieldIndex, valueIndex);
+        return;
+    }
+
+    startTrackingTimeDevOps(info, tab, null, [{ id: fieldConfig.id, value: value }]);
+}
+
+async function startTrackingTimeDevOps(info, tab, tagId, customFieldValues) {
     await setupEnvironment();
 
     const notificationId = getRandomString();
@@ -383,11 +421,12 @@ async function startTrackingTimeDevOps(info, tab, tagId) {
     }
 
     if (taskInfo) {
-        this.backgroundData.myHoursApi.startLog('', taskInfo.projectId, taskInfo.taskId, tagIds)
+        this.backgroundData.myHoursApi.startLog('', taskInfo.projectId, taskInfo.taskId, tagIds, customFieldValues)
             .then(data => {
                 refreshMyHoursPage();
+                const activity = customFieldValues?.length ? ` (${customFieldValues.map(x => x.value).join(', ')})` : '';
                 chrome.notifications.create(notificationId, getProgressNotificationOptions(
-                    `Log started: ${taskInfo.taskName}`, '👍 success', 100));
+                    `Log started: ${taskInfo.taskName}${activity}`, '👍 success', 100));
             })
             .catch(error => {
                 console.log(error);
