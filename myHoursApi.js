@@ -190,7 +190,7 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
     // -------------------------------------------------------------------------
     // ADD LOG WITH START/END TIME
     // -------------------------------------------------------------------------
-    _this.addLogWithTime = function (start, end, comment, projectId, taskId, tagIds) {
+    _this.addLogWithTime = function (start, end, comment, projectId, taskId, tagIds, customFieldValues) {
         return new Promise((resolve, reject) => {
             var newLogData = {
                 note: comment,
@@ -204,6 +204,7 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
             if (taskId) newLogData.taskId = taskId;
             if (projectId) newLogData.projectId = projectId;
             if (tagIds) newLogData.tagIds = [...tagIds];
+            if (customFieldValues) newLogData.customFieldValues = customFieldValues;
 
             fetch(baseUrl + 'logs/insertlog', {
                 method: 'POST',
@@ -270,7 +271,7 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
     };
 
 
-    _this.startLog = function (comment, projectId, taskId, tagIds) {
+    _this.startLog = function (comment, projectId, taskId, tagIds, customFieldValues) {
 
 // const payload = {
 //   "note": "research",
@@ -314,6 +315,7 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
         if (taskId) newLogData.taskId = taskId;
         if (projectId) newLogData.projectId = projectId;
         if (tagIds) newLogData.tagIds = tagIds;
+        if (customFieldValues) newLogData.customFieldValues = customFieldValues;
 
         
         var localDateStr = currentTime.startOf('day').format('YYYY-MM-DDTHH:mm:ssZ');
@@ -383,7 +385,8 @@ function MyHoursApi(currentUser, apiUrl, apiKey) {
             var currentTime = moment();
             var newLogData = {
                 logId: logId,
-                startTime: currentTime.toISOString(true)
+                startTime: currentTime.toISOString(true),
+                originType: 10,
             };
 
             fetch(baseUrl + 'logs/insertAndStartFromExisting', {

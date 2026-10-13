@@ -117,13 +117,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ status: "Service worker is awake!" });
     }
 
-    if (message.type === 'start-myhours-log') {
-        startTrackingTimeDevOps(
-            message.itemId,
-            message.tabId,
-            message.tagId
-        );
-    }
 
     if (message.type === 'get-allhours-calculation') {
 
@@ -134,24 +127,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.webRequest.onCompleted.addListener(
     (details) => {
         const parsedUrl = new URL(details.url);
-        if (details.method === "POST"
-            && parsedUrl.pathname.includes("/_apis/wit/workItemsBatch")
-        ) {
-            console.log('sending message to cointent script', details);
-            chrome.tabs.sendMessage(details.tabId, { type: 'work-item-fetched' });
-            console.log('background script message sent: work-item-fetched');
-        }
-    },
-    { urls: ["*://dev.azure.com/*"] } // filter only requests to dev.azure.com
-);
-
-
-chrome.webRequest.onCompleted.addListener(
-    (details) => {
-        const parsedUrl = new URL(details.url);
         if (details.tabId != -1 && details.method === "GET" && parsedUrl.pathname.includes("/api/logs")) {
             console.log('sending message to cointent script', parsedUrl);
-            chrome.tabs.sendMessage(details.tabId, { type: 'mh-logs-fetched', date: parsedUrl.searchParams.get('date') });
+            chrome.tabs.sendMessage(details.tabId, { type: 'mh-logs-fetched', date: parsedUrl.searchParams.get('date') })
+                .catch(() => { }); // tab has no content script (e.g. opened before extension reload)
         }
     },
     { urls: ["*://api2.myhours.com/*"] } // filter only requests to mh
@@ -164,144 +143,98 @@ chrome.runtime.onInstalled.addListener(() => {
     options.load().then(
         x => {
 
+            const customFields = (options.platforms.myHours.contextMenuCustomFields ?? [])
+                .map((fieldConfig, fieldIndex) => ({ fieldConfig, fieldIndex }))
+                .filter(x => x.fieldConfig.values?.length);
+            if (!customFields.length) return;
 
+            // a single top-level item is shown directly by Chrome instead of being grouped under the extension name
+            // (%s in the title is replaced by Chrome with the selected text)
+            const rootMenuId = "azureDevMenuRoot";
             chrome.contextMenus.create({
-                id: "contextMenuDivider",
-                type: "separator",
+                id: rootMenuId,
+                title: options.platforms.myHours.contextMenuTitle ?? "Track %s",
                 contexts: ["selection"],
                 documentUrlPatterns: ["https://dev.azure.com/*"]
             });
 
-            chrome.contextMenus.create({
-                id: "azureDevMenu",
-                title: "Track %s",
-                contexts: ["selection"],
-                documentUrlPatterns: ["https://dev.azure.com/*"]
-            });
-
-            if (options.platforms.myHours.contextMenuTags != undefined && options.platforms.myHours.contextMenuTags.length > 0) {
-                // chrome.contextMenus.create({
-                //     id: "azureDevMenuRoot",
-                //     title: "Track [%s]",
-                //     contexts: ["selection"],
-                //     documentUrlPatterns: ["https://dev.azure.com/*"]
-                // }); 
-
-                options.platforms.myHours.contextMenuTags.forEach(tagConfig => {
+            customFields.forEach(({ fieldConfig, fieldIndex }, groupIndex) => {
+                // separate value groups when more than one custom field is configured
+                if (groupIndex > 0) {
                     chrome.contextMenus.create({
-                        id: `azureDevMenuTag_${tagConfig.id}`,
-                        title: `Track %s / ${tagConfig.name}`,
+                        id: `azureDevMenuCFDivider_${fieldIndex}`,
+                        parentId: rootMenuId,
+                        type: "separator",
+                        contexts: ["selection"],
+                        documentUrlPatterns: ["https://dev.azure.com/*"]
+                    });
+                }
+
+                // first `visibleCount` values go directly under the root, the rest under an "other" submenu
+                // (menu order follows creation order, so the submenu is created after the visible values)
+                const visibleCount = Math.max(0, fieldConfig.visibleCount ?? fieldConfig.values.length);
+                const otherMenuId = `azureDevMenuCFOther_${fieldIndex}`;
+
+                fieldConfig.values.forEach((entry, valueIndex) => {
+                    if (valueIndex === visibleCount) {
+                        chrome.contextMenus.create({
+                            id: otherMenuId,
+                            parentId: rootMenuId,
+                            title: fieldConfig.otherTitle ?? "Other activities",
+                            contexts: ["selection"],
+                            documentUrlPatterns: ["https://dev.azure.com/*"]
+                        });
+                    }
+
+                    chrome.contextMenus.create({
+                        id: `azureDevMenuCF_${fieldIndex}_${valueIndex}`,
+                        parentId: valueIndex < visibleCount ? rootMenuId : otherMenuId,
+                        title: normalizeCustomFieldValue(entry).label,
                         contexts: ["selection"],
                         documentUrlPatterns: ["https://dev.azure.com/*"]
                     });
                 });
-            }
-
-            // chrome.contextMenus.create({
-            //     id: "copyBranchNameToClipboard",
-            //     title: "Copy branch name to clipboard",
-            //     contexts: ["selection"],
-            //     documentUrlPatterns: ["https://dev.azure.com/*"]
-            // }); 
-
-
-            // if(options.platforms.myHours.contextMenuTags!=undefined && options.platforms.myHours.contextMenuTags.length>0) {
-            //     chrome.contextMenus.create({
-            //         id: "azureDevMenuRoot",
-            //         title: "Track %s",
-            //         contexts: ["selection"],
-            //         documentUrlPatterns: ["https://dev.azure.com/*"]
-            //     }); 
-
-            //     options.platforms.myHours.contextMenuTags.forEach(tagConfig => {
-            //         chrome.contextMenus.create({
-            //             id: `azureDevMenuTag_${tagConfig.id}`,
-            //             parentId: "azureDevMenuRoot",
-            //             title: `${tagConfig.name}`,
-            //             contexts: ["selection"],
-            //             documentUrlPatterns: ["https://dev.azure.com/*"]
-            //         });
-            //     });
-            // }
+            });
         }
     );
-
-    /*
-
-
-    chrome.contextMenus.create({
-        id: "azureDevMenu",
-        title: "Track %s",
-        contexts: ["selection"],
-        documentUrlPatterns: ["https://dev.azure.com/*"]
-    });  
-
-    chrome.contextMenus.create({
-        id: "contextMenuDivider",
-        type: "separator",
-        contexts: ["selection"],
-        documentUrlPatterns: ["https://dev.azure.com/*"]
-    });
-    */
-
-    chrome.contextMenus.create({
-        id: "copyBranchNameToClipboard",
-        title: "Copy branch name to clipboard",
-        contexts: ["selection"],
-        documentUrlPatterns: ["https://dev.azure.com/*"]
-    });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "azureDevMenu" && info.selectionText) {
-        startTrackingTimeDevOps(info.selectionText, tab, null);
-    }
-    if (info.menuItemId.startsWith("azureDevMenuTag_") && info.selectionText) {
-        const tagId = info.menuItemId.replace("azureDevMenuTag_", "");
-        startTrackingTimeDevOps(info.selectionText, tab, tagId);
-    }
-    if (info.menuItemId === "copyBranchNameToClipboard" && info.selectionText) {
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            args: [info.selectionText],
-            func: (selectedText) => {
-
-                const branchName = selectedText
-                    .toLowerCase()
-                    .trim()
-                    .replace(/[\W_]+/g, " ")  //remove all non alpha chars
-                    .replace(/\s\s+/g, ' ')  //replace mulitple spaces with single one. 
-                    .replace(/ /g, "-");     //replace spaces with dashes
-
-                navigator.clipboard.writeText(branchName)
-                    .then(() => {
-                        console.log('Branch name copied to clipboard successfully.');
-                        chrome.notifications.create('', getNotificationOptions(`Copied ${branchName} to clipboard.`), () => { resolve(); });
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy branch name: ', err);
-                        chrome.notifications.create('', getNotificationOptions(`Error generating branch name.`), () => { resolve(); });
-                    });
-            }
-        });
+    if (info.menuItemId.startsWith("azureDevMenuCF_") && info.selectionText) {
+        const [fieldIndex, valueIndex] = info.menuItemId.replace("azureDevMenuCF_", "").split("_").map(Number);
+        startTrackingTimeDevOpsWithCustomField(info.selectionText, tab, fieldIndex, valueIndex);
     }
 });
 
 
-async function startTrackingTimeDevOps(info, tab, tagId) {
+async function startTrackingTimeDevOpsWithCustomField(info, tab, fieldIndex, valueIndex) {
+    await setupEnvironment();
+
+    const fieldConfig = this.backgroundData.options.platforms.myHours.contextMenuCustomFields?.[fieldIndex];
+    const entry = fieldConfig?.values?.[valueIndex];
+    if (!fieldConfig || entry === undefined) {
+        console.warn('Custom field config not found', fieldIndex, valueIndex);
+        return;
+    }
+
+    const { value, label } = normalizeCustomFieldValue(entry);
+    startTrackingTimeDevOps(info, tab, [{ id: fieldConfig.id, value: value }], label);
+}
+
+// a custom field value is either a plain string or { value, label }; label is display-only
+function normalizeCustomFieldValue(entry) {
+    if (typeof entry === 'string') return { value: entry, label: entry };
+    return { value: entry.value, label: entry.label ?? entry.value };
+}
+
+async function startTrackingTimeDevOps(info, tab, customFieldValues, activityLabel) {
     await setupEnvironment();
 
     const notificationId = getRandomString();
     // chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info}`, 10));
 
-    let tagIds = this.backgroundData.options.platforms.myHours.defaultTagIds;
+    const tagIds = this.backgroundData.options.platforms.myHours.defaultTagIds;
     const splitInfo = splitNumberAndText(info.trim());
-
-    tagName = '';
-    if (tagId) {
-        tagIds = [tagId];
-        tagName = this.backgroundData.options.platforms.myHours.contextMenuTags.find(t => t.id == tagId)?.name || '';
-    }
 
     let taskInfo = findTaskInTaskLists(this.backgroundData.taskLists, splitInfo.itemId);
     if (taskInfo == null) {
@@ -313,11 +246,12 @@ async function startTrackingTimeDevOps(info, tab, tagId) {
     }
 
     if (taskInfo) {
-        this.backgroundData.myHoursApi.startLog('', taskInfo.projectId, taskInfo.taskId, tagIds)
+        this.backgroundData.myHoursApi.startLog('', taskInfo.projectId, taskInfo.taskId, tagIds, customFieldValues)
             .then(data => {
                 refreshMyHoursPage();
+                const activity = activityLabel ? ` (${activityLabel})` : '';
                 chrome.notifications.create(notificationId, getProgressNotificationOptions(
-                    `Log started: ${taskInfo.taskName}`, '👍 success', 100));
+                    `Log started: ${taskInfo.taskName}${activity}`, '👍 success', 100));
             })
             .catch(error => {
                 console.log(error);
@@ -350,48 +284,6 @@ function findTaskInTaskLists(taskLists, text) {
     return null;
 }
 
-
-function startTrackingTimeDevOps_old(info, tab, tagId) {
-
-    const notificationId = getRandomString();
-    chrome.notifications.create(notificationId, getProgressNotificationOptions(`Starting log. Please wait a bit.`, `input: ${info}`, 10));
-
-    let currentUser = new CurrentUser();
-    let options = new Options();
-
-    options.load().then(
-        function () {
-            let myHoursApi = new MyHoursApi(currentUser, options.platforms.myHours.apiUri, options.platforms.myHours.pat);
-
-            currentUser.load(function () {
-
-                let tagIds = options.platforms.myHours.defaultTagIds;
-                const splitInfo = splitNumberAndText(info.trim());
-
-                tagName = '';
-                if (tagId) {
-                    tagIds = [tagId];
-                    tagName = options.platforms.myHours.contextMenuTags.find(t => t.id == tagId)?.name || '';
-                }
-
-                myHoursApi.startLogFromId(splitInfo.itemId, tagIds)
-                    .then(
-                        (data) => {
-                            if (data.logStarted) {
-                                refreshMyHoursPage();
-                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`${splitInfo.itemId} ${tagName}`, 'Log started', 100), () => { resolve(); });
-                            } else {
-                                chrome.notifications.create(notificationId, getProgressNotificationOptions(`There is no incompleted no task with id ${splitInfo.itemId}`, 'Failed to start log.', 100), () => { resolve(); });
-                            }
-                        }
-                    )
-                    .catch((error) => {
-                        console.error(error);
-                        chrome.notifications.create(notificationId, getProgressNotificationOptions(`There was an error. See console.`, 'Failed to start log.', 100), () => { resolve(); });
-                    });
-            });
-        });
-}
 
 function getNotificationOptions(message) {
     return {

@@ -46,6 +46,7 @@ $(function () {
             // Set active theme tile
             $('.theme-tile').removeClass('active');
             $(`.theme-tile[data-theme="${_this.options.theme}"]`).addClass('active');
+            applyHeaderTheme(_this.options.theme);
             
             $('#mhCommonDescriptions').val(_this.options.myHoursCommonDescriptions);
             $('#myHoursDistractionComment').val(_this.options.myHoursDistractionComment);
@@ -74,6 +75,7 @@ $(function () {
             _this.allHoursApi = new AllHoursApi(_this.options);
             _this.myHoursApi = new MyHoursApi(_this.currentUser, _this.options.platforms.myHours.apiUri, _this.options.platforms.myHours.pat);
             _this.devOpsApi = new DevOpsApi(_this.options);
+            updateSpicaPasswordLabel(_this.options?.platforms?.spica?.userName);
 
             _this.devOpsApi.getMyRepositoriesAsync().then(repos => {
                 repos.value.forEach(repo => {
@@ -129,6 +131,7 @@ $(function () {
         $(this).addClass('active');
 
         _this.options.theme = selectedTheme;
+        applyHeaderTheme(selectedTheme);
         saveOptions().then(
             function () {
                 toastr.success(`Theme saved: ${selectedThemeName}`);
@@ -201,23 +204,6 @@ $(function () {
             }
         );
     });     
-
-    $('#saveDevOpsButton').click(function () {
-        // _this.options.devOpsInstanceUrl = $('#devOpsInstanceUrl').val();
-        // _this.options.devOpsPersonalAccessToken = $('#devOpsPersonalAccessToken').val();
-        // _this.options.devOpsAuthorName = $('#devOpsAuthorName').val();
-        // _this.options.devOpsUserId = $('#devOpsUserId').val();
-        // _this.options.devOpsPullRequestRepos = $('#devOpsPullRequestRepos').val();
-        // _this.options.devOpsPullRequestMyReviewerGroups = $('#devOpsPullRequestMyReviewerGroups').val();
-        saveOptions().then(
-            function(x){
-                toastr.success('DevOps settings saved');
-            },
-            function(err){
-                toastr.error('Error saving DevOps settings.');
-            }
-        );
-    });    
 
     $('#saveKaboomButton').click(function () {
         _this.options.kaboomDefinitions = JSON.parse($('#kaboomDefinitions').val());
@@ -307,5 +293,34 @@ $(function () {
             // $('#axo-section').show();
             $('#devops-section').hide();
         }
+    }
+
+    function updateSpicaPasswordLabel(email) {
+        const labelText = email ? `Password for ${email}` : 'Password';
+        $('#spicaPasswordLabel').text(labelText);
+    }
+
+    function applyHeaderTheme(theme) {
+        const knownThemes = [
+            'spica',
+            'desert',
+            'frost',
+            'forrest',
+            'bloom',
+            'cave',
+            'meadow',
+            'aurora'
+        ];
+        const resolvedTheme = knownThemes.includes(theme) ? theme : 'spica';
+        const headerThemeClasses = knownThemes
+            .map(x => `theme-header-${x}`)
+            .join(' ');
+
+        // $('#settings-title')
+        //     .removeClass(headerThemeClasses)
+        //     .addClass(`theme-header-${resolvedTheme}`);
+
+        // Apply theme to body for gradient background
+        $('body').attr('data-theme', resolvedTheme);
     }
 });

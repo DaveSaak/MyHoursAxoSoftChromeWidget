@@ -29,10 +29,11 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
             myPullRequestsUi.empty();
 
             const otherPullRequestsUi = _this.viewContainer.find('.pull-requests-list .other-pull-requests');
-            myPullRequestsUi.empty();
+            otherPullRequestsUi.empty();
 
             //split into mine and others
-            const devOpsPullRequestMyReviewerGroups = _this.options.platforms.devops.repo.pullRequestMyReviewerGroups.split(',');
+            const myUserId = _this.options?.platforms?.devops?.repo?.userId;
+            const myReviewerGroups = getMyReviewerGroupIds();
 
             const partition = (array, callback) => {
                 const matches = []
@@ -43,7 +44,7 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
 
             const [myPullRequests, otherPullRequests] = 
                 partition(pullRequests, pullRequest => pullRequest.reviewers?.filter(
-                    x => x.id === _this.options.platforms.devops.repo.userId || devOpsPullRequestMyReviewerGroups.filter(g => x.id == g).length > 0
+                    x => x.id === myUserId || myReviewerGroups.includes(String(x.id))
                 ).length > 0);
 
 
@@ -58,17 +59,15 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
                 .filter(x => 
                     (+(new Date(x.creationDate)) > threeDaysAgo) && 
                     x.reviewers?.filter(
-                        r => (r.id === _this.options.platforms.devops.repo.userId || devOpsPullRequestMyReviewerGroups.filter(
-                            g => r.id == g
-                            ).length > 0
+                        r => (r.id === myUserId || myReviewerGroups.includes(String(r.id))
                             ) && r.vote == 0)
                         .length > 0);
 
             const tab = $('#pills-pull-requests-tab');
             if (lastThreeDaysPullRequests.length > 0) {
-                tab.text = `Pull Requests (${lastThreeDaysPullRequests.length})`;
+                tab.text(`Pull Requests (${lastThreeDaysPullRequests.length})`);
             } else {    
-                tab.text = `Pull Requests`;
+                tab.text('Pull Requests');
             };
 
             console.log('lastThreeDaysPullRequests', lastThreeDaysPullRequests);
@@ -84,6 +83,34 @@ function PullRequestsView(options, devOpsApi, viewContainer) {
 
 
         });
+    }
+
+    function getMyReviewerGroupIds() {
+        const pullRequests = _this.options?.platforms?.devops?.pullRequests;
+        const legacyGroupConfig = _this.options?.platforms?.devops?.repo?.pullRequestMyReviewerGroups;
+
+        if (Array.isArray(pullRequests?.myReviewerGroupIds)) {
+            return pullRequests.myReviewerGroupIds
+                .map(x => String(x).trim())
+                .filter(x => x.length > 0);
+        }
+
+        if (typeof pullRequests?.myReviewerGroupIds === 'string') {
+            return splitCsv(pullRequests.myReviewerGroupIds);
+        }
+
+        if (typeof legacyGroupConfig === 'string') {
+            return splitCsv(legacyGroupConfig);
+        }
+
+        return [];
+    }
+
+    function splitCsv(value) {
+        return String(value)
+            .split(',')
+            .map(x => x.trim())
+            .filter(x => x.length > 0);
     }
 
     function getPullRequestUi(pullRequest) {

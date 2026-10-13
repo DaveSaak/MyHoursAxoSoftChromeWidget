@@ -199,9 +199,11 @@ function DevOpsApi(options) {
         let pullRequestPromises = [];
         const repos = await this.getMyRepositoriesAsync();
 
-        const selectedPullRequestRepos = _this.options.platforms.devops.repo.pullRequestRepos?.split(',');
+        const selectedPullRequestRepos = getSelectedPullRequestRepos();
+        const hasRepoFilter = selectedPullRequestRepos.length > 0;
         repos.value.forEach(repo => {
-            if (!selectedPullRequestRepos || selectedPullRequestRepos.length === 0 || selectedPullRequestRepos.find(x => x === repo.name)) {
+            const isSelectedRepo = selectedPullRequestRepos.find(x => x.toLowerCase() === String(repo.name).toLowerCase());
+            if (!hasRepoFilter || isSelectedRepo) {
                 const url = _this.options.platforms.devops.uri +
                     `/_apis/git/repositories/${repo.id}/pullrequests?api-version=7.0` +
                     `&searchCriteria.status=active`;
@@ -233,6 +235,34 @@ function DevOpsApi(options) {
         // });
         // return response.json();        
 
+    }
+
+    function getSelectedPullRequestRepos() {
+        const pullRequests = _this.options?.platforms?.devops?.pullRequests;
+        const legacyRepoConfig = _this.options?.platforms?.devops?.repo?.pullRequestRepos;
+
+        if (Array.isArray(pullRequests?.repoNames)) {
+            return pullRequests.repoNames
+                .map(x => String(x).trim())
+                .filter(x => x.length > 0);
+        }
+
+        if (typeof pullRequests?.repoNames === 'string') {
+            return splitCsv(pullRequests.repoNames);
+        }
+
+        if (typeof legacyRepoConfig === 'string') {
+            return splitCsv(legacyRepoConfig);
+        }
+
+        return [];
+    }
+
+    function splitCsv(value) {
+        return String(value)
+            .split(',')
+            .map(x => x.trim())
+            .filter(x => x.length > 0);
     }
 
 }

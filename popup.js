@@ -2083,6 +2083,7 @@ function popup() {
                     editedLog.projectId = kaboomDefinition.myHours.projectId;
                     editedLog.taskId = kaboomDefinition.myHours.taskId;
                     editedLog.tagIds = kaboomDefinition.myHours.tagIds?.length > 0 ? kaboomDefinition.myHours.tagIds : undefined;
+                    if (kaboomDefinition.myHours.customFieldValues) editedLog.customFieldValues = kaboomDefinition.myHours.customFieldValues;
 
                     _this.myHoursApi.updateLog(
                         editedLog
@@ -2142,6 +2143,7 @@ function popup() {
             customField1: logDto.customField1 || 0,
             customField2: logDto.customField2 || 0,
             customField3: logDto.customField3 || 0,
+            customFieldValues: logDto.customFieldValues || [],
             attachments: logDto.attachments || [],
             userId: logDto.userId,
             isStart: false,  // Not present in input, assuming default `false`
@@ -2193,7 +2195,8 @@ function popup() {
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
                     kaboomDefinition.myHours.taskId, 
-                    kaboomDefinition.myHours.tagIds).then( x =>
+                    kaboomDefinition.myHours.tagIds,
+                    kaboomDefinition.myHours.customFieldValues).then( x =>
                     {
                         console.info(x);
                         toastr.success(`My Hours Log started.`);
@@ -2227,7 +2230,8 @@ function popup() {
                     kaboomDefinition.myHours.description, 
                     kaboomDefinition.myHours.projectId, 
                     kaboomDefinition.myHours.taskId, 
-                    kaboomDefinition.myHours.tagIds).then(
+                    kaboomDefinition.myHours.tagIds,
+                    kaboomDefinition.myHours.customFieldValues).then(
                     function (data) {
                         toastr.success(`My Hours Log added.`);
 
